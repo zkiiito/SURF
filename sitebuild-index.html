@@ -1,10 +1,10 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" >
+<!DOCTYPE html>
+<html>
 <head>
   <title>Surf</title>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
   <link rel="stylesheet" type="text/css" href="style.css" />
-  <link rel="icon" href="" type="image/x-icon">
+  <link rel="icon" href="" type="image/x-icon" />
 </head>
 <body>
 <div id="header">
@@ -12,30 +12,32 @@
   <a href=""><img id="header-logo" src="images/surf-logo.png" /></a>
 </div>
 <div id="middle">
-  <div id="left">
-    <div class="wave">
+  <div id="wave-list">
+    <div class="waveitem">
       <a href=""><h2>Csudivávé</h2></a>
       <p class="meta">tibor, klara, csabcsi</p>
     </div>
-    <div class="wave open">
+    <div class="waveitem open">
       <a href=""><h2>Csillag-delta tejbevávé</h2></a>
       <p class="meta">leguan, tibor, klara, csabcsi</p>
     </div>
-    <div class="wave updated">
+    <div class="waveitem updated">
       <a href=""><h2>Lorem ipsum すごい atomvávé őáűő</h2></a>
       <p class="meta">tibor, klara, csabcsi +4 | <span class="sarga">43 új üzenet</span></p>
     </div>
   </div>
-  <div id="right">
+  <div id="wave-container">
+  <div class="wave">
     <div class="title">
       <h2>Csillag-delta tejbevávé</h2>
       <p class="heads"><img src="images/head1.png" /><img src="images/head2.png" /><img src="images/head3.png" /><img src="images/head5.png" /></p>
       <p class="meta">leguan, tibor, klara, csabcsi</p>
     </div>
-    <div id="messages">
+    <div class="messages">
       <div class="message unread">
         <img class="head" src="images/head3.png" />
         <p class="text"><span class="meta">csabcsi:</span> Tenderloin corned beef venison sirloin, pork loin cow bresaola. Leberkas brisket turducken tri-tip, pancetta ball tip corned beef tail. Beef corned beef ham pork turkey pork chop, prosciutto fatback short loin meatloaf filet mignon turducken pastrami frankfurter chuck. Sausage cow brisket, tail drumstick shank pancetta rump beef ribs hamburger. Kielbasa sausage andouille, bresaola bacon tail ball tip. Boudin spare ribs turkey prosciutto tenderloin bresaola. Rump turkey pork loin jowl ham andouille strip steak short loin pastrami. <a class="reply" href="">Válasz</a></p>
+		<div class="replies">
         <div class="message unread">
           <img class="head" src="images/head2.png" />
           <p class="text"><span class="meta">tibor:</span> Leberkas brisket turducken tri-tip, pancetta ball tip corned beef tail. <a class="reply" href="">Válasz</a></p>
@@ -48,23 +50,29 @@
           <textarea placeholder="Válasz csabcsi üzenetére"></textarea>
           <a class="cancel" href="">Mégse válaszolok</a>
         </form>
+        </div>
       </div>
       <div class="message">
         <img class="head" src="images/head3.png" />
         <p class="text"><span class="meta">csabcsi:</span> Tenderloin corned beef venison sirloin, pork loin cow bresaola. Leberkas brisket turducken tri-tip, pancetta ball tip corned beef tail. Beef corned beef ham pork turkey pork chop, prosciutto fatback short loin meatloaf filet mignon turducken pastrami frankfurter chuck. Sausage cow brisket, tail drumstick shank pancetta rump beef ribs hamburger. Kielbasa sausage andouille, bresaola bacon tail ball tip. Boudin spare ribs turkey prosciutto tenderloin bresaola. Rump turkey pork loin jowl ham andouille strip steak short loin pastrami. <a class="reply" href="">Válasz</a></p>
+        <div class="replies">
         <div class="message">
           <img class="head" src="images/head2.png" />
           <p class="text"><span class="meta">tibor:</span> Sausage cow brisket, tail drumstick shank pancetta rump beef ribs hamburger. Kielbasa sausage andouille, bresaola bacon tail ball tip. Boudin spare ribs turkey prosciutto tenderloin bresaola. Rump turkey pork loin jowl ham andouille strip steak short loin pastrami. <a class="reply" href="">Válasz</a></p>
+          <div class="replies">
           <div class="message unread">
             <img class="head" src="images/head5.png" />
             <p class="text"><span class="meta">klara:</span> Leberkas brisket turducken tri-tip, pancetta ball tip corned beef tail. Sausage cow brisket, tail drumstick shank pancetta rump beef ribs hamburger. Kielbasa sausage andouille, bresaola bacon tail ball tip. Boudin spare ribs turkey prosciutto tenderloin bresaola. Rump turkey pork loin jowl ham andouille strip steak short loin pastrami. <a class="reply" href="">Válasz</a></p>
           </div>
+          </div>
+        </div>
         </div>
       </div>
     </div>        
     <form class="add-message" method="post">
       <textarea placeholder="Új üzenet"></textarea>
     </form>
+  </div>
   </div>
 </div>
 </body>
