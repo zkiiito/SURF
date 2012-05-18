@@ -7,7 +7,7 @@
 }
 
 body {
-  font: normal normal normal 1em 'Segoe UI', 'Proxima Nova', 'Helvetica Neue', 'Helvetica', Arial, MS Gothic, sans-serifÅ;
+  font: normal normal normal 1em 'Segoe UI', 'Proxima Nova', 'Helvetica Neue', 'Helvetica', Arial, MS Gothic, sans-serif¬Å;
   color: #555;
 }
 
@@ -250,7 +250,7 @@ a.cancel {
   top: 0;
 }
 
-/* loginoldal-specifikus rÈv¸let */
+/* loginoldal-specifikus r√©v√ºlet */
 
 body.login {
   background-color: #333333;

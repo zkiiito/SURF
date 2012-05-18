@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Surf</title>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+  <link rel="stylesheet" type="text/css" href="style.css" />
+  <link rel="icon" href="" type="image/x-icon" />
+</head>
+<body>
+
+<script id="user_view" type="text/html">
+<img class="head" src="{{ avatar }}" alt="{{ name }}"/>
+</script>
+    
+<script id="wave_list_view" type="text/html">
+<div class="waveitem">
+    <a href="#wave/{{ id }}"><h2>{{ title }}</h2></a>
+    <p class="meta"><span class="usernames">{{ usernames }}</span> <span class="sarga">{{ unreadPosts }}</span></p>
+</div>
+</script>
+
+<script id="wave_view" type="text/html">
+<div class="wave">
+    <div class="title">
+      <h2>{{ title }}</h2>
+      <p class="heads"></p>
+      <p class="meta">{{ usernames }}</p>
+    </div>
+    <div class="messages">
+    </div>
+    <form class="add-message" method="post">
+      <textarea placeholder="Új üzenet"></textarea>
+    </form>
+</div>
+</script>
+
+<script id="message_view" type="text/html">
+<div class="message unread">
+	<p class="text"><span class="meta">{{ user.name }}:</span>{{ message }} <a class="reply" href="">Válasz</a></p>
+	<div class="replies">
+	</div>
+</div>
+</script>
+
+<script id="post_replyform_view" type="text/html">
+	<form class="add-message" method="post">
+	    <textarea placeholder="Válasz csabcsi üzenetére"></textarea>
+	    <a class="cancel" href="">Mégse válaszolok</a>
+	</form>
+</script>
+
+<div id="header">
+  <h1>Surf</h1>
+  <a href=""><img id="header-logo" src="images/surf-logo.png" /></a>
+</div>
+<div id="middle">
+  <div id="wave-list"></div>
+  <div id="wave-container"></div>
+</div>
+
+
+<script src="js/jquery-1.7.2.min.js"></script>
+<script src="js/underscore.js"></script>
+<script src="js/backbone.js"></script>
+<script src="js/mustache.js"></script>
+<script src="js/ICanHaz-no-mustache.js"></script>
+<script src="js/surf.js"></script>
+
+</body>
+</html>
