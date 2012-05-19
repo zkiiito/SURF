@@ -29,7 +29,8 @@
     <div class="messages">
     </div>
     <form class="add-message" method="post">
-      <textarea placeholder="Új üzenet"></textarea>
+      <input type="hidden" name="wave_id" value="{{ id }}"/>
+      <textarea name="message" placeholder="Új üzenet"></textarea>
     </form>
 </div>
 </script>
@@ -42,9 +43,11 @@
 </div>
 </script>
 
-<script id="post_replyform_view" type="text/html">
+<script id="replyform_view" type="text/html">
 	<form class="add-message" method="post">
-	    <textarea placeholder="Válasz csabcsi üzenetére"></textarea>
+            <input type="hidden" name="wave_id" value="{{ waveId }}"/>
+            <input type="hidden" name="parent_id" value="{{ id }}"/>
+	    <textarea name="message" placeholder="Válasz {{ user.name }} üzenetére"></textarea>
 	    <a class="cancel" href="">Mégse válaszolok</a>
 	</form>
 </script>

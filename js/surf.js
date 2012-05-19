@@ -34,6 +34,11 @@ var Message = Backbone.Model.extend({
          this.messages = new MessageCollection(); //nem itt kene
          this.user = app.model.users.get(this.get('userId'));
          this.set('unread', app.currentUser != this.get('userId'));
+         
+         //TODO: csak valid idk
+         if (null == this.id) {
+             this.id = this.cid;
+         }
     },
     addReply: function(message) {
         if (null == this.messages) {
@@ -47,11 +52,13 @@ var Message = Backbone.Model.extend({
 
 var MessageView = Backbone.View.extend({
     initialize: function() {
-        _.bindAll(this, 'addMessage', 'readMessage');
+        this.hasReplyForm = false;
+        _.bindAll(this, 'addMessage', 'readMessage', 'replyMessage');
         this.model.messages.bind('add', this.addMessage);//ezt nem itt kene, hanem amikor letrejon ott a messages
     },
     events: {
-        'click': 'readMessage'
+        'click': 'readMessage',
+        'click a.reply' : 'replyMessage'
     },
     render: function() {
         var context = _.extend(this.model.toJSON(), {id: this.model.id, user: this.model.user.toJSON()});        
@@ -82,6 +89,34 @@ var MessageView = Backbone.View.extend({
             this.model.set('unread', false);
             this.$el.removeClass('unread');
         }
+    },
+    
+    replyMessage: function(e) {
+        e.preventDefault();
+        
+        $('.message .add-message').unbind().remove(); //eleg igy unbindelni?
+
+        var context = _.extend(this.model.toJSON(), {id: this.model.id, user: this.model.user.toJSON()});
+        var form = ich.replyform_view(context);
+
+        this.$el.append(form);
+
+        this.$el.find('textarea').keydown(function(e){
+            if (e.shiftKey && 13 == e.keyCode) {
+                var form = $(this).parents('form');
+                Communicator.sendMessage($('textarea', form).val(), $('[name=wave_id]', form).val(), $('[name=parent_id]', form).val());
+                $(this).val('');
+                e.preventDefault();
+            }
+        }).focus();
+        
+        this.$el.find('a.cancel').click(function(e){
+            e.preventDefault();
+            $(this).parents('form').unbind().remove();
+            return false;
+        })
+        
+       return false;
     }
 });
 
@@ -113,7 +148,7 @@ var Wave = Backbone.Model.extend({
     },
     
     getUnreadCount: function() {
-        return this.messages.reduce(function(unread, msg){ return unread + (msg.get('unread') ? 1 : 0)}, 0);
+        return this.messages.reduce(function(unread, msg){return unread + (msg.get('unread') ? 1 : 0)}, 0);
     },
     
     getUserNames: function() {
@@ -192,6 +227,16 @@ var WaveView = Backbone.View.extend({
         var template = ich.wave_view(context);
         this.setElement(template);
         this.$el.hide();
+        
+        this.$el.find('textarea').keydown(function(e){
+            if (e.shiftKey && 13 == e.keyCode) {
+                var form = $(this).parents('form');
+                Communicator.sendMessage($('textarea', form).val(), $('[name=wave_id]', form).val(), null);
+                $(this).val('');
+                e.preventDefault();
+            }
+        });
+        
         return this;
     },
     
@@ -306,6 +351,16 @@ var SurfAppRouter = Backbone.Router.extend({
     //app.model.movies.remove(app.model.movies.getByCid(cid));
     }
 });
+
+
+var Communicator = {
+    sendMessage: function(message, waveId, parentId) {
+        var message = new Message({userId: app.currentUser, waveId: waveId, message: message, parentId: parentId});
+        app.model.waves.get(waveId).addMessage(message);
+    }
+}
+
+
 
 $(function() {
     var surfApp = new SurfAppRouter();

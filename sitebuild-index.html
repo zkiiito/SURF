@@ -47,7 +47,9 @@
           <p class="text"><span class="meta">csabcsi:</span> Herp derp <a class="reply" href="">Válasz</a></p>
         </div>
         <form class="add-message" method="post">
-          <textarea placeholder="Válasz csabcsi üzenetére"></textarea>
+          <input type="hidden" name="wave_id" value="1"/>
+          <input type="hidden" name="parent_id" value="1"/>            
+          <textarea name="message" placeholder="Válasz csabcsi üzenetére"></textarea>
           <a class="cancel" href="">Mégse válaszolok</a>
         </form>
         </div>
@@ -70,7 +72,8 @@
       </div>
     </div>        
     <form class="add-message" method="post">
-      <textarea placeholder="Új üzenet"></textarea>
+      <input type="hidden" name="wave_id" value="1"/>
+      <textarea name="message" placeholder="Új üzenet"></textarea>
     </form>
   </div>
   </div>
