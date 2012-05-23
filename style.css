@@ -141,7 +141,7 @@ a:hover {
 
 .heads img {
   width: 1.4em;
-  margin-right: 1px;
+  margin-right: 4px;
   vertical-align: -20%;
 }
 
@@ -150,6 +150,14 @@ a:hover {
   display: inline-block;
   margin-top: 0;
   color: #999;
+}
+
+.online {
+  border-right: 4px solid #6d8b39;
+}
+
+.offline {
+  border-right: 4px solid #aaa;
 }
 
 .title .meta {
@@ -223,8 +231,28 @@ textarea {
 }
 
 .reply {
-  font-size: 0.7em;
-  color: #c7b9d6;
+  display: inline-block;
+  width: auto;
+  margin-left: 0.2em;
+  padding: 0 0.5em;
+  font-size: 0.8em;
+  background: #c7b9d6;
+  color: white;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+}
+
+.reply:hover {
+  text-decoration: none;
+  background: #388c85;
+  color: white;
+}
+
+.threadend {
+  display: inline-block;
+  width: auto;
+  margin: 1.2em 0.75em 1em 0.75em;
 }
 
 a.cancel {
