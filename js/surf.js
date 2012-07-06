@@ -127,6 +127,7 @@ var MessageCollection = Backbone.Collection.extend({
 
 var Wave = Backbone.Model.extend({
     defaults: {
+        title: '',
         current: false
     },
     initialize: function() {
@@ -380,10 +381,80 @@ var SurfAppRouter = Backbone.Router.extend({
 
 
 var Communicator = {
+    socket: null,
+    initialize: function() {
+        if (typeof io == 'undefined') return;
+        
+        socket = new io.connect(document.location.href);
+        socket.emit('data', "NICK " + 'currentnick');
+		
+        socket.on('INIT', function(data){
+            console.log("Client side INIT "+ data);
+        });
+
+        socket.on('message', function(data){    
+            console.log('Full message from server: ' + data);
+
+            var a = data.indexOf(' ');
+            var someNick = data.slice(0, a); // Pull some nickname off of message.
+            var fullcommand = data.slice(a+1, data.length);
+            a = fullcommand.indexOf(' '); // find index of next space.
+            var comtype = fullcommand.slice(0, a);
+            var params = fullcommand.slice(a+1, fullcommand.length);
+			
+            console.log("Client received command: "+fullcommand);
+			
+            switch(comtype){
+                case "PRIVMSG"://valaki irt olyanba amiben bennevagyok
+                    Communicator.onMsg(params);
+                    break;
+                case "NICK"://valaki nicket cserelt
+                    nick(someNick, params);
+                    break;
+                case "JOIN"://valaki belepett
+                    Communicator.onJoin(params);
+                    break;
+                case "PART"://valaki elhagyta a wavet
+                    part(someNick, params);
+                    break;
+                case "TOPIC":
+                    topic(someNick, params);
+                    break;
+                case "QUIT"://valaki kilepett
+                    quit(someNick, params);
+                    break;
+                default:
+                    nocommand(comtype);
+            }  
+        });
+    //beginChat(socket);
+    },
+    
     sendMessage: function(message, waveId, parentId) {
-        var message = new Message({userId: app.currentUser, waveId: waveId, message: message, parentId: parentId});
+        var message = new Message({
+            userId: app.currentUser, 
+            waveId: waveId, 
+            message: message, 
+            parentId: parentId
+        });
         app.model.waves.get(waveId).addMessage(message);
+    },
+    
+    onJoin: function(data) {
+        //data: user_id, wave_id, kell-e full userinfo?
+        var user = app.model.users.at(data.userId);
+        app.model.waves.at(data.waveId).addUser(user);
+    },
+    
+    onMsg: function(data) {
+        var message = new Message(data);
+        if (data.parentId)
+            app.model.messages.at(data.parentId).addReply(message);
+        else
+            app.model.waves.at(data.waveId).addMessage(message);
     }
+    
+    
 }
 
 
@@ -392,7 +463,7 @@ $(function() {
     var surfApp = new SurfAppRouter();
     window.app = surfApp;
     Backbone.history.start();
-    
+    Communicator.initialize();
     test();
 });
 
