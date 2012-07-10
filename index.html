@@ -9,7 +9,7 @@
 <body>
 
 <script id="user_view" type="text/html">
-<img class="head" src="{{ avatar }}" alt="{{ name }}"/>
+<img class="head {{ status }}" src="{{ avatar }}" alt="{{ name }}"/>
 </script>
     
 <script id="wave_list_view" type="text/html">
@@ -37,7 +37,7 @@
 
 <script id="message_view" type="text/html">
 <div class="message unread">
-	<p class="text"><span class="meta">{{ user.name }}:</span>{{ message }} <a class="reply" href="">Válasz</a></p>
+	<p class="text"><span class="meta">{{ user.name }}:</span> {{ message }} <a class="reply" href="">Válasz</a></p>
 	<div class="replies">
 	</div>
 </div>
@@ -63,10 +63,9 @@
 
 <script src="socket.io/socket.io.js"></script>
 <script src="js/jquery-1.7.2.min.js"></script>
-<script src="js/underscore.js"></script>
-<script src="js/backbone.js"></script>
-<script src="js/mustache.js"></script>
-<script src="js/ICanHaz-no-mustache.js"></script>
+<script src="serverside/node_modules/underscore/underscore.js"></script>
+<script src="serverside/node_modules/backbone/backbone.js"></script>
+<script src="js/ICanHaz.js"></script>
 <script src="js/surf.js"></script>
 
 </body>

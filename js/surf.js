@@ -385,14 +385,22 @@ var Communicator = {
     initialize: function() {
         if (typeof io == 'undefined') return;
         
-        socket = new io.connect(document.location.href);
-        socket.emit('data', "NICK " + 'currentnick');
-		
-        socket.on('INIT', function(data){
-            console.log("Client side INIT "+ data);
-        });
+        Communicator.socket = new io.connect(document.location.href);
+        Communicator.socket.emit('auth', navigator.userAgent.toLowerCase().indexOf('chrome') > 0 ? 1 : 3 );
+        
+        Communicator.socket.on('init', function(data){
+            app.currentUser = data.me.id;
+            data.users.push(data.me);
+            app.model.users.reset(data.users);
+            app.model.waves.reset(data.waves);
+            app.model.messages.reset(data.messages);
 
-        socket.on('message', function(data){    
+            document.location = $('.waveitem:last a').attr('href');
+        });
+        
+        Communicator.socket.on('message', Communicator.onMessage);
+
+        Communicator.socket.on('message2', function(data){    
             console.log('Full message from server: ' + data);
 
             var a = data.indexOf(' ');
@@ -431,27 +439,24 @@ var Communicator = {
     },
     
     sendMessage: function(message, waveId, parentId) {
-        var message = new Message({
+        var msg = new Message({
             userId: app.currentUser, 
             waveId: waveId, 
             message: message, 
             parentId: parentId
         });
-        app.model.waves.get(waveId).addMessage(message);
+        Communicator.socket.emit('message', msg);
     },
     
     onJoin: function(data) {
         //data: user_id, wave_id, kell-e full userinfo?
-        var user = app.model.users.at(data.userId);
-        app.model.waves.at(data.waveId).addUser(user);
+        //var user = app.model.users.at(data.userId);
+        //app.model.waves.at(data.waveId).addUser(user);
     },
     
-    onMsg: function(data) {
+    onMessage: function(data) {
         var message = new Message(data);
-        if (data.parentId)
-            app.model.messages.at(data.parentId).addReply(message);
-        else
-            app.model.waves.at(data.waveId).addMessage(message);
+        app.model.waves.get(data.waveId).addMessage(message);
     }
     
     
@@ -464,7 +469,6 @@ $(function() {
     window.app = surfApp;
     Backbone.history.start();
     Communicator.initialize();
-    test();
 });
 
 function test() {

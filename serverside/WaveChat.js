@@ -62,12 +62,58 @@ var User = Backbone.Model.extend({
     },
     initialize: function() {
         this.waves = new WaveCollection();
+    },
+    
+    init: function() {
+        this.socket.emit('init', {
+           me: this,
+           users: this.getFriends(),
+           waves: this.waves,
+           messages: messages
+        });
+    },
+    
+    disconnect: function() {
+        this.set('status', 'offline');
+        //broadcast
+    },
+    
+    getFriends: function() {//sajat magat nem adhatja vissza!
+        var friends = this.waves.reduce(function(friends, wave){
+            var uids = wave.get('userIds');
+            _.each(uids, function(item){
+                if (item != this.get('id')) {
+                    var user = waveServer.users.get(item);
+                    friends.add(user);
+                }
+            }, this);
+            
+            return friends;
+        }, new UserCollection(), this);
+        
+        return friends;
+    },
+    
+    send: function(msgtype, msg) {
+        if (this.socket) {
+            this.socket.emit(msgtype, msg);
+        }
     }
 });
 
 
 var UserCollection = Backbone.Collection.extend({
     model: User 
+});
+
+var Message = Backbone.Model.extend({
+    defaults: {
+        userId: null,
+        waveId: null,
+        parentId: null,
+        message: '',
+        unread: true
+    }
 });
 
 var Wave = Backbone.Model.extend({
@@ -84,15 +130,25 @@ var Wave = Backbone.Model.extend({
                 user.waves.add(this);
             }, this);
         }
+        this.messageCounter = 1000;
     },
     
     addMessage: function(message) {
-        //save, emit
+        //save, save unread
+        
+        //id savekor lesz
+        message.id = this.messageCounter;
+        message.set('id', this.messageCounter);
+        this.messageCounter++;
+        
+        this.users.each(function(user){
+            user.send('message', message);
+        }, message);
     },
     
     addUser: function(user) {
         this.users.add(user);
-        //emit join
+        //emit join?
     }
 });
 
@@ -126,20 +182,18 @@ function test() {
     
     var waves = [{id:1,title: 'Csillag-delta tejbevávé', userIds: [1,2,3,4]}];
     
-    var messages = [
-        {id:1, waveId:1, userId:1, message: 'Tenderloin corned beef venison sirloin, pork loin cow bresaola. Leberkas brisket turducken tri-tip, pancetta ball tip corned beef tail. Beef corned beef ham pork turkey pork chop, prosciutto fatback short loin meatloaf filet mignon turducken pastrami frankfurter chuck. Sausage cow brisket, tail drumstick shank pancetta rump beef ribs hamburger. Kielbasa sausage andouille, bresaola bacon tail ball tip. Boudin spare ribs turkey prosciutto tenderloin bresaola. Rump turkey pork loin jowl ham andouille strip steak short loin pastrami.'},
-        {id:2, waveId:1, userId:1, message: 'Tenderloin corned beef venison sirloin, pork loin cow bresaola. Leberkas brisket turducken tri-tip, pancetta ball tip corned beef tail. Beef corned beef ham pork turkey pork chop, prosciutto fatback short loin meatloaf filet mignon turducken pastrami frankfurter chuck. Sausage cow brisket, tail drumstick shank pancetta rump beef ribs hamburger. Kielbasa sausage andouille, bresaola bacon tail ball tip. Boudin spare ribs turkey prosciutto tenderloin bresaola. Rump turkey pork loin jowl ham andouille strip steak short loin pastrami.'},
-        {id:3, waveId:1, userId:3, parentId: 1, message: 'Leberkas brisket turducken tri-tip, pancetta ball tip corned beef tail. '},
-        {id:4, waveId:1, userId:1, parentId: 1, message: 'Herp derp'},
-        {id:5, waveId:1, userId:2, parentId: 2, message: 'Sausage cow brisket, tail drumstick shank pancetta rump beef ribs hamburger. Kielbasa sausage andouille, bresaola bacon tail ball tip. Boudin spare ribs turkey prosciutto tenderloin bresaola. Rump turkey pork loin jowl ham andouille strip steak short loin pastrami.'},
-        {id:6, waveId:1, userId:4, parentId: 5, message: 'Leberkas brisket turducken tri-tip, pancetta ball tip corned beef tail. Sausage cow brisket, tail drumstick shank pancetta rump beef ribs hamburger. Kielbasa sausage andouille, bresaola bacon tail ball tip. Boudin spare ribs turkey prosciutto tenderloin bresaola. Rump turkey pork loin jowl ham andouille strip steak short loin pastrami.'}
-    ];
-    
     waveServer.users.reset(users);    
     waveServer.waves.reset(waves);
-    
-    //app.model.messages.reset(messages);
 }
+
+var messages = [
+    {id:1, waveId:1, userId:1, message: 'Tenderloin corned beef venison sirloin, pork loin cow bresaola. Leberkas brisket turducken tri-tip, pancetta ball tip corned beef tail. Beef corned beef ham pork turkey pork chop, prosciutto fatback short loin meatloaf filet mignon turducken pastrami frankfurter chuck. Sausage cow brisket, tail drumstick shank pancetta rump beef ribs hamburger. Kielbasa sausage andouille, bresaola bacon tail ball tip. Boudin spare ribs turkey prosciutto tenderloin bresaola. Rump turkey pork loin jowl ham andouille strip steak short loin pastrami.'},
+    {id:2, waveId:1, userId:1, message: 'Tenderloin corned beef venison sirloin, pork loin cow bresaola. Leberkas brisket turducken tri-tip, pancetta ball tip corned beef tail. Beef corned beef ham pork turkey pork chop, prosciutto fatback short loin meatloaf filet mignon turducken pastrami frankfurter chuck. Sausage cow brisket, tail drumstick shank pancetta rump beef ribs hamburger. Kielbasa sausage andouille, bresaola bacon tail ball tip. Boudin spare ribs turkey prosciutto tenderloin bresaola. Rump turkey pork loin jowl ham andouille strip steak short loin pastrami.'},
+    {id:3, waveId:1, userId:3, parentId: 1, message: 'Leberkas brisket turducken tri-tip, pancetta ball tip corned beef tail. '},
+    {id:4, waveId:1, userId:1, parentId: 1, message: 'Herp derp'},
+    {id:5, waveId:1, userId:2, parentId: 2, message: 'Sausage cow brisket, tail drumstick shank pancetta rump beef ribs hamburger. Kielbasa sausage andouille, bresaola bacon tail ball tip. Boudin spare ribs turkey prosciutto tenderloin bresaola. Rump turkey pork loin jowl ham andouille strip steak short loin pastrami.'},
+    {id:6, waveId:1, userId:4, parentId: 5, message: 'Leberkas brisket turducken tri-tip, pancetta ball tip corned beef tail. Sausage cow brisket, tail drumstick shank pancetta rump beef ribs hamburger. Kielbasa sausage andouille, bresaola bacon tail ball tip. Boudin spare ribs turkey prosciutto tenderloin bresaola. Rump turkey pork loin jowl ham andouille strip steak short loin pastrami.'}
+];
 
 test();
 
@@ -186,111 +240,6 @@ function userModeData(){
 }
 
 var socket = io.listen(webServer);
-
-var privmsg = function(user, params) {
-    console.log("PRIVATE MESSAGE!!");
-    console.log(user);
-    console.log(params);
-
-    var channel = params.split(' ')[0];
-    var dest = [];
-
-    if(channel[0] === '#'){
-        if(channels[channel] != undefined){
-            dest = channels[channel].users;
-        }
-    } else {
-        return;
-    }
-
-    var sendmsg = ":" + user.nick + " PRIVMSG " + params;
-    console.log(sendmsg);
-
-    //TODO: beletenni dbbe mint uzenet, beletenni olvasatlannak mindenkihez, aki inviteolva van a channelre
-    for(var i in dest){
-        dest[i].socket.emit('message', sendmsg);
-    }
-};
-
-//TODO: jora megirni: azokat irja ki, akik ismerik (akikkel 1 csatornan van)
-var who = function(thisuser, params) {
-    console.log("WHO!");
-    var pattern = "";
-    var name = "";
-    var i;
-    var thatuser;
-    var oper = "";
-    var sendmsg = ":" + thisuser.nick + " WHO";
-    if (!params) {
-        params = "";
-    }
-    var a = params.indexOf(' ');
-    if (a > 0) {
-        oper = params.slice(a+1, a+2);
-        params = params.slice(0, a);
-        console.log("params: " + params + " oper: " + oper);
-    }
-    if (params[0] === '#') {
-        if (channels[params] && !channels[params].mode.secret_chan) {
-            for (i in channels[params].users) {
-                thatuser = channels[params].users[i];
-                if (!thatuser.mode.invisible) {
-                    name = thatuser.nick;
-                    if (oper === 'o') {
-                        if (channels[params].mode.operators[name]) {
-                            console.log(name);
-                            sendmsg += " " + name;
-                        }
-                    } else {
-                        console.log(name);
-                        sendmsg += " " + name;
-                    }
-                }
-            }
-        } else {
-            console.log("ERROR: Channel " + params + " not found!");
-            sendmsg += " Channel " + params + " not found!\n";
-        }
-    } else {
-        if (params == "" || params == "0") {
-            pattern = new RegExp(".*");
-        } else {
-            pattern = new RegExp(params);
-        }
-        var foundusers = false;
-        for (i in clients) {
-            if (!clients[i].mode.invisible) {
-                name = clients[i].nick;
-                if (name.match(pattern)) {
-                    if (oper == "o") {
-                        var isOper = false;
-                        for (var temp in clients[i].mode.operatorOf) {
-                            isOper = true;
-                        }
-                        if (isOper) {
-                            console.log(name);
-                            sendmsg += " " + name;
-                            foundusers = true;
-                        }
-                    } else {
-                        console.log(name);
-                        sendmsg += " " + name;
-                        foundusers = true;
-                    }
-                }
-            }
-        }
-        if (!foundusers) {
-            if (oper == "o") {
-                sendmsg += " no opers matching pattern " + params;
-            } else {
-                sendmsg += " no users matching pattern " + params;
-            }
-        }
-    }
-    thisuser.socket.emit('message', sendmsg);
-};
-
 
 var joinchan = function(userdata, params){
     var chan = params.split(' ')[0]; //channel name to join
@@ -394,39 +343,6 @@ var part = function(thisuser, params) {
     }
 };
 
-var quit = function(userdata, params){
-    var quitmsg;
-
-    if(params == undefined)
-        quitmsg = "disconnected";
-    else
-        quitmsg = params;
-
-    for(var i in userdata.channels){
-
-        console.log("quit: " + channels[i].name);
-        var u = channels[i].users;
-        delete u[userdata.nick];
-
-        var size = 0;
-        for(var j in userdata.channels[i].users){
-            size++;
-            var ud = userdata.channels[i].users[j];
-            console.log("quit: " + ud.nick);
-            ud.socket.emit('message', ':' + userdata.nick + ' QUIT ' + quitmsg);
-        }
-
-        if(size <= 0){
-            //TODO: elmenteni a channel statust
-            delete channels[i];
-        }
-    }
-
-    delete clients[userdata.nick];
-
-    console.log(userdata.nick + " has quit");
-};
-
 var invite = function(userdata, params){
     console.log("INVITE: "+params);
     paramArray = params.split(/\s+/);
@@ -469,10 +385,6 @@ var topic = function(thisuser, params){
         }
     }
 }
-
-var nocommand = function(com){
-    console.log(com + ": not a recognized command");
-};
 
 var nick = function(userdata, nick){
 
@@ -535,17 +447,36 @@ socket.sockets.on('connection', function(client){
     console.log("connection works!");
     var address = client.handshake.address; // Get client ip address and port.
     var thisuser = new userData(address.address, client);
+    var curUser = new User();//temporary
+    
+    client.on('auth', function(data){
+        //TODO: login command: query user, auto-join channels, send who
+        var id = data *1;
+        curUser = waveServer.users.get(id);
+        curUser.set('status', 'online');
+        console.log(curUser.get('name') + ' logged in');
+        curUser.socket = client;
+        curUser.ip = client.handshake.address.address;
+        
+        curUser.init();        
+    });
 
-    //TODO: login command: query user, auto-join channels, send who
-
-
-    client.on('disconnect', function(data){
-        console.log(thisuser.nick);
-        quit(thisuser);
+    client.on('disconnect', function(data) {
+        console.log(curUser.get('name') + ' disconnected');
+        curUser.disconnect();
+    });
+    
+    client.on('message', function(data) {
+        console.log(curUser.get('name') + ' message ' + data);
+        
+        var msg = new Message(data);
+        
+        var wave = waveServer.waves.get(msg.get('waveId'));
+        wave.addMessage(msg);
     });
 
     client.on('data', function(data){
-        console.log(thisuser.nick);
+        console.log(curUser.get('name') + ' data');
         console.log(data);
         var a, fullcommand;
 
