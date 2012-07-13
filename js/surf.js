@@ -3,8 +3,14 @@ var User = Backbone.Model.extend({
         name: '',
         avatar: '',
         status: 'offline'
+    },
+    
+    update: function(data) {
+        _.each(data, function(el, idx){
+            if ('id' != idx)
+                this.set(idx, el);
+        }, this);
     }
-
 });
 
 
@@ -14,9 +20,19 @@ var UserCollection = Backbone.Collection.extend({
 
 
 var UserView = Backbone.View.extend({
+    initialize: function(){
+        _.bindAll(this, 'render', 'updateStatus');
+        this.model.bind('change:status', this.updateStatus);
+    },    
+    
     render: function() {
         var template = ich.user_view(this.model.toJSON());
-        this.setElement(template);
+        this.setElement(template);        
+        return this;
+    },
+    
+    updateStatus: function() {
+        this.$el.removeClass('online offline').addClass(this.model.get('status'));
         return this;
     }
 });
@@ -69,8 +85,8 @@ var MessageView = Backbone.View.extend({
             this.$el.removeClass('unread');
         }
         
-        var userTemplate = ich.user_view(this.model.user.toJSON());
-        this.$el.prepend(userTemplate);
+        var userView = new UserView({model: this.model.user});
+        this.$el.prepend(userView.render().el);
         
         return this;
     },
@@ -128,6 +144,7 @@ var MessageCollection = Backbone.Collection.extend({
 var Wave = Backbone.Model.extend({
     defaults: {
         title: '',
+        userIds: [],
         current: false
     },
     initialize: function() {
@@ -135,10 +152,7 @@ var Wave = Backbone.Model.extend({
         this.users = new UserCollection();
         if (this.get('userIds')) {
             var uids = this.get('userIds');
-            _.each(uids, function(item){
-                var user = app.model.users.get(item);
-                this.addUser(user);
-            }, this);
+            this.addUsers(uids);
         }
     },
     
@@ -155,19 +169,40 @@ var Wave = Backbone.Model.extend({
         this.users.add(user);
     },
     
+    addUsers: function(ids) {
+        _.each(ids, function(item){
+            var user = app.model.users.get(item);
+            this.addUser(user);
+        }, this);        
+    },
+    
     getUnreadCount: function() {
         return this.messages.reduce(function(unread, msg){return unread + (msg.get('unread') ? 1 : 0)}, 0);
     },
     
     getUserNames: function() {
         return this.users.pluck('name').join(', ');
-    }
+    },
+    
+    update: function(data) {
+        this.set('title', data.title);
+        
+        var userIds = this.get('userIds');
+        if (data.userIds != userIds) {
+            var newIds = _.difference(data.userIds, userIds);
+            var deletedIds = _.difference(userIds, data.userIds);
+            this.users.remove(deletedIds);
+            this.addUsers(newIds);
+            this.set('userIds', data.userIds);
+        }
+    }    
 });
 
 var WaveListView = Backbone.View.extend({
     initialize: function() {
-        _.bindAll(this, 'setCurrent', 'countMessages', 'updateMessages', 'changeUsers');
+        _.bindAll(this, 'setCurrent', 'countMessages', 'updateMessages', 'changeUsers', 'updateTitle');
         this.model.bind('change:current', this.setCurrent);
+        this.model.bind('change:title', this.updateTitle);
         
         this.model.messages.bind('change:unread', this.countMessages);
         this.model.messages.bind('add', this.countMessages);
@@ -213,20 +248,25 @@ var WaveListView = Backbone.View.extend({
     changeUsers: function() {
         var usernames = this.model.getUserNames();
         this.$el.find('.usernames').text(usernames);
-    }
+    },
+    
+    updateTitle: function() {
+        this.$el.find('h2').text(this.model.get('title'));
+    }    
 });
 
 var WaveView = Backbone.View.extend({
     initialize: function() {
-        _.bindAll(this, 'setCurrent', 'addMessage', 'addUser', 'removeUser');
+        _.bindAll(this, 'setCurrent', 'addMessage', 'addUser', 'removeUser', 'updateTitle');
         
         this.userViews = [];
         
         this.model.bind('change:current', this.setCurrent);
+        this.model.bind('change:title', this.updateTitle);
         
         this.model.messages.bind('add', this.addMessage);
         this.model.users.bind('add', this.addUser);
-        //this.model.users.bind('remove', this.changeUsers);
+        this.model.users.bind('remove', this.removeUser);
     },
     
     render: function() {
@@ -275,13 +315,19 @@ var WaveView = Backbone.View.extend({
     addUser: function(user) {
         this.changeUsers();
         var userView = new UserView({model: user});
-        this.userViews.push(userView);
+        this.userViews[user.id] = userView;
         
         this.$el.find('.heads').append(userView.render().el);
     },
     
     removeUser: function(user) {
         this.changeUsers();
+        this.userViews[user.id].remove();
+        delete this.userViews[user.id];
+    },
+    
+    updateTitle: function() {
+        this.$el.find('h2').text(this.model.get('title'));
     }
 });
 
@@ -386,7 +432,7 @@ var Communicator = {
         if (typeof io == 'undefined') return;
         
         Communicator.socket = new io.connect(document.location.href);
-        Communicator.socket.emit('auth', navigator.userAgent.toLowerCase().indexOf('chrome') > 0 ? 1 : 3 );
+        Communicator.socket.emit('auth', Math.ceil(Math.random() * 4) );
         
         Communicator.socket.on('init', function(data){
             app.currentUser = data.me.id;
@@ -399,6 +445,14 @@ var Communicator = {
         });
         
         Communicator.socket.on('message', Communicator.onMessage);
+        
+        Communicator.socket.on('disconnect', function(){
+            alert('disconnected');
+            document.location.href = 'http://localhost:8000';
+        });
+        
+        Communicator.socket.on('updateUser', Communicator.onUpdateUser);
+        Communicator.socket.on('updateWave', Communicator.onUpdateWave);
 
         Communicator.socket.on('message2', function(data){    
             console.log('Full message from server: ' + data);
@@ -457,9 +511,27 @@ var Communicator = {
     onMessage: function(data) {
         var message = new Message(data);
         app.model.waves.get(data.waveId).addMessage(message);
+    },
+    
+    onUpdateUser: function(data) {
+        var user = data.user;
+        
+        if (app.model.users.get(user.id)) {
+            app.model.users.get(user.id).update(user);
+        } else {
+            app.model.users.add(new User(user));
+        }
+    },
+    
+    onUpdateWave: function(data) {
+        var wave = data.wave;
+        
+        if (app.model.waves.get(wave.id)) {
+            app.model.waves.get(wave.id).update(wave);
+        } else {
+            app.model.waves.add(new Wave(wave));
+        }        
     }
-    
-    
 }
 
 

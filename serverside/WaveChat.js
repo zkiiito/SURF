@@ -14,6 +14,8 @@ webServer = http.createServer(function(req, res){
         abspath += 'index.html';
     }
 
+    //gyorsitas: inditaskor felderiti a konyvtarat, becacheli a tartalmat
+    //es csak azt szolgalja ki, aminek a neve benn a listaban
     path.exists(abspath, function(exists){
         if(!exists){
             res.writeHead(404, {
@@ -65,17 +67,21 @@ var User = Backbone.Model.extend({
     },
     
     init: function() {
+        var friends = this.getFriends();
+        
         this.socket.emit('init', {
            me: this,
-           users: this.getFriends(),
+           users: friends,
            waves: this.waves,
            messages: messages
         });
+        
+        this.notifyFriends();
     },
     
     disconnect: function() {
         this.set('status', 'offline');
-        //broadcast
+        this.notifyFriends();
     },
     
     getFriends: function() {//sajat magat nem adhatja vissza!
@@ -98,7 +104,21 @@ var User = Backbone.Model.extend({
         if (this.socket) {
             this.socket.emit(msgtype, msg);
         }
+    },
+    
+    notifyFriends: function(){
+        var friends = this.getFriends();
+
+        friends.each(function(friend){
+           friend.send('updateUser', {
+               user: this
+           });
+        }, this);        
     }
+    
+    //validate: function(){
+    //check: ?
+    //}
 });
 
 
@@ -112,13 +132,19 @@ var Message = Backbone.Model.extend({
         waveId: null,
         parentId: null,
         message: '',
-        unread: true
+        unread: true//?
     }
+    
+    //validate: function(){
+    //check: userId, waveId, parentId
+    //}
 });
 
 var Wave = Backbone.Model.extend({
     defaults: {
-        title: ''
+        title: '',
+        userIds: [],
+        messageCounter: 100
     },
     initialize: function() {
         this.users = new UserCollection();
@@ -130,16 +156,16 @@ var Wave = Backbone.Model.extend({
                 user.waves.add(this);
             }, this);
         }
-        this.messageCounter = 1000;
     },
     
     addMessage: function(message) {
         //save, save unread
         
-        //id savekor lesz
-        message.id = this.messageCounter;
-        message.set('id', this.messageCounter);
-        this.messageCounter++;
+        //id savekor lesz, idopontot is akkor kell hozarendelni
+        var counter = this.get('messageCounter');
+        this.set('messageCounter', counter + 1);
+        message.id = counter;
+        message.set('id', counter);
         
         this.users.each(function(user){
             user.send('message', message);
@@ -150,6 +176,10 @@ var Wave = Backbone.Model.extend({
         this.users.add(user);
         //emit join?
     }
+    
+    //validate: function() {
+    //check userids
+    //}
 });
 
 var WaveCollection = Backbone.Collection.extend({
@@ -453,6 +483,11 @@ socket.sockets.on('connection', function(client){
         //TODO: login command: query user, auto-join channels, send who
         var id = data *1;
         curUser = waveServer.users.get(id);
+        if (curUser.socket)
+        {
+            curUser.socket.disconnect();
+        }
+        
         curUser.set('status', 'online');
         console.log(curUser.get('name') + ' logged in');
         curUser.socket = client;
