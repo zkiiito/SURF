@@ -408,10 +408,12 @@ a.cancel {
 
 .close {
   background: #9a6d3c;
+  border-color: #895e2f;
 }
 
 .close:hover {
   background: #845929;
+  border-color: #744c1f;
 }
 
 #wave-list, .waveitem {
