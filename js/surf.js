@@ -87,6 +87,7 @@ var MessageView = Backbone.View.extend({
         
         var userView = new UserView({model: this.model.user});
         this.$el.prepend(userView.render().el);
+        this.$el.children('a.reply.threadend').hide();
         
         return this;
     },
@@ -97,6 +98,10 @@ var MessageView = Backbone.View.extend({
         });
         
         this.$el.children('.replies').append(view.render().el);
+        if (this.model.messages.length == 1) {
+            this.$el.children('p').find('a.reply.normal').hide();
+            this.$el.children('a.reply.threadend').show();
+        }
     },
 
     readMessage: function(e) {
@@ -309,7 +314,7 @@ var WaveView = Backbone.View.extend({
     
     changeUsers: function() {
         var usernames = this.model.getUserNames();
-        this.$el.find('p.meta').text(usernames);
+        this.$el.find('span.usernames').text(usernames);
     },
     
     addUser: function(user) {

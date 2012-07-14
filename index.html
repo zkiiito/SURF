@@ -24,7 +24,7 @@
     <div class="title">
       <h2>{{ title }}</h2>
       <p class="heads"></p>
-      <p class="meta">{{ usernames }}</p>
+      <p class="meta"><span class="usernames">{{ usernames }}</span> <a class="button adduser" href="">Még valaki kell</a></p>
     </div>
     <div class="messages">
     </div>
@@ -37,9 +37,10 @@
 
 <script id="message_view" type="text/html">
 <div class="message unread">
-	<p class="text"><span class="meta">{{ user.name }}:</span> {{ message }} <a class="reply" href="">Válasz</a></p>
+	<p class="text"><span class="meta">{{ user.name }}:</span> {{ message }} <a class="reply button normal" href="">Válasz &rarr;</a></p>
 	<div class="replies">
 	</div>
+        <a class="button reply threadend" href="">Válasz &darr;</a>
 </div>
 </script>
 
@@ -57,7 +58,11 @@
   <a href=""><img id="header-logo" src="images/surf-logo.png" /></a>
 </div>
 <div id="middle">
-  <div id="wave-list"></div>
+  <div id="wave-list">
+    <div id="newwave">
+      <a class="button" href="">Boldog újvévet +</a>
+    </div>
+  </div>
   <div id="wave-container"></div>
 </div>
 
