@@ -175,6 +175,14 @@ var Wave = Backbone.Model.extend({
     addUser: function(user) {
         this.users.add(user);
         //emit join?
+    },
+    
+    notifyUsers: function() {
+        this.users.each(function(user){
+           user.send('updateWave', {
+               wave: this
+           });
+        }, this);        
     }
     
     //validate: function() {
@@ -508,6 +516,17 @@ socket.sockets.on('connection', function(client){
         
         var wave = waveServer.waves.get(msg.get('waveId'));
         wave.addMessage(msg);
+    });
+    
+    client.on('createWave', function(data) {
+        console.log('createWave ' + data.title);
+        
+        var wave = new Wave(data);
+        //factorybol!
+        wave.id = 100 + Math.floor(Math.random() * 100);
+        wave.set('id', wave.id);
+        waveServer.waves.add(wave);
+        wave.notifyUsers();
     });
 
     client.on('data', function(data){

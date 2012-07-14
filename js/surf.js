@@ -351,16 +351,62 @@ var SurfAppModel = Backbone.Model.extend({
     }
 });
 
-var SurfAppView = Backbone.View.extend({
+var CreateWaveView = Backbone.View.extend({
     initialize: function() {
-        _.bindAll(this, 'addMessage');
-        this.model.waves.bind('add', this.addWave);
-        this.model.waves.bind('reset', this.resetWaves, this);
-        this.model.messages.bind('reset', this.resetMessages, this);
+        _.bindAll(this, 'show', 'hide');
+    },
+    events: {
+        'click a.close' : 'hide',
+        'submit form' : 'createWave'
     },
     
     render: function() {
-    //nem igazan szukseges, kint van minden -> bar lehet ossze kene rakni inkabb?
+        var template = ich.createwave_view();
+        this.setElement(template);
+        this.$el.hide();
+        
+        return this;
+    },
+    
+    show: function() {
+        //this.$el.find('form').reset();???
+        this.$el.show();
+        $('#darken').show();
+        return false;
+    },
+    
+    hide: function() {
+        this.$el.hide();
+        $('#darken').hide();
+        return false;
+    },
+    
+    createWave: function() {
+        var title = this.$el.find('input[name=title]').val();
+        Communicator.createWave(title);
+        return this.hide();
+    }
+});
+
+var SurfAppView = Backbone.View.extend({
+    initialize: function() {
+        _.bindAll(this, 'addMessage', 'showCreateWave', 'hideOverlays');
+        this.model.waves.bind('add', this.addWave);
+        this.model.waves.bind('reset', this.resetWaves, this);
+        this.model.messages.bind('reset', this.resetMessages, this);
+        this.render();
+    },
+    events: {
+        'click #new-wave > a.button' : 'showCreateWave',
+        'click #darken' : 'hideOverlays'
+    },        
+    
+    render: function() {
+        this.setElement($('body'));
+        this.createWaveView = new CreateWaveView();
+        this.$el.append(this.createWaveView.render().el);
+        
+        return this;
     },
     
     addWave: function(wave) {
@@ -387,6 +433,17 @@ var SurfAppView = Backbone.View.extend({
     
     resetMessages: function() {
         this.model.messages.map(this.addMessage);
+    },
+    
+    showCreateWave: function() {
+        this.createWaveView.show();
+        return false;
+    },
+    
+    hideOverlays: function() {
+        $('#darken').hide();
+        $('.overlay').hide();
+        return false;
     }
 });
 
@@ -505,6 +562,15 @@ var Communicator = {
             parentId: parentId
         });
         Communicator.socket.emit('message', msg);
+    },
+    
+    createWave: function(title) {
+        var wave = new Wave({
+            title: title,
+            userIds: [app.currentUser]
+        });
+        
+        Communicator.socket.emit('createWave', wave);
     },
     
     onJoin: function(data) {

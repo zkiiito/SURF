@@ -103,7 +103,7 @@ a:hover h2 {
   overflow: auto;
 }
 
-#newwave {
+#new-wave {
   height: auto;
   padding: 0.8em;
   background: #cfcfcf;
@@ -344,6 +344,7 @@ a.cancel {
 }
 
 .overlay {
+  display: none;
   position: absolute;
   top: 10em;
   left: 50%;
@@ -359,7 +360,8 @@ a.cancel {
   z-index: 2;
 }
 
-.darken {
+#darken {
+  display: none;
   position: absolute;
   top: 0;
   left: 0;

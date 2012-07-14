@@ -5,6 +5,7 @@
   <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
   <link rel="stylesheet" type="text/css" href="style.css" />
   <link rel="shortcut icon" type="image/png" href="images/surf-ico.png" />
+  <script src="js/jquery-1.7.2.min.js"></script>
 </head>
 <body>
 <div id="header">
@@ -13,8 +14,11 @@
 </div>
 <div id="middle">
   <div id="wave-list">
-    <div id="newwave">
-      <a class="button" href="">Boldog újvévet +</a>
+    <div id="new-wave">
+      <a class="button" href="#" onclick="
+          $('#darken').show();
+          $('.overlay').show();
+          return false;">Boldog újvévet +</a>
     </div>
     <div class="waveitem">
       <a href=""><h2>Csudivávé</h2></a>
@@ -93,7 +97,7 @@
       <div>
         <label>Mi legyen a címe neki</label>
         <div class="right">
-          <input class="normal" type="text" value="hűgec" />
+          <input class="normal" type="text" placeholder="hűgec" required="required"/>
           <p class="inline-help">Inlány hjälp</p>
         </div>
       </div>
@@ -104,11 +108,11 @@
         </div>
       </div>
       <div class="buttons">
-        <a href="" class="button">Hajdihó fasszopók</a>
+        <button type="submit" class="button">Hajdihó fasszopók</button>
       </div>
     </form>
   </div>
 </div>
-<div class="darken"></div>
+<div id="darken"></div>
 </body>
 </html>
