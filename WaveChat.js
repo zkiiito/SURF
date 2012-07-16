@@ -7,8 +7,10 @@ _ = require('underscore');
 Backbone = require('backbone');
 
 webServer = http.createServer(function(req, res){
-    var uri = url.parse(req.url).pathname;
-    var abspath = path.join(process.cwd(), '../', uri);
+    var uri = url.parse(req.url).pathname;    
+    var abspath = path.join(process.cwd(), 'client/', uri);
+    //kiakad a hulyesegtol
+    abspath = abspath.replace('node', '../node_modules/');
 
     if(req.url == '/'){
         abspath += 'index.html';
@@ -16,7 +18,7 @@ webServer = http.createServer(function(req, res){
 
     //gyorsitas: inditaskor felderiti a konyvtarat, becacheli a tartalmat
     //es csak azt szolgalja ki, aminek a neve benn a listaban
-    path.exists(abspath, function(exists){
+    fs.exists(abspath, function(exists){
         if(!exists){
             res.writeHead(404, {
                 "Content-Type":"text/html"
