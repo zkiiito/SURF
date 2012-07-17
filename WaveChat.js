@@ -280,6 +280,11 @@ function userModeData(){
 }
 
 var socket = io.listen(webServer);
+// assuming io is the Socket.IO server object, HEROKU
+socket.configure(function () { 
+    socket.set("transports", ["xhr-polling"]); 
+    socket.set("polling duration", 10); 
+});
 
 var joinchan = function(userdata, params){
     var chan = params.split(' ')[0]; //channel name to join
