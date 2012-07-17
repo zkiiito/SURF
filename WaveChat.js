@@ -1,10 +1,14 @@
-http = require('http');
-url = require('url');
-path = require('path');
-fs = require('fs');
-io = require('socket.io');
-_ = require('underscore');
-Backbone = require('backbone');
+var http = require('http'),
+    url = require('url'),
+    path = require('path'),
+    fs = require('fs'),
+    io = require('socket.io'),
+    _ = require('underscore'),
+    Backbone = require('backbone'),
+    mongoose = require('mongoose'),
+    Schema = mongoose.Schema;
+
+mongoose.connect(process.env.MONGOHQ_URL || 'mongodb://localhost/my_database');
 
 webServer = http.createServer(function(req, res){
     var uri = url.parse(req.url).pathname;    
@@ -66,19 +70,28 @@ var User = Backbone.Model.extend({
     },
     initialize: function() {
         this.waves = new WaveCollection();
+        
+        this.set({id: this.get('_id')});
     },
-    
+    idAttribute: '_id',
     init: function() {
-        var friends = this.getFriends();
         
-        this.socket.emit('init', {
-           me: this,
-           users: friends,
-           waves: this.waves,
-           messages: messages
-        });
+        var sendMsg = function(context) {
+            return function(err, messages) {
+                var friends = context.getFriends();
+                context.socket.emit('init', {
+                    me: context.toJSON(),
+                    users: friends,
+                    waves: context.waves,
+                    messages: new MessageCollection().reset(messages)
+                });
+
+                context.notifyFriends();
+            }
+        }
         
-        this.notifyFriends();
+        MessageModel.find({}, sendMsg(this));
+        
     },
     
     disconnect: function() {
@@ -90,7 +103,7 @@ var User = Backbone.Model.extend({
         var friends = this.waves.reduce(function(friends, wave){
             var uids = wave.get('userIds');
             _.each(uids, function(item){
-                if (item != this.get('id')) {
+                if (item != this.id) {
                     var user = waveServer.users.get(item);
                     friends.add(user);
                 }
@@ -116,6 +129,18 @@ var User = Backbone.Model.extend({
                user: this
            });
         }, this);        
+    },
+    
+    save: function() {
+        var m = new UserModel({
+            name: this.get('name'),
+            avatar: this.get('avatar')
+        });
+        
+        m.save();
+        this.set({_id: m._id});
+        
+        return this;
     }
     
     //validate: function(){
@@ -128,6 +153,13 @@ var UserCollection = Backbone.Collection.extend({
     model: User 
 });
 
+var UserSchema = new Schema({
+    name: { type: String, trim: true},
+    avatar: { type: String, trim: true}
+});
+
+var UserModel = mongoose.model('UserModel', UserSchema);
+
 var Message = Backbone.Model.extend({
     defaults: {
         userId: null,
@@ -135,6 +167,21 @@ var Message = Backbone.Model.extend({
         parentId: null,
         message: '',
         unread: true//?
+    },
+    idAttribute: '_id',
+    save: function() {
+        var m = new MessageModel({
+            userId: this.get('userId'),
+            waveId: this.get('waveId'),
+            parentId: this.get('parentId'),
+            message: this.get('message')
+        });
+        
+        m.save();
+        
+        this.set({_id: m._id});
+        
+        return this;
     }
     
     //validate: function(){
@@ -142,12 +189,26 @@ var Message = Backbone.Model.extend({
     //}
 });
 
+var MessageCollection = Backbone.Collection.extend({
+    model: Message 
+});
+
+var MessageSchema = new Schema({
+    userId: Schema.ObjectId,
+    waveId: Schema.ObjectId,
+    parentId: Schema.ObjectId,
+    message: {type: String, trim: true},
+    created_at: { type: Date, 'default': Date.now }
+});
+
+var MessageModel = mongoose.model('MessageModel', MessageSchema);
+
 var Wave = Backbone.Model.extend({
     defaults: {
         title: '',
-        userIds: [],
-        messageCounter: 100
+        userIds: []
     },
+    idAttribute: '_id',
     initialize: function() {
         this.users = new UserCollection();
         if (this.get('userIds')) {
@@ -162,12 +223,7 @@ var Wave = Backbone.Model.extend({
     
     addMessage: function(message) {
         //save, save unread
-        
-        //id savekor lesz, idopontot is akkor kell hozarendelni
-        var counter = this.get('messageCounter');
-        this.set({messageCounter: counter + 1});
-        //message.id = counter;
-        message.set({id: counter});
+        message.save();
         
         this.users.each(function(user){
             user.send('message', message);
@@ -185,6 +241,20 @@ var Wave = Backbone.Model.extend({
                wave: this
            });
         }, this);        
+    },
+    
+    save: function() {
+        var m = new WaveModel({
+            title: this.get('title'),
+            userIds: this.get('userIds')
+        });
+        
+        m.save();
+        
+        //this.id = m._id;
+        this.set({_id: m._id});
+        
+        return this;
     }
     
     //validate: function() {
@@ -196,15 +266,18 @@ var WaveCollection = Backbone.Collection.extend({
     model: Wave    
 });
 
+var WaveSchema = new Schema({
+    title: {type: String, trim: true},
+    userIds: {type: [String]}
+});
+
+var WaveModel = mongoose.model('WaveModel', WaveSchema);
+
 var WaveServer = Backbone.Model.extend({
     initialize: function() {
         this.users = new UserCollection();
         this.waves = new WaveCollection();
         
-        //query users - nem biztos h kell, lehet eleg akkor lekerni amikor belep vki... de egyelore jo lesz igy.
-        //query waves
-        //init users
-        //init waves
         var port = process.env.PORT || 8000;
         console.log('port: ' + port);
         webServer.listen(port);
@@ -215,91 +288,90 @@ var WaveServer = Backbone.Model.extend({
 waveServer = new WaveServer();
 
 function test() {
-var users = [
-        {id:1,name: 'csabcsi',avatar: 'images/head3.png'},
-        {id:2,name: 'leguan',avatar: 'images/head2.png'},
-        {id:3,name: 'tibor',avatar: 'images/head5.png'},
-        {id:4,name: 'klara',avatar: 'images/head4.png'}
-    ];
+    console.log('init data');
+    var users = [];
+    var uids = [];
     
-var uids = [1,2,3,4];
-    
-    for (var i = 5; i <= 100; i++) {
-        var u = {id: i, name: 'teszt' + i, avatar: 'images/head' + (i%6 + 1) + '.png'};
+    for (var i = 1; i <= 50; i++) {
+        var u = new User({name: 'teszt' + i, avatar: 'images/head' + (i%6 + 1) + '.png'});
+        u.save();
         users.push(u);
-        uids.push(i);
-    }
+        uids.push(u.id.toString());
+        
+    }    
     
-    var waves = [{id:1,title: 'Csillag-delta tejbevávé', userIds: uids}];
+    waveServer.users.reset(users);
     
-    waveServer.users.reset(users);    
-    waveServer.waves.reset(waves);
+    var wave = new Wave({title: 'Csillag-delta tejbevávé', userIds: uids});
+    wave.save();
+    waveServer.waves.reset([wave]);
 }
 
-var messages = [
-    {id:1, waveId:1, userId:1, message: 'Tenderloin corned beef venison sirloin, pork loin cow bresaola. Leberkas brisket turducken tri-tip, pancetta ball tip corned beef tail. Beef corned beef ham pork turkey pork chop, prosciutto fatback short loin meatloaf filet mignon turducken pastrami frankfurter chuck. Sausage cow brisket, tail drumstick shank pancetta rump beef ribs hamburger. Kielbasa sausage andouille, bresaola bacon tail ball tip. Boudin spare ribs turkey prosciutto tenderloin bresaola. Rump turkey pork loin jowl ham andouille strip steak short loin pastrami.'},
-    {id:2, waveId:1, userId:1, message: 'Tenderloin corned beef venison sirloin, pork loin cow bresaola. Leberkas brisket turducken tri-tip, pancetta ball tip corned beef tail. Beef corned beef ham pork turkey pork chop, prosciutto fatback short loin meatloaf filet mignon turducken pastrami frankfurter chuck. Sausage cow brisket, tail drumstick shank pancetta rump beef ribs hamburger. Kielbasa sausage andouille, bresaola bacon tail ball tip. Boudin spare ribs turkey prosciutto tenderloin bresaola. Rump turkey pork loin jowl ham andouille strip steak short loin pastrami.'},
-    {id:3, waveId:1, userId:3, parentId: 1, message: 'Leberkas brisket turducken tri-tip, pancetta ball tip corned beef tail. '},
-    {id:4, waveId:1, userId:1, parentId: 1, message: 'Herp derp'},
-    {id:5, waveId:1, userId:2, parentId: 2, message: 'Sausage cow brisket, tail drumstick shank pancetta rump beef ribs hamburger. Kielbasa sausage andouille, bresaola bacon tail ball tip. Boudin spare ribs turkey prosciutto tenderloin bresaola. Rump turkey pork loin jowl ham andouille strip steak short loin pastrami.'},
-    {id:6, waveId:1, userId:4, parentId: 5, message: 'Leberkas brisket turducken tri-tip, pancetta ball tip corned beef tail. Sausage cow brisket, tail drumstick shank pancetta rump beef ribs hamburger. Kielbasa sausage andouille, bresaola bacon tail ball tip. Boudin spare ribs turkey prosciutto tenderloin bresaola. Rump turkey pork loin jowl ham andouille strip steak short loin pastrami.'}
-];
+var socket = null;
 
-test();
-
-var socket = io.listen(webServer);
-// assuming io is the Socket.IO server object, HEROKU
-socket.configure(function () { 
-    socket.set("transports", ["xhr-polling"]); 
-    socket.set("polling duration", 10); 
-});
-
-//torolt funkciok a regibol: nick, topic, part, invite, joinchan
-
-socket.sockets.on('connection', function(client){
-    console.log("connection works!");
-    var address = client.handshake.address; // Get client ip address and port.
-    var curUser = new User();//temporary
-    
-    client.on('auth', function(data){
-        //TODO: login command: query user, auto-join channels, send who
-        var id = data *1;
-        curUser = waveServer.users.get(id);
-        if (curUser.socket)
-        {
-            curUser.socket.disconnect();
+UserModel.find({}, function(err, users){
+    waveServer.users.reset(users);
+    WaveModel.find({}, function(err, waves){
+        waveServer.waves.reset(waves);
+        if (waves.length == 0) {
+            test();
         }
         
-        curUser.set({status: 'online'});
-        console.log(curUser.get('name') + ' logged in');
-        curUser.socket = client;
-        curUser.ip = client.handshake.address.address;
-        
-        curUser.init();        
-    });
+        socket = io.listen(webServer);
 
-    client.on('disconnect', function(data) {
-        console.log(curUser.get('name') + ' disconnected');
-        curUser.disconnect();
-    });
-    
-    client.on('message', function(data) {
-        console.log(curUser.get('name') + ' message ' + data);
+        //HEROKU
+        socket.configure(function () { 
+            socket.set("transports", ["xhr-polling"]); 
+            socket.set("polling duration", 10); 
+        });
         
-        var msg = new Message(data);
-        
-        var wave = waveServer.waves.get(msg.get('waveId'));
-        wave.addMessage(msg);
-    });
-    
-    client.on('createWave', function(data) {
-        console.log('createWave ' + data.title);
-        
-        var wave = new Wave(data);
-        //factorybol!
-        wave.id = 100 + Math.floor(Math.random() * 100);
-        wave.set({id: wave.id});
-        waveServer.waves.add(wave);
-        wave.notifyUsers();
+        //torolt funkciok a regibol: nick, topic, part, invite, joinchan
+
+        socket.sockets.on('connection', function(client){
+            console.log("connection works!");
+            var curUser = new User();//temporary
+
+            client.on('auth', function(data){
+                console.log('user auth: ' + data);
+                //TODO: login command: query user, auto-join channels, send who
+                var id = data *1;
+                curUser = waveServer.users.at(id);
+                if (curUser.socket)
+                {
+                    curUser.socket.disconnect();
+                }
+
+                curUser.set({status: 'online'});
+                console.log(curUser.get('name') + ' logged in');
+                curUser.socket = client;
+                curUser.ip = client.handshake.address.address;
+
+                curUser.init();        
+            });
+
+            client.on('disconnect', function(data) {
+                console.log(curUser.get('name') + ' disconnected');
+                curUser.disconnect();
+            });
+
+            client.on('message', function(data) {
+                console.log(curUser.get('name') + ' message ' + data);
+
+                var msg = new Message(data);
+
+                var wave = waveServer.waves.get(msg.get('waveId'));
+                wave.addMessage(msg);
+            });
+
+            client.on('createWave', function(data) {
+                console.log('createWave ' + data.title);
+
+                var wave = new Wave(data);
+                wave.save();
+                waveServer.waves.add(wave);
+                wave.notifyUsers();
+            });
+        });
+
     });
 });

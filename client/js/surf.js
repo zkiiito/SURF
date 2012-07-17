@@ -4,10 +4,10 @@ var User = Backbone.Model.extend({
         avatar: '',
         status: 'offline'
     },
-    
+    idAttribute: '_id',
     update: function(data) {
         _.each(data, function(el, idx){
-            if ('id' != idx)
+            if (this.idAttribute != idx)
                 this.set(idx, el);
         }, this);
     }
@@ -46,15 +46,18 @@ var Message = Backbone.Model.extend({
         message: '',
         unread: true
     },
+    idAttribute: '_id',
     initialize: function() {
          this.messages = new MessageCollection(); //nem itt kene
          this.user = app.model.users.get(this.get('userId'));
          this.set('unread', app.currentUser != this.get('userId'));
          
          //TODO: csak valid idk
+         /*
          if (null == this.id) {
              this.id = this.cid;
          }
+         */
     },
     addReply: function(message) {
         if (null == this.messages) {
@@ -152,6 +155,7 @@ var Wave = Backbone.Model.extend({
         userIds: [],
         current: false
     },
+    idAttribute: '_id',
     initialize: function() {
         this.messages = new MessageCollection();
         this.users = new UserCollection();
@@ -428,7 +432,8 @@ var SurfAppView = Backbone.View.extend({
     
     addMessage: function(message) {
         var wave = this.model.waves.get(message.get('waveId'));
-        wave.addMessage(message);
+        if (wave)
+            wave.addMessage(message);
     },
     
     resetMessages: function() {
@@ -498,10 +503,10 @@ var Communicator = {
         if (typeof io == 'undefined') return;
         
         Communicator.socket = new io.connect(document.location.href);
-        Communicator.socket.emit('auth', Math.ceil(Math.random() * 100) );
+        Communicator.socket.emit('auth', Math.ceil(Math.random() * 50) );
         
         Communicator.socket.on('init', function(data){
-            app.currentUser = data.me.id;
+            app.currentUser = data.me._id;
             data.users.push(data.me);
             app.model.users.reset(data.users);
             app.model.waves.reset(data.waves);
@@ -586,21 +591,21 @@ $(function() {
 
 function test() {
     var users = [
-        {id:1,name: 'csabcsi',avatar: 'images/head3.png'},
-        {id:2,name: 'leguan',avatar: 'images/head2.png'},
-        {id:3,name: 'tibor',avatar: 'images/head5.png'},
-        {id:4,name: 'klara',avatar: 'images/head4.png'}
+        {_id:1,name: 'csabcsi',avatar: 'images/head3.png'},
+        {_id:2,name: 'leguan',avatar: 'images/head2.png'},
+        {_id:3,name: 'tibor',avatar: 'images/head5.png'},
+        {_id:4,name: 'klara',avatar: 'images/head4.png'}
     ];
     
-    var waves = [{id:1,title: 'Csillag-delta tejbevávé', userIds: [1,2,3,4]}];
+    var waves = [{_id:1,title: 'Csillag-delta tejbevávé', userIds: [1,2,3,4]}];
     
     var messages = [
-        {id:1, waveId:1, userId:1, message: 'Tenderloin corned beef venison sirloin, pork loin cow bresaola. Leberkas brisket turducken tri-tip, pancetta ball tip corned beef tail. Beef corned beef ham pork turkey pork chop, prosciutto fatback short loin meatloaf filet mignon turducken pastrami frankfurter chuck. Sausage cow brisket, tail drumstick shank pancetta rump beef ribs hamburger. Kielbasa sausage andouille, bresaola bacon tail ball tip. Boudin spare ribs turkey prosciutto tenderloin bresaola. Rump turkey pork loin jowl ham andouille strip steak short loin pastrami.'},
-        {id:2, waveId:1, userId:1, message: 'Tenderloin corned beef venison sirloin, pork loin cow bresaola. Leberkas brisket turducken tri-tip, pancetta ball tip corned beef tail. Beef corned beef ham pork turkey pork chop, prosciutto fatback short loin meatloaf filet mignon turducken pastrami frankfurter chuck. Sausage cow brisket, tail drumstick shank pancetta rump beef ribs hamburger. Kielbasa sausage andouille, bresaola bacon tail ball tip. Boudin spare ribs turkey prosciutto tenderloin bresaola. Rump turkey pork loin jowl ham andouille strip steak short loin pastrami.'},
-        {id:3, waveId:1, userId:3, parentId: 1, message: 'Leberkas brisket turducken tri-tip, pancetta ball tip corned beef tail. '},
-        {id:4, waveId:1, userId:1, parentId: 1, message: 'Herp derp'},
-        {id:5, waveId:1, userId:2, parentId: 2, message: 'Sausage cow brisket, tail drumstick shank pancetta rump beef ribs hamburger. Kielbasa sausage andouille, bresaola bacon tail ball tip. Boudin spare ribs turkey prosciutto tenderloin bresaola. Rump turkey pork loin jowl ham andouille strip steak short loin pastrami.'},
-        {id:6, waveId:1, userId:4, parentId: 5, message: 'Leberkas brisket turducken tri-tip, pancetta ball tip corned beef tail. Sausage cow brisket, tail drumstick shank pancetta rump beef ribs hamburger. Kielbasa sausage andouille, bresaola bacon tail ball tip. Boudin spare ribs turkey prosciutto tenderloin bresaola. Rump turkey pork loin jowl ham andouille strip steak short loin pastrami.'}
+        {_id:1, waveId:1, userId:1, message: 'Tenderloin corned beef venison sirloin, pork loin cow bresaola. Leberkas brisket turducken tri-tip, pancetta ball tip corned beef tail. Beef corned beef ham pork turkey pork chop, prosciutto fatback short loin meatloaf filet mignon turducken pastrami frankfurter chuck. Sausage cow brisket, tail drumstick shank pancetta rump beef ribs hamburger. Kielbasa sausage andouille, bresaola bacon tail ball tip. Boudin spare ribs turkey prosciutto tenderloin bresaola. Rump turkey pork loin jowl ham andouille strip steak short loin pastrami.'},
+        {_id:2, waveId:1, userId:1, message: 'Tenderloin corned beef venison sirloin, pork loin cow bresaola. Leberkas brisket turducken tri-tip, pancetta ball tip corned beef tail. Beef corned beef ham pork turkey pork chop, prosciutto fatback short loin meatloaf filet mignon turducken pastrami frankfurter chuck. Sausage cow brisket, tail drumstick shank pancetta rump beef ribs hamburger. Kielbasa sausage andouille, bresaola bacon tail ball tip. Boudin spare ribs turkey prosciutto tenderloin bresaola. Rump turkey pork loin jowl ham andouille strip steak short loin pastrami.'},
+        {_id:3, waveId:1, userId:3, parentId: 1, message: 'Leberkas brisket turducken tri-tip, pancetta ball tip corned beef tail. '},
+        {_id:4, waveId:1, userId:1, parentId: 1, message: 'Herp derp'},
+        {_id:5, waveId:1, userId:2, parentId: 2, message: 'Sausage cow brisket, tail drumstick shank pancetta rump beef ribs hamburger. Kielbasa sausage andouille, bresaola bacon tail ball tip. Boudin spare ribs turkey prosciutto tenderloin bresaola. Rump turkey pork loin jowl ham andouille strip steak short loin pastrami.'},
+        {_id:6, waveId:1, userId:4, parentId: 5, message: 'Leberkas brisket turducken tri-tip, pancetta ball tip corned beef tail. Sausage cow brisket, tail drumstick shank pancetta rump beef ribs hamburger. Kielbasa sausage andouille, bresaola bacon tail ball tip. Boudin spare ribs turkey prosciutto tenderloin bresaola. Rump turkey pork loin jowl ham andouille strip steak short loin pastrami.'}
     ];
     
     app.model.users.reset(users);    
