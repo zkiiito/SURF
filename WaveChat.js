@@ -215,14 +215,22 @@ var WaveServer = Backbone.Model.extend({
 waveServer = new WaveServer();
 
 function test() {
-    var users = [
+var users = [
         {id:1,name: 'csabcsi',avatar: 'images/head3.png'},
         {id:2,name: 'leguan',avatar: 'images/head2.png'},
         {id:3,name: 'tibor',avatar: 'images/head5.png'},
         {id:4,name: 'klara',avatar: 'images/head4.png'}
     ];
     
-    var waves = [{id:1,title: 'Csillag-delta tejbevávé', userIds: [1,2,3,4]}];
+var uids = [1,2,3,4];
+    
+    for (var i = 5; i <= 100; i++) {
+        var u = {id: i, name: 'teszt' + i, avatar: 'images/head' + (i%6 + 1) + '.png'};
+        users.push(u);
+        uids.push(i);
+    }
+    
+    var waves = [{id:1,title: 'Csillag-delta tejbevávé', userIds: uids}];
     
     waveServer.users.reset(users);    
     waveServer.waves.reset(waves);

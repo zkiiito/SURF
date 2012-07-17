@@ -494,7 +494,7 @@ var Communicator = {
         if (typeof io == 'undefined') return;
         
         Communicator.socket = new io.connect(document.location.href);
-        Communicator.socket.emit('auth', Math.ceil(Math.random() * 4) );
+        Communicator.socket.emit('auth', Math.ceil(Math.random() * 100) );
         
         Communicator.socket.on('init', function(data){
             app.currentUser = data.me.id;
@@ -510,7 +510,10 @@ var Communicator = {
         
         Communicator.socket.on('disconnect', function(){
             alert('disconnected');
-            document.location.href = 'http://localhost:8000';
+            var url = 'http://' + document.location.host;
+            if (document.location.port)
+                url += ':' + document.location.port;
+            document.location.href = url;
         });
         
         Communicator.socket.on('updateUser', Communicator.onUpdateUser);
