@@ -123,7 +123,7 @@ var MessageView = Backbone.View.extend({
         this.$el.append(form);
 
         this.$el.find('textarea').keydown(function(e){
-            if (e.shiftKey && 13 == e.keyCode) {
+            if (!e.shiftKey && 13 == e.keyCode) {
                 var form = $(this).parents('form');
                 Communicator.sendMessage($('textarea', form).val(), $('[name=wave_id]', form).val(), $('[name=parent_id]', form).val());
                 $(this).val('');
@@ -283,7 +283,7 @@ var WaveView = Backbone.View.extend({
         this.$el.hide();
         
         this.$el.find('textarea').keydown(function(e){
-            if (e.shiftKey && 13 == e.keyCode) {
+            if (!e.shiftKey && 13 == e.keyCode) {
                 var form = $(this).parents('form');
                 Communicator.sendMessage($('textarea', form).val(), $('[name=wave_id]', form).val(), null);
                 $(this).val('');
@@ -475,11 +475,15 @@ var SurfAppRouter = Backbone.Router.extend({
     },
     
     showWave: function(id) {
-        if (app.currentWave) {
-            app.model.waves.get(app.currentWave).set('current', false);
+        if (app.model.waves.get(id)) {
+            if (app.currentWave) {
+                app.model.waves.get(app.currentWave).set('current', false);
+            }
+            app.model.waves.get(id).set('current', true);
+            app.currentWave = id;
+        } else {
+            this.navigate("");
         }
-        app.model.waves.get(id).set('current', true);
-        app.currentWave = id;        
     },
 
     removeWave: function(cid) {
@@ -518,43 +522,6 @@ var Communicator = {
         
         Communicator.socket.on('updateUser', Communicator.onUpdateUser);
         Communicator.socket.on('updateWave', Communicator.onUpdateWave);
-
-        Communicator.socket.on('message2', function(data){    
-            console.log('Full message from server: ' + data);
-
-            var a = data.indexOf(' ');
-            var someNick = data.slice(0, a); // Pull some nickname off of message.
-            var fullcommand = data.slice(a+1, data.length);
-            a = fullcommand.indexOf(' '); // find index of next space.
-            var comtype = fullcommand.slice(0, a);
-            var params = fullcommand.slice(a+1, fullcommand.length);
-			
-            console.log("Client received command: "+fullcommand);
-			
-            switch(comtype){
-                case "PRIVMSG"://valaki irt olyanba amiben bennevagyok
-                    Communicator.onMsg(params);
-                    break;
-                case "NICK"://valaki nicket cserelt
-                    nick(someNick, params);
-                    break;
-                case "JOIN"://valaki belepett
-                    Communicator.onJoin(params);
-                    break;
-                case "PART"://valaki elhagyta a wavet
-                    part(someNick, params);
-                    break;
-                case "TOPIC":
-                    topic(someNick, params);
-                    break;
-                case "QUIT"://valaki kilepett
-                    quit(someNick, params);
-                    break;
-                default:
-                    nocommand(comtype);
-            }  
-        });
-    //beginChat(socket);
     },
     
     sendMessage: function(message, waveId, parentId) {
