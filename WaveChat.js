@@ -205,7 +205,9 @@ var WaveServer = Backbone.Model.extend({
         //query waves
         //init users
         //init waves
-        webServer.listen(8000);
+        var port = process.env.PORT || 8000;
+        console.log('port: ' + port);
+        webServer.listen(port);
     }
 });
 
