@@ -82,7 +82,7 @@ var User = Backbone.Model.extend({
     },
     
     disconnect: function() {
-        this.set('status', 'offline');
+        this.set({status: 'offline'});
         this.notifyFriends();
     },
     
@@ -165,9 +165,9 @@ var Wave = Backbone.Model.extend({
         
         //id savekor lesz, idopontot is akkor kell hozarendelni
         var counter = this.get('messageCounter');
-        this.set('messageCounter', counter + 1);
-        message.id = counter;
-        message.set('id', counter);
+        this.set({messageCounter: counter + 1});
+        //message.id = counter;
+        message.set({id: counter});
         
         this.users.each(function(user){
             user.send('message', message);
@@ -503,7 +503,7 @@ socket.sockets.on('connection', function(client){
             curUser.socket.disconnect();
         }
         
-        curUser.set('status', 'online');
+        curUser.set({status: 'online'});
         console.log(curUser.get('name') + ' logged in');
         curUser.socket = client;
         curUser.ip = client.handshake.address.address;
@@ -531,7 +531,7 @@ socket.sockets.on('connection', function(client){
         var wave = new Wave(data);
         //factorybol!
         wave.id = 100 + Math.floor(Math.random() * 100);
-        wave.set('id', wave.id);
+        wave.set({id: wave.id});
         waveServer.waves.add(wave);
         wave.notifyUsers();
     });
