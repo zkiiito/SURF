@@ -126,7 +126,7 @@ var User = Backbone.Model.extend({
 
         friends.each(function(friend){
            friend.send('updateUser', {
-               user: this
+               user: this.toJSON()
            });
         }, this);        
     },
