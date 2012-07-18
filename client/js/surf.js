@@ -562,8 +562,8 @@ var Communicator = {
     onUpdateUser: function(data) {
         var user = data.user;
         
-        if (app.model.users.get(user.id)) {
-            app.model.users.get(user.id).update(user);
+        if (app.model.users.get(user._id)) {
+            app.model.users.get(user._id).update(user);
         } else {
             app.model.users.add(new User(user));
         }
@@ -572,8 +572,8 @@ var Communicator = {
     onUpdateWave: function(data) {
         var wave = data.wave;
         
-        if (app.model.waves.get(wave.id)) {
-            app.model.waves.get(wave.id).update(wave);
+        if (app.model.waves.get(wave._id)) {
+            app.model.waves.get(wave._id).update(wave);
         } else {
             app.model.waves.add(new Wave(wave));
         }        
