@@ -506,6 +506,7 @@ var Communicator = {
         Communicator.socket.emit('auth', Math.ceil(Math.random() * 50) );
         
         Communicator.socket.on('init', function(data){
+            console.log(data.me);
             app.currentUser = data.me._id;
             data.users.push(data.me);
             app.model.users.reset(data.users);
@@ -521,7 +522,7 @@ var Communicator = {
             alert('disconnected');
             var url = 'http://' + document.location.host;
             if (document.location.port)
-                url += ':' + document.location.port;
+                url += document.location.port;
             document.location.href = url;
         });
         
@@ -561,7 +562,7 @@ var Communicator = {
     
     onUpdateUser: function(data) {
         var user = data.user;
-        
+        console.log(user);
         if (app.model.users.get(user._id)) {
             app.model.users.get(user._id).update(user);
         } else {

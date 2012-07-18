@@ -71,7 +71,7 @@ var User = Backbone.Model.extend({
     initialize: function() {
         this.waves = new WaveCollection();
         
-        this.set({id: this.get('_id')});
+        //this.set({id: this.get('_id')});
     },
     idAttribute: '_id',
     init: function() {
@@ -310,9 +310,20 @@ function test() {
 var socket = null;
 
 UserModel.find({}, function(err, users){
-    waveServer.users.reset(users);
+    var usersTmp = [];
+    _.each(users, function(user) {
+        usersTmp.push({name: user.name, avatar: user.avatar, _id: user._id});
+    });
+    waveServer.users.reset(usersTmp);
+    usersTmp = null;
+    
     WaveModel.find({}, function(err, waves){
-        waveServer.waves.reset(waves);
+        var wavesTmp = [];
+        _.each(waves, function(wave){
+            wavesTmp.push({title: wave.title, userIds: wave.userIds, _id: wave._id});
+        })
+        waveServer.waves.reset(wavesTmp);
+        
         if (waves.length == 0) {
             test();
         }
@@ -320,10 +331,12 @@ UserModel.find({}, function(err, users){
         socket = io.listen(webServer);
 
         //HEROKU
-        socket.configure(function () { 
-            socket.set("transports", ["xhr-polling"]); 
-            socket.set("polling duration", 10); 
-        });
+        if (process.env.PORT) {
+            socket.configure(function () { 
+                socket.set("transports", ["xhr-polling"]); 
+                socket.set("polling duration", 10); 
+            });
+        }
         
         //torolt funkciok a regibol: nick, topic, part, invite, joinchan
 
@@ -372,6 +385,5 @@ UserModel.find({}, function(err, users){
                 wave.notifyUsers();
             });
         });
-
     });
 });
