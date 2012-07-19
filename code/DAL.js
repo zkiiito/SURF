@@ -116,7 +116,9 @@ DAL = {
     },
     
     getLastMessagesForUser: function(userId, callback) {
-        MessageModel.find({}, callback);
+        MessageModel.find({}, function(err, messages) {
+            callback(err, messages);
+        });
     },
     
     readMessage: function(user, message) {
@@ -130,6 +132,7 @@ DAL = {
         var key = 'unread-' + user.id + '-' + message.get('waveId');
         //console.log(key);
         redis.sadd(key, message.id);
+        redis.sadd('unread-sets', key);//nyomon akarjuk kovetni, h mik vannak
     }
 };
 
