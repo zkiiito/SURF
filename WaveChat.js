@@ -137,6 +137,7 @@ var Wave = Backbone.Model.extend({
         
         this.users.each(function(user){
             user.send('message', message);
+            DAL.addUnreadMessage(user, message);
         }, message);
     },
     
@@ -228,6 +229,10 @@ var WaveServer = {
 
             var wave = WaveServer.waves.get(msg.get('waveId'));
             wave.addMessage(msg);
+        });
+        
+        client.on('readMessage', function(data) {
+            DAL.readMessage(client.curUser, data);
         });
 
         client.on('createWave', function(data) {

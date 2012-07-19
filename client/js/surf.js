@@ -64,6 +64,10 @@ var Message = Backbone.Model.extend({
             this.messages = new MessageCollection();
         }
         this.messages.add(message);
+    },
+    read: function() {
+        this.set('unread', false);
+        Communicator.readMessage(this);
     }
     
 });
@@ -72,8 +76,9 @@ var Message = Backbone.Model.extend({
 var MessageView = Backbone.View.extend({
     initialize: function() {
         this.hasReplyForm = false;
-        _.bindAll(this, 'addMessage', 'readMessage', 'replyMessage');
+        _.bindAll(this, 'addMessage', 'readMessage', 'replyMessage', 'onReadMessage');
         this.model.messages.bind('add', this.addMessage);//ezt nem itt kene, hanem amikor letrejon ott a messages
+        this.model.bind('change:unread', this.onReadMessage);
     },
     events: {
         'click': 'readMessage',
@@ -109,10 +114,12 @@ var MessageView = Backbone.View.extend({
 
     readMessage: function(e) {
         e.stopPropagation();
-        if (this.model.get('unread')) {
-            this.model.set('unread', false);
+        this.model.read();
+    },
+    
+    onReadMessage: function() {
+        if (!this.model.get('unread'))
             this.$el.removeClass('unread');
-        }
     },
     
     replyMessage: function(e) {
@@ -538,6 +545,10 @@ var Communicator = {
             parentId: parentId
         });
         Communicator.socket.emit('message', msg);
+    },
+    
+    readMessage: function(message) {
+        Communicator.socket.emit('readMessage', {id: message.id, waveId: message.get('waveId')});
     },
     
     createWave: function(title) {

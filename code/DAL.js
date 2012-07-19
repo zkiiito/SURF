@@ -1,14 +1,13 @@
-var _ = require('underscore');
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+var _ = require('underscore'),
+    mongoose = require('mongoose'),
+    Schema = mongoose.Schema,
+    redis = require('redis-url');
 
 var UserSchema = new Schema({
     name: { type: String, trim: true},
     avatar: { type: String, trim: true}
 });
-
 var UserModel = mongoose.model('UserModel', UserSchema);
-
 
 var MessageSchema = new Schema({
     userId: Schema.ObjectId,
@@ -17,22 +16,20 @@ var MessageSchema = new Schema({
     message: {type: String, trim: true},
     created_at: { type: Date, 'default': Date.now }
 });
-
 var MessageModel = mongoose.model('MessageModel', MessageSchema);
 
 var WaveSchema = new Schema({
     title: {type: String, trim: true},
     userIds: {type: [String]}
 });
-
 var WaveModel = mongoose.model('WaveModel', WaveSchema);
-
 
 DAL = {
     server: null,
     init: function(server) {
         DAL.server = server;
         mongoose.connect(process.env.MONGOHQ_URL || 'mongodb://localhost/my_databas2e');
+        redis = redis.connect(process.env.REDISTOGO_URL || 'redis://localhost:6379');
         
         UserModel.find({}, function(err, users){
             var usersTmp = [];
@@ -120,6 +117,19 @@ DAL = {
     
     getLastMessagesForUser: function(userId, callback) {
         MessageModel.find({}, callback);
+    },
+    
+    readMessage: function(user, message) {
+        var key = 'unread-' + user.id + '-' + message.waveId;
+        //console.log(key);
+        redis.srem(key, message.id);
+        //console.log(user.id + ' read ' + message.id);
+    },
+    
+    addUnreadMessage: function(user, message) {
+        var key = 'unread-' + user.id + '-' + message.get('waveId');
+        //console.log(key);
+        redis.sadd(key, message.id);
     }
 };
 
