@@ -8,9 +8,7 @@ var http = require('http'),
     mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
-mongoose.connect(process.env.MONGOHQ_URL || 'mongodb://localhost/my_database');
-
-webServer = http.createServer(function(req, res){
+var WebServer = http.createServer(function(req, res){
     var uri = url.parse(req.url).pathname;    
     var abspath = path.join(process.cwd(), 'client/', uri);
     //kiakad a hulyesegtol
@@ -60,7 +58,96 @@ webServer = http.createServer(function(req, res){
 	
 });
 
+var DAL = {
+    init: function() {
+        mongoose.connect(process.env.MONGOHQ_URL || 'mongodb://localhost/my_databas2e');
+        
+        UserModel.find({}, function(err, users){
+            var usersTmp = [];
+            _.each(users, function(user) {
+                usersTmp.push({name: user.name, avatar: user.avatar, _id: user._id});
+            });
+            WaveServer.users.reset(usersTmp);
+            usersTmp = null;
 
+            WaveModel.find({}, function(err, waves){
+                var wavesTmp = [];
+                _.each(waves, function(wave){
+                    wavesTmp.push({title: wave.title, userIds: wave.userIds, _id: wave._id});
+                })
+                WaveServer.waves.reset(wavesTmp);
+
+                if (waves.length == 0) {
+                    DAL.initData();
+                }
+
+                WaveServer.startServer();
+            });
+        });
+    },
+    
+    initData: function() {
+        function test() {
+            console.log('init data');
+            var users = [];
+            var uids = [];
+
+            for (var i = 1; i <= 50; i++) {
+                var u = new User({name: 'teszt' + i, avatar: 'images/head' + (i%6 + 1) + '.png'});
+                u.save();
+                users.push(u);
+                uids.push(u.id.toString());
+
+            }    
+
+            WaveServer.users.reset(users);
+
+            var wave = new Wave({title: 'Csillag-delta tejbevávé', userIds: uids});
+            wave.save();
+            WaveServer.waves.reset([wave]);
+        }        
+    },
+    
+    saveUser: function(user) {
+        var m = new UserModel({
+            name: user.get('name'),
+            avatar: user.get('avatar')
+        });
+        m.save();
+        user.set({_id: m._id});
+        return user;
+    },
+    
+    saveWave: function(wave) {
+        var m = new WaveModel({
+            title: wave.get('title'),
+            userIds: wave.get('userIds')
+        });
+        m.save();
+        wave.set({_id: m._id});
+        return wave;
+    },
+    
+    saveMessage: function(message) {
+        var m = new MessageModel({
+            userId: message.get('userId'),
+            waveId: message.get('waveId'),
+            parentId: message.get('parentId'),
+            message: message.get('message')
+        });
+        m.save();
+        message.set({_id: m._id});
+        return message;
+    },
+    
+    getMessage: function(id) {
+        //root id meghatarozashoz
+    },
+    
+    getLastMessagesForUserInWave: function(userId, waveId) {
+        
+    }
+};
 
 var User = Backbone.Model.extend({
     defaults: {
@@ -75,23 +162,27 @@ var User = Backbone.Model.extend({
     },
     idAttribute: '_id',
     init: function() {
+        this.set({status: 'online'});
         
-        var sendMsg = function(context) {
+        var sendMsg = function(userContext) {
             return function(err, messages) {
-                var friends = context.getFriends();
-                context.socket.emit('init', {
-                    me: context.toJSON(),
-                    users: friends,
-                    waves: context.waves,
-                    messages: new MessageCollection().reset(messages)
-                });
-
-                context.notifyFriends();
+                userContext.sendInit(messages);
             }
         }
-        
+        //TODO: DAL
         MessageModel.find({}, sendMsg(this));
-        
+    },
+    
+    sendInit: function(messages) {
+        var friends = this.getFriends();
+        this.socket.emit('init', {
+            me: this.toJSON(),
+            users: friends,
+            waves: this.waves,
+            messages: new MessageCollection().reset(messages)
+        });
+
+        this.notifyFriends();
     },
     
     disconnect: function() {
@@ -104,7 +195,7 @@ var User = Backbone.Model.extend({
             var uids = wave.get('userIds');
             _.each(uids, function(item){
                 if (item != this.id) {
-                    var user = waveServer.users.get(item);
+                    var user = WaveServer.users.get(item);
                     friends.add(user);
                 }
             }, this);
@@ -132,15 +223,7 @@ var User = Backbone.Model.extend({
     },
     
     save: function() {
-        var m = new UserModel({
-            name: this.get('name'),
-            avatar: this.get('avatar')
-        });
-        
-        m.save();
-        this.set({_id: m._id});
-        
-        return this;
+        return DAL.saveUser(this);
     }
     
     //validate: function(){
@@ -166,22 +249,11 @@ var Message = Backbone.Model.extend({
         waveId: null,
         parentId: null,
         message: '',
-        unread: true//?
+        unread: true
     },
     idAttribute: '_id',
     save: function() {
-        var m = new MessageModel({
-            userId: this.get('userId'),
-            waveId: this.get('waveId'),
-            parentId: this.get('parentId'),
-            message: this.get('message')
-        });
-        
-        m.save();
-        
-        this.set({_id: m._id});
-        
-        return this;
+        return DAL.saveMessage(this);
     }
     
     //validate: function(){
@@ -214,7 +286,7 @@ var Wave = Backbone.Model.extend({
         if (this.get('userIds')) {
             var uids = this.get('userIds');
             _.each(uids, function(item){
-                var user = waveServer.users.get(item);
+                var user = WaveServer.users.get(item);
                 this.addUser(user);
                 user.waves.add(this);
             }, this);
@@ -244,17 +316,7 @@ var Wave = Backbone.Model.extend({
     },
     
     save: function() {
-        var m = new WaveModel({
-            title: this.get('title'),
-            userIds: this.get('userIds')
-        });
-        
-        m.save();
-        
-        //this.id = m._id;
-        this.set({_id: m._id});
-        
-        return this;
+        return DAL.saveWave(this);
     }
     
     //validate: function() {
@@ -273,63 +335,22 @@ var WaveSchema = new Schema({
 
 var WaveModel = mongoose.model('WaveModel', WaveSchema);
 
-var WaveServer = Backbone.Model.extend({
-    initialize: function() {
+var WaveServer = {
+    socket: null,
+
+    init: function() {
         this.users = new UserCollection();
         this.waves = new WaveCollection();
-        
+        DAL.init();
+    },
+    
+    startServer: function() {
         var port = process.env.PORT || 8000;
         console.log('port: ' + port);
-        webServer.listen(port);
-    }
-});
-
-
-waveServer = new WaveServer();
-
-function test() {
-    console.log('init data');
-    var users = [];
-    var uids = [];
-    
-    for (var i = 1; i <= 50; i++) {
-        var u = new User({name: 'teszt' + i, avatar: 'images/head' + (i%6 + 1) + '.png'});
-        u.save();
-        users.push(u);
-        uids.push(u.id.toString());
+        WebServer.listen(port);
+          
+        socket = WaveServer.socket = io.listen(WebServer);
         
-    }    
-    
-    waveServer.users.reset(users);
-    
-    var wave = new Wave({title: 'Csillag-delta tejbevávé', userIds: uids});
-    wave.save();
-    waveServer.waves.reset([wave]);
-}
-
-var socket = null;
-
-UserModel.find({}, function(err, users){
-    var usersTmp = [];
-    _.each(users, function(user) {
-        usersTmp.push({name: user.name, avatar: user.avatar, _id: user._id});
-    });
-    waveServer.users.reset(usersTmp);
-    usersTmp = null;
-    
-    WaveModel.find({}, function(err, waves){
-        var wavesTmp = [];
-        _.each(waves, function(wave){
-            wavesTmp.push({title: wave.title, userIds: wave.userIds, _id: wave._id});
-        })
-        waveServer.waves.reset(wavesTmp);
-        
-        if (waves.length == 0) {
-            test();
-        }
-        
-        socket = io.listen(webServer);
-
         //HEROKU
         if (process.env.PORT) {
             socket.configure(function () { 
@@ -338,52 +359,55 @@ UserModel.find({}, function(err, users){
             });
         }
         
-        //torolt funkciok a regibol: nick, topic, part, invite, joinchan
-
         socket.sockets.on('connection', function(client){
             console.log("connection works!");
-            var curUser = new User();//temporary
+            client.curUser = new User();//temporary
 
             client.on('auth', function(data){
                 console.log('user auth: ' + data);
-                //TODO: login command: query user, auto-join channels, send who
+                //TODO: auth
                 var id = data *1;
-                curUser = waveServer.users.at(id);
-                if (curUser.socket)
+                client.curUser = WaveServer.users.at(id);
+                if (client.curUser.socket)
                 {
-                    curUser.socket.disconnect();
+                    client.curUser.socket.disconnect();
                 }
 
-                curUser.set({status: 'online'});
-                console.log(curUser.get('name') + ' logged in');
-                curUser.socket = client;
-                curUser.ip = client.handshake.address.address;
+                console.log(client.curUser.get('name') + ' logged in');
+                client.curUser.socket = client;
+                client.curUser.ip = client.handshake.address.address;
 
-                curUser.init();        
+                WaveServer.authClient(client);
+                client.curUser.init();
             });
-
-            client.on('disconnect', function(data) {
-                console.log(curUser.get('name') + ' disconnected');
-                curUser.disconnect();
-            });
-
-            client.on('message', function(data) {
-                console.log(curUser.get('name') + ' message ' + data);
-
-                var msg = new Message(data);
-
-                var wave = waveServer.waves.get(msg.get('waveId'));
-                wave.addMessage(msg);
-            });
-
-            client.on('createWave', function(data) {
-                console.log('createWave ' + data.title);
-
-                var wave = new Wave(data);
-                wave.save();
-                waveServer.waves.add(wave);
-                wave.notifyUsers();
-            });
+        });    
+    },
+    
+    authClient: function(client) {
+        //torolt funkciok a regibol: nick, topic, part, invite, joinchan
+        client.on('disconnect', function(data) {
+            console.log(client.curUser.get('name') + ' disconnected');
+            client.curUser.disconnect();
         });
-    });
-});
+
+        client.on('message', function(data) {
+            console.log(client.curUser.get('name') + ' message ' + data);
+
+            var msg = new Message(data);
+
+            var wave = WaveServer.waves.get(msg.get('waveId'));
+            wave.addMessage(msg);
+        });
+
+        client.on('createWave', function(data) {
+            console.log('createWave ' + data.title);
+
+            var wave = new Wave(data);
+            wave.save();
+            WaveServer.waves.add(wave);
+            wave.notifyUsers();
+        });
+    }
+}
+
+WaveServer.init();

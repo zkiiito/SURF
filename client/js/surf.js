@@ -50,7 +50,7 @@ var Message = Backbone.Model.extend({
     initialize: function() {
          this.messages = new MessageCollection(); //nem itt kene
          this.user = app.model.users.get(this.get('userId'));
-         this.set('unread', app.currentUser != this.get('userId'));
+         this.set('unread', this.get('unread') && app.currentUser != this.get('userId'));
          
          //TODO: csak valid idk
          /*
@@ -503,7 +503,7 @@ var Communicator = {
         if (typeof io == 'undefined') return;
         
         Communicator.socket = new io.connect(document.location.href);
-        Communicator.socket.emit('auth', Math.ceil(Math.random() * 50) );
+        Communicator.socket.emit('auth', prompt('hanyas vagy?', Math.ceil(Math.random() * 50)) * 1 -1);
         
         Communicator.socket.on('init', function(data){
             console.log(data.me);
