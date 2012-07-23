@@ -65,9 +65,12 @@ var Message = Backbone.Model.extend({
         }
         this.messages.add(message);
     },
+    
     read: function() {
-        this.set('unread', false);
-        Communicator.readMessage(this);
+        if (this.get('unread')) {
+            this.set('unread', false);
+            Communicator.readMessage(this);
+        }
     }
     
 });

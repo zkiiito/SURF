@@ -18,14 +18,8 @@ var User = Backbone.Model.extend({
     },
     idAttribute: '_id',
     init: function() {
-        this.set({status: 'online'});
-        
-        var sendMsg = function(userContext) {
-            return function(err, messages) {
-                userContext.sendInit(messages);
-            }
-        }
-        DAL.getLastMessagesForUser(this.id, sendMsg(this));
+        this.set({status: 'online'});        
+        DAL.getLastMessagesForUser(this, function(c){return function(msgs){c.sendInit(msgs)}}(this));
     },
     
     sendInit: function(messages) {
@@ -232,6 +226,7 @@ var WaveServer = {
         });
         
         client.on('readMessage', function(data) {
+            console.log('readMessage ' + data);
             DAL.readMessage(client.curUser, data);
         });
 
