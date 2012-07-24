@@ -18,8 +18,11 @@ var User = Backbone.Model.extend({
     },
     idAttribute: '_id',
     init: function() {
+		var self = this;
         this.set({status: 'online'});        
-        DAL.getLastMessagesForUser(this, function(c){return function(msgs){c.sendInit(msgs)}}(this));
+        DAL.getLastMessagesForUser(this, function(msgs) {
+			self.sendInit(msgs);
+		});
     },
     
     sendInit: function(messages) {
@@ -208,6 +211,26 @@ var WaveServer = {
             });
         });    
     },
+	
+    initData: function() {
+        console.log('init data');
+        var users = [];
+        var uids = [];
+
+        for (var i = 1; i <= 50; i++) {
+            var u = new User({name: 'teszt' + i, avatar: 'images/head' + (i%6 + 1) + '.png'});
+            u.save();
+            users.push(u);
+            uids.push(u.id.toString());
+
+        }
+
+        DAL.server.users.reset(users);
+
+        var wave = new Wave({title: 'Csillag-delta tejbevávé', userIds: uids});
+        wave.save();
+        DAL.server.waves.reset([wave]);
+    },	
     
     authClient: function(client) {
         //torolt funkciok a regibol: nick, topic, part, invite, joinchan

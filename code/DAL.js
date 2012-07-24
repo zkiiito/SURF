@@ -48,34 +48,14 @@ DAL = {
                 server.waves.reset(wavesTmp);
 
                 if (waves.length == 0) {
-                    DAL.initData();
+                    DAL.server.initData();
                 }
 
                 DAL.server.startServer();
             });
         });
     },
-    
-    initData: function() {
-        console.log('init data');
-        var users = [];
-        var uids = [];
-
-        for (var i = 1; i <= 50; i++) {
-            var u = new User({name: 'teszt' + i, avatar: 'images/head' + (i%6 + 1) + '.png'});
-            u.save();
-            users.push(u);
-            uids.push(u.id.toString());
-
-        }    
-
-        DAL.server.users.reset(users);
-
-        var wave = new Wave({title: 'Csillag-delta tejbevávé', userIds: uids});
-        wave.save();
-        DAL.server.waves.reset([wave]);
-    },
-    
+        
     saveUser: function(user) {
         var m = new UserModel({
             name: user.get('name'),
