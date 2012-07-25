@@ -4,10 +4,10 @@ var User = Backbone.Model.extend({
         avatar: '',
         status: 'offline'
     },
-    
+    idAttribute: '_id',
     update: function(data) {
         _.each(data, function(el, idx){
-            if ('id' != idx)
+            if (this.idAttribute != idx)
                 this.set(idx, el);
         }, this);
     }
@@ -46,21 +46,31 @@ var Message = Backbone.Model.extend({
         message: '',
         unread: true
     },
+    idAttribute: '_id',
     initialize: function() {
          this.messages = new MessageCollection(); //nem itt kene
          this.user = app.model.users.get(this.get('userId'));
-         this.set('unread', app.currentUser != this.get('userId'));
+         this.set('unread', this.get('unread') && app.currentUser != this.get('userId'));
          
          //TODO: csak valid idk
+         /*
          if (null == this.id) {
              this.id = this.cid;
          }
+         */
     },
     addReply: function(message) {
         if (null == this.messages) {
             this.messages = new MessageCollection();
         }
         this.messages.add(message);
+    },
+    
+    read: function() {
+        if (this.get('unread')) {
+            this.set('unread', false);
+            Communicator.readMessage(this);
+        }
     }
     
 });
@@ -69,8 +79,9 @@ var Message = Backbone.Model.extend({
 var MessageView = Backbone.View.extend({
     initialize: function() {
         this.hasReplyForm = false;
-        _.bindAll(this, 'addMessage', 'readMessage', 'replyMessage');
+        _.bindAll(this, 'addMessage', 'readMessage', 'replyMessage', 'onReadMessage');
         this.model.messages.bind('add', this.addMessage);//ezt nem itt kene, hanem amikor letrejon ott a messages
+        this.model.bind('change:unread', this.onReadMessage);
     },
     events: {
         'click': 'readMessage',
@@ -106,10 +117,12 @@ var MessageView = Backbone.View.extend({
 
     readMessage: function(e) {
         e.stopPropagation();
-        if (this.model.get('unread')) {
-            this.model.set('unread', false);
+        this.model.read();
+    },
+    
+    onReadMessage: function() {
+        if (!this.model.get('unread'))
             this.$el.removeClass('unread');
-        }
     },
     
     replyMessage: function(e) {
@@ -123,7 +136,7 @@ var MessageView = Backbone.View.extend({
         this.$el.append(form);
 
         this.$el.find('textarea').keydown(function(e){
-            if (e.shiftKey && 13 == e.keyCode) {
+            if (!e.shiftKey && 13 == e.keyCode) {
                 var form = $(this).parents('form');
                 Communicator.sendMessage($('textarea', form).val(), $('[name=wave_id]', form).val(), $('[name=parent_id]', form).val());
                 $(this).val('');
@@ -152,6 +165,7 @@ var Wave = Backbone.Model.extend({
         userIds: [],
         current: false
     },
+    idAttribute: '_id',
     initialize: function() {
         this.messages = new MessageCollection();
         this.users = new UserCollection();
@@ -283,7 +297,7 @@ var WaveView = Backbone.View.extend({
         this.$el.hide();
         
         this.$el.find('textarea').keydown(function(e){
-            if (e.shiftKey && 13 == e.keyCode) {
+            if (!e.shiftKey && 13 == e.keyCode) {
                 var form = $(this).parents('form');
                 Communicator.sendMessage($('textarea', form).val(), $('[name=wave_id]', form).val(), null);
                 $(this).val('');
@@ -428,7 +442,8 @@ var SurfAppView = Backbone.View.extend({
     
     addMessage: function(message) {
         var wave = this.model.waves.get(message.get('waveId'));
-        wave.addMessage(message);
+        if (wave)
+            wave.addMessage(message);
     },
     
     resetMessages: function() {
@@ -475,11 +490,15 @@ var SurfAppRouter = Backbone.Router.extend({
     },
     
     showWave: function(id) {
-        if (app.currentWave) {
-            app.model.waves.get(app.currentWave).set('current', false);
+        if (app.model.waves.get(id)) {
+            if (app.currentWave) {
+                app.model.waves.get(app.currentWave).set('current', false);
+            }
+            app.model.waves.get(id).set('current', true);
+            app.currentWave = id;
+        } else {
+            this.navigate("");
         }
-        app.model.waves.get(id).set('current', true);
-        app.currentWave = id;        
     },
 
     removeWave: function(cid) {
@@ -494,10 +513,11 @@ var Communicator = {
         if (typeof io == 'undefined') return;
         
         Communicator.socket = new io.connect(document.location.href);
-        Communicator.socket.emit('auth', Math.ceil(Math.random() * 100) );
+        Communicator.socket.emit('auth', prompt('hanyas vagy?', Math.ceil(Math.random() * 50)) * 1 -1);
         
         Communicator.socket.on('init', function(data){
-            app.currentUser = data.me.id;
+            console.log(data.me);
+            app.currentUser = data.me._id;
             data.users.push(data.me);
             app.model.users.reset(data.users);
             app.model.waves.reset(data.waves);
@@ -512,49 +532,12 @@ var Communicator = {
             alert('disconnected');
             var url = 'http://' + document.location.host;
             if (document.location.port)
-                url += ':' + document.location.port;
+                url += document.location.port;
             document.location.href = url;
         });
         
         Communicator.socket.on('updateUser', Communicator.onUpdateUser);
         Communicator.socket.on('updateWave', Communicator.onUpdateWave);
-
-        Communicator.socket.on('message2', function(data){    
-            console.log('Full message from server: ' + data);
-
-            var a = data.indexOf(' ');
-            var someNick = data.slice(0, a); // Pull some nickname off of message.
-            var fullcommand = data.slice(a+1, data.length);
-            a = fullcommand.indexOf(' '); // find index of next space.
-            var comtype = fullcommand.slice(0, a);
-            var params = fullcommand.slice(a+1, fullcommand.length);
-			
-            console.log("Client received command: "+fullcommand);
-			
-            switch(comtype){
-                case "PRIVMSG"://valaki irt olyanba amiben bennevagyok
-                    Communicator.onMsg(params);
-                    break;
-                case "NICK"://valaki nicket cserelt
-                    nick(someNick, params);
-                    break;
-                case "JOIN"://valaki belepett
-                    Communicator.onJoin(params);
-                    break;
-                case "PART"://valaki elhagyta a wavet
-                    part(someNick, params);
-                    break;
-                case "TOPIC":
-                    topic(someNick, params);
-                    break;
-                case "QUIT"://valaki kilepett
-                    quit(someNick, params);
-                    break;
-                default:
-                    nocommand(comtype);
-            }  
-        });
-    //beginChat(socket);
     },
     
     sendMessage: function(message, waveId, parentId) {
@@ -565,6 +548,10 @@ var Communicator = {
             parentId: parentId
         });
         Communicator.socket.emit('message', msg);
+    },
+    
+    readMessage: function(message) {
+        Communicator.socket.emit('readMessage', {id: message.id, waveId: message.get('waveId')});
     },
     
     createWave: function(title) {
@@ -589,9 +576,9 @@ var Communicator = {
     
     onUpdateUser: function(data) {
         var user = data.user;
-        
-        if (app.model.users.get(user.id)) {
-            app.model.users.get(user.id).update(user);
+        console.log(user);
+        if (app.model.users.get(user._id)) {
+            app.model.users.get(user._id).update(user);
         } else {
             app.model.users.add(new User(user));
         }
@@ -600,8 +587,8 @@ var Communicator = {
     onUpdateWave: function(data) {
         var wave = data.wave;
         
-        if (app.model.waves.get(wave.id)) {
-            app.model.waves.get(wave.id).update(wave);
+        if (app.model.waves.get(wave._id)) {
+            app.model.waves.get(wave._id).update(wave);
         } else {
             app.model.waves.add(new Wave(wave));
         }        
@@ -619,21 +606,21 @@ $(function() {
 
 function test() {
     var users = [
-        {id:1,name: 'csabcsi',avatar: 'images/head3.png'},
-        {id:2,name: 'leguan',avatar: 'images/head2.png'},
-        {id:3,name: 'tibor',avatar: 'images/head5.png'},
-        {id:4,name: 'klara',avatar: 'images/head4.png'}
+        {_id:1,name: 'csabcsi',avatar: 'images/head3.png'},
+        {_id:2,name: 'leguan',avatar: 'images/head2.png'},
+        {_id:3,name: 'tibor',avatar: 'images/head5.png'},
+        {_id:4,name: 'klara',avatar: 'images/head4.png'}
     ];
     
-    var waves = [{id:1,title: 'Csillag-delta tejbevávé', userIds: [1,2,3,4]}];
+    var waves = [{_id:1,title: 'Csillag-delta tejbevávé', userIds: [1,2,3,4]}];
     
     var messages = [
-        {id:1, waveId:1, userId:1, message: 'Tenderloin corned beef venison sirloin, pork loin cow bresaola. Leberkas brisket turducken tri-tip, pancetta ball tip corned beef tail. Beef corned beef ham pork turkey pork chop, prosciutto fatback short loin meatloaf filet mignon turducken pastrami frankfurter chuck. Sausage cow brisket, tail drumstick shank pancetta rump beef ribs hamburger. Kielbasa sausage andouille, bresaola bacon tail ball tip. Boudin spare ribs turkey prosciutto tenderloin bresaola. Rump turkey pork loin jowl ham andouille strip steak short loin pastrami.'},
-        {id:2, waveId:1, userId:1, message: 'Tenderloin corned beef venison sirloin, pork loin cow bresaola. Leberkas brisket turducken tri-tip, pancetta ball tip corned beef tail. Beef corned beef ham pork turkey pork chop, prosciutto fatback short loin meatloaf filet mignon turducken pastrami frankfurter chuck. Sausage cow brisket, tail drumstick shank pancetta rump beef ribs hamburger. Kielbasa sausage andouille, bresaola bacon tail ball tip. Boudin spare ribs turkey prosciutto tenderloin bresaola. Rump turkey pork loin jowl ham andouille strip steak short loin pastrami.'},
-        {id:3, waveId:1, userId:3, parentId: 1, message: 'Leberkas brisket turducken tri-tip, pancetta ball tip corned beef tail. '},
-        {id:4, waveId:1, userId:1, parentId: 1, message: 'Herp derp'},
-        {id:5, waveId:1, userId:2, parentId: 2, message: 'Sausage cow brisket, tail drumstick shank pancetta rump beef ribs hamburger. Kielbasa sausage andouille, bresaola bacon tail ball tip. Boudin spare ribs turkey prosciutto tenderloin bresaola. Rump turkey pork loin jowl ham andouille strip steak short loin pastrami.'},
-        {id:6, waveId:1, userId:4, parentId: 5, message: 'Leberkas brisket turducken tri-tip, pancetta ball tip corned beef tail. Sausage cow brisket, tail drumstick shank pancetta rump beef ribs hamburger. Kielbasa sausage andouille, bresaola bacon tail ball tip. Boudin spare ribs turkey prosciutto tenderloin bresaola. Rump turkey pork loin jowl ham andouille strip steak short loin pastrami.'}
+        {_id:1, waveId:1, userId:1, message: 'Tenderloin corned beef venison sirloin, pork loin cow bresaola. Leberkas brisket turducken tri-tip, pancetta ball tip corned beef tail. Beef corned beef ham pork turkey pork chop, prosciutto fatback short loin meatloaf filet mignon turducken pastrami frankfurter chuck. Sausage cow brisket, tail drumstick shank pancetta rump beef ribs hamburger. Kielbasa sausage andouille, bresaola bacon tail ball tip. Boudin spare ribs turkey prosciutto tenderloin bresaola. Rump turkey pork loin jowl ham andouille strip steak short loin pastrami.'},
+        {_id:2, waveId:1, userId:1, message: 'Tenderloin corned beef venison sirloin, pork loin cow bresaola. Leberkas brisket turducken tri-tip, pancetta ball tip corned beef tail. Beef corned beef ham pork turkey pork chop, prosciutto fatback short loin meatloaf filet mignon turducken pastrami frankfurter chuck. Sausage cow brisket, tail drumstick shank pancetta rump beef ribs hamburger. Kielbasa sausage andouille, bresaola bacon tail ball tip. Boudin spare ribs turkey prosciutto tenderloin bresaola. Rump turkey pork loin jowl ham andouille strip steak short loin pastrami.'},
+        {_id:3, waveId:1, userId:3, parentId: 1, message: 'Leberkas brisket turducken tri-tip, pancetta ball tip corned beef tail. '},
+        {_id:4, waveId:1, userId:1, parentId: 1, message: 'Herp derp'},
+        {_id:5, waveId:1, userId:2, parentId: 2, message: 'Sausage cow brisket, tail drumstick shank pancetta rump beef ribs hamburger. Kielbasa sausage andouille, bresaola bacon tail ball tip. Boudin spare ribs turkey prosciutto tenderloin bresaola. Rump turkey pork loin jowl ham andouille strip steak short loin pastrami.'},
+        {_id:6, waveId:1, userId:4, parentId: 5, message: 'Leberkas brisket turducken tri-tip, pancetta ball tip corned beef tail. Sausage cow brisket, tail drumstick shank pancetta rump beef ribs hamburger. Kielbasa sausage andouille, bresaola bacon tail ball tip. Boudin spare ribs turkey prosciutto tenderloin bresaola. Rump turkey pork loin jowl ham andouille strip steak short loin pastrami.'}
     ];
     
     app.model.users.reset(users);    
