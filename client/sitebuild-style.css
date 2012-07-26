@@ -23,9 +23,10 @@ table, td {
   font-style: normal;
 }
 
-body {
+body  {
   color: #555;
-  font-family: Segoe UI, Proxima Nova, Helvetica Neue, Helvetica, Arial, MS Gothic, sans-serif;
+  font-family: Segoe UI, sans-serif;
+  /*font-family: Segoe UI, Proxima Nova, Helvetica Neue, Helvetica, Arial, MS Gothic, sans-serif;*/
 }
 
 img {
