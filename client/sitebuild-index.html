@@ -20,6 +20,7 @@
         {id: 9000, name: "csabcsi"}
       ]
     });
+  });
   </script>
 </head>
 <body>
@@ -193,7 +194,9 @@
 </div>
 <div class="overlay">
   <div class="overlay-title">
-    <a class="close button" href="">Bezárás</a>
+    <a class="close button" href="" onclick="
+          $('#darken, .overlay').hide();
+          return false;">Bezárás</a>
     <h2>Új beszélgetés</h2>
   </div>
   <div class="overlay-body">
