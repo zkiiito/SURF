@@ -3,17 +3,19 @@
 <head>
   <title>Surf</title>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-  <link rel="stylesheet" type="text/css" href="sitebuild-style.css" />
+  <link rel="stylesheet" type="text/css" href="sitebuild-nu.css" />
   <link rel="shortcut icon" type="image/png" href="images/surf-ico.png" />
   <script src="js/jquery-1.7.2.min.js"></script>
   <script type="text/javascript" src="js/jquery.tokeninput.js"></script>
   <link rel="stylesheet" type="text/css" href="token-input.css" />
-
   <script type="text/javascript">
   $(document).ready(function () {
     $("#users").tokenInput("http://idejöna/script/url-je", {
       theme: "facebook",
       preventDuplicates: true,
+      hintText: "Írj be egy felhasználónevet.",
+      noResultsText: "Nincs ilyen felhasználónk.",
+      searchingText: "Keresés...",
       prePopulate: [
         {id: 123, name: "leguan"},
         {id: 555, name: "tibor"},
@@ -29,31 +31,87 @@
   <a href=""><img id="header-logo" src="images/surf-logo.png" /></a>
   <a class="button addwave" href="#" onclick="
           $('#darken').show();
-          $('.overlay').show();
+          $('#ujvev').show();
           return false;">Új beszélgetés +</a>
-</div>
-<div id="middle">
-  <div id="wave-list">
-    <a class="waveitem" href="">
-      <h2>Csudivávé</h2>
-      <p class="meta">3 résztvevő</p>
-    </a>
-    <a class="waveitem open" href="">
-      <h2>Csillag-delta tejbevávé</h2>
-      <p class="meta">4 résztvevő</p>
-    </a>
-    <a class="waveitem updated" href="">
-      <h2>Lorem ipsum すごい atomvávé őáűő</h2>
-      <p class="meta">8 résztvevő | <span class="piros">43 új üzenet</span></p>
-    </a>
+  <div id="usermenu">
+    <img src="images/head3.png" class="online" /> 
+    <p>leguan</p>
+    <a class="button" href="">Beállítások</a>
+    <a class="button" href=""onclick="
+          $('#darken-login').show();
+          $('#login').show();
+          return false;">Kijelentkezés</a>
   </div>
-  <div id="wave-container">
-    <div class="wave">
-      <div class="messages">
-        <div class="notification">
-          <p class="time">Júl 17 21:50</p>
-          <p>A beszélgetést indította: leguan. Résztvevők: tibor, klara.</p>
-        </div>
+</div>
+<div id="wave-list">
+  <a class="waveitem" href="">
+    <h2>Csudivávé</h2>
+    <p class="meta">3 résztvevő</p>
+  </a>
+  <a class="waveitem open" href="">
+    <h2>Csillag-delta tejbevávé</h2>
+    <p class="meta">4 résztvevő</p>
+  </a>
+  <a class="waveitem updated" href="">
+    <h2>Lorem ipsum すごい atomvávé őáűő</h2>
+    <p class="meta">8 résztvevő | <span class="piros">43 új üzenet</span></p>
+  </a>
+</div>
+<div id="wavetop">
+  <h2 class="wave-title">Csillag-delta tejbevávé</h2>
+  <p class="heads">
+    <img src="images/head1.png" class="online" />
+    <img src="images/head2.png" class="online" /> 
+    <img src="images/head3.png" class="online" /> 
+    <img src="images/head4.png" class="online" /> 
+    <img src="images/head5.png" class="offline" /> 
+    <img src="images/head6.png" class="offline" />
+  </p>
+  <div class="buttons">
+    <a class="button editwave" href="">Cím szerkesztése</a>
+    <a class="button editwave" href="">Résztvevők</a>
+  </div>
+</div>
+<div id="wave-container">
+  <div class="messages">
+    <div class="notification">
+      <p class="time">Júl 17 21:50</p>
+      <p>A beszélgetést indította: leguan. Résztvevők: tibor, klara.</p>
+    </div>
+    <div class="message">
+      <table class="unread">
+        <tbody>
+          <tr>
+            <td class="message-header">
+              <img src="images/head1.png" class="online" />
+            </td>
+            <td class="message-body">
+              <a class="button branch" href="">&rarr;</a>
+              <p class="time">Júl 17 21:50</p>
+              <p class="message-text">
+                <span class="author">csabcsi:</span> Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi.
+              </p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="message">
+        <table>
+          <tbody>
+            <tr>
+              <td class="message-header">
+                <img src="images/head1.png" class="online" />
+              </td>
+              <td class="message-body">
+                <a class="button branch" href="">&rarr;</a>
+                <p class="time">Júl 17 21:50</p>
+                <p class="message-text">
+                  <span class="author">csabcsi:</span> Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi.
+                </p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
         <div class="message">
           <table class="unread">
             <tbody>
@@ -65,7 +123,7 @@
                   <a class="button branch" href="">&rarr;</a>
                   <p class="time">Júl 17 21:50</p>
                   <p class="message-text">
-                    <span class="author">csabcsi:</span> Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi.
+                    <span class="author">csabcsi:</span> Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi.
                   </p>
                 </td>
               </tr>
@@ -79,7 +137,7 @@
                     <img src="images/head1.png" class="online" />
                   </td>
                   <td class="message-body">
-                    <a class="button branch" href="">&rarr;</a>
+                    <a class="button branch" href="">&rarr;</a>  
                     <p class="time">Júl 17 21:50</p>
                     <p class="message-text">
                       <span class="author">csabcsi:</span> Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi.
@@ -88,114 +146,82 @@
                 </tr>
               </tbody>
             </table>
-            <div class="message">
-              <table class="unread">
-                <tbody>
-                  <tr>
-                    <td class="message-header">
-                      <img src="images/head1.png" class="online" />
-                    </td>
-                    <td class="message-body">
-                      <a class="button branch" href="">&rarr;</a>
-                      <p class="time">Júl 17 21:50</p>
-                      <p class="message-text">
-                        <span class="author">csabcsi:</span> Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi.
-                      </p>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-              <div class="message">
-                <table>
-                  <tbody>
-                    <tr>
-                      <td class="message-header">
-                        <img src="images/head1.png" class="online" />
-                      </td>
-                      <td class="message-body">
-                        <a class="button branch" href="">&rarr;</a>  
-                        <p class="time">Júl 17 21:50</p>
-                        <p class="message-text">
-                          <span class="author">csabcsi:</span> Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi.
-                        </p>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <div class="notification">
-                <p><a class="button threadend" href="">Új üzenet &darr;</a></p>
-              </div>
-            </div>
-            <div class="notification">
-              <p><a class="button threadend" href="">Új üzenet &darr;</a></p>
-            </div>
           </div>
           <div class="notification">
             <p><a class="button threadend" href="">Új üzenet &darr;</a></p>
           </div>
         </div>
         <div class="notification">
-          <p class="time">Júl 17 21:50</p>
-          <p>csabcsi csatlakozott a beszélgetéshez. Hozzáadta: leguan.</p>
-        </div>
-        <div class="message">
-          <table class="unread">
-            <tbody>
-              <tr>
-                <td class="message-header">
-                  <img src="images/head1.png" class="online" />
-                </td>
-                <td class="message-body">
-                  <a class="button branch" href="">&rarr;</a>
-                  <p class="time">Júl 17 21:50</p>
-                  <p class="message-text">
-                    <span class="author">csabcsi:</span> Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi.
-                  </p>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <div class="message">
-            <table>
-              <tbody>
-                <tr>
-                  <td class="message-header">
-                    <img src="images/head1.png" class="online" />
-                  </td>
-                  <td class="message-body">
-                    <a class="button branch" href="">&rarr;</a>
-                    <p class="time">Júl 17 21:50</p>
-                    <p class="message-text">
-                      <span class="author">csabcsi:</span> Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi.
-                    </p>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="notification">
-            <p><a class="button threadend" href="">Új üzenet &darr;</a></p>
-          </div>
+          <p><a class="button threadend" href="">Mégse &uarr;</a></p>
+          <form class="add-message threadend" method="post">
+            <input type="hidden" name="wave_id" value="1"/>
+            <input type="hidden" name="parent_id" value="1"/>            
+            <textarea name="message" placeholder="Válasz csabcsi üzenetére"></textarea>
+            <p class="inline-help">Nyomj Entert a mentéshez, Shift-Entert a sortöréshez.</p>
+          </form>   
         </div>
       </div>
-      <!--<form class="add-message" method="post">
+      <div class="notification">
+        <p><a class="button threadend" href="">Új üzenet &darr;</a></p>
+      </div>
+    </div>
+    <div class="notification">
+      <p class="time">Júl 17 21:50</p>
+      <p>csabcsi csatlakozott a beszélgetéshez. Hozzáadta: leguan.</p>
+    </div>
+    <div class="message">
+      <table class="unread">
+        <tbody>
+          <tr>
+            <td class="message-header">
+              <img src="images/head1.png" class="online" />
+            </td>
+            <td class="message-body">
+              <a class="button branch" href="">&rarr;</a>
+              <p class="time">Júl 17 21:50</p>
+              <p class="message-text">
+                <span class="author">csabcsi:</span> Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi.
+              </p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="message">
+        <table>
+          <tbody>
+            <tr>
+              <td class="message-header">
+                <img src="images/head1.png" class="online" />
+              </td>
+              <td class="message-body">
+                <a class="button branch" href="">&rarr;</a>
+                <p class="time">Júl 17 21:50</p>
+                <p class="message-text">
+                  <span class="author">csabcsi:</span> Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi.
+                </p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="notification">
+        <p><a class="button threadend" href="">Új üzenet &darr;</a></p>
+      </div>
+    </div>
+    <div class="notification">
+      <form class="add-message" method="post">
         <input type="hidden" name="wave_id" value="1"/>
         <input type="hidden" name="parent_id" value="1"/>            
-        <textarea name="message" placeholder="Válasz csabcsi üzenetére"></textarea>
-        <a class="cancel" href="">Mégse válaszolok</a>
-      </form>-->      
-      <!--<form class="add-message" method="post">
-        <input type="hidden" name="wave_id" value="1"/>
         <textarea name="message" placeholder="Új üzenet"></textarea>
-      </form>-->
+        <p class="inline-help">Nyomj Entert a mentéshez, Shift-Entert a sortöréshez.</p>
+      </form>  
     </div>
   </div>
 </div>
-<div class="overlay">
+<div id="ujvev" class="overlay">
   <div class="overlay-title">
     <a class="close button" href="" onclick="
-          $('#darken, .overlay').hide();
+          $('#darken, #ujvev').hide();
           return false;">Bezárás</a>
     <h2>Új beszélgetés</h2>
   </div>
@@ -212,15 +238,37 @@
         <label>Résztvevők</label>
         <div class="right">
           <input id="users" class="normal" type="text" />
-          <p class="inline-help">Inlány hjälp</p>
         </div>
       </div>
       <div class="buttons">
-        <button type="submit" class="button">Hajdihó fasszopók</button>
+        <button type="submit" class="button">Létrehozás</button>
+      </div>
+    </form>
+  </div>
+</div>
+<div id="login" class="overlay">
+  <div class="overlay-body">
+    <h2>Bejelentkezés</h2>
+    <form method="post">
+      <div>
+        <label>Felhasználónév</label>
+        <div class="right">
+          <input class="normal" type="text" />
+        </div>
+      </div>
+      <div>
+        <label>Jelszó</label>
+        <div class="right">
+          <input class="normal" type="password" />
+        </div>
+      </div>
+      <div class="buttons">
+        <button type="submit" class="button">Bejelentkezés</button>
       </div>
     </form>
   </div>
 </div>
 <div id="darken"></div>
+<div id="darken-login"></div>
 </body>
 </html>
