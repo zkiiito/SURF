@@ -8,6 +8,7 @@
   <script src="js/jquery-1.7.2.min.js"></script>
   <script type="text/javascript" src="js/jquery.tokeninput.js"></script>
   <link rel="stylesheet" type="text/css" href="token-input.css" />
+  <link rel="stylesheet" type="text/css" href="sitebuild-style.css" />
   <script type="text/javascript">
   $(document).ready(function () {
     $("#users").tokenInput("http://idejöna/script/url-je", {
@@ -17,6 +18,12 @@
       noResultsText: "Nincs ilyen felhasználónk.",
       searchingText: "Keresés...",
       prePopulate: [
+        {id: 123, name: "leguan"},
+        {id: 555, name: "tibor"},
+        {id: 9000, name: "csabcsi"},
+        {id: 123, name: "leguan"},
+        {id: 555, name: "tibor"},
+        {id: 9000, name: "csabcsi"},
         {id: 123, name: "leguan"},
         {id: 555, name: "tibor"},
         {id: 9000, name: "csabcsi"}
@@ -152,8 +159,10 @@
           </div>
         </div>
         <div class="notification">
-          <p><a class="button threadend" href="">Mégse &uarr;</a></p>
-          <form class="add-message threadend" method="post">
+          <p><a class="button threadend" href="" onclick="
+              $('#threadend-132').slideToggle(75);
+              return false;">Mégse &uarr;</a></p>
+          <form class="add-message threadend" id="threadend-132" method="post">
             <input type="hidden" name="wave_id" value="1"/>
             <input type="hidden" name="parent_id" value="1"/>            
             <textarea name="message" placeholder="Válasz csabcsi üzenetére"></textarea>
@@ -240,7 +249,7 @@
           <input id="users" class="normal" type="text" />
         </div>
       </div>
-      <div class="buttons">
+      <div class="right">
         <button type="submit" class="button">Létrehozás</button>
       </div>
     </form>
@@ -250,10 +259,16 @@
   <div class="overlay-body">
     <h2>Bejelentkezés</h2>
     <form method="post">
+      <div class="page-level-error">
+        Valami elírhattál, próbáld újra. Ha nem megy, <a href="">kérj új jelszót</a>.
+      </div>
       <div>
         <label>Felhasználónév</label>
         <div class="right">
-          <input class="normal" type="text" />
+          <input class="normal error" type="text" />
+          <div class="form-level-error">
+            Így néz ki egy formszintű hibaüzenet
+          </div>
         </div>
       </div>
       <div>
@@ -262,7 +277,7 @@
           <input class="normal" type="password" />
         </div>
       </div>
-      <div class="buttons">
+      <div class="right">
         <button type="submit" class="button">Bejelentkezés</button>
       </div>
     </form>

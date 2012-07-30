@@ -298,6 +298,18 @@ table.unread {
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
   border-radius: 4px;
+  background-image: linear-gradient(bottom, rgb(141,121,162) 100%, rgb(114,92,136) 0%);
+  background-image: -o-linear-gradient(bottom, rgb(141,121,162) 100%, rgb(114,92,136) 0%);
+  background-image: -moz-linear-gradient(bottom, rgb(141,121,162) 100%, rgb(114,92,136) 0%);
+  background-image: -webkit-linear-gradient(bottom, rgb(141,121,162) 100%, rgb(114,92,136) 0%);
+  background-image: -ms-linear-gradient(bottom, rgb(141,121,162) 100%, rgb(114,92,136) 0%);
+  background-image: -webkit-gradient(
+    linear,
+    left bottom,
+    left top,
+    color-stop(1, rgb(141,121,162)),
+    color-stop(0, rgb(114,92,136))
+  );
 }
 
 .button:hover {
@@ -329,8 +341,9 @@ form.threadend {
 }
 
 form .button {
-  margin-left: 14.4em;
-  margin-top: 1em;
+  font-size: 1em;
+  margin: 0 1em 1em 0;
+  padding-top: 0.5em;
 }
 
 label {
@@ -347,16 +360,56 @@ form div {
   margin-bottom: 0.8em;
 }
 
+.page-level-error, .form-level-error {
+  padding: 0.7em;
+  background: #9a6d3c;
+  border: 1px solid #916535;
+  color: white;
+}
+
+.page-level-error a, .form-level-error a {
+  color: white;
+  text-decoration: underline;
+}
+
+.page-level-error a:hover, .form-level-error a:hover {
+  color: white;
+}
+
+.page-level-error {
+  margin-top: -0.5em;
+  margin-bottom: 1em;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+}
+
+.form-level-error {
+  font-size: 0.8em;
+  margin-top: -0.25em;
+  margin-bottom: 0;
+  -webkit-border-bottom-right-radius: 4px;
+  -webkit-border-bottom-left-radius: 4px;
+  -moz-border-radius-bottomright: 4px;
+  -moz-border-radius-bottomleft: 4px;
+  border-bottom-right-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+input.error {
+  border-color: #916535;
+}
+
 form div.right {
   margin: 0;
   float: right;
   width: 26.5em;
 }
 
-input.normal {
+.normal {
   font-family: 'Segoe UI', 'Proxima Nova', 'Helvetica Neue', 'Helvetica', Arial, sans-serif;
   font-size: 1em;
-  width: 24em;
+  width: 25em;
   border: 1px solid #ddd;
   padding: 0.45em 0.7em;
   line-height: 1.5em;
@@ -386,7 +439,6 @@ a.cancel {
 }
 
 .overlay {
-  display: none;
   position: absolute;
   top: 10em;
   left: 50%;
@@ -405,7 +457,7 @@ a.cancel {
 }
 
 .overlay-body {
-  padding: 1em;
+  padding: 0 1em;
 }
 
 #darken {
@@ -422,17 +474,23 @@ a.cancel {
 }
 
 #darken-login {
+  display: none;
   z-index: 10;
   height: 100%;
   width: 100%;
-  display: none;
+  adisplay: none;
   position: absolute;
   top: 0;
   left: 0;
   background: url('images/surf-logo.png') no-repeat center 0.4em #333333;
 }
 
+#ujvev {
+  display: none;
+}
+
 #login {
+  display: none;
   -moz-box-shadow: 0 0 2em 0 #000;
   -webkit-box-shadow: 0 0 2em 0 #000;
   box-shadow: 0 0 2em 0 #000;
@@ -475,7 +533,7 @@ a.cancel {
 }
 
 .overlay h2 {
-  margin-top: 0;
+  margin-top: 0.4em;
   margin-bottom: 0.5em;
 }
 
