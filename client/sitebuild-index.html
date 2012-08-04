@@ -43,8 +43,12 @@
   <div id="usermenu">
     <img src="images/head3.png" class="online" /> 
     <p>leguan</p>
+    <a class="button" href="" onclick="
+          $('#darken').show();
+          $('#friends').show();
+          return false;">Ismerőseim</a>
     <a class="button" href="">Beállítások</a>
-    <a class="button" href=""onclick="
+    <a class="button" href="" onclick="
           $('#darken-login').show();
           $('#login').show();
           return false;">Kijelentkezés</a>
@@ -253,6 +257,108 @@
         <button type="submit" class="button">Létrehozás</button>
       </div>
     </form>
+  </div>
+</div>
+<div id="friends" class="overlay-scrollable">
+  <div class="overlay-title">
+    <a class="close button" href="" onclick="
+          $('#darken, #friends').hide();
+          return false;">Bezárás</a>
+    <h2>Ismerőseim</h2>
+  </div>
+  <div class="overlay-body">
+    <h2>Ismerőseim</h2>
+    <div class="friendslist">
+      <div class="friend">
+        <img src="images/head1.png">
+        <h3>leguan</h3>
+        <p><a href="">Törlés</a></p>
+      </div>
+      <div class="friend">
+        <img src="images/head1.png">
+        <h3>leguan</h3>
+        <p><a href="">Törlés</a></p>
+      </div>
+      <div class="friend">
+        <img src="images/head1.png">
+        <h3>leguan</h3>
+        <p><a href="">Törlés</a></p>
+      </div>
+      <div class="friend">
+        <img src="images/head1.png">
+        <h3>leguan</h3>
+        <p><a href="">Törlés</a></p>
+      </div>
+      <div class="friend">
+        <img src="images/head1.png">
+        <h3>leguan</h3>
+        <p><a href="">Törlés</a></p>
+      </div>
+      <div class="friend">
+        <img src="images/head1.png">
+        <h3>leguan</h3>
+        <p><a href="">Törlés</a></p>
+      </div>
+      <div class="friend">
+        <img src="images/head1.png">
+        <h3>leguan</h3>
+        <p><a href="">Törlés</a></p>
+      </div>
+      <div class="friend">
+        <img src="images/head1.png">
+        <h3>leguan</h3>
+        <p><a href="">Törlés</a></p>
+      </div>
+      <div class="friend">
+        <img src="images/head1.png">
+        <h3>leguan</h3>
+        <p><a href="">Törlés</a></p>
+      </div>
+      <div class="friend">
+        <img src="images/head1.png">
+        <h3>leguan</h3>
+        <p><a href="">Törlés</a></p>
+      </div>
+      <div class="friend">
+        <img src="images/head1.png">
+        <h3>leguan</h3>
+        <p><a href="">Törlés</a></p>
+      </div>
+      <div class="friend">
+        <img src="images/head1.png">
+        <h3>leguan</h3>
+        <p><a href="">Törlés</a></p>
+      </div>
+      <div class="friend">
+        <img src="images/head1.png">
+        <h3>leguan</h3>
+        <p><a href="">Törlés</a></p>
+      </div>
+      <div class="friend">
+        <img src="images/head1.png">
+        <h3>leguan</h3>
+        <p><a href="">Törlés</a></p>
+      </div>
+      <div class="friend">
+        <img src="images/head1.png">
+        <h3>leguan</h3>
+        <p><a href="">Törlés</a></p>
+      </div>
+    </div>
+    <div class="addfriend">
+      <h2>Új ismerős</h2>
+      <form method="post">
+        <div>
+          <label>Felhasználónév</label>
+          <div class="right">
+            <input id="users" class="normal" type="text" />
+          </div>
+        </div>
+        <div class="right">
+          <button type="submit" class="button">Ismerősnek jelölöm</button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>
 <div id="login" class="overlay">

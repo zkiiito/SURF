@@ -39,6 +39,16 @@ h2 {
   margin-top: 0.3em;
 }
 
+h3 {
+  font-family: AllerLightRegular, Helvetica, Arial, sans-serif;
+  font-weight: normal;
+  color: #555;
+  font-size: 1.3em;
+  font-weight: normal;
+  margin-bottom: 0.2em;
+  margin-top: 0.2em;
+}
+
 a {
   text-decoration: none;
   color: #87729d;
@@ -350,7 +360,7 @@ label {
   display: block;
   padding: 0.45em;
   float: left;
-  width: 10em;
+  width: 9em;
   text-align: right;
 }
 
@@ -409,7 +419,7 @@ form div.right {
 .normal {
   font-family: 'Segoe UI', 'Proxima Nova', 'Helvetica Neue', 'Helvetica', Arial, sans-serif;
   font-size: 1em;
-  width: 25em;
+  width: 24.9em;
   border: 1px solid #ddd;
   padding: 0.45em 0.7em;
   line-height: 1.5em;
@@ -449,11 +459,36 @@ a.cancel {
   -moz-border-radius: 7px;
   -webkit-border-radius: 7px;
   border-radius: 7px;
-  overflow: hidden;
   z-index: 11;
   -moz-box-shadow: 0 0 2em 0 #333;
   -webkit-box-shadow: 0 0 2em 0 #333;
   box-shadow: 0 0 2em 0 #333;
+}
+
+.overlay-scrollable {
+  position: absolute;
+  top: 10em;
+  left: 50%;
+  width: 40em;
+  margin-left: -20em;
+  background: white;
+  border: 1px solid black;
+  -moz-border-radius: 7px;
+  -webkit-border-radius: 7px;
+  border-radius: 7px;
+  z-index: 11;
+  -moz-box-shadow: 0 0 2em 0 #333;
+  -webkit-box-shadow: 0 0 2em 0 #333;
+  box-shadow: 0 0 2em 0 #333;
+}
+
+.overlay-scrollable .overlay-body {
+  position: absolute;
+  top: 2.7em;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: auto;
 }
 
 .overlay-body {
@@ -478,7 +513,7 @@ a.cancel {
   z-index: 10;
   height: 100%;
   width: 100%;
-  adisplay: none;
+  display: none;
   position: absolute;
   top: 0;
   left: 0;
@@ -496,8 +531,55 @@ a.cancel {
   box-shadow: 0 0 2em 0 #000;
 }
 
-.overlay-title {
+#friends {
+  margin: 0;
+  width: 80%;
+  height: 80%;
+  top: 10%;
+  left: 10%;
+  display: none;
+}
+
+.addfriend {
+  width: 38em;
+}
+
+.friendslist {
+  margin-top: -0.5em;
+  padding-bottom: 0.5em;
+  margin-bottom: 0.8em;
   overflow: auto;
+  border-bottom: 1px solid #ddd;
+}
+
+.friend {
+  float: left;
+  width: 10em;
+  margin-bottom: 0.5em;
+  margin-top: 0.5em;
+}
+
+.friend img {
+  float: left;
+  width: 2.5em;
+  margin-right: 0.3em;
+}
+
+.friend h3 {
+  font-size: 1em;
+  margin-bottom: 0;
+}
+
+.friend p {
+  font-size: 0.6em;
+  margin-top: 0;
+}
+
+.overlay-title {
+  position: relative;
+  top: 0;
+  height: 2.7em;
+  overflow: hidden;
   background-color: #333333;
   background: -webkit-gradient(
     linear,
@@ -519,7 +601,8 @@ a.cancel {
   border-top-right-radius: 3px;
 }
 
-.overlay .overlay-title h2 {
+.overlay .overlay-title h2, .overlay-scrollable .overlay-title h2 {
+  display: block;
   font-size: 1em;
   margin: 0.6em 0.5em 0.7em 0.5em;
   color: white;
@@ -532,7 +615,7 @@ a.cancel {
   margin: 0.6em 0.5em 0.7em 0.5em;
 }
 
-.overlay h2 {
+.overlay h2, .overlay-scrollable h2 {
   margin-top: 0.4em;
   margin-bottom: 0.5em;
 }
