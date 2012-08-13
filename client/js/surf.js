@@ -372,6 +372,7 @@ var SurfAppModel = Backbone.Model.extend({
         this.waves = new WaveCollection();
         this.users = new UserCollection();
         this.messages = new MessageCollection();
+        this.currentUser = new User();
     }
 });
 
@@ -418,6 +419,7 @@ var SurfAppView = Backbone.View.extend({
         this.model.waves.bind('add', this.addWave);
         this.model.waves.bind('reset', this.resetWaves, this);
         this.model.messages.bind('reset', this.resetMessages, this);
+        this.model.currentUser.bind('all', this.changeCurrentUser, this);
         this.render();
     },
     events: {
@@ -468,6 +470,12 @@ var SurfAppView = Backbone.View.extend({
     hideOverlays: function() {
         $('#darken').hide();
         $('.overlay').hide();
+        return false;
+    },
+    
+    changeCurrentUser: function() {
+        var template = new UserView({model: this.model.currentUser});
+        this.$el.find('#currentuser').html('').append(template.render().el).append(' <p>' + this.model.currentUser.get('name') + '</p>');
         return false;
     }
 });
@@ -532,6 +540,7 @@ var Communicator = {
             app.model.users.reset(data.users);
             app.model.waves.reset(data.waves);
             app.model.messages.reset(data.messages);
+            app.model.currentUser.set(app.model.users.get(app.currentUser).toJSON());
 
             document.location = $('.waveitem:last a').attr('href');
         });
