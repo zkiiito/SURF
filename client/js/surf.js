@@ -50,7 +50,9 @@ var Message = Backbone.Model.extend({
     initialize: function() {
          this.messages = new MessageCollection(); //nem itt kene
          this.user = app.model.users.get(this.get('userId'));
-         this.set('unread', this.get('unread') && app.currentUser != this.get('userId'));
+         if (this.get('id')) {
+            this.set('unread', this.get('unread') && app.currentUser != this.get('userId'));
+         }
          
          //TODO: csak valid idk
          /*
