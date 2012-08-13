@@ -163,7 +163,7 @@ a:hover {
   font-size: 0.8em;
 }
 
-#wavetop {
+.wavetop {
   position: fixed;
   left: 20%;
   top: 5em;
@@ -179,26 +179,26 @@ a:hover {
   box-shadow: -0.5em -0.5em 2em 0 #aaa;
 }
 
-#wavetop h2 {
+.wavetop h2 {
   font-size: 1.8em;
   float: left;
   margin-top: -0.1em;
   color: #6d8b39;
 }
 
-#wavetop .heads {
+.wavetop .heads {
   float: left;
   margin-top: 0.15em;
   margin-left: 0.8em;
   overflow: auto;
 }
 
-#wavetop .heads img {
+.wavetop .heads img {
   width: 1.8em;
   margin-right: 0.2em;
 }
 
-#wavetop .buttons {
+.wavetop .buttons {
   margin-top: 0.2em;
   float: right;
   margin-right: 1.6em;
@@ -212,7 +212,7 @@ a:hover {
   border-right: 0.3em solid #aaa;
 }
 
-#wave-container {
+.waves-container {
   overflow: auto; 
   position: absolute; 
   width: 80%;
@@ -220,10 +220,10 @@ a:hover {
   bottom: 0; 
   left: 20%; 
   background:#eee;
+  font-size: 0.8em;
 }
 
 .messages {
-  font-size: 0.8em;
   border-bottom: 1px solid #e4e4e4;
   background: white;
 }
@@ -329,7 +329,7 @@ table.unread {
   border: 1px solid #2d6964;
 }
 
-.branch {
+.reply {
   float: right;
 }
 
@@ -441,11 +441,6 @@ textarea {
   font-size: 1em;
   line-height: 1.5em;
   overflow: auto;
-}
-
-a.cancel {
-  display: block;
-  margin-top: 0.2em;
 }
 
 .overlay {

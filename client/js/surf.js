@@ -87,7 +87,8 @@ var MessageView = Backbone.View.extend({
     },
     events: {
         'click': 'readMessage',
-        'click a.reply' : 'replyMessage'
+        'click a.reply' : 'replyMessage',
+        'click a.threadend' : 'replyMessage'
     },
     render: function() {
         var context = _.extend(this.model.toJSON(), {id: this.model.id, user: this.model.user.toJSON()});        
@@ -95,12 +96,12 @@ var MessageView = Backbone.View.extend({
         
         this.setElement(template);
         if (!this.model.get('unread')) {
-            this.$el.removeClass('unread');
+            this.$el.children('table').removeClass('unread');
         }
         
         var userView = new UserView({model: this.model.user});
-        this.$el.prepend(userView.render().el);
-        this.$el.children('a.reply.threadend').hide();
+        this.$el.find('.message-header').html(userView.render().el);
+        this.$el.children('div.threadend').hide();
         
         return this;
     },
@@ -112,8 +113,8 @@ var MessageView = Backbone.View.extend({
         
         this.$el.children('.replies').append(view.render().el);
         if (this.model.messages.length == 1) {
-            this.$el.children('p').find('a.reply.normal').hide();
-            this.$el.children('a.reply.threadend').show();
+            this.$el.find('td.message-body').find('a.reply').hide();
+            this.$el.children('div.threadend').show();
         }
     },
 
@@ -124,13 +125,14 @@ var MessageView = Backbone.View.extend({
     
     onReadMessage: function() {
         if (!this.model.get('unread'))
-            this.$el.removeClass('unread');
+            this.$el.children('table').removeClass('unread');
     },
     
     replyMessage: function(e) {
         e.preventDefault();
         
-        $('.message .add-message').unbind().remove(); //eleg igy unbindelni?
+        $('.message .replyform').find('form').unbind();
+        $('.message .replyform').remove();
 
         var context = _.extend(this.model.toJSON(), {id: this.model.id, user: this.model.user.toJSON()});
         var form = ich.replyform_view(context);
@@ -148,7 +150,9 @@ var MessageView = Backbone.View.extend({
         
         this.$el.find('a.cancel').click(function(e){
             e.preventDefault();
-            $(this).parents('form').unbind().remove();
+            var parent = $(this).parents('.notification');
+            parent.find('form').unbind();
+            parent.remove();
             return false;
         })
         
@@ -205,6 +209,10 @@ var Wave = Backbone.Model.extend({
         return this.users.pluck('name').join(', ');
     },
     
+    getUserCount: function() {
+        return this.users.length +  ' résztvevő';
+    },
+    
     update: function(data) {
         this.set('title', data.title);
         
@@ -253,9 +261,9 @@ var WaveListView = Backbone.View.extend({
     countMessages: function() {
         var msgs = this.model.getUnreadCount();
         if (msgs > 0) {
-            this.$el.find('.sarga').text('| ' + msgs + ' új üzenet');
+            this.$el.find('.piros').text('| ' + msgs + ' új üzenet');
         } else {
-            this.$el.find('.sarga').text('');
+            this.$el.find('.piros').text('');
             this.$el.removeClass('updated');
         }
     },
@@ -267,8 +275,8 @@ var WaveListView = Backbone.View.extend({
     },
     
     changeUsers: function() {
-        var usernames = this.model.getUserNames();
-        this.$el.find('.usernames').text(usernames);
+        var usercount = this.model.getUserCount();
+        this.$el.find('.usercount').text(usercount);
     },
     
     updateTitle: function() {
@@ -323,7 +331,7 @@ var WaveView = Backbone.View.extend({
         if (null == message.get('parentId')) {
             var view = new MessageView({
                 model: message
-            });            
+            });
             $('.messages', this.$el).append(view.render().el);
         }
     },

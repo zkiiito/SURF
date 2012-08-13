@@ -2,55 +2,85 @@
 <html>
 <head>
   <title>Surf</title>
-  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-  <link rel="stylesheet" type="text/css" href="style.css" />
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
   <link rel="shortcut icon" type="image/png" href="images/surf-ico.png" />
+  <link rel="stylesheet" type="text/css" href="token-input.css" />
+  <link rel="stylesheet" type="text/css" href="sitebuild-style.css" />  
 </head>
 <body>
 
 <script id="user_view" type="text/html">
-<img class="head {{ status }}" src="{{ avatar }}" alt="{{ name }}"/>
+<img class="{{ status }}" src="{{ avatar }}" alt="{{ name }}"/>
 </script>
     
 <script id="wave_list_view" type="text/html">
-<div class="waveitem">
-    <a href="#wave/{{ id }}"><h2>{{ title }}</h2></a>
-    <p class="meta"><span class="usernames">{{ usernames }}</span> <span class="sarga">{{ unreadPosts }}</span></p>
-</div>
+    <div class="waveitem">
+        <a href="#wave/{{ id }}"><h2>{{ title }}</h2></a>
+        <p class="meta"><span class="usercount">{{ usercount }} résztvevő</span> <span class="piros">{{ unreadPosts }}</span></p>
+    </div>
 </script>
 
 <script id="wave_view" type="text/html">
-<div class="wave">
-    <div class="title">
-      <h2>{{ title }}</h2>
-      <p class="heads"></p>
-      <p class="meta"><span class="usernames">{{ usernames }}</span> <a class="button adduser" href="">Még valaki kell</a></p>
+    <div class="wave">
+        <div class="wavetop">
+            <h2 class="wave-title">{{ title }}</h2>
+            <p class="heads">
+            </p>
+            <div class="buttons">
+                <a class="button editwave" href="">Cím szerkesztése</a>
+                <a class="button editwave" href="">Résztvevők</a>
+            </div>
+        </div>
+        <div class="waves-container">
+            <div class="messages">
+            </div>
+            <div class="notification replyform">
+                <form class="add-message" method="post">
+                    <input type="hidden" name="wave_id" value="{{ id }}"/>
+                    <textarea name="message" placeholder="Új üzenet"></textarea>
+                    <p class="inline-help">Nyomj Entert a mentéshez, Shift-Entert a sortöréshez.</p>
+                </form>  
+            </div>
+        </div>
     </div>
-    <div class="messages">
-    </div>
-    <form class="add-message" method="post">
-      <input type="hidden" name="wave_id" value="{{ id }}"/>
-      <textarea name="message" placeholder="Új üzenet"></textarea>
-    </form>
-</div>
 </script>
 
 <script id="message_view" type="text/html">
-<div class="message unread">
-	<p class="text"><span class="meta">{{ user.name }}:</span> {{ message }} <a class="reply button normal" href="">Válasz &rarr;</a></p>
-	<div class="replies">
-	</div>
-        <a class="button reply threadend" href="">Válasz &darr;</a>
-</div>
+    <div class="message">
+        <table class="unread">
+            <tbody>
+                <tr>
+                    <td class="message-header">
+                    </td>
+                    <td class="message-body">
+                        <a class="button reply" href="">&rarr;</a>
+                        <p class="time">Júl 17 21:50</p>
+                        <p class="message-text">
+                            <span class="author">{{ user.name }}:</span> {{ message }}
+                        </p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="replies">
+        </div>
+        <div class="notification threadend">
+            <p><a class="button threadend" href="">Új üzenet &darr;</a></p>
+      </div>
+
+    </div>    
 </script>
 
 <script id="replyform_view" type="text/html">
-	<form class="add-message" method="post">
-            <input type="hidden" name="wave_id" value="{{ waveId }}"/>
-            <input type="hidden" name="parent_id" value="{{ id }}"/>
-	    <textarea name="message" placeholder="Válasz {{ user.name }} üzenetére"></textarea>
-	    <a class="cancel" href="">Mégse válaszolok</a>
-	</form>
+    <div class="notification replyform">
+    <p><a class="button threadend cancel" href="">Mégse &uarr;</a></p>
+    <form class="add-message threadend" method="post">    
+        <input type="hidden" name="wave_id" value="{{ waveId }}"/>
+        <input type="hidden" name="parent_id" value="{{ id }}"/>
+        <textarea name="message" placeholder="Válasz {{ user.name }} üzenetére"></textarea>
+        <p class="inline-help">Nyomj Entert a mentéshez, Shift-Entert a sortöréshez.</p>
+    </form>
+    </div>
 </script>
 
 <script id="createwave_view" type="text/html">
@@ -86,15 +116,26 @@
 <div id="header">
   <h1>Surf</h1>
   <a href=""><img id="header-logo" src="images/surf-logo.png" /></a>
-</div>
-<div id="middle">
-  <div id="wave-list">
-    <div id="new-wave">
-      <a class="button" href="">Boldog újvévet +</a>
-    </div>
+  <a class="button addwave" href="#" onclick="
+          $('#darken').show();
+          $('#ujvev').show();
+          return false;">Új beszélgetés +</a>
+  <div id="usermenu">
+    <img src="images/head3.png" class="online" /> 
+    <p>leguan</p>
+    <a class="button" href="" onclick="
+          $('#darken').show();
+          $('#friends').show();
+          return false;">Ismerőseim</a>
+    <a class="button" href="">Beállítások</a>
+    <a class="button" href="" onclick="
+          $('#darken-login').show();
+          $('#login').show();
+          return false;">Kijelentkezés</a>
   </div>
-  <div id="wave-container"></div>
 </div>
+<div id="wave-list"></div>
+<div id="wave-container"></div>
 
 <div id="darken"></div>
 

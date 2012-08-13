@@ -3,7 +3,6 @@
 <head>
   <title>Surf</title>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-  <link rel="stylesheet" type="text/css" href="sitebuild-nu.css" />
   <link rel="shortcut icon" type="image/png" href="images/surf-ico.png" />
   <script src="js/jquery-1.7.2.min.js"></script>
   <script type="text/javascript" src="js/jquery.tokeninput.js"></script>
@@ -68,7 +67,8 @@
     <p class="meta">8 résztvevő | <span class="piros">43 új üzenet</span></p>
   </a>
 </div>
-<div id="wavetop">
+<div class="wave">
+<div class="wavetop">
   <h2 class="wave-title">Csillag-delta tejbevávé</h2>
   <p class="heads">
     <img src="images/head1.png" class="online" />
@@ -83,7 +83,7 @@
     <a class="button editwave" href="">Résztvevők</a>
   </div>
 </div>
-<div id="wave-container">
+<div class="waves-container">
   <div class="messages">
     <div class="notification">
       <p class="time">Júl 17 21:50</p>
@@ -97,7 +97,7 @@
               <img src="images/head1.png" class="online" />
             </td>
             <td class="message-body">
-              <a class="button branch" href="">&rarr;</a>
+              <a class="button reply" href="">&rarr;</a>
               <p class="time">Júl 17 21:50</p>
               <p class="message-text">
                 <span class="author">csabcsi:</span> Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi.
@@ -114,7 +114,7 @@
                 <img src="images/head1.png" class="online" />
               </td>
               <td class="message-body">
-                <a class="button branch" href="">&rarr;</a>
+                <a class="button reply" href="">&rarr;</a>
                 <p class="time">Júl 17 21:50</p>
                 <p class="message-text">
                   <span class="author">csabcsi:</span> Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi.
@@ -131,7 +131,7 @@
                   <img src="images/head1.png" class="online" />
                 </td>
                 <td class="message-body">
-                  <a class="button branch" href="">&rarr;</a>
+                  <a class="button reply" href="">&rarr;</a>
                   <p class="time">Júl 17 21:50</p>
                   <p class="message-text">
                     <span class="author">csabcsi:</span> Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi.
@@ -148,7 +148,7 @@
                     <img src="images/head1.png" class="online" />
                   </td>
                   <td class="message-body">
-                    <a class="button branch" href="">&rarr;</a>  
+                    <a class="button reply" href="">&rarr;</a>  
                     <p class="time">Júl 17 21:50</p>
                     <p class="message-text">
                       <span class="author">csabcsi:</span> Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi.
@@ -158,12 +158,30 @@
               </tbody>
             </table>
           </div>
-          <div class="notification">
+          <div class="message">
+            <table>
+              <tbody>
+                <tr>
+                  <td class="message-header">
+                    <img src="images/head1.png" class="online" />
+                  </td>
+                  <td class="message-body">
+                    <a class="button reply" href="">&rarr;</a>  
+                    <p class="time">Júl 17 21:50</p>
+                    <p class="message-text">
+                      <span class="author">csabcsi:</span> Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi. Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi.
+                    </p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>		  
+          <div class="notification threadend">
             <p><a class="button threadend" href="">Új üzenet &darr;</a></p>
           </div>
         </div>
-        <div class="notification">
-          <p><a class="button threadend" href="" onclick="
+        <div class="notification threadend">
+          <p><a class="button threadend cancel" href="" onclick="
               $('#threadend-132').slideToggle(75);
               return false;">Mégse &uarr;</a></p>
           <form class="add-message threadend" id="threadend-132" method="post">
@@ -174,7 +192,7 @@
           </form>   
         </div>
       </div>
-      <div class="notification">
+      <div class="notification threadend">
         <p><a class="button threadend" href="">Új üzenet &darr;</a></p>
       </div>
     </div>
@@ -190,7 +208,7 @@
               <img src="images/head1.png" class="online" />
             </td>
             <td class="message-body">
-              <a class="button branch" href="">&rarr;</a>
+              <a class="button reply" href="">&rarr;</a>
               <p class="time">Júl 17 21:50</p>
               <p class="message-text">
                 <span class="author">csabcsi:</span> Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi.
@@ -207,7 +225,7 @@
                 <img src="images/head1.png" class="online" />
               </td>
               <td class="message-body">
-                <a class="button branch" href="">&rarr;</a>
+                <a class="button reply" href="">&rarr;</a>
                 <p class="time">Júl 17 21:50</p>
                 <p class="message-text">
                   <span class="author">csabcsi:</span> Etiam aliquet, diam eu aliquam fermentum, purus libero dictum lacus, id sagittis mauris massa tincidunt mi.
@@ -217,19 +235,20 @@
           </tbody>
         </table>
       </div>
-      <div class="notification">
+      <div class="notification threadend">
         <p><a class="button threadend" href="">Új üzenet &darr;</a></p>
       </div>
     </div>
-    <div class="notification">
-      <form class="add-message" method="post">
-        <input type="hidden" name="wave_id" value="1"/>
-        <input type="hidden" name="parent_id" value="1"/>            
-        <textarea name="message" placeholder="Új üzenet"></textarea>
-        <p class="inline-help">Nyomj Entert a mentéshez, Shift-Entert a sortöréshez.</p>
-      </form>  
-    </div>
   </div>
+<div class="notification">
+    <form class="add-message" method="post">
+    <input type="hidden" name="wave_id" value="1"/>
+    <input type="hidden" name="parent_id" value="1"/>            
+    <textarea name="message" placeholder="Új üzenet"></textarea>
+    <p class="inline-help">Nyomj Entert a mentéshez, Shift-Entert a sortöréshez.</p>
+    </form>  
+</div>
+</div>
 </div>
 <div id="ujvev" class="overlay">
   <div class="overlay-title">
