@@ -10,13 +10,7 @@
   <link rel="stylesheet" type="text/css" href="sitebuild-style.css" />
   <script type="text/javascript">
   $(document).ready(function () {
-    $("#users").tokenInput("http://idejöna/script/url-je", {
-      theme: "facebook",
-      preventDuplicates: true,
-      hintText: "Írj be egy felhasználónevet.",
-      noResultsText: "Nincs ilyen felhasználónk.",
-      searchingText: "Keresés...",
-      prePopulate: [
+      var local_data = [
         {id: 123, name: "leguan"},
         {id: 555, name: "tibor"},
         {id: 9000, name: "csabcsi"},
@@ -26,7 +20,14 @@
         {id: 123, name: "leguan"},
         {id: 555, name: "tibor"},
         {id: 9000, name: "csabcsi"}
-      ]
+      ];    
+      
+    $("#users").tokenInput(local_data, {
+      theme: "facebook",
+      preventDuplicates: true,
+      hintText: "Írj be egy felhasználónevet.",
+      noResultsText: "Nincs ilyen felhasználónk.",
+      searchingText: "Keresés..."
     });
   });
   </script>
