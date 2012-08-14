@@ -106,8 +106,8 @@ var MessageView = Backbone.View.extend({
         
         this.$el.children('.replies').append(view.render().el);
         if (this.model.messages.length == 1) {
-            this.$el.find('td.message-body').find('a.reply').hide();
-            this.$el.children('div.threadend').show();
+            if (this.$el.children('div.replyform').size() == 0)//ha nincs kint a replyform
+                this.$el.children('div.threadend').show();
         }
     },
 
@@ -131,6 +131,7 @@ var MessageView = Backbone.View.extend({
         var form = ich.replyform_view(context);
 
         this.$el.append(form);
+        this.$el.children('div.threadend').hide();//ha latszik-ha nem.
 
         this.$el.find('textarea').keydown(function(e){
             if (!e.shiftKey && 13 == e.keyCode) {
@@ -143,8 +144,10 @@ var MessageView = Backbone.View.extend({
         
         this.$el.find('a.cancel').click(function(e){
             e.preventDefault();
-            var parent = $(this).parents('.notification');
+            var parent = $(this).parents('.notification');//nem lehet tobb notificationon belul
             parent.find('form').unbind();
+            if (parent.siblings('.replies').children().size() > 0)
+                parent.siblings('.threadend').show();
             parent.remove();
             return false;
         })
@@ -562,7 +565,7 @@ var Communicator = {
             app.model.messages.reset(data.messages);
             app.model.currentUser.set(app.model.users.get(app.currentUser).toJSON());
 
-            document.location = $('.waveitem:last a').attr('href');
+            document.location = $('a.waveitem:last').attr('href');
         });
         
         Communicator.socket.on('message', Communicator.onMessage);

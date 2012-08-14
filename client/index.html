@@ -5,7 +5,7 @@
   <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
   <link rel="shortcut icon" type="image/png" href="images/surf-ico.png" />
   <link rel="stylesheet" type="text/css" href="token-input.css" />
-  <link rel="stylesheet" type="text/css" href="sitebuild-style.css" />  
+  <link rel="stylesheet" type="text/css" href="style.css" />  
 </head>
 <body>
 
@@ -14,10 +14,10 @@
 </script>
     
 <script id="wave_list_view" type="text/html">
-    <div class="waveitem">
-        <a href="#wave/{{ id }}"><h2>{{ title }}</h2></a>
+    <a class="waveitem" href="#wave/{{ id }}">
+        <h2>{{ title }}</h2>
         <p class="meta"><span class="usercount">{{ usercount }} résztvevő</span> <span class="piros">{{ unreadPosts }}</span></p>
-    </div>
+    </a>
 </script>
 
 <script id="wave_view" type="text/html">
