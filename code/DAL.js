@@ -15,7 +15,7 @@ var MessageSchema = new Schema({
     waveId: Schema.ObjectId,
     parentId: Schema.ObjectId,
     message: {type: String, trim: true},
-    created_at: { type: Date, 'default': Date.now }
+    created_at: { type: Date/*, 'default': Date.now */}
 });
 var MessageModel = mongoose.model('MessageModel', MessageSchema);
 
@@ -81,7 +81,8 @@ DAL = {
             userId: message.get('userId'),
             waveId: message.get('waveId'),
             parentId: message.get('parentId'),
-            message: message.get('message')
+            message: message.get('message'),
+            created_at: message.get('created_at')
         });
         m.save();
         message.set({_id: m._id});
@@ -112,7 +113,7 @@ DAL = {
                             var key = 'unread-' + user.id + '-' + msg.waveId;
                             redis.sismember([key, msg.id], function(err, result) {
                                 console.log(key + ' ' + msg.id + ' ' + result);
-                                msg = {_id: msg.id, userId: msg.userId, waveId: msg.waveId, parentId: msg.parentId, message: msg.message, unread: result};
+                                msg = {_id: msg.id, userId: msg.userId, waveId: msg.waveId, parentId: msg.parentId, message: msg.message, unread: result, created_at: msg.created_at};
                                 wave_messages.push(msg);
                                 isread_calls--;
                                 if (!calls && !isread_calls) {
@@ -137,7 +138,7 @@ DAL = {
                         var key = 'unread-' + user.id + '-' + msg.waveId;
                         redis.sismember([key, msg.id], function(err, result) {
                             //console.log(key + ' ' + msg.id + ' ' + result);
-                            msg = {_id: msg.id, userId: msg.userId, waveId: msg.waveId, parentId: msg.parentId, message: msg.message, unread: result};
+                            msg = {_id: msg.id, userId: msg.userId, waveId: msg.waveId, parentId: msg.parentId, message: msg.message, unread: result, created_at: msg.created_at};
                             callback(null, msg);
                         });
                     }, function(err, results) {

@@ -94,15 +94,23 @@ var Message = Backbone.Model.extend({
         waveId: null,
         parentId: null,
         message: '',
-        unread: true
+        unread: true,
+        created_at: null
     },
     idAttribute: '_id',
+    initialize: function() {
+        if (this.isNew())
+            this.set('created_at', Date.now());
+    },
     save: function() {
         return DAL.saveMessage(this);
     }
     
     //validate: function(){
     //check: userId, waveId, parentId
+    //user member of wave
+    //parent member of wave?
+    //
     //}
 });
 
@@ -227,7 +235,7 @@ var WaveServer = {
 
         DAL.server.users.reset(users);
 
-        var wave = new Wave({title: 'Csillag-delta tejbev·vÈ', userIds: uids});
+        var wave = new Wave({title: 'Csillag-delta tejbev√°v√©', userIds: uids});
         wave.save();
         DAL.server.waves.reset([wave]);
     },	

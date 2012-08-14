@@ -44,7 +44,8 @@ var Message = Backbone.Model.extend({
         waveId: null,
         parentId: null,
         message: '',
-        unread: true
+        unread: true,
+        created_at: null
     },
     idAttribute: '_id',
     initialize: function() {
@@ -77,6 +78,9 @@ var MessageView = Backbone.View.extend({
         _.bindAll(this, 'addMessage', 'readMessage', 'replyMessage', 'onReadMessage');
         this.model.messages.bind('add', this.addMessage);//ezt nem itt kene, hanem amikor letrejon ott a messages
         this.model.bind('change:unread', this.onReadMessage);
+        
+        var date = new Date(this.model.get('created_at'));        
+        this.model.set('dateFormatted', date.format('mmm d HH:MM'));
     },
     events: {
         'click': 'readMessage',
@@ -135,8 +139,10 @@ var MessageView = Backbone.View.extend({
 
         this.$el.find('textarea').keydown(function(e){
             if (!e.shiftKey && 13 == e.keyCode) {
-                var form = $(this).parents('form');
-                Communicator.sendMessage($('textarea', form).val(), $('[name=wave_id]', form).val(), $('[name=parent_id]', form).val());
+                if ($(this).val().length > 0) {
+                    var form = $(this).parents('form');
+                    Communicator.sendMessage($('textarea', form).val(), $('[name=wave_id]', form).val(), $('[name=parent_id]', form).val());
+                }
                 $(this).val('');
                 e.preventDefault();
             }
@@ -304,8 +310,10 @@ var WaveView = Backbone.View.extend({
         
         this.$el.find('textarea').keydown(function(e){
             if (!e.shiftKey && 13 == e.keyCode) {
-                var form = $(this).parents('form');
-                Communicator.sendMessage($('textarea', form).val(), $('[name=wave_id]', form).val(), null);
+                if ($(this).val().length > 0) {
+                    var form = $(this).parents('form');
+                    Communicator.sendMessage($('textarea', form).val(), $('[name=wave_id]', form).val(), null);
+                }
                 $(this).val('');
                 e.preventDefault();
             }
