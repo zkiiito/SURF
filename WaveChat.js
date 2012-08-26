@@ -2,7 +2,7 @@ var _ = require('underscore'),
     Backbone =  require('backbone'),
     io = require('socket.io');
 
-require('./code/WebServer');
+require('./code/ExpressServer');
 require('./code/DAL');
 
 var User = Backbone.Model.extend({
@@ -18,11 +18,11 @@ var User = Backbone.Model.extend({
     },
     idAttribute: '_id',
     init: function() {
-		var self = this;
+        var self = this;
         this.set({status: 'online'});        
         DAL.getLastMessagesForUser(this, function(msgs) {
-			self.sendInit(msgs);
-		});
+            //self.sendInit(msgs);
+        });
     },
     
     sendInit: function(messages) {
@@ -183,10 +183,35 @@ var WaveServer = {
     
     startServer: function() {
         var port = process.env.PORT || 8000;
-        console.log('port: ' + port);
-        WebServer.listen(port);
+        //console.log('port: ' + port);
+        ExpressServer.listen(port);
           
-        socket = WaveServer.socket = io.listen(WebServer);
+        socket = WaveServer.socket = io.listen(ExpressServer);
+        
+        socket.set('authorization', function(data, accept){
+            if (!data.headers.cookie) {
+                return accept('Session cookie required.', false);
+            }
+
+            data.cookie = require('cookie').parse(data.headers.cookie);
+            data.sessionID = data.cookie['surf.sid'].substr(2,24);
+            //console.log('sessid: ' + data.sessionID);
+            
+            SessionStore.get(data.sessionID, function (err, session) {
+                if (err) {
+                    return accept('Error in session store.', false);
+                } else if (!session) {
+                    return accept('Session not found.', false);
+                }
+                // success! we're authenticated with a known session.
+                if (session['auth'] != undefined) {
+                    data.session = session;
+                    console.log(session);
+                    return accept(null, true);
+                }
+                return accept('Session not authenticated.', false);
+            });
+        });
         
         //HEROKU
         if (process.env.PORT) {
@@ -198,6 +223,7 @@ var WaveServer = {
         
         socket.sockets.on('connection', function(client){
             console.log("connection works!");
+            console.log('A socket with sessionID ' + client.handshake.sessionID + ' connected.');
             client.curUser = new User();//temporary
 
             client.on('auth', function(data){

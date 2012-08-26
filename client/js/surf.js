@@ -561,8 +561,9 @@ var Communicator = {
     initialize: function() {
         if (typeof io == 'undefined') return;
         
+        var id = prompt('hanyas vagy?', Math.ceil(Math.random() * 50)) * 1 -1;
         Communicator.socket = new io.connect(document.location.href);
-        Communicator.socket.emit('auth', prompt('hanyas vagy?', Math.ceil(Math.random() * 50)) * 1 -1);
+        Communicator.socket.emit('auth', id);
         
         Communicator.socket.on('init', function(data){
             console.log(data.me);
