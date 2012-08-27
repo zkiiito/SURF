@@ -39,9 +39,9 @@ everyauth.facebook
 
 var usersByGoogleId = {};
 everyauth.google
-    .appId('3335216477.apps.googleusercontent.com')
-    .appSecret('PJMW_uP39nogdu0WpBuqMhtB')
-    .scope('https://www.googleapis.com/auth/userinfo.profile https://www.google.com/m8/feeds/')
+    .appId('290177368237.apps.googleusercontent.com')
+    .appSecret('x58fnA7rUYCqhsLeAXTakjdN')
+    .scope('https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email')
     .findOrCreateUser( function (sess, accessToken, extra, googleUser) {
         googleUser.refreshToken = extra.refresh_token;
         googleUser.expiresIn = extra.expires_in;
@@ -49,17 +49,6 @@ everyauth.google
     })
     .redirectPath('/');
   
-var usersByGoogleHybridId = {};
-everyauth.googlehybrid
-    .myHostname('http://surf:8000')
-    .consumerKey('YOUR CONSUMER KEY HERE')
-    .consumerSecret('YOUR CONSUMER SECRET HERE')
-    .scope(['http://docs.google.com/feeds/','http://spreadsheets.google.com/feeds/'])
-    .findOrCreateUser( function(session, userAttributes) {
-        return usersByGoogleHybridId[userAttributes.claimedIdentifier] || (usersByGoogleHybridId[userAttributes.claimedIdentifier] = addUser('googlehybrid', userAttributes));
-    })
-    .redirectPath('/');
-
 var app = express();
 
 app.configure(function(){
