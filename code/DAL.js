@@ -5,8 +5,9 @@ var _ = require('underscore'),
     async = require('async');
 
 var UserSchema = new Schema({
-    name: { type: String, trim: true},
-    avatar: { type: String, trim: true}
+    name: {type: String, trim: true},
+    avatar: {type: String, trim: true},
+    googleId: {type: String, trim: true}
 });
 var UserModel = mongoose.model('UserModel', UserSchema);
 
@@ -35,7 +36,7 @@ DAL = {
         UserModel.find({}, function(err, users){
             var usersTmp = [];
             _.each(users, function(user) {
-                usersTmp.push({name: user.name, avatar: user.avatar, _id: user._id});
+                usersTmp.push({name: user.name, avatar: user.avatar, _id: user._id, googleId: user.googleId});
             });
             DAL.server.users.reset(usersTmp);
             usersTmp = null;
@@ -59,7 +60,8 @@ DAL = {
     saveUser: function(user) {
         var m = new UserModel({
             name: user.get('name'),
-            avatar: user.get('avatar')
+            avatar: user.get('avatar'),
+            googleId: user.get('googleId')
         });
         m.save();
         user.set({_id: m._id});
@@ -67,12 +69,22 @@ DAL = {
     },
     
     saveWave: function(wave) {
-        var m = new WaveModel({
+        var data = {
             title: wave.get('title'),
             userIds: wave.get('userIds')
-        });
-        m.save();
-        wave.set({_id: m._id});
+        };
+        
+        if (wave.isNew()) {
+            //console.log('new');
+            var m = new WaveModel(data);
+            m.save();
+            wave.set({_id: m._id});
+        }
+        else
+        {
+            //console.log('update:' + wave.id);
+            WaveModel.findByIdAndUpdate(wave.id, data, function(err, doc){});
+        }
         return wave;
     },
     
@@ -160,10 +172,12 @@ DAL = {
     },
     
     addUnreadMessage: function(user, message) {
-        var key = 'unread-' + user.id + '-' + message.get('waveId');
-        console.log(key + ' added ' + message.id);
-        redis.sadd(key, message.id);
-        redis.sadd('unread-sets', key);//nyomon akarjuk kovetni, h mik vannak
+        if (message.get('userId') != user.id) {
+            var key = 'unread-' + user.id + '-' + message.get('waveId');
+            console.log(key + ' added ' + message.id);
+            redis.sadd(key, message.id);
+            redis.sadd('unread-sets', key);//nyomon akarjuk kovetni, h mik vannak
+        }
     }
 };
 

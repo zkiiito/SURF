@@ -561,9 +561,9 @@ var Communicator = {
     initialize: function() {
         if (typeof io == 'undefined') return;
         
-        var id = prompt('hanyas vagy?', Math.ceil(Math.random() * 50)) * 1 -1;
+        //var id = prompt('hanyas vagy?', Math.ceil(Math.random() * 50)) * 1 -1;
         Communicator.socket = new io.connect(document.location.href);
-        Communicator.socket.emit('auth', id);
+        //Communicator.socket.emit('auth', id);
         
         Communicator.socket.on('init', function(data){
             console.log(data.me);
@@ -574,7 +574,7 @@ var Communicator = {
             app.model.messages.reset(data.messages);
             app.model.currentUser.set(app.model.users.get(app.currentUser).toJSON());
 
-            document.location = $('a.waveitem:last').attr('href');
+            //document.location = $('a.waveitem:last').attr('href');
         });
         
         Communicator.socket.on('message', Communicator.onMessage);

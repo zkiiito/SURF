@@ -1,9 +1,8 @@
 var express = require('express'),
     http = require('http'),
-    MemoryStore = express.session.MemoryStore,
     everyauth = require('everyauth');
     
-SessionStore = new MemoryStore();
+SessionStore = new express.session.MemoryStore();
 
 //everyauth.debug = true;
 
@@ -28,15 +27,6 @@ everyauth.everymodule
         callback(null, usersById[id]);
     });
 
-var usersByFbId = {};
-everyauth.facebook
-    .appId('117631014938869')
-    .appSecret('0fcdf78ad3a76a00fc0ae9481311d087')
-    .findOrCreateUser( function (session, accessToken, accessTokenExtra, fbUserMetadata) {
-        return usersByFbId[fbUserMetadata.id] || (usersByFbId[fbUserMetadata.id] = addUser('facebook', fbUserMetadata));
-    })
-    .redirectPath('/');
-
 var usersByGoogleId = {};
 everyauth.google
     .appId('290177368237.apps.googleusercontent.com')
@@ -50,6 +40,7 @@ everyauth.google
     .redirectPath('/');
   
 var app = express();
+var clientDir = __dirname.replace('code', 'client');
 
 app.configure(function(){
     app.use(express.methodOverride());
@@ -64,17 +55,30 @@ app.configure(function(){
         key: 'surf.sid',
         store: SessionStore
     }));
-    app.use(express.static(__dirname + '/../client'));
+    app.use('/css', express.static(__dirname + '/../client/css'));
+    app.use('/js', express.static(__dirname + '/../client/js'));
+    app.use('/images', express.static(__dirname + '/../client/images'));
+    app.use('/fonts', express.static(__dirname + '/../client/fonts'));
+
     app.use('/node', express.static(__dirname + '/../node_modules'));
   
     app.use(everyauth.middleware(app));
   
-    app.set('view engine', 'jade');
-    app.set('views', __dirname + '/../client/loginview');
+//    app.set('view engine', 'jade');
+//    app.set('views', __dirname + '/../client/loginview');
 });
 
+/*
 app.get('/lgn', function (req, res) {
     res.render('home');
+});
+*/
+
+app.get('/', function(req, res) {
+    if (!req.session['auth']) {
+        return res.redirect('/auth/google');
+    }
+    res.sendfile(clientDir + '/index.html');
 });
 
 ExpressServer = http.createServer(app);
