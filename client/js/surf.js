@@ -574,7 +574,8 @@ var Communicator = {
             app.model.messages.reset(data.messages);
             app.model.currentUser.set(app.model.users.get(app.currentUser).toJSON());
 
-            //document.location = $('a.waveitem:last').attr('href');
+            //if ($('a.waveitem').size() > 0)
+                document.location = $('a.waveitem:last').attr('href');
         });
         
         Communicator.socket.on('message', Communicator.onMessage);

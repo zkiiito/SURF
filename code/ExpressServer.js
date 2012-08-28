@@ -27,10 +27,13 @@ everyauth.everymodule
         callback(null, usersById[id]);
     });
 
+var appId = process.env.PORT ? '290177368237-pne1smhvlb3g2r5c7g25d34hk3pfi96f.apps.googleusercontent.com' : '290177368237.apps.googleusercontent.com';
+var appSecret = process.env.PORT ? 'v28w9nWORgGioUdDO5JSAdBv' : 'x58fnA7rUYCqhsLeAXTakjdN';
+
 var usersByGoogleId = {};
 everyauth.google
-    .appId('290177368237.apps.googleusercontent.com')
-    .appSecret('x58fnA7rUYCqhsLeAXTakjdN')
+    .appId(appId)
+    .appSecret(appSecret)
     .scope('https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email')
     .findOrCreateUser( function (sess, accessToken, extra, googleUser) {
         googleUser.refreshToken = extra.refresh_token;

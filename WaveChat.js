@@ -154,6 +154,7 @@ var Wave = Backbone.Model.extend({
             var userIds = this.get('userIds');
             userIds.push(user.id);
             this.set('userIds', userIds);
+            user.waves.add(this);
 
             this.notifyUsersOfNewUser(user);
             this.notifyUsers();
