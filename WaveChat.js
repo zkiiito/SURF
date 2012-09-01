@@ -199,8 +199,8 @@ var Wave = Backbone.Model.extend({
     },
     
     sendOldMessagesToUser: function(user) {
-        DAL.getLastMessagesForUserFromWave(user, this, [], function(err, msgs){
-            
+        DAL.getLastMessagesForUserFromWave(user, this, [], function(err, msgs) {
+            user.send('message', {messages: msgs});
         });
     },
     
@@ -372,7 +372,12 @@ var WaveServer = {
                 if (data.userIds != userIds) {
                     var newIds = _.difference(data.userIds, userIds);
                     notified = wave.addUsers(newIds, true);
-                    //TODO: newIds-nek kikuldeni a wave tartalmat is
+                    
+                    //kikuldeni a wave tartalmat is, amibe belepett
+                    _.each(newIds, function(userId){
+                        var user = WaveServer.users.get(userId);
+                        wave.sendOldMessagesToUser(user);
+                    });
                 }
                 
                 if (!notified)

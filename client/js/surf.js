@@ -682,6 +682,11 @@ var Communicator = {
     },
     
     onMessage: function(data) {
+        if (data.messages) {
+            _.each(data.messages, function(msg) {
+                Communicator.onMessage(msg);
+            });
+        }
         var message = new Message(data);
         app.model.waves.get(data.waveId).addMessage(message);
     },
