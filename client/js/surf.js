@@ -51,9 +51,10 @@ var Message = Backbone.Model.extend({
     initialize: function() {
          this.messages = new MessageCollection(); //nem itt kene
          this.user = app.model.users.get(this.get('userId'));
+         this.formatMessage();
          if (!this.isNew()) {
             this.set('unread', this.get('unread') && app.currentUser != this.get('userId'));
-         }         
+         }
     },
     addReply: function(message) {
         if (null == this.messages) {
@@ -67,6 +68,19 @@ var Message = Backbone.Model.extend({
             this.set('unread', false);
             Communicator.readMessage(this);
         }
+    },
+    
+    formatMessage: function() {
+        var msg = this.get('message');
+        msg = strip_tags(msg);
+        
+        //TODO: improve
+        var urlRegex = /((https?:\/\/|www\.)[^\s"]+)/g;
+        msg = msg.replace(urlRegex, '<a href="$1" target="_blank">$1</a>');
+        
+        msg = nl2br(msg, true);
+        
+        this.set('messageFormatted', msg);
     }
     
 });

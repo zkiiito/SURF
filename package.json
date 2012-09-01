@@ -20,8 +20,7 @@
     "async": "0.1.x",
     "express": "3.x",
     "cookie": "0.0.x",
-    "everyauth": "git://github.com/bnoguchi/everyauth.git#express3",
-    "jade": ">=0.12.1"
+    "everyauth": "git://github.com/bnoguchi/everyauth.git#express3"
   },
   "engines": {
     "node": "0.8.x",

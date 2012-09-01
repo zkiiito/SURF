@@ -145,10 +145,10 @@ DAL = {
             }
 	});
     },
-    */
+    */   
     getLastMessagesForUser: function(user, callback) {
         var startTime = new Date().getTime();
-        WaveModel.find({}, function(err, waves) {
+        WaveModel.find().where('_id').in(user.waves.pluck('_id')).exec(function(err, waves) {
             //console.log(waves.length + " waves found");
             async.reduce(waves, [], function(memo, wave, callback_async_reduce){//ez nem parhuzamosan fut
                 DAL.getLastMessagesForUserFromWave(user, wave, memo, callback_async_reduce);
