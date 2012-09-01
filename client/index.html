@@ -27,8 +27,7 @@
             <p class="heads">
             </p>
             <div class="buttons">
-                <a class="button editwave" href="#">Cím szerkesztése</a>
-                <a class="button editwave" href="#">Résztvevők</a>
+                <a class="button editwave" href="#">Szerkesztés</a>
             </div>
         </div>
         <div class="waves-container">
@@ -83,8 +82,8 @@
     </div>
 </script>
 
-<script id="createwave_view" type="text/html">
-<div id="newwave" class="overlay">
+<script id="editwave_view" type="text/html">
+<div id="editwave" class="overlay">
   <div class="overlay-title">
     <a class="close button" href="">Bezárás</a>
     <h2>Új beszélgetés</h2>
@@ -93,19 +92,19 @@
     <h2>Új beszélgetés</h2>
     <form method="post">
       <div>
-        <label>Beszélgetés címe</label>
+        <label for="editwave-title">Beszélgetés címe</label>
         <div class="right">
-          <input class="normal" name="title" type="text" />
+          <input id="editwave-title" class="normal" name="title" type="text" />
         </div>
       </div>
       <div>
-        <label>Résztvevők</label>
+        <label for="editwave-users">Résztvevők</label>
         <div class="right">
-          <input id="newwave-users" name="userids" class="normal" type="text" />
+          <input id="editwave-users" name="userids" class="normal" type="text" />
         </div>
       </div>
       <div class="right">
-        <button type="submit" class="button">Létrehozás</button>
+        <button id="editwave-submit" type="submit" class="button">Létrehozás</button>
       </div>
     </form>
   </div>

@@ -288,7 +288,7 @@ var WaveListView = Backbone.View.extend({
 
 var WaveView = Backbone.View.extend({
     initialize: function() {
-        _.bindAll(this, 'setCurrent', 'addMessage', 'addUser', 'removeUser', 'updateTitle');
+        _.bindAll(this, 'setCurrent', 'addMessage', 'addUser', 'removeUser', 'updateTitle', 'showUpdateWave');
         
         this.userViews = [];
         
@@ -298,6 +298,9 @@ var WaveView = Backbone.View.extend({
         this.model.messages.bind('add', this.addMessage);
         this.model.users.bind('add', this.addUser);
         this.model.users.bind('remove', this.removeUser);
+    },
+    events: {
+        'click a.editwave' : 'showUpdateWave'
     },
     
     render: function() {
@@ -361,6 +364,10 @@ var WaveView = Backbone.View.extend({
     
     updateTitle: function() {
         this.$el.find('h2').text(this.model.get('title'));
+    },
+    
+    showUpdateWave: function() {
+        return app.view.showUpdateWave();
     }
 });
 
@@ -380,20 +387,24 @@ var SurfAppModel = Backbone.Model.extend({
     }
 });
 
-var CreateWaveView = Backbone.View.extend({
+var EditWaveView = Backbone.View.extend({
     initialize: function() {
-        _.bindAll(this, 'show', 'hide');
+        _.bindAll(this, 'show', 'hide', 'setWave');
     },
     events: {
         'click a.close' : 'hide',
-        'submit form' : 'createWave'
+        'submit form' : 'editWave'
     },
     
     render: function() {
-        var template = ich.createwave_view();
+        var template = ich.editwave_view();
         this.setElement(template);
         this.$el.hide();
-        
+        return this;
+    },
+    
+    initUserSuggest: function() {
+        if (this.inited) return;
         var userArray = [];
         
         app.model.users.each(function(user){
@@ -406,18 +417,45 @@ var CreateWaveView = Backbone.View.extend({
             userArray.push(obj);
         }, this);
         
-        this.$el.find('#newwave-users').tokenInput(userArray, {
-          theme: "facebook",
-          preventDuplicates: true,
+        this.$el.find('#editwave-users').tokenInput(userArray, {
+            theme: "facebook",
+            preventDuplicates: true,
             hintText: "Írj be egy felhasználónevet.",
             noResultsText: "Nincs ilyen felhasználónk.",
             searchingText: "Keresés..."
-        });
+        });  
+        this.inited = true;
+    },
     
-        return this;
+    updateUserSuggest: function() {
+        this.initUserSuggest();
+        var suggest = this.$el.find('#editwave-users');
+        suggest.tokenInput('clear');
+        
+        if (this.wave) {
+            this.wave.users.each(function(user){
+                suggest.tokenInput('add', {id: user.id, name: user.get('name'), readonly: true});
+            });
+        } else {
+            var currentUser = app.model.users.get(app.currentUser);
+            suggest.tokenInput('add', {id: currentUser.id, name: currentUser.get('name'), readonly: true});
+        }
+        
     },
     
     show: function() {
+        if (this.wave) {
+            this.$el.find('input[name=title]').val(this.wave.get('title'));
+            this.$el.find('h2').text('Beszélgetés szerkesztése');
+            this.$el.find('#editwave-submit').text('Mentés');
+        } else {
+            this.$el.find('input[name=title]').val('');
+            this.$el.find('h2').text('Új beszélgetés');
+            this.$el.find('#editwave-submit').text('Létrehozás');
+        }
+        
+        this.updateUserSuggest();
+
         //this.$el.find('form').reset();???
         this.$el.show();
         $('#darken').show();
@@ -430,20 +468,29 @@ var CreateWaveView = Backbone.View.extend({
         return false;
     },
     
-    createWave: function() {
-        var title = this.$el.find('input[name=title]').val();
-        var users = this.$el.find('#newwave-users').tokenInput('get');
+    setWave: function(waveId) {
+        this.wave = app.model.waves.get(waveId);
+    },
+    
+    editWave: function() {
+        var title = this.$el.find('#editwave-title').val();
+        var users = this.$el.find('#editwave-users').tokenInput('get');
         var userIds = _.pluck(users, 'id');
-        userIds.push(app.currentUser);
+        //userIds.push(app.currentUser);
         
-        Communicator.createWave(title, userIds);
+        if (this.wave) {
+            Communicator.updateWave(this.wave.id, title, userIds);
+        } else {
+            Communicator.createWave(title, userIds);
+        }
+        
         return this.hide();
     }
 });
 
 var SurfAppView = Backbone.View.extend({
     initialize: function() {
-        _.bindAll(this, 'addMessage', 'showCreateWave', 'hideOverlays');
+        _.bindAll(this, 'addMessage', 'showCreateWave', 'showUpdateWave', 'hideOverlays');
         this.model.waves.bind('add', this.addWave);
         this.model.waves.bind('reset', this.resetWaves, this);
         this.model.messages.bind('reset', this.resetMessages, this);
@@ -457,7 +504,9 @@ var SurfAppView = Backbone.View.extend({
     },        
     
     render: function() {
-        this.setElement($('body'));        
+        this.setElement($('body'));    
+        this.editWaveView = new EditWaveView();
+        this.$el.append(this.editWaveView.render().el);
         return this;
     },
     
@@ -489,12 +538,14 @@ var SurfAppView = Backbone.View.extend({
     },
     
     showCreateWave: function() {
-        if (!this.createView) {
-            this.createWaveView = new CreateWaveView();
-            this.$el.append(this.createWaveView.render().el);
-        }
-        
-        this.createWaveView.show();
+        this.editWaveView.setWave(null);
+        this.editWaveView.show();
+        return false;
+    },
+    
+    showUpdateWave: function() {
+        this.editWaveView.setWave(app.currentWave);
+        this.editWaveView.show();
         return false;
     },
     
@@ -593,12 +644,12 @@ var Communicator = {
     },
     
     sendMessage: function(message, waveId, parentId) {
-        var msg = new Message({
+        var msg = {
             userId: app.currentUser, 
             waveId: waveId, 
             message: message, 
             parentId: parentId
-        });
+        };
         Communicator.socket.emit('message', msg);
     },
     
@@ -607,12 +658,21 @@ var Communicator = {
     },
     
     createWave: function(title, userIds) {
-        var wave = new Wave({
+        var wave = {
             title: title,
             userIds: userIds
-        });
-        
+        };
         Communicator.socket.emit('createWave', wave);
+    },
+    
+    updateWave: function(waveId, title, userIds) {
+        var wave = {
+            id : waveId,
+            title: title,
+            userIds: userIds
+        };
+        
+        Communicator.socket.emit('updateWave', wave);
     },
     
     onJoin: function(data) {

@@ -16,7 +16,7 @@ var MessageSchema = new Schema({
     waveId: Schema.ObjectId,
     parentId: Schema.ObjectId,
     message: {type: String, trim: true},
-    created_at: { type: Date/*, 'default': Date.now */}
+    created_at: {type: Date }
 });
 var MessageModel = mongoose.model('MessageModel', MessageSchema);
 
@@ -30,10 +30,10 @@ DAL = {
     server: null,
     init: function(server) {
         DAL.server = server;
-        mongoose.connect(process.env.MONGOHQ_URL || 'mongodb://localhost/my_databas2e');
+        mongoose.connect(process.env.MONGOHQ_URL || 'mongodb://localhost/wave0');
         redis = redis.connect(process.env.REDISTOGO_URL || 'redis://localhost:6379');
         
-        UserModel.find({}, function(err, users){
+        UserModel.find().exec(function(err, users){
             var usersTmp = [];
             _.each(users, function(user) {
                 usersTmp.push({name: user.name, avatar: user.avatar, _id: user._id, googleId: user.googleId});
@@ -41,7 +41,7 @@ DAL = {
             DAL.server.users.reset(usersTmp);
             usersTmp = null;
 
-            WaveModel.find({}, function(err, waves){
+            WaveModel.find().sort('_id').exec(function(err, waves){
                 var wavesTmp = [];
                 _.each(waves, function(wave){
                     wavesTmp.push({title: wave.title, userIds: wave.userIds, _id: wave._id});
@@ -71,18 +71,16 @@ DAL = {
     saveWave: function(wave) {
         var data = {
             title: wave.get('title'),
-            userIds: wave.get('userIds')
+            userIds: _.uniq(wave.get('userIds'))
         };
         
         if (wave.isNew()) {
-            //console.log('new');
             var m = new WaveModel(data);
             m.save();
             wave.set({_id: m._id});
         }
         else
         {
-            //console.log('update:' + wave.id);
             WaveModel.findByIdAndUpdate(wave.id, data, function(err, doc){});
         }
         return wave;
@@ -125,7 +123,15 @@ DAL = {
                             var key = 'unread-' + user.id + '-' + msg.waveId;
                             redis.sismember([key, msg.id], function(err, result) {
                                 console.log(key + ' ' + msg.id + ' ' + result);
-                                msg = {_id: msg.id, userId: msg.userId, waveId: msg.waveId, parentId: msg.parentId, message: msg.message, unread: result, created_at: msg.created_at};
+                                msg = {
+                                    _id: msg.id, 
+                                    userId: msg.userId, 
+                                    waveId: msg.waveId, 
+                                    parentId: msg.parentId, 
+                                    message: msg.message, 
+                                    unread: result, 
+                                    created_at: msg.created_at
+                                };
                                 wave_messages.push(msg);
                                 isread_calls--;
                                 if (!calls && !isread_calls) {
@@ -141,6 +147,7 @@ DAL = {
     },
     
     getLastMessagesForUser: function(user, callback) {
+        var startTime = new Date().getTime();
         WaveModel.find({}, function(err, waves) {
             //console.log(waves.length + " waves found");
             async.reduce(waves, [], function(memo, wave, callback){//ez nem parhuzamosan fut
@@ -150,7 +157,15 @@ DAL = {
                         var key = 'unread-' + user.id + '-' + msg.waveId;
                         redis.sismember([key, msg.id], function(err, result) {
                             //console.log(key + ' ' + msg.id + ' ' + result);
-                            msg = {_id: msg.id, userId: msg.userId, waveId: msg.waveId, parentId: msg.parentId, message: msg.message, unread: result, created_at: msg.created_at};
+                            msg = {
+                                _id: msg.id, 
+                                userId: msg.userId, 
+                                waveId: msg.waveId, 
+                                parentId: msg.parentId, 
+                                message: msg.message, 
+                                unread: result, 
+                                created_at: msg.created_at
+                            };
                             callback(null, msg);
                         });
                     }, function(err, results) {
@@ -159,10 +174,12 @@ DAL = {
                     });
                 });
             }, function(err, results) {
+                var endTime = new Date().getTime();
+                console.log('msg query in ' + (endTime - startTime));
                 callback(results);
             });
-	});        
-    },    
+	});
+    },
     
     readMessage: function(user, message) {
         var key = 'unread-' + user.id + '-' + message.waveId;

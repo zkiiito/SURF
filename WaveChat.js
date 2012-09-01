@@ -13,8 +13,6 @@ var User = Backbone.Model.extend({
     },
     initialize: function() {
         this.waves = new WaveCollection();
-        
-        //this.set({id: this.get('_id')});
     },
     idAttribute: '_id',
     init: function() {
@@ -128,13 +126,7 @@ var Wave = Backbone.Model.extend({
         this.users = new UserCollection();
         if (this.get('userIds')) {
             var uids = this.get('userIds');
-            _.each(uids, function(item){
-                var user = WaveServer.users.get(item);
-                if (user) {
-                    this.addUser(user, false);
-                    user.waves.add(this);
-                }
-            }, this);
+            this.addUsers(uids, false);
         }
     },
     
@@ -145,26 +137,52 @@ var Wave = Backbone.Model.extend({
         this.users.each(function(user){
             user.send('message', message);
             DAL.addUnreadMessage(user, message);
-        }, message);
+        }, message);  
+    },
+    
+    addUsers: function(userIds, notify) {
+        var newUsers = [];
+        _.each(userIds, function(item){
+            var user = WaveServer.users.get(item);
+            if (user) {
+                newUsers.push(user);
+                this.addUser(user, false);//itt nem notifyolunk senkit egyenkent, max globalisan
+            }
+        }, this);
+        
+        if (notify && newUsers.length > 0) {
+            _.each(newUsers, function(user){
+                this.notifyUsersOfNewUser(user);
+            }, this);
+            this.notifyUsers();
+            return true;
+        }
+        return false;
     },
     
     addUser: function(user, notify) {
         this.users.add(user);
+        user.waves.add(this);
+        
+        //initkor pluszkoltseg, maskor nem szamit
+        var userIds = this.get('userIds');
+        userIds.push(user.id);
+        this.set('userIds', _.uniq(userIds));
+        
         if (notify) {
-            var userIds = this.get('userIds');
-            userIds.push(user.id);
-            this.set('userIds', userIds);
-            user.waves.add(this);
-
             this.notifyUsersOfNewUser(user);
             this.notifyUsers();
+            return true;
         }
+        return false;
     },
     
+    //TODO: atszervezni multiuserre vagy nem - tobb msg
     notifyUsersOfNewUser: function(newuser) {
         this.users.each(function(user){
-            //TODO: csak annak, aki nem ismeri
-            if (user != newuser) {
+            //csak ha be van lepve, es nem ismerte eddig
+            //tehat most lett 1 waven vele
+            if (user.socket && user != newuser && _.intersection(newuser.waves, user.waves).length < 2) {
                 user.send('updateUser', {
                     user: newuser.toJSON()
                 });
@@ -199,7 +217,7 @@ var WaveServer = {
     init: function() {
         this.users = new UserCollection();
         this.waves = new WaveCollection();
-        DAL.init(WaveServer);
+        DAL.init(WaveServer);        
     },
     
     startServer: function() {
@@ -280,7 +298,7 @@ var WaveServer = {
         user.save();
         WaveServer.users.add(user);
 
-        var wave0 = WaveServer.waves.find(function(w){return w.get('userIds').length > 20});
+        var wave0 = WaveServer.waves.at(0);
         console.log('new user added to: ' + wave0.get('name'));
         wave0.addUser(user, true);
         wave0.save();
@@ -288,24 +306,24 @@ var WaveServer = {
         return user;
     },
 	
-    initData: function() {
+    initData: function(app) {
         console.log('init data');
         var users = [];
         var uids = [];
 
-        for (var i = 1; i <= 50; i++) {
+        for (var i = 1; i <= 5; i++) {
             var u = new User({name: 'teszt' + i, avatar: 'images/head' + (i%6 + 1) + '.png'});
             u.save();
             users.push(u);
-            uids.push(u.id.toString());
-
+            uids.push(u.get('_id'));//itt valami bug van.
+            //uids.push(u.toString());//itt valami bug van.
         }
-
-        DAL.server.users.reset(users);
+        console.log('reset hivodik');
+        WaveServer.users.reset(users);
 
         var wave = new Wave({title: 'Csillag-delta tejbevávé', userIds: uids});
         wave.save();
-        DAL.server.waves.reset([wave]);
+        WaveServer.waves.reset([wave]);
     },	
     
     authClient: function(client) {
@@ -333,9 +351,30 @@ var WaveServer = {
             console.log('createWave ' + data.title);
 
             var wave = new Wave(data);
+            wave.addUser(client.curUser, false);
             wave.save();
             WaveServer.waves.add(wave);
             wave.notifyUsers();
+        });
+        
+        client.on('updateWave', function(data){
+            console.log('updateWave ' + data.title);
+            var wave = WaveServer.waves.get(data.id);
+            if (wave) {
+                wave.set('title', data.title);
+                var notified = false;
+                
+                var userIds = wave.get('userIds');
+                if (data.userIds != userIds) {
+                    var newIds = _.difference(data.userIds, userIds);
+                    notified = wave.addUsers(newIds, true);
+                }
+                
+                if (!notified)
+                    wave.notifyUsers();
+
+                wave.save();
+            }
         });
     }
 }
