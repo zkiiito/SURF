@@ -210,7 +210,7 @@ DAL = {
     },
     
     getLastMessagesForUserFromWave: function(user, wave, memo, callback) {
-        MessageModel.find({waveId: wave.id}, function(err, messages) {
+        MessageModel.find({waveId: wave.id}).sort('_id').exec(function(err, messages) {
             //console.log(messages.length + ' msgs found');
             async.map(messages, function(msg, callback_async_map) {
                 var key = 'unread-' + user.id + '-' + msg.waveId;
