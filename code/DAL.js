@@ -16,7 +16,7 @@ var MessageSchema = new Schema({
     waveId: Schema.ObjectId,
     parentId: Schema.ObjectId,
     message: {type: String, trim: true},
-    created_at: {type: Date }
+    created_at: {type: Date}
 });
 var MessageModel = mongoose.model('MessageModel', MessageSchema);
 
@@ -106,7 +106,7 @@ DAL = {
     getLastMessagesForUserInWave: function(userId, waveId) {
         
     },
-    
+    /*
     getLastMessagesForUserOld: function(user, callback) {
         var wave_messages = [];
 	var calls = 0;
@@ -145,40 +145,44 @@ DAL = {
             }
 	});
     },
-    
+    */
     getLastMessagesForUser: function(user, callback) {
         var startTime = new Date().getTime();
         WaveModel.find({}, function(err, waves) {
             //console.log(waves.length + " waves found");
-            async.reduce(waves, [], function(memo, wave, callback){//ez nem parhuzamosan fut
-                MessageModel.find({waveId: wave.id}, function(err, messages) {
-                    //console.log(messages.length + ' msgs found');
-                    async.map(messages, function(msg, callback) {
-                        var key = 'unread-' + user.id + '-' + msg.waveId;
-                        redis.sismember([key, msg.id], function(err, result) {
-                            //console.log(key + ' ' + msg.id + ' ' + result);
-                            msg = {
-                                _id: msg.id, 
-                                userId: msg.userId, 
-                                waveId: msg.waveId, 
-                                parentId: msg.parentId, 
-                                message: msg.message, 
-                                unread: result, 
-                                created_at: msg.created_at
-                            };
-                            callback(null, msg);
-                        });
-                    }, function(err, results) {
-                        memo = _.union(memo, results);
-                        callback(null, memo);
-                    });
-                });
+            async.reduce(waves, [], function(memo, wave, callback_async_reduce){//ez nem parhuzamosan fut
+                DAL.getLastMessagesForUserFromWave(user, wave, memo, callback_async_reduce);
             }, function(err, results) {
                 var endTime = new Date().getTime();
                 console.log('msg query in ' + (endTime - startTime));
                 callback(results);
             });
 	});
+    },
+    
+    getLastMessagesForUserFromWave: function(user, wave, memo, callback) {
+        MessageModel.find({waveId: wave.id}, function(err, messages) {
+            //console.log(messages.length + ' msgs found');
+            async.map(messages, function(msg, callback_async_map) {
+                var key = 'unread-' + user.id + '-' + msg.waveId;
+                redis.sismember([key, msg.id], function(err, result) {
+                    //console.log(key + ' ' + msg.id + ' ' + result);
+                    msg = {
+                        _id: msg.id, 
+                        userId: msg.userId, 
+                        waveId: msg.waveId, 
+                        parentId: msg.parentId, 
+                        message: msg.message, 
+                        unread: result, 
+                        created_at: msg.created_at
+                    };
+                    callback_async_map(null, msg);
+                });
+            }, function(err, results) {
+                memo = _.union(memo, results);
+                callback(null, memo);
+            });
+        });
     },
     
     readMessage: function(user, message) {

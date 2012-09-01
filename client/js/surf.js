@@ -271,7 +271,7 @@ var WaveListView = Backbone.View.extend({
     },
     
     updateMessages: function(message) {
-        if (message.get('userId') != app.currentUser) {
+        if (message.get('userId') != app.currentUser && message.get('unread')) {
             this.$el.addClass('updated');
         }
     },

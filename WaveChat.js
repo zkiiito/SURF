@@ -166,7 +166,7 @@ var Wave = Backbone.Model.extend({
         
         //initkor pluszkoltseg, maskor nem szamit
         var userIds = this.get('userIds');
-        userIds.push(user.id);
+        userIds.push(user.id.toString());
         this.set('userIds', _.uniq(userIds));
         
         if (notify) {
@@ -195,7 +195,13 @@ var Wave = Backbone.Model.extend({
             user.send('updateWave', {
                 wave: this
             });
-        }, this);        
+        }, this);
+    },
+    
+    sendOldMessagesToUser: function(user) {
+        DAL.getLastMessagesForUserFromWave(user, this, [], function(err, msgs){
+            
+        });
     },
     
     save: function() {
@@ -299,7 +305,7 @@ var WaveServer = {
         WaveServer.users.add(user);
 
         var wave0 = WaveServer.waves.at(0);
-        console.log('new user added to: ' + wave0.get('name'));
+        console.log('new user added to: ' + wave0.get('title'));
         wave0.addUser(user, true);
         wave0.save();
         
@@ -315,10 +321,8 @@ var WaveServer = {
             var u = new User({name: 'teszt' + i, avatar: 'images/head' + (i%6 + 1) + '.png'});
             u.save();
             users.push(u);
-            uids.push(u.get('_id'));//itt valami bug van.
-            //uids.push(u.toString());//itt valami bug van.
+            uids.push(u.id.toString());//userIdsbe mindig toStringkent kell!
         }
-        console.log('reset hivodik');
         WaveServer.users.reset(users);
 
         var wave = new Wave({title: 'Csillag-delta tejbevávé', userIds: uids});
@@ -368,6 +372,7 @@ var WaveServer = {
                 if (data.userIds != userIds) {
                     var newIds = _.difference(data.userIds, userIds);
                     notified = wave.addUsers(newIds, true);
+                    //TODO: newIds-nek kikuldeni a wave tartalmat is
                 }
                 
                 if (!notified)
