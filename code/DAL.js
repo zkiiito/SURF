@@ -15,6 +15,7 @@ var MessageSchema = new Schema({
     userId: Schema.ObjectId,
     waveId: Schema.ObjectId,
     parentId: Schema.ObjectId,
+    rootId: Schema.ObjectId,
     message: {type: String, trim: true},
     created_at: {type: Date}
 });
@@ -55,6 +56,18 @@ DAL = {
                 DAL.server.startServer();
             });
         });
+        
+        //temporary fix
+        MessageModel.find({rootId: null}).exec(function(err, messages){
+            _.each(messages, function(message){
+                if (null == message.rootId) {
+                    if (null == message.parentId)
+                        MessageModel.findByIdAndUpdate(message._id, {rootId: message._id}).exec();
+                    else
+                        DAL.calcRootId(message.parentId, [message]);
+                }
+            });
+        });        
     },
         
     saveUser: function(user) {
@@ -94,13 +107,49 @@ DAL = {
             message: message.get('message'),
             created_at: message.get('created_at')
         });
-        m.save();
+        
+        if (null == m.parentId) {
+            m.rootId = m._id;
+            m.save();
+        } else {
+            m.save(function(err, msg){
+                DAL.calcRootId(m.parentId, [m]);
+            });
+        }
+        
         message.set({_id: m._id});
         return message;
     },
     
-    getMessage: function(id) {
-        //root id meghatarozashoz
+    //rekurzivan, elvileg csak az elejen vannak olyan esetek, hogy nincs root id-je
+    calcRootId: function(messageId, messages) {
+        MessageModel.findById(messageId, function(err, message){
+            if (err) {
+                console.log('error van');
+                return;
+            }
+            //ha gyokerelem, vagy tud arrol valamit
+            if (null != message.rootId || null == message.parentId) {
+                var rootId = null;
+                
+                if (null != message.rootId) {
+                    rootId = message.rootId;
+                }
+                else if (null == message.parentId) {
+                    rootId = message._id;
+                    messages.push(message);
+                }
+                
+                _.each(messages, function(msg){
+                    MessageModel.findByIdAndUpdate(msg._id, {rootId: rootId}).exec();
+                });
+            }
+            else
+            {
+                messages.push(message);
+                DAL.calcRootId(message.parentId, messages);
+            }
+        });
     },
     
     getLastMessagesForUserInWave: function(userId, waveId) {
