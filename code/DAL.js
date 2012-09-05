@@ -140,7 +140,7 @@ DAL = {
                     messages.push(message);
                 }
                 
-                _.each(messages, function(msg){
+                async.forEach(messages, function(msg){
                     MessageModel.findByIdAndUpdate(msg._id, {rootId: rootId}).exec();
                 });
             }
