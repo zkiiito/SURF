@@ -240,16 +240,28 @@ a:hover {
 }
 
 table.unread {
-  background: #f8f7e2;
+  background: #f6f5d8;
+}
+
+table.selected {
+  background: #d8ebb6;
+}
+
+.message table.selected:hover {
+  background: #d8ebb6;
 }
 
 .message table.unread:hover {
-  background: #f1efcf;
+  background: #f3f1ca;
 }
 
 .message table {
   border-collapse: collapse;
   vertical-align: top;
+}
+
+.message table:hover {
+  background: #f2f7e8;
 }
 
 .message .message {
