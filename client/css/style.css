@@ -246,6 +246,7 @@ a:hover {
 .message table:focus,
 .message table:focus:hover {
   background: #d8ebb6;
+  outline: none;
 }
 
 .message table.unread {

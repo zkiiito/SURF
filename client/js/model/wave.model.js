@@ -71,7 +71,12 @@ var Wave = Backbone.Model.extend({
     getNextUnreadMessage: function() {
         var minId = this.currentMessageId ? this.messages.get(this.currentMessageId).getSortableId() : 0;
         var nextUnreadMessage = this.messages.find(function(msg){return msg.get('unread') && msg.getSortableId() > minId });
-        
+
+        //ha nincs utana, megyunk visszafele
+        if (!nextUnreadMessage) {
+            nextUnreadMessage = this.messages.find(function(msg){return msg.get('unread') && msg.getSortableId() < minId});
+        }
+
         if (!nextUnreadMessage) {
             this.trigger('noMoreUnread');
         }

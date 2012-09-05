@@ -79,6 +79,7 @@ var Communicator = {
             });
         }
         var message = new Message(data);
+        app.model.messages.add(message);
         app.model.waves.get(data.waveId).addMessage(message);
     },
     
