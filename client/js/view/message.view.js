@@ -1,9 +1,10 @@
 var MessageView = Backbone.View.extend({
     initialize: function() {
         this.hasReplyForm = false;
-        _.bindAll(this, 'addMessage', 'readMessage', 'replyMessage', 'onReadMessage');
+        _.bindAll(this, 'addMessage', 'readMessage', 'replyMessage', 'onReadMessage', 'scrollTo');
         this.model.messages.bind('add', this.addMessage);//ezt nem itt kene, hanem amikor letrejon ott a messages
         this.model.bind('change:unread', this.onReadMessage);
+        this.model.bind('change:scrolled', this.scrollTo)
         
         var date = new Date(this.model.get('created_at'));        
         this.model.set('dateFormatted', date.format('mmm d HH:MM'));
@@ -44,11 +45,26 @@ var MessageView = Backbone.View.extend({
     readMessage: function(e) {
         e.stopPropagation();
         this.model.read();
+        this.model.setCurrent();
     },
     
     onReadMessage: function() {
         if (!this.model.get('unread'))
             this.$el.children('table').removeClass('unread');
+    },
+    
+    scrollTo: function() {
+        //console.log('scroll');
+        var scrollTop = this.$el.position().top;
+        
+        this.$el.triggerHandler('click');
+                
+        var wavesContainer = this.$el.parents('.waves-container');
+        //wavesContainer = $('.wave').filter(':visible').find('.waves-container');
+        if (scrollTop < 0 || scrollTop > wavesContainer.height())
+            wavesContainer.scrollTop(this.$el.position().top + wavesContainer.scrollTop() - wavesContainer.height() * 0.3);
+        
+        this.$el.children('table').focus();
     },
     
     replyMessage: function(e) {
@@ -72,6 +88,7 @@ var MessageView = Backbone.View.extend({
                 $(this).val('');
                 e.preventDefault();
             }
+            e.stopPropagation();
         }).focus();
         
         this.$el.find('a.cancel').click(function(e){
@@ -82,7 +99,7 @@ var MessageView = Backbone.View.extend({
                 parent.siblings('.threadend').show();
             parent.remove();
             return false;
-        })
+        });
         
        return false;
     }

@@ -1,7 +1,6 @@
-
 var WaveListView = Backbone.View.extend({
     initialize: function() {
-        _.bindAll(this, 'setCurrent', 'countMessages', 'updateMessages', 'changeUsers', 'updateTitle');
+        _.bindAll(this, 'setCurrent', 'countMessages', 'updateMessages', 'changeUsers', 'updateTitle', 'scrollToNextUnread');
         this.model.bind('change:current', this.setCurrent);
         this.model.bind('change:title', this.updateTitle);
         
@@ -11,6 +10,10 @@ var WaveListView = Backbone.View.extend({
         
         this.model.users.bind('add', this.changeUsers);
         this.model.users.bind('remove', this.changeUsers);
+    },
+    
+    events: {
+        'click' : 'scrollToNextUnread'
     },
     
     render: function() {
@@ -53,5 +56,16 @@ var WaveListView = Backbone.View.extend({
     
     updateTitle: function() {
         this.$el.find('h2').text(this.model.get('title'));
-    }    
+    },
+    
+    scrollToNextUnread: function(e) {
+        //ilyenkor nem kell hrefelni a routernek
+        if (app.currentWave == this.model.id) {
+            e.preventDefault();
+            var nextUnread = this.model.getNextUnreadMessage();
+        
+            if (nextUnread)
+                nextUnread.setScrolled();
+        }
+    }
 });

@@ -7,6 +7,11 @@ var Wave = Backbone.Model.extend({
     idAttribute: '_id',
     initialize: function() {
         this.messages = new MessageCollection();
+        
+        this.messages.comparator = function(msg) {
+            return msg.getSortableId();
+        };
+        
         this.users = new UserCollection();
         if (this.get('userIds')) {
             var uids = this.get('userIds');
@@ -57,7 +62,22 @@ var Wave = Backbone.Model.extend({
             this.addUsers(newIds);
             this.set('userIds', data.userIds);
         }
-    }    
+    },
+    
+    setCurrentMessage: function(messageId) {
+        this.currentMessageId = messageId;
+    },
+    
+    getNextUnreadMessage: function() {
+        var minId = this.currentMessageId ? this.messages.get(this.currentMessageId).getSortableId() : 0;
+        var nextUnreadMessage = this.messages.find(function(msg){return msg.get('unread') && msg.getSortableId() > minId });
+        
+        if (!nextUnreadMessage) {
+            this.trigger('noMoreUnread');
+        }
+        
+        return nextUnreadMessage;
+    }
 });
 
 var WaveCollection = Backbone.Collection.extend({

@@ -1,4 +1,3 @@
-
 var SurfAppRouter = Backbone.Router.extend({
     defaults: {
         currentWave: null,
@@ -14,7 +13,7 @@ var SurfAppRouter = Backbone.Router.extend({
     routes: {
         'wave/:number': "showWave"
     },
-    
+    /*
     addWave: function() {
         app.model.waves.add(new Wave({
             id: Math.floor(Math.random() * 1100),
@@ -24,7 +23,7 @@ var SurfAppRouter = Backbone.Router.extend({
         }));
     //this.navigate('movies'); // reset location so we can trigger again
     },
-    
+    */
     showWave: function(id) {
         if (app.model.waves.get(id)) {
             if (app.currentWave) {
@@ -41,11 +40,6 @@ var SurfAppRouter = Backbone.Router.extend({
     //app.model.movies.remove(app.model.movies.getByCid(cid));
     }
 });
-
-
-
-
-
 
 $(function() {
     var surfApp = new SurfAppRouter();

@@ -239,12 +239,21 @@ a:hover {
   color: #aaa;
 }
 
-table.unread {
-  background: #f8f7e2;
+.message table:hover {
+  background: #f2f7e8;
+}
+
+.message table:focus,
+.message table:focus:hover {
+  background: #d8ebb6;
+}
+
+.message table.unread {
+  background: #f6f5d8;
 }
 
 .message table.unread:hover {
-  background: #f1efcf;
+  background: #f3f1ca;
 }
 
 .message table {

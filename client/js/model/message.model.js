@@ -30,6 +30,15 @@ var Message = Backbone.Model.extend({
         }
     },
     
+    setCurrent: function() {
+        var wave = app.model.waves.get(this.get('waveId'));
+        wave.setCurrentMessage(this.id);
+    },
+    
+    setScrolled: function() {
+        this.trigger('change:scrolled');
+    },
+    
     formatMessage: function() {
         var msg = this.get('message');
         msg = strip_tags(msg);
@@ -41,6 +50,17 @@ var Message = Backbone.Model.extend({
         msg = nl2br(msg, true);
         
         this.set('messageFormatted', msg);
+    },
+    
+    getSortableId: function() {
+        if (!this.sortableId) {
+            var timestamp = Number('0x' + this.id.substr(0, 8));
+            //var machine = Number('0x' + this.id.substr(8, 6));
+            //var pid = Number('0x' + this.id.substr(14, 4));
+            var increment = Number('0x' + this.id.substr(18, 6));
+            this.sortableId = Number(timestamp + increment);
+        }
+        return this.sortableId;
     }
     
 });

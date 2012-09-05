@@ -8,7 +8,7 @@ var Communicator = {
         //Communicator.socket.emit('auth', id);
         
         Communicator.socket.on('init', function(data){
-            console.log(data.me);
+            //console.log(data.me);
             app.currentUser = data.me._id;
             data.users.push(data.me);
             app.model.users.reset(data.users);
@@ -84,7 +84,7 @@ var Communicator = {
     
     onUpdateUser: function(data) {
         var user = data.user;
-        console.log(user);
+        //console.log(user);
         if (app.model.users.get(user._id)) {
             app.model.users.get(user._id).update(user);
         } else {

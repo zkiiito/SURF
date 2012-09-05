@@ -1,18 +1,20 @@
 var WaveView = Backbone.View.extend({
     initialize: function() {
-        _.bindAll(this, 'setCurrent', 'addMessage', 'addUser', 'removeUser', 'updateTitle', 'showUpdateWave');
+        _.bindAll(this, 'setCurrent', 'addMessage', 'addUser', 'removeUser', 'updateTitle', 'showUpdateWave', 'scrollToNextUnread', 'scrollToBottom');
         
         this.userViews = [];
         
         this.model.bind('change:current', this.setCurrent);
         this.model.bind('change:title', this.updateTitle);
+        this.model.bind('noMoreUnread', this.scrollToBottom);
         
         this.model.messages.bind('add', this.addMessage);
         this.model.users.bind('add', this.addUser);
         this.model.users.bind('remove', this.removeUser);
     },
     events: {
-        'click a.editwave' : 'showUpdateWave'
+        'click a.editwave' : 'showUpdateWave',
+        'click a.gounread' : 'scrollToNextUnread'
     },
     
     render: function() {
@@ -32,6 +34,15 @@ var WaveView = Backbone.View.extend({
                 $(this).val('');
                 e.preventDefault();
             }
+            e.stopPropagation();
+        });
+        
+        var that = this;
+        $('body').keydown(function(e){
+            if (app.currentWave == that.model.id && 32 == e.keyCode) {
+                e.preventDefault();
+                that.scrollToNextUnread();
+            }
         });
         
         this.model.users.each(this.addUser);
@@ -43,6 +54,7 @@ var WaveView = Backbone.View.extend({
         if (this.model.get('current')) {
             $('.wave').hide();
             this.$el.show();
+            this.scrollToNextUnread();
         }
     },
     
@@ -80,5 +92,18 @@ var WaveView = Backbone.View.extend({
     
     showUpdateWave: function() {
         return app.view.showUpdateWave();
+    },
+    
+    scrollToNextUnread: function(e) {
+        if (e) e.preventDefault();
+        var nextUnread = this.model.getNextUnreadMessage();
+        
+        if (nextUnread)
+            nextUnread.setScrolled();
+    },
+    
+    scrollToBottom: function() {
+        var wavesContainer = this.$el.find('.waves-container');
+        wavesContainer.scrollTop(wavesContainer.prop('scrollHeight')).focus();
     }
 });

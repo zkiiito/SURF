@@ -4,6 +4,7 @@ var SurfAppView = Backbone.View.extend({
         this.model.waves.bind('add', this.addWave);
         this.model.waves.bind('reset', this.resetWaves, this);
         this.model.messages.bind('reset', this.resetMessages, this);
+        this.model.messages.bind('add', this.setTitle, this);
         this.model.currentUser.bind('all', this.changeCurrentUser, this);
         //this.createView = null;//gag
         this.render();
@@ -16,7 +17,7 @@ var SurfAppView = Backbone.View.extend({
     render: function() {
         this.setElement($('body'));    
         this.editWaveView = new EditWaveView();
-        this.$el.append(this.editWaveView.render().el);
+        this.$el.append(this.editWaveView.render().el);    
         return this;
     },
     
@@ -45,6 +46,7 @@ var SurfAppView = Backbone.View.extend({
     
     resetMessages: function() {
         this.model.messages.map(this.addMessage);
+        this.setTitle();
     },
     
     showCreateWave: function() {
@@ -69,5 +71,15 @@ var SurfAppView = Backbone.View.extend({
         var template = new UserView({model: this.model.currentUser});
         this.$el.find('#currentuser').html('').append(template.render().el).append(' <p>' + this.model.currentUser.get('name') + '</p>');
         return false;
+    },
+    
+    setTitle: function() {
+        var title = 'Surf';
+        var unreadCount = this.model.messages.where({unread: true}).length;
+        
+        if (unreadCount > 0) {
+            title = '[' + unreadCount + '] ' + title;
+        }
+        $('title').text(title);
     }
 });
