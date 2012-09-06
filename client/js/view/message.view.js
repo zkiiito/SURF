@@ -71,7 +71,12 @@ var MessageView = Backbone.View.extend({
         e.preventDefault();
         
         $('.message .replyform').find('form').unbind();
-        $('.message .replyform').remove();
+        $('.message .replyform:visible').each(function(id, el) {
+            el = $(el);
+            if (el.siblings('.replies').children().size() > 0)
+                el.siblings('.threadend').show();
+            el.remove();
+        });
 
         var context = _.extend(this.model.toJSON(), {id: this.model.id, user: this.model.user.toJSON()});
         var form = ich.replyform_view(context);
