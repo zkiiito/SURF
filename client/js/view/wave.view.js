@@ -39,7 +39,12 @@ var WaveView = Backbone.View.extend({
         
         var that = this;
         $('body').keydown(function(e){
-            if (app.currentWave == that.model.id && 32 == e.keyCode) {
+            var nodeName = $(e.target).prop('nodeName');
+            
+            if ('INPUT' == nodeName || 'TEXTBOX' == nodeName) {
+                return;
+            }
+            else if (app.currentWave == that.model.id && 32 == e.keyCode) {
                 e.preventDefault();
                 that.scrollToNextUnread();
             }
