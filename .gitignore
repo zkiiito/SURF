@@ -2,3 +2,4 @@
 /serverside/node_modules/
 /nbproject/
 /node_modules
+/client/js/surf.min.js
