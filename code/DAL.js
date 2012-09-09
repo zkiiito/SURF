@@ -34,6 +34,8 @@ DAL = {
         mongoose.connect(process.env.MONGOHQ_URL || 'mongodb://localhost/wave0');
         redis = redis.connect(process.env.REDISTOGO_URL || 'redis://localhost:6379');
         
+        mongoose.set('debug', true);
+        
         UserModel.find().exec(function(err, users){
             var usersTmp = [];
             _.each(users, function(user) {
@@ -165,7 +167,7 @@ DAL = {
             });
 	});
     },
-    
+    /*
     getLastMessagesForUserInWave2: function(user, wave, memo, callback) {
         MessageModel.find({waveId: wave.id}).sort('_id').exec(function(err, messages) {
             //console.log(messages.length + ' msgs found');
@@ -190,9 +192,9 @@ DAL = {
             });
         });
     },
-    
+    */
     getLastMessagesForUserInWave: function(user, wave, memo, callback) {
-        DAL.getMinUnreadRootItForUserInWave(user, wave, function(err, result){
+        DAL.getMinUnreadRootIdForUserInWave(user, wave, function(err, result){
             console.log(result);
             var minRootId = null,
                 unreadIds = [];
@@ -200,15 +202,17 @@ DAL = {
                 minRootId = result.minRootId;
                 unreadIds = result.unreadIds;
             }
-                
-            DAL.getMessagesForUserInWave(user, wave, minRootId, null, unreadIds, function(err, results){
-                memo = _.union(memo, results);
-                callback(null, memo);
+            
+            DAL.getMinRootIdForWave(wave, minRootId, null, function(err, newMinRootId){
+                DAL.getMessagesForUserInWave(wave, newMinRootId, null, unreadIds, function(err, results){
+                    memo = _.union(memo, results);
+                    callback(null, memo);
+                }, []);                
             });
         });
     },
     
-    getMinUnreadRootItForUserInWave: function(user, wave, callback) {
+    getMinUnreadRootIdForUserInWave: function(user, wave, callback) {
         var key = 'unread-' + user.id + '-' + wave.id;
         redis.smembers(key, function(err, results) {
             if (0 == results.length)
@@ -229,14 +233,58 @@ DAL = {
         });
     },
     
-    getMessagesForUserInWave: function(user, wave, minRootId, maxRootId, unreadIds, callback) {
+    getMinRootIdForWave: function(wave, minRootId, maxRootId, callback) {
+        DAL.countMessagesInRange(wave, minRootId, maxRootId, function(err, count){
+            if (count > 10)
+                callback(null, minRootId)
+            else
+                DAL.getNextMinRootIdForWave(wave, minRootId, function(err, newMinRootId){
+                    if (err || minRootId == newMinRootId)
+                        callback(null, minRootId);
+                    else
+                        DAL.getMinRootIdForWave(wave, newMinRootId, maxRootId, callback);
+                });
+        });
+    },
+    
+    getNextMinRootIdForWave: function(wave, minRootId, callback) {
+        //ha keves, vagy ha a minRootId null
+        var query = MessageModel.find({waveId: wave.id, parentId: null}).sort('-_id').limit(11);
+        
+        if (minRootId)
+            query.where('rootId').lt(minRootId);
+        
+        query.exec(function(err, results){
+            if (0 == results.length)
+                callback(true);
+            else
+                callback(null, _.last(results).rootId);
+        });
+    },
+    
+    countMessagesInRange: function(wave, minRootId, maxRootId, callback) {
+        var query = MessageModel.find({waveId: wave.id});
+        
+        if (!minRootId) {
+            callback(null, 0);
+        } else {
+            query.where('rootId').gte(minRootId);
+            
+            if (maxRootId)
+                query.where('rootId').lt(maxRootId);
+
+            query.count(function(err, count) {
+                callback(null, count);
+            });
+        }
+    },
+        
+    getMessagesForUserInWave: function(wave, minRootId, maxRootId, unreadIds, callback) {
         var query = MessageModel.find({waveId: wave.id})
                     .sort('_id');
                     
         if (minRootId) {
             query.where('rootId').gte(minRootId);
-        } else {
-          //limit!
         }
             
         if (maxRootId) {
@@ -260,7 +308,7 @@ DAL = {
             callback(null, res);
         });
     },
-    
+        
     readMessage: function(user, message) {
         var key = 'unread-' + user.id + '-' + message.waveId;
         console.log(key);
