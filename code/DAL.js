@@ -34,7 +34,7 @@ DAL = {
         mongoose.connect(process.env.MONGOHQ_URL || 'mongodb://localhost/wave0');
         redis = redis.connect(process.env.REDISTOGO_URL || 'redis://localhost:6379');
         
-        mongoose.set('debug', true);
+        //mongoose.set('debug', true);
         
         UserModel.find().exec(function(err, users){
             var usersTmp = [];
@@ -207,7 +207,7 @@ DAL = {
                 DAL.getMessagesForUserInWave(wave, newMinRootId, null, unreadIds, function(err, results){
                     memo = _.union(memo, results);
                     callback(null, memo);
-                }, []);                
+                });
             });
         });
     },
@@ -234,6 +234,9 @@ DAL = {
     },
     
     getMinRootIdForWave: function(wave, minRootId, maxRootId, callback) {
+        if (null == minRootId && null != maxRootId)
+            minRootId = maxRootId;
+        
         DAL.countMessagesInRange(wave, minRootId, maxRootId, function(err, count){
             if (count > 10)
                 callback(null, minRootId)

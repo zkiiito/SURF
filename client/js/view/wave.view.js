@@ -14,7 +14,8 @@ var WaveView = Backbone.View.extend({
     },
     events: {
         'click a.editwave' : 'showUpdateWave',
-        'click a.gounread' : 'scrollToNextUnread'
+        'click a.gounread' : 'scrollToNextUnread',
+        'click a.getprevmessages' : 'getPreviousMessages'
     },
     
     render: function() {
@@ -68,7 +69,16 @@ var WaveView = Backbone.View.extend({
             var view = new MessageView({
                 model: message
             });
-            $('.messages', this.$el).append(view.render().el);
+            
+            var targetPos = this.model.messages.where({parentId: null}).indexOf(message);
+            var viewElement = view.render().el;
+            
+            if (0 == targetPos)
+                this.$el.find('div.getprevmessages').after(viewElement);
+            else
+                this.$el.find('.messages > .message').eq(targetPos - 1).after(viewElement);
+            
+            //$('.messages', this.$el).append(view.render().el);
         }
     },
     
@@ -110,5 +120,11 @@ var WaveView = Backbone.View.extend({
     scrollToBottom: function() {
         var wavesContainer = this.$el.find('.waves-container');
         wavesContainer.scrollTop(wavesContainer.prop('scrollHeight')).focus();
+    },
+    
+    getPreviousMessages: function(e) {
+        e.preventDefault();
+        //this.$el.find('div.getprevmessages').hide();
+        this.model.getPreviousMessages();
     }
 });

@@ -77,7 +77,10 @@ var Communicator = {
             _.each(data.messages, function(msg) {
                 Communicator.onMessage(msg);
             });
+            return;
         }
+        
+        console.log(data);
         var message = new Message(data);
         app.model.messages.add(message);
         app.model.waves.get(data.waveId).addMessage(message);
@@ -101,5 +104,15 @@ var Communicator = {
         } else {
             app.model.waves.add(new Wave(wave));
         }        
+    },
+    
+    getMessages: function(wave, minRootId, maxRootId) {
+        var data = {
+            waveId: wave.id,
+            minRootId: minRootId,
+            maxRootId: maxRootId
+        }
+        
+        Communicator.socket.emit('getMessages', data);
     }
 }

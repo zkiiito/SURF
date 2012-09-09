@@ -205,6 +205,21 @@ var Wave = Backbone.Model.extend({
         });
     },
     
+    sendPreviousMessagesToUser: function(user, minRootId, maxRootId) {
+        //ha olvasatlan jott, es le kell szedni addig
+        if (minRootId && maxRootId) {
+            console.log('van min, error');
+        
+        } else {
+            var wave = this;
+            DAL.getMinRootIdForWave(wave, maxRootId, maxRootId, function(err, newMinRootId){
+                DAL.getMessagesForUserInWave(wave, newMinRootId, maxRootId, [], function(err, msgs) {
+                    user.send('message', {messages: msgs});
+                });
+            });
+        }
+    },
+    
     save: function() {
         return DAL.saveWave(this);
     }
@@ -361,7 +376,7 @@ var WaveServer = {
             WaveServer.waves.add(wave);
             wave.notifyUsers();
         });
-        
+        //TODO: bele a wave classba
         client.on('updateWave', function(data){
             console.log('updateWave ' + data.title);
             var wave = WaveServer.waves.get(data.id);
@@ -386,6 +401,11 @@ var WaveServer = {
 
                 wave.save();
             }
+        });
+        
+        client.on('getMessages', function(data){
+            var wave = WaveServer.waves.get(data.waveId);
+            wave.sendPreviousMessagesToUser(client.curUser, data.minRootId, data.maxRootId);
         });
     }
 }

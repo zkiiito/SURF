@@ -20,7 +20,7 @@ var Wave = Backbone.Model.extend({
     },
     
     addMessage: function(message) {
-        message.set('waveId', this.id);
+        //message.set('waveId', this.id);
         this.messages.add(message);
         
         if (null != message.get('parentId')) {
@@ -70,7 +70,7 @@ var Wave = Backbone.Model.extend({
     
     getNextUnreadMessage: function() {
         var minId = this.currentMessageId ? this.messages.get(this.currentMessageId).getSortableId() : 0;
-        var nextUnreadMessage = this.messages.find(function(msg){return msg.get('unread') && msg.getSortableId() > minId });
+        var nextUnreadMessage = this.messages.find(function(msg){return msg.get('unread') && msg.getSortableId() > minId});
 
         //ha nincs utana, megyunk visszafele
         if (!nextUnreadMessage) {
@@ -82,6 +82,11 @@ var Wave = Backbone.Model.extend({
         }
         
         return nextUnreadMessage;
+    },
+    
+    getPreviousMessages: function() {
+        var maxRootId = this.messages.at(0).id;
+        Communicator.getMessages(this, null, maxRootId);
     }
 });
 
