@@ -80,10 +80,9 @@ var Communicator = {
             return;
         }
         
-        console.log(data);
         var message = new Message(data);
-        app.model.messages.add(message);
-        app.model.waves.get(data.waveId).addMessage(message);
+        if (app.model.waves.get(data.waveId).addMessage(message))
+            app.model.messages.add(message);
     },
     
     onUpdateUser: function(data) {
@@ -106,10 +105,10 @@ var Communicator = {
         }        
     },
     
-    getMessages: function(wave, minRootId, maxRootId) {
+    getMessages: function(wave, minParentId, maxRootId) {
         var data = {
             waveId: wave.id,
-            minRootId: minRootId,
+            minParentId: minParentId,
             maxRootId: maxRootId
         }
         

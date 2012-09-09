@@ -124,7 +124,7 @@ DAL = {
     },
     
     //rekurzivan, elvileg csak az elejen vannak olyan esetek, hogy nincs root id-je
-    calcRootId: function(messageId, messages) {
+    calcRootId: function(messageId, messages, callback) {
         MessageModel.findById(messageId, function(err, message){
             if (err) {
                 console.log('error van');
@@ -145,11 +145,14 @@ DAL = {
                 async.forEach(messages, function(msg){
                     MessageModel.findByIdAndUpdate(msg._id, {rootId: rootId}).exec();
                 });
+                
+                if (callback)
+                    callback(null, rootId);
             }
             else
             {
                 messages.push(message);
-                DAL.calcRootId(message.parentId, messages);
+                DAL.calcRootId(message.parentId, messages, callback);
             }
         });
     },
@@ -213,8 +216,7 @@ DAL = {
     },
     
     getMinUnreadRootIdForUserInWave: function(user, wave, callback) {
-        var key = 'unread-' + user.id + '-' + wave.id;
-        redis.smembers(key, function(err, results) {
+        DAL.getUnreadIdsForUserInWave(user, wave, function(err, results) {
             if (0 == results.length)
                 callback(true, null);
             else
@@ -231,6 +233,11 @@ DAL = {
                             callback(null, res);
                         });
         });
+    },
+
+    getUnreadIdsForUserInWave: function(user, wave, callback) {
+        var key = 'unread-' + user.id + '-' + wave.id;
+        redis.smembers(key, callback);
     },
     
     getMinRootIdForWave: function(wave, minRootId, maxRootId, callback) {

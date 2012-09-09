@@ -20,12 +20,21 @@ var Wave = Backbone.Model.extend({
     },
     
     addMessage: function(message) {
-        //message.set('waveId', this.id);
-        this.messages.add(message);
-        
         if (null != message.get('parentId')) {
-            this.messages.get(message.get('parentId')).addReply(message);
+            var parentMsg = this.messages.get(message.get('parentId'));
+            if (parentMsg) {
+                parentMsg.addReply(message);
+                this.messages.add(message);
+            } else {
+                var minParentId = message.get('parentId');
+                var maxRootId = this.messages.at(0).id;
+                Communicator.getMessages(this, minParentId, maxRootId);
+                return false;
+            }
+        } else {
+            this.messages.add(message);
         }
+        return true;
     },
     
     addUser: function(user) {
