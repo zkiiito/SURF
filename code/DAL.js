@@ -152,55 +152,12 @@ DAL = {
         });
     },
     
-    getLastMessagesForUserInWave: function(userId, waveId) {
-        
-    },
-    /*
-    getLastMessagesForUserOld: function(user, callback) {
-        var wave_messages = [];
-	var calls = 0;
-	var isread_calls = 0;
-	WaveModel.find({}, function(err, waves) {
-            calls += waves.length;
-            console.log(waves.length + " waves found");
-            for (wid in waves) {
-                MessageModel.find({waveId: waves[wid].id}, function(err, messages) {
-                    isread_calls += messages.length;
-                    console.log(messages.length + ' msgs found');
-                    for (mid in messages) {
-                        (function(msg) {
-                            var key = 'unread-' + user.id + '-' + msg.waveId;
-                            redis.sismember([key, msg.id], function(err, result) {
-                                console.log(key + ' ' + msg.id + ' ' + result);
-                                msg = {
-                                    _id: msg.id, 
-                                    userId: msg.userId, 
-                                    waveId: msg.waveId, 
-                                    parentId: msg.parentId, 
-                                    message: msg.message, 
-                                    unread: result, 
-                                    created_at: msg.created_at
-                                };
-                                wave_messages.push(msg);
-                                isread_calls--;
-                                if (!calls && !isread_calls) {
-                                    callback(wave_messages);
-                                }
-                            });
-                        })(messages[mid]);
-                    }
-                    calls--;
-                });
-            }
-	});
-    },
-    */   
     getLastMessagesForUser: function(user, callback) {
         var startTime = new Date().getTime();
         WaveModel.find().where('_id').in(user.waves.pluck('_id')).exec(function(err, waves) {
             //console.log(waves.length + " waves found");
-            async.reduce(waves, [], function(memo, wave, callback_async_reduce){//ez nem parhuzamosan fut
-                DAL.getLastMessagesForUserFromWave(user, wave, memo, callback_async_reduce);
+            async.reduce(waves, [], function(memo, wave, callback_async_reduce){//ez nem parhuzamosan fut, de async mert az iteratornak callbackje van
+                DAL.getLastMessagesForUserInWave(user, wave, memo, callback_async_reduce);
             }, function(err, results) {
                 var endTime = new Date().getTime();
                 console.log('msg query in ' + (endTime - startTime));
@@ -209,7 +166,7 @@ DAL = {
 	});
     },
     
-    getLastMessagesForUserFromWave: function(user, wave, memo, callback) {
+    getLastMessagesForUserInWave2: function(user, wave, memo, callback) {
         MessageModel.find({waveId: wave.id}).sort('_id').exec(function(err, messages) {
             //console.log(messages.length + ' msgs found');
             async.map(messages, function(msg, callback_async_map) {
@@ -231,6 +188,76 @@ DAL = {
                 memo = _.union(memo, results);
                 callback(null, memo);
             });
+        });
+    },
+    
+    getLastMessagesForUserInWave: function(user, wave, memo, callback) {
+        DAL.getMinUnreadRootItForUserInWave(user, wave, function(err, result){
+            console.log(result);
+            var minRootId = null,
+                unreadIds = [];
+            if (!err) {//ha van unread
+                minRootId = result.minRootId;
+                unreadIds = result.unreadIds;
+            }
+                
+            DAL.getMessagesForUserInWave(user, wave, minRootId, null, unreadIds, function(err, results){
+                memo = _.union(memo, results);
+                callback(null, memo);
+            });
+        });
+    },
+    
+    getMinUnreadRootItForUserInWave: function(user, wave, callback) {
+        var key = 'unread-' + user.id + '-' + wave.id;
+        redis.smembers(key, function(err, results) {
+            if (0 == results.length)
+                callback(true, null);
+            else
+                MessageModel.find({waveId: wave.id})
+                        .where('_id').in(results)
+                        .select('rootId')
+                        .sort('rootId')
+                        .limit(1)
+                        .exec(function(err, result){
+                            var res = {
+                                minRootId: _.first(result).rootId,
+                                unreadIds: results
+                            }
+                            callback(null, res);
+                        });
+        });
+    },
+    
+    getMessagesForUserInWave: function(user, wave, minRootId, maxRootId, unreadIds, callback) {
+        var query = MessageModel.find({waveId: wave.id})
+                    .sort('_id');
+                    
+        if (minRootId) {
+            query.where('rootId').gte(minRootId);
+        } else {
+          //limit!
+        }
+            
+        if (maxRootId) {
+            query.where('rootId').lt(maxRootId);
+        }
+        
+        query.exec(function(err, messages){
+            var res = _.map(messages, function(msg){
+                msg = {
+                    _id: msg.id, 
+                    userId: msg.userId, 
+                    waveId: msg.waveId, 
+                    parentId: msg.parentId, 
+                    message: msg.message, 
+                    unread: _.indexOf(unreadIds, msg.id) >= 0, 
+                    created_at: msg.created_at
+                };
+                return msg;
+            });
+            
+            callback(null, res);
         });
     },
     
