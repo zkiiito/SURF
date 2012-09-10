@@ -4,7 +4,7 @@ var _ = require('underscore'),
 
 require('./code/ExpressServer');
 require('./code/DAL');
-require('./code/Minify');
+//require('./code/Minify');
 
 var User = Backbone.Model.extend({
     defaults: {
@@ -414,5 +414,5 @@ var WaveServer = {
         });
     }
 }
-Minify.minify();
+//Minify.minify();
 WaveServer.init();
