@@ -251,7 +251,7 @@ var WaveServer = {
         var port = process.env.PORT || 8000;
         //console.log('port: ' + port);
         ExpressServer.listen(port);
-          
+        
         socket = WaveServer.socket = io.listen(ExpressServer);
         
         socket.set('authorization', function(data, accept){
@@ -283,6 +283,11 @@ var WaveServer = {
             socket.configure(function () { 
                 socket.set("transports", ["xhr-polling"]); 
                 socket.set("polling duration", 10); 
+                
+                socket.enable('browser client minification');  // send minified client
+                socket.enable('browser client etag');          // apply etag caching logic based on version number
+                socket.enable('browser client gzip');          // gzip the file
+                socket.set('log level', 1);                    // reduce logging
             });
         }
         
