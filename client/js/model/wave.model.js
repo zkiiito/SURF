@@ -27,8 +27,12 @@ var Wave = Backbone.Model.extend({
                 this.messages.add(message);
             } else {
                 var minParentId = message.get('parentId');
-                var maxRootId = this.messages.at(0).id;
-                Communicator.getMessages(this, minParentId, maxRootId);
+                if (this.messages.length > 0) { //bugos adatszerkezetnel elofordulhat
+                    var maxRootId = this.messages.at(0).id;
+                    Communicator.getMessages(this, minParentId, maxRootId);
+                } else {
+                    console.log(message);
+                }
                 return false;
             }
         } else {
