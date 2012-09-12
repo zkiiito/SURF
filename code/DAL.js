@@ -127,7 +127,7 @@ DAL = {
     calcRootId: function(messageId, messages, callback) {
         MessageModel.findById(messageId, function(err, message){
             if (err) {
-                console.log('error van');
+                console.log('calcRootId: error');
                 return;
             }
             //ha gyokerelem, vagy tud arrol valamit
@@ -165,40 +165,15 @@ DAL = {
                 DAL.getLastMessagesForUserInWave(user, wave, memo, callback_async_reduce);
             }, function(err, results) {
                 var endTime = new Date().getTime();
-                console.log('msg query in ' + (endTime - startTime));
+                console.log('LastMessagesForUser: msg query in ' + (endTime - startTime));
                 callback(results);
             });
 	});
     },
-    /*
-    getLastMessagesForUserInWave2: function(user, wave, memo, callback) {
-        MessageModel.find({waveId: wave.id}).sort('_id').exec(function(err, messages) {
-            //console.log(messages.length + ' msgs found');
-            async.map(messages, function(msg, callback_async_map) {
-                var key = 'unread-' + user.id + '-' + msg.waveId;
-                redis.sismember([key, msg.id], function(err, result) {
-                    //console.log(key + ' ' + msg.id + ' ' + result);
-                    msg = {
-                        _id: msg.id, 
-                        userId: msg.userId, 
-                        waveId: msg.waveId, 
-                        parentId: msg.parentId, 
-                        message: msg.message, 
-                        unread: result, 
-                        created_at: msg.created_at
-                    };
-                    callback_async_map(null, msg);
-                });
-            }, function(err, results) {
-                memo = _.union(memo, results);
-                callback(null, memo);
-            });
-        });
-    },
-    */
+
     getLastMessagesForUserInWave: function(user, wave, memo, callback) {
         DAL.getMinUnreadRootIdForUserInWave(user, wave, function(err, result){
-            console.log(result);
+            //console.log(result);
             var minRootId = null,
                 unreadIds = [];
             if (!err) {//ha van unread
@@ -323,22 +298,18 @@ DAL = {
         
     readMessage: function(user, message) {
         var key = 'unread-' + user.id + '-' + message.waveId;
-        console.log(key);
         redis.srem(key, message.id);
-        console.log(user.id + ' read ' + message.id);
     },
     
     addUnreadMessage: function(user, message) {
-        if (message.get('userId') != user.id) {
+        if (message.get('userId') != user.id && message.id) {
             var key = 'unread-' + user.id + '-' + message.get('waveId');
-            console.log(key + ' added ' + message.id);
             redis.sadd(key, message.id);
         }
     },
     
     readAllMessagesForUserInWave: function(user, wave) {
         var key = 'unread-' + user.id + '-' + wave.id;
-        console.log('read all: ' + key);
         redis.del(key);
     }
 };

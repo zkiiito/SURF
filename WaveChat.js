@@ -253,7 +253,6 @@ var WaveServer = {
     
     startServer: function() {
         var port = process.env.PORT || 8000;
-        //console.log('port: ' + port);
         ExpressServer.listen(port);
         
         socket = WaveServer.socket = io.listen(ExpressServer);
@@ -265,7 +264,6 @@ var WaveServer = {
 
             data.cookie = require('cookie').parse(data.headers.cookie);
             data.sessionID = data.cookie['surf.sid'].substr(2,24);
-            //console.log('sessid: ' + data.sessionID);
             
             SessionStore.get(data.sessionID, function (err, session) {
                 if (err) {
@@ -296,10 +294,8 @@ var WaveServer = {
         }
         
         socket.sockets.on('connection', function(client){
-            //console.log("connection works!");
-            
-            var userData = client.handshake.session['auth']['google']['user'];
-            console.log(userData);
+            //var userData = client.handshake.session['auth']['google']['user'];
+            //console.log(userData);
             
             client.curUser = WaveServer.getUserByAuth(client.handshake.session['auth']);
 
@@ -308,7 +304,7 @@ var WaveServer = {
                 client.curUser.socket.disconnect();
             }
 
-            console.log(client.curUser.get('name') + ' logged in');
+            console.log('login: ' + client.curUser.id);
             client.curUser.socket = client;
             client.curUser.ip = client.handshake.address.address;
 
@@ -323,7 +319,7 @@ var WaveServer = {
         var user = WaveServer.users.find(function(u){return u.get('googleId') == userData['id']});
         
         if (user) {
-            console.log('found');
+            console.log('auth: userfound ' + user.id);
             return user;
         }
         
@@ -335,7 +331,7 @@ var WaveServer = {
         WaveServer.users.add(user);
 
         var wave0 = WaveServer.waves.at(0);
-        console.log('new user added to: ' + wave0.get('title'));
+        console.log('auth: newuser ' + user.id + ' (' + user.get('name') +  ')');
         wave0.addUser(user, true);
         wave0.save();
         
@@ -343,7 +339,7 @@ var WaveServer = {
     },
 	
     initData: function(app) {
-        console.log('init data');
+        console.log('startup: initdata');
         var users = [];
         var uids = [];
 
@@ -363,12 +359,12 @@ var WaveServer = {
     authClient: function(client) {
         //torolt funkciok a regibol: nick, topic, part, invite, joinchan
         client.on('disconnect', function(data) {
-            console.log(client.curUser.get('name') + ' disconnected');
+            console.log('disconnect: ' + client.curUser.id);
             client.curUser.disconnect();
         });
 
         client.on('message', function(data) {
-            console.log(client.curUser.get('name') + ' message ' + data);
+            console.log('message: ' + client.curUser.id);
 
             var msg = new Message(data);
 
@@ -378,12 +374,12 @@ var WaveServer = {
         });
         
         client.on('readMessage', function(data) {
-            console.log('readMessage ' + data);
+            console.log('readMessage: ' + client.curUser.id);
             DAL.readMessage(client.curUser, data);
         });
 
         client.on('createWave', function(data) {
-            console.log('createWave ' + data.title);
+            console.log('createWave: ' + client.curUser.id);
 
             var wave = new Wave(data);
             wave.addUser(client.curUser, false);
@@ -393,7 +389,7 @@ var WaveServer = {
         });
         //TODO: bele a wave classba
         client.on('updateWave', function(data){
-            console.log('updateWave ' + data.title);
+            console.log('updateWave: ' + client.curUser.id);
             var wave = WaveServer.waves.get(data.id);
             if (wave) {
                 wave.set('title', data.title);
@@ -425,6 +421,7 @@ var WaveServer = {
         });
         
         client.on('readAllMessages', function(data) {
+            console.log('readAllMessages: ' + client.curUser.id);
             var wave = WaveServer.waves.get(data.waveId);
             if (wave)
                 wave.readAllMessagesOfUser(client.curUser);
