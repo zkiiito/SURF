@@ -64,11 +64,7 @@ var Message = Backbone.Model.extend({
     },
     
     readAllMessages: function() {
-        var unread = false;
-        this.messages.each(function(msg){
-            unread = msg.readAllMessages() || unread;
-        });
-        unread = unread || this.get('unread');
+        unread = this.get('unread');
         this.set('unread', false);
         
         return unread;
