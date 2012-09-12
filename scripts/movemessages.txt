@@ -1,0 +1,1 @@
+db.messagemodels.update({waveId: new ObjectId('5006669440a2b50200000033'), created_at: {$lt: new Date(2012,8,1)}}, {$set: {waveId: new ObjectId('503dcf4685f3c90200000021')}}, false, true)
