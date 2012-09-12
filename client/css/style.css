@@ -116,6 +116,7 @@ a:hover {
 
 #usermenu img {
   width: 1.5em;
+  height: 1.5em;
   float: left;
   margin-right: 0.2em;
 }
@@ -195,6 +196,7 @@ a:hover {
 
 .wavetop .heads img {
   width: 1.8em;
+  height: 1.8em;
   margin-right: 0.2em;
 }
 
@@ -281,6 +283,7 @@ a:hover {
 .message-header img {
   float: left;
   height: 1.5em;
+  width: 1.5em;
 }
 
 .message-body {
@@ -567,6 +570,7 @@ textarea {
 .friend img {
   float: left;
   width: 2.5em;
+  height: 2.5em;
   margin-right: 0.3em;
 }
 
