@@ -226,6 +226,8 @@ DAL = {
                         .sort('rootId')
                         .limit(1)
                         .exec(function(err, result){
+                            if (err || 0 == result.length)
+                                callback(true, null);
                             var res = {
                                 minRootId: _.first(result).rootId,
                                 unreadIds: results
