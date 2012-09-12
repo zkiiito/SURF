@@ -1,6 +1,6 @@
 var WaveView = Backbone.View.extend({
     initialize: function() {
-        _.bindAll(this, 'setCurrent', 'addMessage', 'addUser', 'removeUser', 'updateTitle', 'showUpdateWave', 'scrollToNextUnread', 'scrollToBottom');
+        _.bindAll(this, 'setCurrent', 'addMessage', 'addUser', 'removeUser', 'updateTitle', 'showUpdateWave', 'scrollToNextUnread', 'scrollToBottom', 'readAllMessages');
         
         this.userViews = [];
         
@@ -15,7 +15,8 @@ var WaveView = Backbone.View.extend({
     events: {
         'click a.editwave' : 'showUpdateWave',
         'click a.gounread' : 'scrollToNextUnread',
-        'click a.getprevmessages' : 'getPreviousMessages'
+        'click a.getprevmessages' : 'getPreviousMessages',
+        'click a.readall' : 'readAllMessages'
     },
     
     render: function() {
@@ -126,5 +127,10 @@ var WaveView = Backbone.View.extend({
         e.preventDefault();
         //this.$el.find('div.getprevmessages').hide();
         this.model.getPreviousMessages();
+    },
+    
+    readAllMessages: function(e) {
+        e.preventDefault();
+        this.model.readAllMessages();
     }
 });

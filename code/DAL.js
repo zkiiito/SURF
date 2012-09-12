@@ -227,7 +227,7 @@ DAL = {
                         .limit(1)
                         .exec(function(err, result){
                             if (err || 0 == result.length)
-                                callback(true, null);
+                                return callback(true, null);
                             var res = {
                                 minRootId: _.first(result).rootId,
                                 unreadIds: results
@@ -333,8 +333,13 @@ DAL = {
             var key = 'unread-' + user.id + '-' + message.get('waveId');
             console.log(key + ' added ' + message.id);
             redis.sadd(key, message.id);
-            redis.sadd('unread-sets', key);//nyomon akarjuk kovetni, h mik vannak
         }
+    },
+    
+    readAllMessagesForUserInWave: function(user, wave) {
+        var key = 'unread-' + user.id + '-' + wave.id;
+        console.log('read all: ' + key);
+        redis.del(key);
     }
 };
 

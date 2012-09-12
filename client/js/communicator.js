@@ -48,6 +48,10 @@ var Communicator = {
         Communicator.socket.emit('readMessage', {id: message.id, waveId: message.get('waveId')});
     },
     
+    readAllMessages: function(wave) {
+        Communicator.socket.emit('readAllMessages', {waveId: wave.id});
+    },
+    
     createWave: function(title, userIds) {
         var wave = {
             title: title,

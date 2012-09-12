@@ -100,6 +100,16 @@ var Wave = Backbone.Model.extend({
     getPreviousMessages: function() {
         var maxRootId = this.messages.at(0).id;
         Communicator.getMessages(this, null, maxRootId);
+    },
+    
+    readAllMessages: function() {
+        var unread = false;
+        this.messages.each(function(msg){
+            unread = msg.readAllMessages() || unread;
+        });
+        
+        if (unread)
+            Communicator.readAllMessages(this);
     }
 });
 

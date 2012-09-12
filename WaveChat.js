@@ -225,6 +225,10 @@ var Wave = Backbone.Model.extend({
         }
     },
     
+    readAllMessagesOfUser: function(user) {
+        DAL.readAllMessagesForUserInWave(user, this);
+    },
+    
     save: function() {
         return DAL.saveWave(this);
     }
@@ -369,7 +373,8 @@ var WaveServer = {
             var msg = new Message(data);
 
             var wave = WaveServer.waves.get(msg.get('waveId'));
-            wave.addMessage(msg);
+            if (wave)
+                wave.addMessage(msg);
         });
         
         client.on('readMessage', function(data) {
@@ -415,7 +420,14 @@ var WaveServer = {
         
         client.on('getMessages', function(data){
             var wave = WaveServer.waves.get(data.waveId);
-            wave.sendPreviousMessagesToUser(client.curUser, data.minParentId, data.maxRootId);
+            if (wave)
+                wave.sendPreviousMessagesToUser(client.curUser, data.minParentId, data.maxRootId);
+        });
+        
+        client.on('readAllMessages', function(data) {
+            var wave = WaveServer.waves.get(data.waveId);
+            if (wave)
+                wave.readAllMessagesOfUser(client.curUser);
         });
     }
 }
