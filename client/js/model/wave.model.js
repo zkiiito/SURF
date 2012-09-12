@@ -7,11 +7,6 @@ var Wave = Backbone.Model.extend({
     idAttribute: '_id',
     initialize: function() {
         this.messages = new MessageCollection();
-        
-        this.messages.comparator = function(msg) {
-            return msg.getSortableId();
-        };
-        
         this.users = new UserCollection();
         if (this.get('userIds')) {
             var uids = this.get('userIds');
@@ -82,13 +77,23 @@ var Wave = Backbone.Model.extend({
     },
     
     getNextUnreadMessage: function() {
-        var minId = this.currentMessageId ? this.messages.get(this.currentMessageId).getSortableId() : 0;
-        var nextUnreadMessage = this.messages.find(function(msg){return msg.get('unread') && msg.getSortableId() > minId});
+        var minId = 0;
+        var nextUnreadMessage;
+        
+        if (this.currentMessageId) {
+            var currentMessage = this.messages.get(this.currentMessageId);
+            minId = currentMessage.getSortableId();
+            
+            //ha van current, akkor eloszor a gyerekei kozott keresunk, majd attol felfele egyre inkabb
+            nextUnreadMessage = currentMessage.getNextUnread(minId);
+        }
+        
+        if (!nextUnreadMessage)
+            nextUnreadMessage = this.messages.find(function(msg){return msg.get('unread') && msg.getSortableId() > minId});
 
         //ha nincs utana, megyunk visszafele
-        if (!nextUnreadMessage) {
+        if (!nextUnreadMessage)
             nextUnreadMessage = this.messages.find(function(msg){return msg.get('unread') && msg.getSortableId() < minId});
-        }
 
         if (!nextUnreadMessage) {
             this.trigger('noMoreUnread');
