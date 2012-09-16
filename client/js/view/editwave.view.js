@@ -21,7 +21,7 @@ var EditWaveView = Backbone.View.extend({
         app.model.users.each(function(user){
             var obj = {id: user.id, name: user.get('name')};
             //hogy?
-            if (user.id == app.currentUser) {
+            if (user.id === app.currentUser) {
                 obj.readonly = true;
             }
             
@@ -84,9 +84,9 @@ var EditWaveView = Backbone.View.extend({
     },
     
     editWave: function() {
-        var title = this.$el.find('#editwave-title').val();
-        var users = this.$el.find('#editwave-users').tokenInput('get');
-        var userIds = _.pluck(users, 'id');
+        var title = this.$el.find('#editwave-title').val(),
+            users = this.$el.find('#editwave-users').tokenInput('get'),
+            userIds = _.pluck(users, 'id');
         //userIds.push(app.currentUser);
         
         if (this.wave) {

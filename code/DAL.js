@@ -48,10 +48,10 @@ DAL = {
                 var wavesTmp = [];
                 _.each(waves, function(wave){
                     wavesTmp.push({title: wave.title, userIds: wave.userIds, _id: wave._id});
-                })
+                });
                 server.waves.reset(wavesTmp);
 
-                if (waves.length == 0) {
+                if (waves.length === 0) {
                     DAL.server.initData();
                 }
 
@@ -62,11 +62,12 @@ DAL = {
         //temporary fix
         MessageModel.find({rootId: null}).exec(function(err, messages){
             _.each(messages, function(message){
-                if (null == message.rootId) {
-                    if (null == message.parentId)
+                if (null === message.rootId) {
+                    if (null === message.parentId) {
                         MessageModel.findByIdAndUpdate(message._id, {rootId: message._id}).exec();
-                    else
+                    } else {
                         DAL.calcRootId(message.parentId, [message]);
+                    }
                 }
             });
         });        
@@ -87,16 +88,14 @@ DAL = {
         var data = {
             title: wave.get('title'),
             userIds: _.uniq(wave.get('userIds'))
-        };
+        }, m;
         
         if (wave.isNew()) {
-            var m = new WaveModel(data);
+            m = new WaveModel(data);
             m.save();
             wave.set({_id: m._id});
-        }
-        else
-        {
-            WaveModel.findByIdAndUpdate(wave.id, data, function(err, doc){});
+        } else {
+            WaveModel.findByIdAndUpdate(wave.id, data).exec();
         }
         return wave;
     },
@@ -110,7 +109,7 @@ DAL = {
             created_at: message.get('created_at')
         });
         
-        if (null == m.parentId) {
+        if (null === m.parentId) {
             m.rootId = m._id;
             m.save();
         } else {
@@ -131,13 +130,13 @@ DAL = {
                 return;
             }
             //ha gyokerelem, vagy tud arrol valamit
-            if (null != message.rootId || null == message.parentId) {
+            if (null !== message.rootId || null === message.parentId) {
                 var rootId = null;
                 
-                if (null != message.rootId) {
+                if (null !== message.rootId) {
                     rootId = message.rootId;
                 }
-                else if (null == message.parentId) {
+                else if (null === message.parentId) {
                     rootId = message._id;
                     messages.push(message);
                 }
@@ -146,8 +145,9 @@ DAL = {
                     MessageModel.findByIdAndUpdate(msg._id, {rootId: rootId}).exec();
                 });
                 
-                if (callback)
+                if (callback) {
                     callback(null, rootId);
+                }
             }
             else
             {
@@ -192,23 +192,25 @@ DAL = {
     
     getMinUnreadRootIdForUserInWave: function(user, wave, callback) {
         DAL.getUnreadIdsForUserInWave(user, wave, function(err, results) {
-            if (0 == results.length)
+            if (0 === results.length) {
                 callback(true, null);
-            else
+            } else {
                 MessageModel.find({waveId: wave.id})
                         .where('_id').in(results)
                         .select('rootId')
                         .sort('rootId')
                         .limit(1)
                         .exec(function(err, result){
-                            if (err || 0 == result.length)
+                            if (err || 0 === result.length) {
                                 return callback(true, null);
+                            }
                             var res = {
                                 minRootId: _.first(result).rootId,
                                 unreadIds: results
-                            }
+                            };
                             callback(null, res);
                         });
+            }
         });
     },
 
@@ -218,19 +220,22 @@ DAL = {
     },
     
     getMinRootIdForWave: function(wave, minRootId, maxRootId, callback) {
-        if (null == minRootId && null != maxRootId)
+        if (null === minRootId && null !== maxRootId) {
             minRootId = maxRootId;
+        }
         
         DAL.countMessagesInRange(wave, minRootId, maxRootId, function(err, count){
-            if (count > 10)
-                callback(null, minRootId)
-            else
+            if (count > 10) {
+                callback(null, minRootId);
+            } else {
                 DAL.getNextMinRootIdForWave(wave, minRootId, function(err, newMinRootId){
-                    if (err || minRootId == newMinRootId)
+                    if (err || minRootId === newMinRootId) {
                         callback(null, minRootId);
-                    else
+                    } else {
                         DAL.getMinRootIdForWave(wave, newMinRootId, maxRootId, callback);
+                    }
                 });
+            }
         });
     },
     
@@ -238,14 +243,16 @@ DAL = {
         //ha keves, vagy ha a minRootId null
         var query = MessageModel.find({waveId: wave.id, parentId: null}).sort('-_id').limit(11);
         
-        if (minRootId)
+        if (minRootId) {
             query.where('rootId').lt(minRootId);
+        }
         
         query.exec(function(err, results){
-            if (0 == results.length)
+            if (0 === results.length) {
                 callback(true);
-            else
+            } else {
                 callback(null, _.last(results).rootId);
+            }
         });
     },
     
@@ -257,8 +264,9 @@ DAL = {
         } else {
             query.where('rootId').gte(minRootId);
             
-            if (maxRootId)
+            if (maxRootId) {
                 query.where('rootId').lt(maxRootId);
+            }
 
             query.count(function(err, count) {
                 callback(null, count);
@@ -302,7 +310,7 @@ DAL = {
     },
     
     addUnreadMessage: function(user, message) {
-        if (message.get('userId') != user.id && message.id) {
+        if (message.get('userId') !== user.id && message.id) {
             var key = 'unread-' + user.id + '-' + message.get('waveId');
             redis.sadd(key, message.id);
         }

@@ -17,7 +17,7 @@ var Message = Backbone.Model.extend({
         }
     },
     addReply: function(message) {
-        if (null == this.messages) {
+        if (null === this.messages) {
             this.messages = new MessageCollection();
         }
         this.messages.add(message);
@@ -54,27 +54,28 @@ var Message = Backbone.Model.extend({
     
     getSortableId: function() {
         if (!this.sortableId) {
-            var timestamp = Number('0x' + this.id.substr(0, 8));
-            //var machine = Number('0x' + this.id.substr(8, 6));
-            //var pid = Number('0x' + this.id.substr(14, 4));
-            var increment = Number('0x' + this.id.substr(18, 6));
+            var timestamp = Number('0x' + this.id.substr(0, 8)),
+                //machine = Number('0x' + this.id.substr(8, 6)),
+                //pid = Number('0x' + this.id.substr(14, 4)),
+                increment = Number('0x' + this.id.substr(18, 6));
             this.sortableId = Number(timestamp + increment);
         }
         return this.sortableId;
     },
     
     readAllMessages: function() {
-        unread = this.get('unread');
+        var unread = this.get('unread');
         this.set('unread', false);
         
         return unread;
     },
     
     getNextUnread: function(minId) {
-        var nextUnread = this.messages.find(function(msg){return msg.get('unread') && msg.getSortableId() > minId});
+        var nextUnread = this.messages.find(function(msg){return msg.get('unread') && msg.getSortableId() > minId;});
         
-        if (!nextUnread && this.get('parentId'))
+        if (!nextUnread && this.get('parentId')) {
             return app.model.messages.get(this.get('parentId')).getNextUnread(minId);
+        }
         
         return nextUnread;
     }

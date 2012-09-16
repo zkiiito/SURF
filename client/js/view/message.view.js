@@ -4,7 +4,7 @@ var MessageView = Backbone.View.extend({
         _.bindAll(this, 'addMessage', 'readMessage', 'replyMessage', 'onReadMessage', 'scrollTo');
         this.model.messages.bind('add', this.addMessage);//ezt nem itt kene, hanem amikor letrejon ott a messages
         this.model.bind('change:unread', this.onReadMessage);
-        this.model.bind('change:scrolled', this.scrollTo)
+        this.model.bind('change:scrolled', this.scrollTo);
         
         var date = new Date(this.model.get('created_at'));        
         this.model.set('dateFormatted', date.format('mmm d HH:MM'));
@@ -36,8 +36,8 @@ var MessageView = Backbone.View.extend({
         });
         
         this.$el.children('.replies').append(view.render().el);
-        if (this.model.messages.length == 1) {
-            if (this.$el.children('div.replyform').size() == 0)//ha nincs kint a replyform
+        if (this.model.messages.length === 1) {
+            if (this.$el.children('div.replyform').size() === 0)//ha nincs kint a replyform
                 this.$el.children('div.threadend').show();
         }
     },
@@ -49,8 +49,9 @@ var MessageView = Backbone.View.extend({
     },
     
     onReadMessage: function() {
-        if (!this.model.get('unread'))
+        if (!this.model.get('unread')) {
             this.$el.children('table').removeClass('unread');
+        }
     },
     
     scrollTo: function() {
@@ -73,8 +74,9 @@ var MessageView = Backbone.View.extend({
         $('.message .replyform').find('form').unbind();
         $('.message .replyform:visible').each(function(id, el) {
             el = $(el);
-            if (el.siblings('.replies').children().size() > 0)
+            if (el.siblings('.replies').children().size() > 0) {
                 el.siblings('.threadend').show();
+            }
             el.remove();
         });
 
@@ -100,8 +102,9 @@ var MessageView = Backbone.View.extend({
             e.preventDefault();
             var parent = $(this).parents('.notification');//nem lehet tobb notificationon belul
             parent.find('form').unbind();
-            if (parent.siblings('.replies').children().size() > 0)
+            if (parent.siblings('.replies').children().size() > 0) {
                 parent.siblings('.threadend').show();
+            }
             parent.remove();
             return false;
         });

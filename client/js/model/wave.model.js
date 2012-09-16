@@ -15,15 +15,15 @@ var Wave = Backbone.Model.extend({
     },
     
     addMessage: function(message) {
-        if (null != message.get('parentId')) {
+        if (null !== message.get('parentId')) {
             var parentMsg = this.messages.get(message.get('parentId'));
             if (parentMsg) {
                 parentMsg.addReply(message);
                 this.messages.add(message);
             } else {
-                var minParentId = message.get('parentId');
                 if (this.messages.length > 0) { //bugos adatszerkezetnel elofordulhat
-                    var maxRootId = this.messages.at(0).id;
+                    var minParentId = message.get('parentId'),
+                        maxRootId = this.messages.at(0).id;
                     Communicator.getMessages(this, minParentId, maxRootId);
                 } else {
                     console.log(message);
@@ -63,9 +63,9 @@ var Wave = Backbone.Model.extend({
         this.set('title', data.title);
         
         var userIds = this.get('userIds');
-        if (data.userIds != userIds) {
-            var newIds = _.difference(data.userIds, userIds);
-            var deletedIds = _.difference(userIds, data.userIds);
+        if (data.userIds !== userIds) {
+            var newIds = _.difference(data.userIds, userIds),
+                deletedIds = _.difference(userIds, data.userIds);
             this.users.remove(deletedIds);
             this.addUsers(newIds);
             this.set('userIds', data.userIds);
@@ -77,8 +77,8 @@ var Wave = Backbone.Model.extend({
     },
     
     getNextUnreadMessage: function() {
-        var minId = 0;
-        var nextUnreadMessage;
+        var minId = 0,
+            nextUnreadMessage;
         
         if (this.currentMessageId) {
             var currentMessage = this.messages.get(this.currentMessageId);
@@ -88,12 +88,14 @@ var Wave = Backbone.Model.extend({
             nextUnreadMessage = currentMessage.getNextUnread(minId);
         }
         
-        if (!nextUnreadMessage)
-            nextUnreadMessage = this.messages.find(function(msg){return msg.get('unread') && msg.getSortableId() > minId});
+        if (!nextUnreadMessage) {
+            nextUnreadMessage = this.messages.find(function(msg){return msg.get('unread') && msg.getSortableId() > minId;});
+        }
 
         //ha nincs utana, megyunk visszafele
-        if (!nextUnreadMessage)
-            nextUnreadMessage = this.messages.find(function(msg){return msg.get('unread') && msg.getSortableId() < minId});
+        if (!nextUnreadMessage) {
+            nextUnreadMessage = this.messages.find(function(msg){return msg.get('unread') && msg.getSortableId() < minId;});
+        }
 
         if (!nextUnreadMessage) {
             this.trigger('noMoreUnread');

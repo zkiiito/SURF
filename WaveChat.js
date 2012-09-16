@@ -45,7 +45,7 @@ var User = Backbone.Model.extend({
         var friends = this.waves.reduce(function(friends, wave){
             var uids = wave.get('userIds');
             _.each(uids, function(item){
-                if (item != this.id) {
+                if (item !== this.id) {
                     var user = WaveServer.users.get(item);
                     friends.add(user);
                 }
@@ -98,8 +98,9 @@ var Message = Backbone.Model.extend({
     },
     idAttribute: '_id',
     initialize: function() {
-        if (this.isNew())
+        if (this.isNew()) {
             this.set('created_at', Date.now());
+        }
     },
     save: function() {
         return DAL.saveMessage(this);
@@ -183,7 +184,7 @@ var Wave = Backbone.Model.extend({
         this.users.each(function(user){
             //csak ha be van lepve, es nem ismerte eddig
             //tehat most lett 1 waven vele
-            if (user.socket && user != newuser && _.intersection(newuser.waves, user.waves).length < 2) {
+            if (user.socket && user !== newuser && _.intersection(newuser.waves, user.waves).length < 2) {
                 user.send('updateUser', {
                     user: newuser.toJSON()
                 });
@@ -272,7 +273,7 @@ var WaveServer = {
                     return accept('Session not found.', false);
                 }
                 // success! we're authenticated with a known session.
-                if (session['auth'] != undefined) {
+                if (session.auth !== undefined) {
                     data.session = session;
                     return accept(null, true);
                 }
@@ -297,7 +298,7 @@ var WaveServer = {
             //var userData = client.handshake.session['auth']['google']['user'];
             //console.log(userData);
             
-            client.curUser = WaveServer.getUserByAuth(client.handshake.session['auth']);
+            client.curUser = WaveServer.getUserByAuth(client.handshake.session.auth);
 
             if (client.curUser.socket)
             {
@@ -314,9 +315,8 @@ var WaveServer = {
     },
     
     getUserByAuth: function(auth) {
-        var userData = auth['google']['user'];
-        
-        var user = WaveServer.users.find(function(u){return u.get('googleId') == userData['id']});
+        var userData = auth.google.user,
+            user = WaveServer.users.find(function(u){return u.get('googleId') === userData.id;});
         
         if (user) {
             console.log('auth: userfound ' + user.id);
@@ -324,9 +324,9 @@ var WaveServer = {
         }
         
         user = new User();
-        user.set('name', userData['name']);
-        user.set('avatar', userData['picture']);
-        user.set('googleId', userData['id']);
+        user.set('name', userData.name);
+        user.set('avatar', userData.picture);
+        user.set('googleId', userData.id);
         user.save();
         WaveServer.users.add(user);
 
@@ -340,8 +340,8 @@ var WaveServer = {
 	
     initData: function(app) {
         console.log('startup: initdata');
-        var users = [];
-        var uids = [];
+        var users = [],
+            uids = [];
 
         for (var i = 1; i <= 5; i++) {
             var u = new User({name: 'teszt' + i, avatar: 'images/head' + (i%6 + 1) + '.png'});
