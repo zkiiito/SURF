@@ -183,7 +183,9 @@ DAL = {
             
             DAL.getMinRootIdForWave(wave, minRootId, null, function(err, newMinRootId){
                 DAL.getMessagesForUserInWave(wave, newMinRootId, null, unreadIds, function(err, results){
-                    memo = _.union(memo, results);
+                    if (!err) {
+                        memo = _.union(memo, results);
+                    }
                     callback(null, memo);
                 });
             });
@@ -287,6 +289,11 @@ DAL = {
         }
         
         query.exec(function(err, messages){
+            if (err) {
+                console.log('ERR getMessagesForUserInWave: ' + query + ' ' + err);
+                return callback(true);
+            }
+            
             var res = _.map(messages, function(msg){
                 msg = {
                     _id: msg.id, 

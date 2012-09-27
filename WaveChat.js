@@ -213,14 +213,18 @@ var Wave = Backbone.Model.extend({
             DAL.calcRootId(minParentId, [], function(err, minRootId){
                 DAL.getUnreadIdsForUserInWave(user, wave, function(err, ids){
                     DAL.getMessagesForUserInWave(wave, minRootId, maxRootId, ids, function(err, msgs){
-                        user.send('message', {messages: msgs});
+                        if (!err) {
+                            user.send('message', {messages: msgs});
+                        }
                     });
                 });
             });
         } else {
             DAL.getMinRootIdForWave(wave, maxRootId, maxRootId, function(err, newMinRootId){
                 DAL.getMessagesForUserInWave(wave, newMinRootId, maxRootId, [], function(err, msgs) {
-                    user.send('message', {messages: msgs});
+                    if (!err) {
+                        user.send('message', {messages: msgs});
+                    }
                 });
             });
         }

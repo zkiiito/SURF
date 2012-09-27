@@ -1,0 +1,24 @@
+Sep 18 09:57:34 wavesurf app/web.1:  /app/node_modules/mongoose/lib/utils.js:436
+Sep 18 09:57:34 wavesurf app/web.1:  throw err;
+Sep 18 09:57:34 wavesurf app/web.1:  ^
+Sep 18 09:57:34 wavesurf app/web.1:  TypeError: Cannot use 'in' operator to search for '0' in 50460c5118c01702000000a3
+Sep 18 09:57:34 wavesurf app/web.1:  at Function._.indexOf (/app/node_modules/underscore/underscore.js:435:56)
+Sep 18 09:57:34 wavesurf app/web.1:  at /app/code/DAL.js:289:31
+Sep 18 09:57:34 wavesurf app/web.1:  at Array.map (native)
+Sep 18 09:57:34 wavesurf app/web.1:  at Function._.map._.collect (/app/node_modules/underscore/underscore.js:95:56)
+Sep 18 09:57:34 wavesurf app/web.1:  at Promise.DAL.getMessagesForUserInWave (/app/code/DAL.js:282:25)
+Sep 18 09:57:34 wavesurf app/web.1:  at Promise.addBack (/app/node_modules/mongoose/lib/promise.js:128:8)
+Sep 18 09:57:34 wavesurf app/web.1:  at Promise.EventEmitter.emit (events.js:88:17)
+Sep 18 09:57:34 wavesurf app/web.1:  at Promise.emit (/app/node_modules/mongoose/lib/promise.js:66:38)
+Sep 18 09:57:34 wavesurf app/web.1:  at Promise.complete (/app/node_modules/mongoose/lib/promise.js:77:20)
+Sep 18 09:57:34 wavesurf app/web.1:  at Promise.resolve (/app/node_modules/mongoose/lib/promise.js:144:15)
+
+
+Sep 18 09:59:00 wavesurf app/web.1:  ^
+Sep 18 09:59:00 wavesurf app/web.1:  TypeError: Cannot use 'in' operator to search for '0' in 5040b68e95e90c0200000025
+Sep 18 09:59:00 wavesurf app/web.1:  at Function._.indexOf (/app/node_modules/underscore/underscore.js:435:56)
+Sep 18 09:59:00 wavesurf app/web.1:  at /app/code/DAL.js:289:31
+Sep 18 09:59:00 wavesurf app/web.1:  at Array.map (native)
+Sep 18 09:59:00 wavesurf app/web.1:  at Function._.map._.collect (/app/node_modules/underscore/underscore.js:95:56)
+Sep 18 09:59:00 wavesurf app/web.1:  at Promise.DAL.getMessagesForUserInWave (/app/code/DAL.js:282:25)
+Sep 18 09:59:00 wavesurf app/web.1:  at Promise.addBack (/app/node_modules/mongoose/lib/promise.js:128:8)
