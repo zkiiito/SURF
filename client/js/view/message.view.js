@@ -15,8 +15,8 @@ var MessageView = Backbone.View.extend({
         'click a.threadend' : 'replyMessage'
     },
     render: function() {
-        var context = _.extend(this.model.toJSON(), {id: this.model.id, user: this.model.user.toJSON()});        
-        var template = ich.message_view(context);
+        var context = _.extend(this.model.toJSON(), {id: this.model.id, user: this.model.user.toJSON()}),
+            template = ich.message_view(context);
         
         this.setElement(template);
         if (!this.model.get('unread')) {
@@ -37,8 +37,10 @@ var MessageView = Backbone.View.extend({
         
         this.$el.children('.replies').append(view.render().el);
         if (this.model.messages.length === 1) {
-            if (this.$el.children('div.replyform').size() === 0)//ha nincs kint a replyform
+            if (this.$el.children('div.replyform').size() === 0) {
+                //ha nincs kint a replyform
                 this.$el.children('div.threadend').show();
+            }
         }
     },
 
@@ -56,14 +58,15 @@ var MessageView = Backbone.View.extend({
     
     scrollTo: function() {
         //console.log('scroll');
-        var scrollTop = this.$el.position().top;
+        var scrollTop = this.$el.position().top,
+            wavesContainer = this.$el.parents('.waves-container');
+            //wavesContainer = $('.wave').filter(':visible').find('.waves-container');
         
         this.$el.triggerHandler('click');
                 
-        var wavesContainer = this.$el.parents('.waves-container');
-        //wavesContainer = $('.wave').filter(':visible').find('.waves-container');
-        if (scrollTop < 0 || scrollTop > wavesContainer.height())
+        if (scrollTop < 0 || scrollTop > wavesContainer.height()) {
             wavesContainer.scrollTop(this.$el.position().top + wavesContainer.scrollTop() - wavesContainer.height() * 0.3);
+        }
         
         this.$el.children('table').focus();
     },
@@ -80,14 +83,14 @@ var MessageView = Backbone.View.extend({
             el.remove();
         });
 
-        var context = _.extend(this.model.toJSON(), {id: this.model.id, user: this.model.user.toJSON()});
-        var form = ich.replyform_view(context);
+        var context = _.extend(this.model.toJSON(), {id: this.model.id, user: this.model.user.toJSON()}),
+            form = ich.replyform_view(context);
 
         this.$el.append(form);
         this.$el.children('div.threadend').hide();//ha latszik-ha nem.
 
         this.$el.find('textarea').keydown(function(e){
-            if (!e.shiftKey && 13 == e.keyCode) {
+            if (!e.shiftKey && 13 === e.keyCode) {
                 if ($(this).val().length > 0) {
                     var form = $(this).parents('form');
                     Communicator.sendMessage($('textarea', form).val(), $('[name=wave_id]', form).val(), $('[name=parent_id]', form).val());

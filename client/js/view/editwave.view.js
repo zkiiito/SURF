@@ -15,7 +15,9 @@ var EditWaveView = Backbone.View.extend({
     },
     
     initUserSuggest: function() {
-        if (this.inited) return;
+        if (this.inited) {
+            return;
+        }
         var userArray = [];
         
         app.model.users.each(function(user){

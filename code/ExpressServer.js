@@ -13,10 +13,13 @@ function addUser (source, sourceUser) {
     var user;
     if (arguments.length === 1) { // password-based
         user = sourceUser = source;
-        user.id = ++nextUserId;
-        return usersById[nextUserId] = user;
+        nextUserId += 1;
+        user.id = nextUserId;
+        usersById[nextUserId] = user;
+        return user;
     } else { // non-password-based
-        user = usersById[++nextUserId] = {id: nextUserId};
+        nextUserId += 1;
+        user = usersById[nextUserId] = {id: nextUserId};
         user[source] = sourceUser;
     }
     return user;
@@ -65,20 +68,12 @@ app.configure(function(){
 
     app.use('/node', express.static(__dirname + '/../node_modules'));
   
-    app.use(everyauth.middleware(app));
-  
-//    app.set('view engine', 'jade');
-//    app.set('views', __dirname + '/../client/loginview');
+    app.use(everyauth.middleware(app));  
 });
 
-/*
-app.get('/lgn', function (req, res) {
-    res.render('home');
-});
-*/
 
 app.get('/', function(req, res) {
-    if (!req.session['auth']) {
+    if (!req.session.auth) {
         return res.redirect('/auth/google');
     }
     res.sendfile(clientDir + '/index.html');

@@ -23,16 +23,11 @@ var SurfAppView = Backbone.View.extend({
     },
     
     addWave: function(wave) {
-        var listView = new WaveListView({
-            model: wave
-        });
-        $('#wave-list').append(listView.render().el);
-		
-        var view = new WaveView({
-            model: wave
-        });
+        var listView = new WaveListView({model: wave}),
+            view = new WaveView({model: wave});
+        
+        $('#wave-list').append(listView.render().el);		
         $('#wave-container').append(view.render().el);
-	
     },
     
     resetWaves: function() {
@@ -41,8 +36,9 @@ var SurfAppView = Backbone.View.extend({
     
     addMessage: function(message) {
         var wave = this.model.waves.get(message.get('waveId'));
-        if (wave)
+        if (wave) {
             wave.addMessage(message);
+        }
     },
     
     resetMessages: function() {
@@ -75,8 +71,8 @@ var SurfAppView = Backbone.View.extend({
     },
     
     setTitle: function() {
-        var title = 'Surf';
-        var unreadCount = this.model.messages.where({unread: true}).length;
+        var title = 'Surf',
+            unreadCount = this.model.messages.where({unread: true}).length;
         
         if (unreadCount > 0) {
             title = '[' + unreadCount + '] ' + title;

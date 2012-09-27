@@ -9,8 +9,11 @@ Minify = {
             if (err) return done(err);
             var i = 0;
             (function next() {
-                var file = list[i++];
-                if (!file) return done(null, contents);
+                i += 1;
+                var file = list[i];
+                if (!file) {
+                    return done(null, contents);
+                }
                 file = dir + '/' + file;
                 fs.stat(file, function(err, stat) {
                     if (stat && stat.isDirectory()) {
@@ -23,7 +26,7 @@ Minify = {
                         next();
                     }
                 });
-            })();
+            }());
         });
     },
     
@@ -36,16 +39,17 @@ Minify = {
     },
     
     minify: function(callback) {
-        var workDir = __dirname + '/../client/js';
-        var minFile = workDir + '/surf.min.js';
+        var workDir = __dirname + '/../client/js',
+            minFile = workDir + '/surf.min.js';
         
-        if (fs.existsSync(minFile))
+        if (fs.existsSync(minFile)) {   
             fs.unlinkSync(minFile);
+        }
         Minify.readFiles(workDir, function(err, fileData) {
             var compressedData = Minify.compress(fileData);
             fs.writeFileSync(minFile, compressedData);
         });
     }
-}
+};
 
 exports.Minify = Minify;

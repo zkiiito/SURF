@@ -1,7 +1,9 @@
 var Communicator = {
     socket: null,
     initialize: function() {
-        if (typeof io == 'undefined') return;
+        if (typeof io === 'undefined') {
+            return;
+        }
         
         //var id = prompt('hanyas vagy?', Math.ceil(Math.random() * 50)) * 1 -1;
         Communicator.socket = new io.connect(document.location.href);
@@ -25,8 +27,9 @@ var Communicator = {
         Communicator.socket.on('disconnect', function(){
             alert('disconnected');
             var url = 'http://' + document.location.host;
-            if (document.location.port)
+            if (document.location.port) {
                 url += document.location.port;
+            }
             document.location.href = url;
         });
         
@@ -85,8 +88,9 @@ var Communicator = {
         }
         
         var message = new Message(data);
-        if (app.model.waves.get(data.waveId).addMessage(message))
+        if (app.model.waves.get(data.waveId).addMessage(message)) {
             app.model.messages.add(message);
+        }
     },
     
     onUpdateUser: function(data) {
@@ -114,8 +118,8 @@ var Communicator = {
             waveId: wave.id,
             minParentId: minParentId,
             maxRootId: maxRootId
-        }
+        };
         
         Communicator.socket.emit('getMessages', data);
     }
-}
+};

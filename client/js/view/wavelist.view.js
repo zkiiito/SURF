@@ -19,8 +19,9 @@ var WaveListView = Backbone.View.extend({
     render: function() {
         var context = _.extend(this.model.toJSON(), {
             id: this.model.id
-        });
-        var template = ich.wave_list_view(context);
+        }),
+            template = ich.wave_list_view(context);
+        
         this.setElement(template);
         this.changeUsers();
         return this;
@@ -44,7 +45,7 @@ var WaveListView = Backbone.View.extend({
     },
     
     updateMessages: function(message) {
-        if (message.get('userId') != app.currentUser && message.get('unread')) {
+        if (message.get('userId') !== app.currentUser && message.get('unread')) {
             this.$el.addClass('updated');
         }
     },
@@ -60,12 +61,13 @@ var WaveListView = Backbone.View.extend({
     
     scrollToNextUnread: function(e) {
         //ilyenkor nem kell hrefelni a routernek
-        if (app.currentWave == this.model.id) {
+        if (app.currentWave === this.model.id) {
             e.preventDefault();
             var nextUnread = this.model.getNextUnreadMessage();
         
-            if (nextUnread)
+            if (nextUnread) {
                 nextUnread.setScrolled();
+            }
         }
     }
 });

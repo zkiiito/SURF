@@ -22,13 +22,15 @@ var WaveView = Backbone.View.extend({
     render: function() {
         var context = _.extend(this.model.toJSON(), {
             id: this.model.id
-        });
-        var template = ich.wave_view(context);
+        }),
+            template = ich.wave_view(context),
+            that = this;
+            
         this.setElement(template);
         this.$el.hide();
         
         this.$el.find('textarea').keydown(function(e){
-            if (!e.shiftKey && 13 == e.keyCode) {
+            if (!e.shiftKey && 13 === e.keyCode) {
                 if ($(this).val().length > 0) {
                     var form = $(this).parents('form');
                     Communicator.sendMessage($('textarea', form).val(), $('[name=wave_id]', form).val(), null);
@@ -39,14 +41,13 @@ var WaveView = Backbone.View.extend({
             e.stopPropagation();
         });
         
-        var that = this;
         $('body').keydown(function(e){
             var nodeName = $(e.target).prop('nodeName');
             
-            if ('INPUT' == nodeName || 'TEXTBOX' == nodeName) {
+            if ('INPUT' === nodeName || 'TEXTBOX' === nodeName) {
                 return;
             }
-            else if (app.currentWave == that.model.id && 32 == e.keyCode) {
+            else if (app.currentWave === that.model.id && 32 === e.keyCode) {
                 e.preventDefault();
                 that.scrollToNextUnread();
             }
@@ -66,18 +67,16 @@ var WaveView = Backbone.View.extend({
     },
     
     addMessage: function(message) {
-        if (null == message.get('parentId')) {
-            var view = new MessageView({
-                model: message
-            });
+        if (null === message.get('parentId')) {
+            var view = new MessageView({model: message}),
+                targetPos = this.model.messages.where({parentId: null}).indexOf(message),
+                viewElement = view.render().el;
             
-            var targetPos = this.model.messages.where({parentId: null}).indexOf(message);
-            var viewElement = view.render().el;
-            
-            if (0 == targetPos)
+            if (0 === targetPos) {
                 this.$el.find('div.getprevmessages').after(viewElement);
-            else
+            } else {
                 this.$el.find('.messages > .message').eq(targetPos - 1).after(viewElement);
+            }
             
             //$('.messages', this.$el).append(view.render().el);
         }
@@ -111,11 +110,14 @@ var WaveView = Backbone.View.extend({
     },
     
     scrollToNextUnread: function(e) {
-        if (e) e.preventDefault();
+        if (e) {
+            e.preventDefault();
+        }
         var nextUnread = this.model.getNextUnreadMessage();
         
-        if (nextUnread)
+        if (nextUnread) {
             nextUnread.setScrolled();
+        }
     },
     
     scrollToBottom: function() {

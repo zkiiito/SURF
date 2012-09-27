@@ -48,7 +48,7 @@ var Wave = Backbone.Model.extend({
     },
     
     getUnreadCount: function() {
-        return this.messages.reduce(function(unread, msg){return unread + (msg.get('unread') ? 1 : 0)}, 0);
+        return this.messages.reduce(function(unread, msg){return unread + (msg.get('unread') ? 1 : 0);}, 0);
     },
     
     getUserNames: function() {
@@ -115,8 +115,9 @@ var Wave = Backbone.Model.extend({
             unread = msg.readAllMessages() || unread;
         });
         
-        if (unread)
+        if (unread) {
             Communicator.readAllMessages(this);
+        }
     }
 });
 

@@ -40,11 +40,10 @@ var Message = Backbone.Model.extend({
     },
     
     formatMessage: function() {
-        var msg = this.get('message');
-        msg = strip_tags(msg);
+        var msg = this.get('message'),
+            urlRegex = /((https?:\/\/|www\.)[^\s"]+)/g; //TODO: improve
         
-        //TODO: improve
-        var urlRegex = /((https?:\/\/|www\.)[^\s"]+)/g;
+        msg = strip_tags(msg);
         msg = msg.replace(urlRegex, '<a href="$1" target="_blank">$1</a>');
         
         msg = nl2br(msg, true);
