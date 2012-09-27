@@ -64,7 +64,7 @@ DAL = {
             _.each(messages, function(message){
                 if (null === message.rootId) {
                     if (null === message.parentId) {
-                        MessageModel.findByIdAndUpdate(message._id, {rootId: message._id}).exec();
+                        MessageModel.update({_id: message._id}, {rootId: message._id}).exec();
                     } else {
                         DAL.calcRootId(message.parentId, [message]);
                     }
@@ -95,7 +95,7 @@ DAL = {
             m.save();
             wave.set({_id: m._id});
         } else {
-            WaveModel.findByIdAndUpdate(wave.id, data).exec();
+            WaveModel.update({_id: wave.id}, data).exec();
         }
         return wave;
     },
@@ -142,7 +142,7 @@ DAL = {
                 }
                 
                 async.forEach(messages, function(msg){
-                    MessageModel.findByIdAndUpdate(msg._id, {rootId: rootId}).exec();
+                    MessageModel.update({_id: msg._id}, {rootId: rootId}).exec();
                 });
                 
                 if (callback) {
