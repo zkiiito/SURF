@@ -10,10 +10,10 @@ var Message = Backbone.Model.extend({
     idAttribute: '_id',
     initialize: function() {
         this.messages = new MessageCollection(); //nem itt kene
-        this.user = app.model.users.get(this.get('userId'));
+        this.user = app.model.users.getUser(this.get('userId'));
         this.formatMessage();
         if (!this.isNew()) {
-            this.set('unread', this.get('unread') && app.currentUser != this.get('userId'));
+            this.set('unread', this.get('unread') && app.currentUser !== this.get('userId'));
         }
     },
     addReply: function(message) {

@@ -430,6 +430,12 @@ var WaveServer = {
             if (wave)
                 wave.readAllMessagesOfUser(client.curUser);
         });
+        
+        client.on('getUser', function(data){
+            var user = WaveServer.users.get(data.userId);
+            if (user)
+                client.curUser.send('updateUser', {user: user.toJSON()});
+        });
     }
 }
 //Minify.minify();

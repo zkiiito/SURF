@@ -16,5 +16,17 @@ var User = Backbone.Model.extend({
 
 
 var UserCollection = Backbone.Collection.extend({
-    model: User 
+    model: User,
+    
+    getUser: function(id) {
+        var user = this.get(id);
+        
+        if (undefined === user) {
+            user = new User({_id: id, name: '[loading]'});
+            this.add(user);
+            Communicator.getUser(id);
+        }
+        
+        return user;
+    }
 });

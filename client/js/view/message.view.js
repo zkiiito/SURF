@@ -1,10 +1,11 @@
 var MessageView = Backbone.View.extend({
     initialize: function() {
         this.hasReplyForm = false;
-        _.bindAll(this, 'addMessage', 'readMessage', 'replyMessage', 'onReadMessage', 'scrollTo');
+        _.bindAll(this, 'addMessage', 'readMessage', 'replyMessage', 'onReadMessage', 'scrollTo', 'changeUserName');
         this.model.messages.bind('add', this.addMessage);//ezt nem itt kene, hanem amikor letrejon ott a messages
         this.model.bind('change:unread', this.onReadMessage);
         this.model.bind('change:scrolled', this.scrollTo);
+        this.model.user.bind('change:name', this.changeUserName);
         
         var date = new Date(this.model.get('created_at'));        
         this.model.set('dateFormatted', date.format('mmm d HH:MM'));
@@ -113,5 +114,9 @@ var MessageView = Backbone.View.extend({
         });
         
        return false;
+    },
+    
+    changeUserName: function() {
+        this.$el.find('span.author').eq(0).text(this.model.user.get('name') + ':');
     }
 });

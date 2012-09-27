@@ -121,5 +121,13 @@ var Communicator = {
         };
         
         Communicator.socket.emit('getMessages', data);
+    },
+    
+    getUser: function(userId) {
+        var data = {
+            userId: userId
+        };
+        
+        Communicator.socket.emit('getUser', data);
     }
 };
