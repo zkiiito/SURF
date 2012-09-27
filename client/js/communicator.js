@@ -129,5 +129,13 @@ var Communicator = {
         };
         
         Communicator.socket.emit('getUser', data);
+    },
+    
+    quitUser: function(waveId) {
+        var data = {
+            waveId: waveId
+        };
+        
+        Communicator.socket.emit('quitWave', data);
     }
 };

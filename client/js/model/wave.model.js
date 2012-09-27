@@ -118,6 +118,14 @@ var Wave = Backbone.Model.extend({
         if (unread) {
             Communicator.readAllMessages(this);
         }
+    },
+    
+    quit: function() {
+        Communicator.quitUser(this.id);
+        app.currentWave = null;
+        app.model.waves.remove(this);
+        app.showWave(null);
+        //TODO: messageket torolni az appbol!
     }
 });
 

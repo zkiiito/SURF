@@ -1,12 +1,15 @@
 var WaveView = Backbone.View.extend({
     initialize: function() {
-        _.bindAll(this, 'setCurrent', 'addMessage', 'addUser', 'removeUser', 'updateTitle', 'showUpdateWave', 'scrollToNextUnread', 'scrollToBottom', 'readAllMessages');
+        _.bindAll(this, 'setCurrent', 'addMessage', 'addUser', 'removeUser', 'updateTitle', 
+                        'showUpdateWave', 'scrollToNextUnread', 'scrollToBottom', 'readAllMessages',
+                        'quitWave', 'removeWave');
         
         this.userViews = [];
         
         this.model.bind('change:current', this.setCurrent);
         this.model.bind('change:title', this.updateTitle);
         this.model.bind('noMoreUnread', this.scrollToBottom);
+        this.model.bind('remove', this.removeWave);
         
         this.model.messages.bind('add', this.addMessage);
         this.model.users.bind('add', this.addUser);
@@ -16,7 +19,8 @@ var WaveView = Backbone.View.extend({
         'click a.editwave' : 'showUpdateWave',
         'click a.gounread' : 'scrollToNextUnread',
         'click a.getprevmessages' : 'getPreviousMessages',
-        'click a.readall' : 'readAllMessages'
+        'click a.readall' : 'readAllMessages',
+        'click a.quit' : 'quitWave'
     },
     
     render: function() {
@@ -134,5 +138,18 @@ var WaveView = Backbone.View.extend({
     readAllMessages: function(e) {
         e.preventDefault();
         this.model.readAllMessages();
-    }
+    },
+    
+    quitWave: function(e) {
+        e.preventDefault();
+        if (confirm('Biztos elhagyod a ' + this.model.get('title') + ' csevegést?')) {
+            this.model.quit();
+        }
+    },
+    
+    removeWave: function(wave) {
+        if (wave.id === this.model.id) {
+            this.$el.remove();
+        }
+    }    
 });

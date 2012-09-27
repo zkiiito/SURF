@@ -75,6 +75,10 @@ var User = Backbone.Model.extend({
     
     save: function() {
         return DAL.saveUser(this);
+    },
+    
+    quitWave: function(wave) {
+        this.waves.remove(wave);
     }
     
     //validate: function(){
@@ -236,6 +240,23 @@ var Wave = Backbone.Model.extend({
     
     save: function() {
         return DAL.saveWave(this);
+    },
+    
+    quitUser: function(user) {
+        if (this.users.indexOf(user) >= 0) {
+            this.users.remove(user);
+            
+            var userIds = this.get('userIds');
+            userIds.splice(_.indexOf(userIds, user.id.toString()), 1);
+            this.set('userIds', userIds);
+            
+            user.quitWave(this);
+            
+            this.save();
+            this.notifyUsers();
+        }
+        //TODO: ha ures a wave, torolni osszes msgt + wavet
+        //vagy, archive flag rajuk.
     }
     
     //validate: function() {
@@ -420,21 +441,31 @@ var WaveServer = {
         
         client.on('getMessages', function(data){
             var wave = WaveServer.waves.get(data.waveId);
-            if (wave)
+            if (wave) {
                 wave.sendPreviousMessagesToUser(client.curUser, data.minParentId, data.maxRootId);
+            }
         });
         
         client.on('readAllMessages', function(data) {
             console.log('readAllMessages: ' + client.curUser.id);
             var wave = WaveServer.waves.get(data.waveId);
-            if (wave)
+            if (wave) {
                 wave.readAllMessagesOfUser(client.curUser);
+            }
         });
         
         client.on('getUser', function(data){
             var user = WaveServer.users.get(data.userId);
-            if (user)
+            if (user) {
                 client.curUser.send('updateUser', {user: user.toJSON()});
+            }
+        });
+        
+        client.on('quitWave', function(data) {
+            var wave = WaveServer.waves.get(data.waveId);
+            if (wave) {
+                wave.quitUser(client.curUser);
+            }
         });
     }
 }

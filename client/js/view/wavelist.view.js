@@ -1,8 +1,9 @@
 var WaveListView = Backbone.View.extend({
     initialize: function() {
-        _.bindAll(this, 'setCurrent', 'countMessages', 'updateMessages', 'changeUsers', 'updateTitle', 'scrollToNextUnread');
+        _.bindAll(this, 'setCurrent', 'countMessages', 'updateMessages', 'changeUsers', 'updateTitle', 'scrollToNextUnread', 'removeWave');
         this.model.bind('change:current', this.setCurrent);
         this.model.bind('change:title', this.updateTitle);
+        this.model.bind('remove', this.removeWave);
         
         this.model.messages.bind('change:unread', this.countMessages);
         this.model.messages.bind('add', this.countMessages);
@@ -68,6 +69,12 @@ var WaveListView = Backbone.View.extend({
             if (nextUnread) {
                 nextUnread.setScrolled();
             }
+        }
+    },
+    
+    removeWave: function(wave) {
+        if (wave.id === this.model.id) {
+            this.$el.remove();
         }
     }
 });
