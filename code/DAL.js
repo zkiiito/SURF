@@ -289,7 +289,10 @@ DAL = {
         }
         
         query.exec(function(err, messages){
-            if (err) {
+            console.log('DEBUG getMessagesForUserInWave: err: ' + err + ', messages.length: ' + messages.length + 
+                        ', unreadIds: ' + unreadIds.length + ' ' + (typeof unreadIds));
+            
+            if (err || messages.length === 0) {
                 console.log('ERR getMessagesForUserInWave: ' + query + ' ' + err);
                 return callback(true);
             }

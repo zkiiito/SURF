@@ -22,3 +22,20 @@ Sep 18 09:59:00 wavesurf app/web.1:  at Array.map (native)
 Sep 18 09:59:00 wavesurf app/web.1:  at Function._.map._.collect (/app/node_modules/underscore/underscore.js:95:56)
 Sep 18 09:59:00 wavesurf app/web.1:  at Promise.DAL.getMessagesForUserInWave (/app/code/DAL.js:282:25)
 Sep 18 09:59:00 wavesurf app/web.1:  at Promise.addBack (/app/node_modules/mongoose/lib/promise.js:128:8)
+
+
+
+
+
+Sep 28 11:15:52 wavesurf app/web.1:  /app/node_modules/mongoose/lib/utils.js:436
+Sep 28 11:15:52 wavesurf app/web.1:  throw err;
+Sep 28 11:15:52 wavesurf app/web.1:  ^
+Sep 28 11:15:52 wavesurf app/web.1:  TypeError: Cannot use 'in' operator to search for '0' in 50600ae845b3fb0200000004
+Sep 28 11:15:52 wavesurf app/web.1:  at Function._.indexOf (/app/node_modules/underscore/underscore.js:435:56)
+Sep 28 11:15:52 wavesurf app/web.1:  at /app/code/DAL.js:304:31
+Sep 28 11:15:52 wavesurf app/web.1:  at Array.map (native)
+Sep 28 11:15:52 wavesurf app/web.1:  at Function._.map._.collect (/app/node_modules/underscore/underscore.js:95:56)
+
+azt kene megnezni, ha az unreadek szama 1, akkor mit ad vissza a redis?!
+logolni, hogy hany elem van miben, arrayok-e jol?
+messages mindenkepp array e?
