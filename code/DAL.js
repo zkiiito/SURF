@@ -289,11 +289,7 @@ DAL = {
         }
         
         query.exec(function(err, messages){
-            console.log('DEBUG getMessagesForUserInWave: err: ' + err + ', messages.length: ' + messages.length + 
-                        ', unreadIds: ' + unreadIds.length + ' ' + (typeof unreadIds));
-            
             if (err || messages.length === 0) {
-                console.log('ERR getMessagesForUserInWave: ' + query + ' ' + err);
                 return callback(true);
             }
             
@@ -304,9 +300,20 @@ DAL = {
                     waveId: msg.waveId, 
                     parentId: msg.parentId, 
                     message: msg.message, 
-                    unread: _.indexOf(unreadIds, msg.id) >= 0, 
+                    //unread: _.indexOf(unreadIds, msg.id) >= 0, 
                     created_at: msg.created_at
                 };
+                
+                try {
+                    msg.unread = _.indexOf(unreadIds, msg.id) >= 0;
+                }
+                catch (error) {
+                    console.log('DEBUG getMessagesForUserInWave: ' + error.message);
+                    console.log('DEBUG getMessagesForUserInWave:  messages.length: ' + messages.length + 
+                        ', unreadIds: ' + unreadIds.length + ' ' + (typeof unreadIds) + ' msg.id: ' + msg.id);
+                    
+                    msg.unread = true;
+                }
                 return msg;
             });
             
