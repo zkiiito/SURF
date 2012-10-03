@@ -1,6 +1,9 @@
 var EditWaveView = Backbone.View.extend({
     initialize: function() {
-        _.bindAll(this, 'show', 'hide', 'setWave');
+        _.bindAll(this, 'show', 'hide', 'setWave', 'genUserArray');
+        this.userArray = [];
+        this.model.users.bind('add', this.genUserArray, this);
+        this.model.users.bind('change', this.genUserArray, this);
     },
     events: {
         'click a.close' : 'hide',
@@ -14,15 +17,12 @@ var EditWaveView = Backbone.View.extend({
         return this;
     },
     
-    initUserSuggest: function() {
-        if (this.inited) {
-            return;
-        }
+    genUserArray: function() {
         var userArray = [];
         
-        app.model.users.each(function(user){
+        this.model.users.each(function(user){
             var obj = {id: user.id, name: user.get('name')};
-            //hogy?
+            
             if (user.id === app.currentUser) {
                 obj.readonly = true;
             }
@@ -30,18 +30,31 @@ var EditWaveView = Backbone.View.extend({
             userArray.push(obj);
         }, this);
         
-        this.$el.find('#editwave-users').tokenInput(userArray, {
+        this.userArray = userArray;
+    },
+    
+    initUserSuggest: function() {
+        if (this.inited) {
+            return;
+        }
+        
+        this.genUserArray();
+        
+        this.$el.find('#editwave-users').tokenInput([], {
             theme: "facebook",
             preventDuplicates: true,
             hintText: "Írj be egy felhasználónevet.",
             noResultsText: "Nincs ilyen felhasználónk.",
             searchingText: "Keresés..."
-        });  
+        });
         this.inited = true;
     },
     
     updateUserSuggest: function() {
         this.initUserSuggest();
+        
+        $('#editwave-users').data("settings").local_data = this.userArray;
+        
         var suggest = this.$el.find('#editwave-users');
         suggest.tokenInput('clear');
         
@@ -50,7 +63,7 @@ var EditWaveView = Backbone.View.extend({
                 suggest.tokenInput('add', {id: user.id, name: user.get('name'), readonly: true});
             });
         } else {
-            var currentUser = app.model.users.get(app.currentUser);
+            var currentUser = this.model.users.get(app.currentUser);
             suggest.tokenInput('add', {id: currentUser.id, name: currentUser.get('name'), readonly: true});
         }
         
@@ -82,7 +95,7 @@ var EditWaveView = Backbone.View.extend({
     },
     
     setWave: function(waveId) {
-        this.wave = app.model.waves.get(waveId);
+        this.wave = this.model.waves.get(waveId);
     },
     
     editWave: function() {

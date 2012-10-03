@@ -16,8 +16,8 @@ var SurfAppView = Backbone.View.extend({
     },        
     
     render: function() {
-        this.setElement($('body'));    
-        this.editWaveView = new EditWaveView();
+        this.setElement($('body'));
+        this.editWaveView = new EditWaveView({model: this.model});
         this.$el.append(this.editWaveView.render().el);
         return this;
     },
