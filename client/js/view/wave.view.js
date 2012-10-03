@@ -142,7 +142,7 @@ var WaveView = Backbone.View.extend({
     
     quitWave: function(e) {
         e.preventDefault();
-        if (confirm('Biztos elhagyod a ' + this.model.get('title') + ' csevegést?')) {
+        if (confirm('Biztosan kilépsz a következő beszélgetésből: ' + this.model.get('title') + "?\n\nHa később vissza szeretnél lépni, a beszélgetés résztvevői újra meghívhatnak.")) {
             this.model.quit();
         }
     },
