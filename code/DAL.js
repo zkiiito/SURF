@@ -59,8 +59,9 @@ DAL = {
             });
         });
         
-        //temporary fix
+        //temporary fix a root nelkuli dolgokra
         MessageModel.find({rootId: null}).exec(function(err, messages){
+            console.log('FIXROOT COUNT: ' + messages.length);
             _.each(messages, function(message){
                 if (null === message.rootId) {
                     if (null === message.parentId) {
@@ -70,7 +71,32 @@ DAL = {
                     }
                 }
             });
-        });        
+        });
+        
+        //temporary fix a sajat unreadokra
+        UserModel.find().exec(function(err, users){
+            _.each(users, function(user) {
+                redis.keys('unread-' + user._id + '-*', function(err, unreadKeys){
+                    _.each(unreadKeys, function(key){
+                        redis.smembers(key, function(err, ids){
+                            if (ids.length > 0) {
+                                //console.log(ids);
+                                MessageModel.find({userId: user._id}).where('_id').in(ids).select('_id').exec(function(err, msgs) {
+                                    if (!err && msgs.length > 0) {
+                                        console.log('FIXUNREAD CONUT: ' + msgs.length);
+                                        var delIdArr = _.pluck(msgs, '_id');
+                                        //console.log(delIdArr);
+                                        _.each(delIdArr, function(id){
+                                            redis.srem(key, id);
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    });
+                });
+            });
+        });
     },
         
     saveUser: function(user) {
