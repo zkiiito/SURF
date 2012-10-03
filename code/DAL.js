@@ -308,11 +308,20 @@ DAL = {
                     msg.unread = _.indexOf(unreadIds, mmsg.id) >= 0;
                 }
                 catch (error) {
+                    /*
+                     * quickfix:
+                     * ez a hiba lokalban sosem jelentkezik, csak elesben
+                     * valahogy a redis altal visszaadott tombbol string lesz, ha 1 elemu
+                     */
                     console.log('DEBUG getMessagesForUserInWave: ' + error.message);
                     console.log('DEBUG getMessagesForUserInWave:  messages.length: ' + messages.length + 
                         ', unreadIds: ' + unreadIds.length + ' ' + (typeof unreadIds) + ' msg.id: ' + mmsg.id);
                     
                     msg.unread = true;
+                    
+                    if ('string' === typeof unreadIds) {
+                        msg.unread = unreadIds === mmsg.id.toString();
+                    }
                 }
                 return msg;
             });
