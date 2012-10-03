@@ -293,24 +293,24 @@ DAL = {
                 return callback(true);
             }
             
-            var res = _.map(messages, function(msg){
-                msg = {
-                    _id: msg.id, 
-                    userId: msg.userId, 
-                    waveId: msg.waveId, 
-                    parentId: msg.parentId, 
-                    message: msg.message, 
-                    //unread: _.indexOf(unreadIds, msg.id) >= 0, 
-                    created_at: msg.created_at
+            var res = _.map(messages, function(mmsg){
+                var msg = {
+                    _id: mmsg.id, 
+                    userId: mmsg.userId, 
+                    waveId: mmsg.waveId, 
+                    parentId: mmsg.parentId, 
+                    message: mmsg.message, 
+                    //unread: _.indexOf(unreadIds, mmsg.id) >= 0, 
+                    created_at: mmsg.created_at
                 };
                 
                 try {
-                    msg.unread = _.indexOf(unreadIds, msg.id) >= 0;
+                    msg.unread = _.indexOf(unreadIds, mmsg.id) >= 0;
                 }
                 catch (error) {
                     console.log('DEBUG getMessagesForUserInWave: ' + error.message);
                     console.log('DEBUG getMessagesForUserInWave:  messages.length: ' + messages.length + 
-                        ', unreadIds: ' + unreadIds.length + ' ' + (typeof unreadIds) + ' msg.id: ' + msg.id);
+                        ', unreadIds: ' + unreadIds.length + ' ' + (typeof unreadIds) + ' msg.id: ' + mmsg.id);
                     
                     msg.unread = true;
                 }
