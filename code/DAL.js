@@ -327,7 +327,9 @@ DAL = {
     },
     
     addUnreadMessage: function(user, message) {
-        if (message.get('userId') !== user.id && message.id) {
+        //itt fontos a != a !== helyett!
+        if (message.get('userId') != user.id && message.id) {
+            //console.log('addUnreadMessage: userid: ' + typeof user.id + ' msguserid: ' + typeof message.get('userId') + ' msgid: ' + message.id);
             var key = 'unread-' + user.id + '-' + message.get('waveId');
             redis.sadd(key, message.id);
         }
