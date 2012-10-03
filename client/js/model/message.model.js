@@ -69,14 +69,39 @@ var Message = Backbone.Model.extend({
         return unread;
     },
     
-    getNextUnread: function(minId) {
-        var nextUnread = this.messages.find(function(msg){return msg.get('unread') && msg.getSortableId() > minId;});
+    getNextUnread: function(minId, downOnly) {
+        //megnezzuk sajat magat
+        if (this.getSortableId() > minId && this.get('unread')) {
+            return this;
+        }
         
-        if (!nextUnread && this.get('parentId')) {
-            return app.model.messages.get(this.get('parentId')).getNextUnread(minId);
+        //megnezzuk a gyerekeit
+        var msgs = this.messages.toArray(),
+            nextUnread = null,
+            i = 0;
+
+        for (i = 0; i < msgs.length; i+=1)
+        {
+            nextUnread = msgs[i].getNextUnread(minId, true);
+            if (nextUnread) {
+                return nextUnread;
+            }
+        }
+        
+        //megnezzuk a szulojet
+        if (!nextUnread && this.get('parentId') && !downOnly) {
+            return app.model.messages.get(this.get('parentId')).getNextUnread(0, false);
         }
         
         return nextUnread;
+    },
+    
+    getRootId: function() {
+        if (this.get('parentId')) {
+            return app.model.messages.get(this.get('parentId')).getRootId();
+        } else {
+            return this.getSortableId();
+        }
     }
     
 });

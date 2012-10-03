@@ -78,30 +78,50 @@ var Wave = Backbone.Model.extend({
     
     getNextUnreadMessage: function() {
         var minId = 0,
-            nextUnreadMessage;
+            nextUnread,
+            msgs,
+            i;
         
         if (this.currentMessageId) {
             var currentMessage = this.messages.get(this.currentMessageId);
             minId = currentMessage.getSortableId();
             
             //ha van current, akkor eloszor a gyerekei kozott keresunk, majd attol felfele egyre inkabb
-            nextUnreadMessage = currentMessage.getNextUnread(minId);
+            nextUnread = currentMessage.getNextUnread(minId, false);
+            
+            if (nextUnread) {
+                return nextUnread;
+            } else {
+                minId = currentMessage.getRootId();
+            }
         }
         
-        if (!nextUnreadMessage) {
-            nextUnreadMessage = this.messages.find(function(msg){return msg.get('unread') && msg.getSortableId() > minId;});
+        //ha nincs az aktualis korul, megyunk lefele a fo agon, az osszesben
+        msgs = this.messages.filter(function(msg){return msg.getSortableId() > minId && msg.get('parentId') === null;});
+        for (i = 0; i < msgs.length; i+=1) {
+            nextUnread = msgs[i].getNextUnread(minId, true);
+            if (nextUnread) {
+                return nextUnread;
+            }
         }
-
-        //ha nincs utana, megyunk visszafele
-        if (!nextUnreadMessage) {
-            nextUnreadMessage = this.messages.find(function(msg){return msg.get('unread') && msg.getSortableId() < minId;});
+        
+        //ha nem volt a fo agon, lefele semmi, akkor az elejetol kezdjuk ott ugyanugy
+        if (minId > 0) {
+            msgs = this.messages.filter(function(msg){return msg.getSortableId() < minId && msg.get('parentId') === null;});
+            
+            for (i = 0; i < msgs.length; i+=1) {
+                nextUnread = msgs[i].getNextUnread(0, true);
+                if (nextUnread) {
+                    return nextUnread;
+                }
+            }
         }
-
-        if (!nextUnreadMessage) {
+        
+        if (!nextUnread) {
             this.trigger('noMoreUnread');
         }
         
-        return nextUnreadMessage;
+        return nextUnread;
     },
     
     getPreviousMessages: function() {
