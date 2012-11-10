@@ -34,7 +34,7 @@ var appId = process.env.PORT ? '290177368237-pne1smhvlb3g2r5c7g25d34hk3pfi96f.ap
 var appSecret = process.env.PORT ? 'v28w9nWORgGioUdDO5JSAdBv' : 'x58fnA7rUYCqhsLeAXTakjdN';
 
 var usersByGoogleId = {};
-everyauth.google
+var auth = everyauth.google
     .appId(appId)
     .appSecret(appSecret)
     .scope('https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email')
@@ -44,7 +44,11 @@ everyauth.google
         return usersByGoogleId[googleUser.id] || (usersByGoogleId[googleUser.id] = addUser('google', googleUser));
     })
     .redirectPath('/');
-  
+
+//auto-login
+auth.moreAuthQueryParams.access_type = 'online';
+auth.moreAuthQueryParams.approval_prompt = 'auto';
+
 var app = express();
 var clientDir = __dirname.replace('code', 'client');
 
