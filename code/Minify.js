@@ -4,6 +4,32 @@ var fs = require('fs'),
 
 Minify = {
     readFiles: function(dir, done) {
+        var i,l,contents = '',files = [
+            "i18n.js",
+            "ICanHaz.js",
+            "jquery.tokeninput.js",
+            "date.format.js",
+            "phpjs.js",
+            "model/user.model.js",
+            "model/wave.model.js",
+            "model/message.model.js",
+            "model/surfapp.model.js",
+            "view/user.view.js",
+            "view/wavelist.view.js",
+            "view/wave.view.js",
+            "view/message.view.js",
+            "view/editwave.view.js",
+            "view/surfapp.view.js",
+            "communicator.js",
+            "surf.js"
+        ];
+        
+        for (i=0, l=files.length; i<l; i++)
+        {
+            contents += fs.readFileSync(dir + '/' + files[i]);
+        }
+        return done(null, contents);
+        /*
         var contents = '';
         fs.readdir(dir, function(err, list) {
             if (err) return done(err);
@@ -28,6 +54,7 @@ Minify = {
                 });
             }());
         });
+        */
     },
     
     compress: function(fileData)
@@ -46,8 +73,8 @@ Minify = {
             fs.unlinkSync(minFile);
         }
         Minify.readFiles(workDir, function(err, fileData) {
-            var compressedData = Minify.compress(fileData);
-            fs.writeFileSync(minFile, compressedData);
+            fileData = Minify.compress(fileData);
+            fs.writeFileSync(minFile, fileData);
         });
     }
 };

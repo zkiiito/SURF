@@ -16,7 +16,7 @@
 <script id="wave_list_view" type="text/html">
     <a class="waveitem" href="#wave/{{ id }}">
         <h2>{{ title }}</h2>
-        <p class="meta"><span class="usercount">{{ usercount }} résztvevő</span> <span class="piros">{{ unreadPosts }}</span></p>
+        <p class="meta"><span class="usercount R">{{ usercount }} users</span> <span class="piros">{{ unreadPosts }}</span></p>
     </a>
 </script>
 
@@ -27,21 +27,21 @@
             <p class="heads">
             </p>
             <div class="buttons">
-                <a class="button gounread" href="#">Köv. olvasatlan</a>
-                <a class="button editwave" href="#">Szerkesztés</a>
-                <a class="button readall" href="#">Mindet olvasottá</a>
-                <a class="button quit" href="#">Kilépés</a>
+                <a class="button gounread R" href="#">Next unread</a>
+                <a class="button editwave R" href="#">Edit</a>
+                <a class="button readall R" href="#">Read all</a>
+                <a class="button quit R" href="#">Leave conversation</a>
             </div>
         </div>
         <div class="waves-container">
             <div class="messages">
-                <div class="notification getprevmessages"><p><a class="getprevmessages" href="#">Régebbi üzenetek</a></p></div>
+                <div class="notification getprevmessages"><p><a class="getprevmessages R" href="#">Older messages</a></p></div>
             </div>
             <div class="notification replyform">
                 <form class="add-message" method="post">
                     <input type="hidden" name="wave_id" value="{{ id }}"/>
-                    <textarea name="message" placeholder="Új üzenet"></textarea>
-                    <p class="inline-help">Nyomj Entert a mentéshez, Shift-Entert a sortöréshez.</p>
+                    <textarea name="message" placeholder="New message" class="R"></textarea>
+                    <p class="inline-help R">Press Return to send, Shift-Return to break line.</p>
                 </form>
             </div>
         </div>
@@ -68,19 +68,19 @@
         <div class="replies">
         </div>
         <div class="notification threadend">
-            <p><a class="button threadend" href="">Új üzenet &darr;</a></p>
+            <p><a class="button threadend" href=""><span class="R">New message</span> &darr;</a></p>
       </div>
     </div>    
 </script>
 
 <script id="replyform_view" type="text/html">
     <div class="notification replyform">
-    <p><a class="button threadend cancel" href="">Mégse &uarr;</a></p>
+    <p><a class="button threadend cancel" href=""><span class="R">Cancel</span> &uarr;</a></p>
     <form class="add-message threadend" method="post">    
         <input type="hidden" name="wave_id" value="{{ waveId }}"/>
         <input type="hidden" name="parent_id" value="{{ id }}"/>
-        <textarea name="message" placeholder="Válasz {{ user.name }} üzenetére"></textarea>
-        <p class="inline-help">Nyomj Entert a mentéshez, Shift-Entert a sortöréshez.</p>
+        <textarea name="message" placeholder="Reply to {{ user.name }}'s message" class="R"></textarea>
+        <p class="inline-help R">Press Return to send, Shift-Return to break line.</p>
     </form>
     </div>
 </script>
@@ -88,26 +88,26 @@
 <script id="editwave_view" type="text/html">
 <div id="editwave" class="overlay">
   <div class="overlay-title">
-    <a class="close button" href="">Bezárás</a>
-    <h2>Új beszélgetés</h2>
+    <a class="close button R" href="">Close</a>
+    <h2 class="R">New conversation</h2>
   </div>
   <div class="overlay-body">
-    <h2>Új beszélgetés</h2>
+    <h2 class="R">New conversation</h2>
     <form method="post">
       <div>
-        <label for="editwave-title">Beszélgetés címe</label>
+        <label for="editwave-title" class="R">Title</label>
         <div class="right">
           <input id="editwave-title" class="normal" name="title" type="text" />
         </div>
       </div>
       <div>
-        <label for="editwave-users">Résztvevők</label>
+        <label for="editwave-users" class="R">Participants</label>
         <div class="right">
           <input id="editwave-users" name="userids" class="normal" type="text" />
         </div>
       </div>
       <div class="right">
-        <button id="editwave-submit" type="submit" class="button">Létrehozás</button>
+        <button id="editwave-submit" type="submit" class="button R">Create</button>
       </div>
     </form>
   </div>
@@ -117,12 +117,12 @@
 <div id="header">
   <h1>Surf</h1>
   <a href="#"><img id="header-logo" src="images/surf-logo.png" /></a>
-  <a class="button addwave" href="#">Új beszélgetés +</a>
+  <a class="button addwave R" href="#">New conversation +</a>
   <div id="usermenu">
     <span id="currentuser"></span>
     <!--a class="button" href="#" onclick="return false;">Ismerőseim</a-->
     <!--a class="button" href="#" onclick="return false;">Beállítások</a-->
-    <a class="button" href="/logout">Kijelentkezés</a>
+    <a class="button R" href="/logout">Log out</a>
   </div>
 </div>
 <div id="wave-list"></div>
@@ -134,9 +134,11 @@
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
 <script src="node/underscore/underscore-min.js"></script>
 <script src="node/backbone/backbone-min.js"></script>
-<!--script src="js/surf.min.js"></script-->
+<script src="node/R.js/R.js"></script>
+<script src="js/surf.min.js"></script>
 
 
+<!--script src="js/i18n.js"></script>
 <script src="js/ICanHaz.js"></script>
 <script src="js/jquery.tokeninput.js"></script>
 <script src="js/date.format.js"></script>
@@ -152,6 +154,6 @@
 <script src="js/view/editwave.view.js"></script>
 <script src="js/view/surfapp.view.js"></script>
 <script src="js/communicator.js"></script>
-<script src="js/surf.js"></script>
+<script src="js/surf.js"></script-->
 </body>
 </html>

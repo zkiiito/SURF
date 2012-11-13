@@ -142,7 +142,12 @@ var WaveView = Backbone.View.extend({
     
     quitWave: function(e) {
         e.preventDefault();
-        if (confirm('Biztosan kilépsz a következő beszélgetésből: ' + this.model.get('title') + "?\n\nHa később vissza szeretnél lépni, a beszélgetés résztvevői újra meghívhatnak.")) {
+        
+        var question =  __("Do you want to leave conversation {{ title }}" + 
+            "?\n\nIf you want to come back later, participants can invite you")
+            .replace('{{ title }}', this.model.get('title'));
+        
+        if (confirm(question)) {
             this.model.quit();
         }
     },

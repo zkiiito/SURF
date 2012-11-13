@@ -56,7 +56,7 @@ var Wave = Backbone.Model.extend({
     },
     
     getUserCount: function() {
-        return this.users.length +  ' résztvevő';
+        return this.users.length;
     },
     
     update: function(data) {

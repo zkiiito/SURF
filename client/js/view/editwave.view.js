@@ -43,9 +43,9 @@ var EditWaveView = Backbone.View.extend({
         this.$el.find('#editwave-users').tokenInput([], {
             theme: "facebook",
             preventDuplicates: true,
-            hintText: "Írj be egy felhasználónevet.",
-            noResultsText: "Nincs ilyen felhasználónk.",
-            searchingText: "Keresés..."
+            hintText: __('Enter username.'),
+            noResultsText: __('User not found.'),
+            searchingText: _('Searching...')
         });
         this.inited = true;
     },
@@ -72,12 +72,12 @@ var EditWaveView = Backbone.View.extend({
     show: function() {
         if (this.wave) {
             this.$el.find('input[name=title]').val(this.wave.get('title'));
-            this.$el.find('h2').text('Beszélgetés szerkesztése');
-            this.$el.find('#editwave-submit').text('Mentés');
+            this.$el.find('h2').text(__('Edit conversation'));
+            this.$el.find('#editwave-submit').text(__('Save'));
         } else {
             this.$el.find('input[name=title]').val('');
-            this.$el.find('h2').text('Új beszélgetés');
-            this.$el.find('#editwave-submit').text('Létrehozás');
+            this.$el.find('h2').text(__('New conversation'));
+            this.$el.find('#editwave-submit').text(__('Create'));
         }
         
         this.updateUserSuggest();

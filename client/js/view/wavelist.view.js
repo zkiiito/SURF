@@ -52,7 +52,7 @@ var WaveListView = Backbone.View.extend({
     },
     
     changeUsers: function() {
-        var usercount = this.model.getUserCount();
+        var usercount = __('{{ usercount }} users').replace('{{ usercount }}', this.model.getUserCount());
         this.$el.find('.usercount').text(usercount);
     },
     

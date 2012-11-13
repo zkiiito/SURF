@@ -10,16 +10,21 @@ var Communicator = {
         //Communicator.socket.emit('auth', id);
         
         Communicator.socket.on('init', function(data){
-            //console.log(data.me);
-            app.currentUser = data.me._id;
-            data.users.push(data.me);
-            app.model.users.reset(data.users);
-            app.model.waves.reset(data.waves);
-            app.model.messages.reset(data.messages);
-            app.model.currentUser.set(app.model.users.get(app.currentUser).toJSON());
+            if (undefined === app.currentUser) {
+                //console.log(data.me);
+                app.currentUser = data.me._id;
+                data.users.push(data.me);
+                app.model.users.reset(data.users);
+                app.model.waves.reset(data.waves);
+                app.model.messages.reset(data.messages);
+                app.model.currentUser.set(app.model.users.get(app.currentUser).toJSON());
 
-            //if ($('a.waveitem').size() > 0)
-                document.location = $('a.waveitem:last').attr('href');
+                var lastMsg = app.model.messages.last();
+                
+                if (lastMsg) {
+                    document.location = '#wave/' + lastMsg.get('waveId');
+                }
+            }
         });
         
         Communicator.socket.on('message', Communicator.onMessage);
