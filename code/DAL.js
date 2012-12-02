@@ -32,7 +32,7 @@ DAL = {
     init: function(server) {
         DAL.server = server;
         mongoose.connect(process.env.MONGOLAB_URI || 'mongodb://localhost/wave0');
-        redis = redis.connect(process.env.REDISGREEN_URL || 'redis://localhost:6379');
+        redis = redis.connect(process.env.REDISCLOUD_URL || 'redis://localhost:6379');
         
         //mongoose.set('debug', true);
         
