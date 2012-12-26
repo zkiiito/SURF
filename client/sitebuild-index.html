@@ -76,12 +76,11 @@
     <img src="images/head2.png" class="online" /> 
     <img src="images/head3.png" class="online" /> 
     <img src="images/head4.png" class="online" /> 
-    <img src="images/head5.png" class="offline" /> 
-    <img src="images/head6.png" class="offline" />
+    <p class="offline-list">+19 offline</p>
   </p>
   <div class="buttons">
-    <a class="button editwave" href="">Cím szerkesztése</a>
-    <a class="button editwave" href="">Résztvevők</a>
+    <a class="button" href="">Cím szerkesztése</a>
+    <a class="button" href="">Résztvevők</a>
   </div>
 </div>
 <div class="waves-container">
@@ -189,7 +188,7 @@
             <input type="hidden" name="wave_id" value="1"/>
             <input type="hidden" name="parent_id" value="1"/>            
             <textarea name="message" placeholder="Válasz csabcsi üzenetére"></textarea>
-            <p class="inline-help">Nyomj Entert a mentéshez, Shift-Entert a sortöréshez.</p>
+            <p class="inline-help"><a class="button sendmsg" href="">Üzenet mentése</a> Nyomj Entert a mentéshez, Shift-Entert a sortöréshez.</p>
           </form>   
         </div>
       </div>
@@ -246,8 +245,8 @@
     <input type="hidden" name="wave_id" value="1"/>
     <input type="hidden" name="parent_id" value="1"/>            
     <textarea name="message" placeholder="Új üzenet"></textarea>
-    <p class="inline-help">Nyomj Entert a mentéshez, Shift-Entert a sortöréshez.</p>
-    </form>  
+    </form> 
+    <p class="inline-help"><a class="button sendmsg" href="">Üzenet mentése</a> Nyomj Entert a mentéshez, Shift-Entert a sortöréshez.</p>
 </div>
 </div>
 </div>
@@ -274,7 +273,7 @@
         </div>
       </div>
       <div class="right">
-        <button type="submit" class="button">Létrehozás</button>
+        <button type="submit" class="button pri">Létrehozás</button>
       </div>
     </form>
   </div>
