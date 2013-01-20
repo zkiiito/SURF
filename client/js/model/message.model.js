@@ -41,11 +41,23 @@ var Message = Backbone.Model.extend({
     
     formatMessage: function() {
         var msg = this.get('message'),
-            urlRegex = /((https?:\/\/|www\.)[^\s"]+)/g; //TODO: improve
-        
+            urlRegex = /((https?:\/\/|www\.)[^\s"]+)/g, //TODO: improve
+            parts,i,c,matched,url;
+            
         msg = strip_tags(msg);
-        msg = msg.replace(urlRegex, '<a href="$1" target="_blank">$1</a>');
+        parts = msg.split(' ');
+        for (i = 0, c = parts.length; i < c; i++) {
+            matched = parts[i].match(urlRegex);
+            if (matched) {//ha link
+                url = matched[0];
+                url = url.length > 53 ? url.substr(0,50) + '...' : url;
+                parts[i] = '<a href="' + matched[0] + '" target="_blank">' + url + '</a>';
+            } else {
+                parts[i] = wordwrap(parts[i], 200, ' ', true);
+            }
+        }
         
+        msg = parts.join(' ');        
         msg = nl2br(msg, true);
         
         this.set('messageFormatted', msg);
