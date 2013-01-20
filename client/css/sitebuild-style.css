@@ -116,6 +116,7 @@ a:hover {
 
 #usermenu img {
   width: 1.5em;
+  height: 1.5em;
   float: left;
   margin-right: 0.2em;
 }
@@ -195,6 +196,7 @@ a:hover {
 
 .wavetop .heads img {
   width: 1.8em;
+  height: 1.8em;
   margin-right: 0.2em;
 }
 
@@ -246,16 +248,22 @@ a:hover {
   color: #aaa;
 }
 
-table.unread {
+.message table:hover {
+  background: #f2f7e8;
+}
+
+.message table:focus,
+.message table:focus:hover,
+/* sitebuild miatt */
+.message table.selected, 
+.message table.selected:hover
+{
+  background: #d8ebb6;
+  outline: none;
+}
+
+.message table.unread {
   background: #f6f5d8;
-}
-
-table.selected {
-  background: #d8ebb6;
-}
-
-.message table.selected:hover {
-  background: #d8ebb6;
 }
 
 .message table.unread:hover {
@@ -265,10 +273,6 @@ table.selected {
 .message table {
   border-collapse: collapse;
   vertical-align: top;
-}
-
-.message table:hover {
-  background: #f2f7e8;
 }
 
 .message .message {
@@ -290,6 +294,7 @@ table.selected {
 .message-header img {
   float: left;
   height: 1.5em;
+  width: 1.5em;
 }
 
 .message-body {
@@ -587,6 +592,7 @@ textarea {
 .friend img {
   float: left;
   width: 2.5em;
+  height: 2.5em;
   margin-right: 0.3em;
 }
 

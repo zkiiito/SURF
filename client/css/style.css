@@ -214,6 +214,13 @@ a:hover {
   border-right: 0.3em solid #aaa;
 }
 
+.offline-list {
+  color: #aaa;
+  margin-top: 0.3em;
+  margin-left: 0.2em;
+  float: left;
+}
+
 .waves-container {
   overflow: auto; 
   position: absolute; 
@@ -246,7 +253,11 @@ a:hover {
 }
 
 .message table:focus,
-.message table:focus:hover {
+.message table:focus:hover,
+/* sitebuild miatt */
+.message table.selected, 
+.message table.selected:hover
+{
   background: #d8ebb6;
   outline: none;
 }
@@ -340,6 +351,17 @@ a:hover {
   background: #388c85;
   color: white;
   border: 1px solid #2d6964;
+}
+
+.sendmsg {
+  font-size: 1em;
+  padding-top: 0.4em;
+  margin-right: 0.2em;
+}
+
+.threadend .sendmsg {
+  margin-right: 0.1em;
+  padding-top: 0.4em;
 }
 
 .reply {

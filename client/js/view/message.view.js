@@ -89,16 +89,25 @@ var MessageView = Backbone.View.extend({
 
         this.$el.append(form);
         this.$el.children('div.threadend').hide();//ha latszik-ha nem.
+        
+        this.$el.find('form').submit(function(){
+            var textarea = $(this).find('textarea');
+            if (textarea.val().length > 0) {
+                Communicator.sendMessage(textarea.val(), $('[name=wave_id]', $(this)).val(), $('[name=parent_id]', $(this)).val());
+            }
+            textarea.val('');
+            return false;
+        });
 
         this.$el.find('textarea').keydown(function(e){
             if (!e.shiftKey && 13 === e.keyCode) {
-                if ($(this).val().length > 0) {
-                    var form = $(this).parents('form');
-                    Communicator.sendMessage($('textarea', form).val(), $('[name=wave_id]', form).val(), $('[name=parent_id]', form).val());
-                }
-                $(this).val('');
                 e.preventDefault();
+                $(this).parents('form').submit();
             }
+            else if (32 === e.keyCode && ' ' === $(this).val().substr(-1)) {
+                e.preventDefault();
+                that.scrollToNextUnread();
+            }            
             e.stopPropagation();
         }).focus();
         

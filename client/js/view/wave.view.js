@@ -33,14 +33,23 @@ var WaveView = Backbone.View.extend({
         this.setElement(template);
         this.$el.hide();
         
+        this.$el.find('form').submit(function(){
+            var textarea = $(this).find('textarea');
+            if (textarea.val().length > 0) {
+                Communicator.sendMessage(textarea.val(), $('[name=wave_id]', $(this)).val(), null);
+            }
+            textarea.val('');
+            return false;
+        });
+        
         this.$el.find('textarea').keydown(function(e){
             if (!e.shiftKey && 13 === e.keyCode) {
-                if ($(this).val().length > 0) {
-                    var form = $(this).parents('form');
-                    Communicator.sendMessage($('textarea', form).val(), $('[name=wave_id]', form).val(), null);
-                }
-                $(this).val('');
                 e.preventDefault();
+                $(this).parents('form').submit();
+            }
+            else if (32 === e.keyCode && ' ' === $(this).val().substr(-1)) {
+                e.preventDefault();
+                that.scrollToNextUnread();
             }
             e.stopPropagation();
         });

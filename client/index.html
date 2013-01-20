@@ -41,7 +41,7 @@
                 <form class="add-message" method="post">
                     <input type="hidden" name="wave_id" value="{{ id }}"/>
                     <textarea name="message" placeholder="New message" class="R"></textarea>
-                    <p class="inline-help R">Press Return to send, Shift-Return to break line.</p>
+                    <p class="inline-help"><button type="submit" class="button sendmsg R">Save message</button> <span class="R">Press Return to send, Shift-Return to break line.</span></p>
                 </form>
             </div>
         </div>
@@ -80,7 +80,7 @@
         <input type="hidden" name="wave_id" value="{{ waveId }}"/>
         <input type="hidden" name="parent_id" value="{{ id }}"/>
         <textarea name="message" placeholder="Reply to {{ user.name }}'s message" class="R"></textarea>
-        <p class="inline-help R">Press Return to send, Shift-Return to break line.</p>
+        <p class="inline-help"><button type="submit" class="button sendmsg R">Save message</button> <span class="R">Press Return to send, Shift-Return to break line.</span></p>
     </form>
     </div>
 </script>

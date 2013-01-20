@@ -7,6 +7,7 @@ var i18n = {
             'Leave conversation': 'Kilépés',
             '{{ usercount }} users' : '{{ usercount }} résztvevő',
             'Press Return to send, Shift-Return to break line.': 'Nyomj Entert a mentéshez, Shift-Entert a sortöréshez.',
+            'Save message' : 'Üzenet mentése',
             'Older messages': 'Régebbi üzenetek',
             'New message' : 'Új üzenet',
             'Reply to {{ user.name }}\'s message': 'Válasz {{ user.name }} üzenetére',
