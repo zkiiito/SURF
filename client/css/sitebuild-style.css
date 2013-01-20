@@ -119,6 +119,7 @@ a:hover {
   height: 1.5em;
   float: left;
   margin-right: 0.2em;
+  overflow: hidden;
 }
 
 #wave-list {
@@ -198,6 +199,13 @@ a:hover {
   width: 1.8em;
   height: 1.8em;
   margin-right: 0.2em;
+  display: block;
+  float: left;
+  overflow: hidden;
+}
+
+.wavetop .heads img.offline {
+    display: none;
 }
 
 .wavetop .buttons {
@@ -295,6 +303,7 @@ a:hover {
   float: left;
   height: 1.5em;
   width: 1.5em;
+  overflow: hidden;
 }
 
 .message-body {
