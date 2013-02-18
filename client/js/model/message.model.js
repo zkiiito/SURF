@@ -51,7 +51,7 @@ var Message = Backbone.Model.extend({
             if (matched) {//ha link
                 url = matched[0];
                 url = url.length > 53 ? url.substr(0,50) + '...' : url;
-                parts[i] = '<a href="' + matched[0] + '" target="_blank">' + url + '</a>';
+                parts[i] = parts[i].replace(matched[0], '<a href="' + matched[0] + '" target="_blank">' + url + '</a>');
             } else {
                 parts[i] = wordwrap(parts[i], 200, ' ', true);
             }
