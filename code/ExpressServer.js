@@ -42,8 +42,10 @@ var auth = everyauth.google
         googleUser.refreshToken = extra.refresh_token;
         googleUser.expiresIn = extra.expires_in;
         return usersByGoogleId[googleUser.id] || (usersByGoogleId[googleUser.id] = addUser('google', googleUser));
-    })
-    .redirectPath('/');
+    });
+    //.redirectPath('/');
+//https://github.com/bnoguchi/everyauth/issues/387
+auth._redirectPath = '/';//BUG IN OAUTH2.JS?
 
 //auto-login
 auth.moreAuthQueryParams.access_type = 'online';
