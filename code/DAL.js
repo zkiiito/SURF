@@ -60,6 +60,7 @@ DAL = {
         });
         
         //temporary fix a root nelkuli dolgokra
+        /*
         MessageModel.find({rootId: null}).exec(function(err, messages){
             console.log('FIXROOT COUNT: ' + messages.length);
             _.each(messages, function(message){
@@ -72,8 +73,10 @@ DAL = {
                 }
             });
         });
+        */
         
         //temporary fix a sajat unreadokra
+        /*
         UserModel.find().exec(function(err, users){
             _.each(users, function(user) {
                 redis.keys('unread-' + user._id + '-*', function(err, unreadKeys){
@@ -97,8 +100,9 @@ DAL = {
                 });
             });
         });
+        */
     },
-        
+   
     saveUser: function(user) {
         var m = new UserModel({
             name: user.get('name'),

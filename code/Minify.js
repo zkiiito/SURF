@@ -29,32 +29,6 @@ Minify = {
             contents += fs.readFileSync(dir + '/' + files[i]);
         }
         return done(null, contents);
-        /*
-        var contents = '';
-        fs.readdir(dir, function(err, list) {
-            if (err) return done(err);
-            var i = 0;
-            (function next() {
-                i += 1;
-                var file = list[i];
-                if (!file) {
-                    return done(null, contents);
-                }
-                file = dir + '/' + file;
-                fs.stat(file, function(err, stat) {
-                    if (stat && stat.isDirectory()) {
-                        Minify.readFiles(file, function(err, res) {
-                            contents += res;
-                            next();
-                        });
-                    } else {
-                        contents += fs.readFileSync(file);
-                        next();
-                    }
-                });
-            }());
-        });
-        */
     },
     
     compress: function(fileData)
@@ -78,5 +52,25 @@ Minify = {
         });
     }
 };
+
+/*
+<script src="js/i18n.js"></script>
+<script src="js/ICanHaz.js"></script>
+<script src="js/jquery.tokeninput.js"></script>
+<script src="js/date.format.js"></script>
+<script src="js/phpjs.js"></script>
+<script src="js/model/user.model.js"></script>
+<script src="js/model/wave.model.js"></script>
+<script src="js/model/message.model.js"></script>
+<script src="js/model/surfapp.model.js"></script>
+<script src="js/view/user.view.js"></script>
+<script src="js/view/wavelist.view.js"></script>
+<script src="js/view/wave.view.js"></script>
+<script src="js/view/message.view.js"></script>
+<script src="js/view/editwave.view.js"></script>
+<script src="js/view/surfapp.view.js"></script>
+<script src="js/communicator.js"></script>
+<script src="js/surf.js"></script>
+*/
 
 exports.Minify = Minify;
