@@ -31,7 +31,7 @@ var Communicator = {
         
         Communicator.socket.on('disconnect', function(){
             alert('disconnected');
-            var url = 'http://' + document.location.host;
+            var url = document.location.protocol + '//' + document.location.host;
             if (document.location.port) {
                 url += document.location.port;
             }
