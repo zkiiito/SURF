@@ -187,6 +187,12 @@ DAL = {
         });
     },
     
+    /**
+     * messages queried for the user on load
+     * @param User user
+     * @param Function callback
+     * @returns void
+     */
     getLastMessagesForUser: function(user, callback) {
         var startTime = new Date().getTime();
         WaveModel.find().where('_id').in(user.waves.pluck('_id')).exec(function(err, waves) {
@@ -196,11 +202,19 @@ DAL = {
             }, function(err, results) {
                 var endTime = new Date().getTime();
                 console.log('LastMessagesForUser: msg query in ' + (endTime - startTime));
+                console.log('LastMessagesForUser: msgs: ' + results.length);
                 callback(results);
             });
 	});
     },
 
+    /**
+     * Unread messages for an user in a wave
+     * @param User user
+     * @param Wave wave
+     * @param Array memo
+     * @param Function callback
+     */
     getLastMessagesForUserInWave: function(user, wave, memo, callback) {
         DAL.getMinUnreadRootIdForUserInWave(user, wave, function(err, result){
             //console.log(result);
@@ -222,11 +236,19 @@ DAL = {
         });
     },
     
+    /**
+     * 
+     * @param User user
+     * @param Wave wave
+     * @param Function callback
+     */
     getMinUnreadRootIdForUserInWave: function(user, wave, callback) {
         DAL.getUnreadIdsForUserInWave(user, wave, function(err, results) {
             if (0 === results.length) {
                 callback(true, null);
             } else {
+                console.log('getMinUnreadRootIdForUserInWave: count: ' + results.length);
+                //TODO: ha tul sok van, akkor hogyan mit???
                 MessageModel.find({waveId: wave.id})
                         .where('_id').in(results)
                         .select('rootId')
@@ -246,6 +268,12 @@ DAL = {
         });
     },
 
+    /**
+     * 
+     * @param UserModel user
+     * @param WaveModel wave
+     * @param Function callback
+     */
     getUnreadIdsForUserInWave: function(user, wave, callback) {
         var key = 'unread-' + user.id + '-' + wave.id;
         redis.smembers(key, callback);

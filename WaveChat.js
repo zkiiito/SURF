@@ -1,3 +1,10 @@
+if (process.env.NODETIME_ACCOUNT_KEY) {
+    require('nodetime').profile({
+        accountKey: process.env.NODETIME_ACCOUNT_KEY,
+        appName: 'surf' // optional
+    });
+}
+
 var _ = require('underscore'),
     Backbone =  require('backbone'),
     io = require('socket.io');
