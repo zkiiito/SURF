@@ -61,12 +61,12 @@ app.configure(function(){
         dumpExceptions: true, 
         showStack: true
     }));
-    //app.use(app.router);
     app.use(express.cookieParser('site secret'));
     app.use(express.session({
         key: 'surf.sid',
         store: SessionStore
     }));
+    app.use(app.router);
     app.use('/css', express.static(__dirname + '/../client/css'));
     app.use('/js', express.static(__dirname + '/../client/js'));
     app.use('/images', express.static(__dirname + '/../client/images'));
