@@ -78,5 +78,39 @@ var SurfAppView = Backbone.View.extend({
             title = '[' + unreadCount + '] ' + title;
         }
         $('title').text(title);
+        this.setIcon(unreadCount);
+    },
+            
+    setIcon: function(count) {
+        var link = document.createElement('link');
+        link.type = 'image/x-icon';
+        link.rel = 'shortcut icon';
+        link.href = '/images/surf-ico.png';
+        link.id = 'favicon';
+
+        //remove old, chrome
+        $('#favicon').remove();
+
+        if (count > 0) {
+            var canvas = document.createElement('canvas');
+            canvas.width = 35;
+            canvas.height = 35;
+            var ctx = canvas.getContext('2d');
+            var img = new Image();
+            img.onload = function() {
+                ctx.drawImage(img, 0, 0);
+                ctx.fillStyle = '#444444';
+                ctx.font = 'bold 16px sans-serif';
+                var txt = count > 99 ? '99+' : count.toString();
+                ctx.fillText(txt, 35 - 9 * txt.length, 35);
+                
+                link.href = canvas.toDataURL("image/x-icon");
+                
+                document.getElementsByTagName('head')[0].appendChild(link);
+            };
+            img.src = '/images/surf-ico.png';
+        } else {
+            document.getElementsByTagName('head')[0].appendChild(link);
+        }
     }
 });
