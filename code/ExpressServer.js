@@ -37,6 +37,7 @@ var usersByGoogleId = {};
 var auth = everyauth.google
     .appId(appId)
     .appSecret(appSecret)
+    .myHostname(process.env.HOSTNAME)//https miatt, configban kell megadni.
     .scope('https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email')
     .findOrCreateUser( function (sess, accessToken, extra, googleUser) {
         googleUser.refreshToken = extra.refresh_token;

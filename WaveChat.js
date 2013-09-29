@@ -352,6 +352,9 @@ var WaveServer = {
         
         if (user) {
             console.log('auth: userfound ' + user.id);
+            user.set('avatar', userData.picture);
+            user.set('email', userData.email);
+            user.save();
             return user;
         }
         
@@ -359,6 +362,7 @@ var WaveServer = {
         user.set('name', userData.name);
         user.set('avatar', userData.picture);
         user.set('googleId', userData.id);
+        user.set('email', userData.email);
         user.save();
         WaveServer.users.add(user);
 
@@ -475,6 +479,6 @@ var WaveServer = {
             }
         });
     }
-}
+};
 Minify.minify();
 WaveServer.init();
