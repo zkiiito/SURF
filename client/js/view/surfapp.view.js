@@ -86,10 +86,6 @@ var SurfAppView = Backbone.View.extend({
         link.type = 'image/x-icon';
         link.rel = 'shortcut icon';
         link.href = '/images/surf-ico.png';
-        link.id = 'favicon';
-
-        //remove old, chrome
-        $('#favicon').remove();
 
         if (count > 0) {
             var canvas = document.createElement('canvas');
@@ -106,10 +102,12 @@ var SurfAppView = Backbone.View.extend({
                 
                 link.href = canvas.toDataURL("image/x-icon");
                 
+                $('link[rel="shortcut icon"]').remove();
                 document.getElementsByTagName('head')[0].appendChild(link);
             };
             img.src = '/images/surf-ico.png';
         } else {
+            $('link[rel="shortcut icon"]').remove();
             document.getElementsByTagName('head')[0].appendChild(link);
         }
     }
