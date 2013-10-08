@@ -42,22 +42,23 @@ var Message = Backbone.Model.extend({
     formatMessage: function() {
         var msg = this.get('message'),
             urlRegex = /((https?:\/\/|www\.)[^\s"]+)/g, //TODO: improve
-            parts,i,c,matched,url;
+            parts,i,c,matched,url,urlText;
             
         msg = strip_tags(msg);
         parts = msg.split(' ');
         for (i = 0, c = parts.length; i < c; i++) {
             matched = parts[i].match(urlRegex);
             if (matched) {//ha link
-                url = matched[0];
-                url = url.length > 53 ? url.substr(0,50) + '...' : url;
-                parts[i] = parts[i].replace(matched[0], '<a href="' + matched[0] + '" target="_blank">' + url + '</a>');
+                url = urlText = matched[0];
+                urlText = urlText.length > 53 ? urlText.substr(0,50) + '...' : urlText;
+                url = 'http' === url.substr(0,4) ? url : 'http://' + url;
+                parts[i] = parts[i].replace(matched[0], '<a href="' + url + '" target="_blank">' + urlText + '</a>');
             } else {
                 parts[i] = wordwrap(parts[i], 200, ' ', true);
             }
         }
         
-        msg = parts.join(' ');        
+        msg = parts.join(' ');
         msg = nl2br(msg, true);
         
         this.set('messageFormatted', msg);
