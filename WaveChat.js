@@ -86,6 +86,11 @@ var User = Backbone.Model.extend({
     
     quitWave: function(wave) {
         this.waves.remove(wave);
+    },
+            
+    handleInvite: function(invite) {
+        console.log('Invited to: ');
+        console.log(invite.waveId);
     }
     
     //validate: function(){
@@ -264,6 +269,10 @@ var Wave = Backbone.Model.extend({
         }
         //TODO: ha ures a wave, torolni osszes msgt + wavet
         //vagy, archive flag rajuk.
+    },
+            
+    createInviteCode: function(user) {
+        return DAL.createInviteCodeForWave(user, this);
     }
     
     //validate: function() {
@@ -332,8 +341,7 @@ var WaveServer = {
             
             client.curUser = WaveServer.getUserByAuth(client.handshake.session.auth);
 
-            if (client.curUser.socket)
-            {
+            if (client.curUser.socket) {
                 client.curUser.socket.disconnect();
             }
 
@@ -343,6 +351,10 @@ var WaveServer = {
 
             WaveServer.authClient(client);
             client.curUser.init();
+            
+            if (client.handshake.session.invite) {
+                client.curUser.handleInvite(client.handshake.session.invite);
+            }
         });
     },
     
@@ -476,6 +488,14 @@ var WaveServer = {
             var wave = WaveServer.waves.get(data.waveId);
             if (wave) {
                 wave.quitUser(client.curUser);
+            }
+        });
+        
+        client.on('createInviteCode', function(data) {
+            console.log('createInviteCode: ' + client.curUser.id);
+            var wave = WaveServer.waves.get(data.waveId);
+            if (wave) {
+                wave.createInviteCode(client.curUser);
             }
         });
     }

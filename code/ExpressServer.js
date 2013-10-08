@@ -1,11 +1,13 @@
 var express = require('express'),
     http = require('http'),
     everyauth = require('everyauth');
+
+require('./DAL');
     
 SessionStore = new express.session.MemoryStore();
 
 //everyauth.debug = true;
-
+//?
 var usersById = {};
 var nextUserId = 0;
 
@@ -24,7 +26,7 @@ function addUser (source, sourceUser) {
     }
     return user;
 }
-
+//?
 everyauth.everymodule
     .findUserById( function (id, callback) {
         callback(null, usersById[id]);
@@ -33,6 +35,7 @@ everyauth.everymodule
 var appId = process.env.PORT ? '290177368237-pne1smhvlb3g2r5c7g25d34hk3pfi96f.apps.googleusercontent.com' : '290177368237.apps.googleusercontent.com';
 var appSecret = process.env.PORT ? 'v28w9nWORgGioUdDO5JSAdBv' : 'x58fnA7rUYCqhsLeAXTakjdN';
 
+//?
 var usersByGoogleId = {};
 var auth = everyauth.google
     .appId(appId)
@@ -42,11 +45,10 @@ var auth = everyauth.google
     .findOrCreateUser( function (sess, accessToken, extra, googleUser) {
         googleUser.refreshToken = extra.refresh_token;
         googleUser.expiresIn = extra.expires_in;
+        //?
         return usersByGoogleId[googleUser.id] || (usersByGoogleId[googleUser.id] = addUser('google', googleUser));
-    });
-    //.redirectPath('/');
-//https://github.com/bnoguchi/everyauth/issues/387
-auth._redirectPath = '/';//BUG IN OAUTH2.JS?
+    })
+    .redirectPath('/');
 
 //auto-login
 auth.moreAuthQueryParams.access_type = 'online';
@@ -78,6 +80,14 @@ app.configure(function(){
     app.use(everyauth.middleware(app));  
 });
 
+app.get('/invite/:inviteCode', function(req, res) {
+    DAL.getWaveInvitebyCode(req.params.inviteCode, function(err, invite){
+        if (!err) {
+            req.session.invite = invite;
+        }
+        res.redirect('/');
+    });
+});
 
 app.get('/', function(req, res) {
     if (!req.session.auth) {

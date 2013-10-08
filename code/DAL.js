@@ -28,10 +28,18 @@ var WaveSchema = new Schema({
 });
 var WaveModel = mongoose.model('WaveModel', WaveSchema);
 
+var WaveInviteSchema = new Schema({
+    userId: Schema.ObjectId,
+    waveId: Schema.ObjectId,
+    code: {type: String, trim: true},
+    usedById: Schema.ObjectId,
+    created_at: {type: Date}
+});
+
+var WaveInviteModel = mongoose.model('WaveInviteModel', WaveInviteSchema);
+
 DAL = {
-    server: null,
     init: function(server) {
-        DAL.server = server;
         mongoose.connect(process.env.MONGOLAB_URI || 'mongodb://localhost/wave0');
         redis = redis.connect(process.env.REDISCLOUD_URL || 'redis://localhost:6379');
         
@@ -42,7 +50,7 @@ DAL = {
             _.each(users, function(user) {
                 usersTmp.push({name: user.name, avatar: user.avatar, _id: user._id, googleId: user.googleId});
             });
-            DAL.server.users.reset(usersTmp);
+            server.users.reset(usersTmp);
             usersTmp = null;
 
             WaveModel.find().sort('_id').exec(function(err, waves){
@@ -53,10 +61,10 @@ DAL = {
                 server.waves.reset(wavesTmp);
 
                 if (waves.length === 0) {
-                    DAL.server.initData();
+                    server.initData();
                 }
 
-                DAL.server.startServer();
+                server.startServer();
             });
         });
         
@@ -386,6 +394,30 @@ DAL = {
     readAllMessagesForUserInWave: function(user, wave) {
         var key = 'unread-' + user.id + '-' + wave.id;
         redis.del(key);
+    },
+            
+    createInviteCodeForWave: function(user, wave) {
+        var code = (Math.random() + 1).toString(36).replace(/[^a-z0-9]+/g, ''),
+        data = {
+            userId: user.id,
+            waveId: wave.id,
+            code: code,
+            created_at: Date.now()
+        }, m;
+        
+        m = new WaveInviteModel(data);
+        m.save();
+        return code;
+    },
+            
+    getWaveInvitebyCode: function(code, callback) {
+        WaveInviteModel.find({code: code}).exec(function(err, result){
+           if (err || result.length === 0) {
+               return callback(true);
+           }
+           
+           callback(false, _.first(result));
+        });
     }
 };
 
