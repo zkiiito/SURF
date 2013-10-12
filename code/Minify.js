@@ -2,7 +2,7 @@ var fs = require('fs'),
     jsp = require("uglify-js").parser,
     pro = require("uglify-js").uglify;
 
-Minify = {
+var Minify = {
     readFiles: function(dir, done) {
         var i,l,contents = '',files = [
             "i18n.js",
@@ -73,4 +73,4 @@ Minify = {
 <script src="js/surf.js"></script>
 */
 
-exports.Minify = Minify;
+module.exports = Minify;

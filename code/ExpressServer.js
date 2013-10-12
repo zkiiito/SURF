@@ -1,10 +1,8 @@
 var express = require('express'),
     http = require('http'),
-    everyauth = require('everyauth');
-
-require('./DAL');
-    
-SessionStore = new express.session.MemoryStore();
+    everyauth = require('everyauth'),
+    DAL = require('./DAL'),
+    SessionStore = require('./SessionStore');
 
 //everyauth.debug = true;
 //?
@@ -96,7 +94,6 @@ app.get('/', function(req, res) {
     res.sendfile(clientDir + '/index.html');
 });
 
-ExpressServer = http.createServer(app);
+var ExpressServer = http.createServer(app);
 
-exports.ExpressServer = ExpressServer;
-exports.SessionStore = SessionStore;
+module.exports = ExpressServer;

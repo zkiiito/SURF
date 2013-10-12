@@ -38,7 +38,7 @@ var WaveInviteSchema = new Schema({
 
 var WaveInviteModel = mongoose.model('WaveInviteModel', WaveInviteSchema);
 
-DAL = {
+var DAL = {
     init: function(server) {
         mongoose.connect(process.env.MONGOLAB_URI || 'mongodb://localhost/wave0');
         redis = redis.connect(process.env.REDISCLOUD_URL || 'redis://localhost:6379');
@@ -425,4 +425,4 @@ DAL = {
     }    
 };
 
-exports.DAL = DAL;
+module.exports = DAL;
