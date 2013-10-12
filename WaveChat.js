@@ -444,7 +444,7 @@ var WaveServer = {
                 var notified = false;
                 
                 var userIds = wave.get('userIds');
-                if (!_.equals(data.userIds, userIds)) {
+                if (!_.isEqual(data.userIds, userIds)) {
                     var newIds = _.difference(data.userIds, userIds);
                     notified = wave.addUsers(newIds, true);
                     
