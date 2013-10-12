@@ -104,7 +104,7 @@ var MessageView = Backbone.View.extend({
                 e.preventDefault();
                 $(this).parents('form').submit();
             }
-            else if (32 === e.keyCode && ' ' === $(this).val().substr(-1)) {
+            else if (32 === e.keyCode && ' ' === $(this).val()) {
                 e.preventDefault();
                 that.scrollToNextUnread();
             }            
