@@ -238,17 +238,17 @@ DAL = {
             } else {
                 console.log('getMinUnreadRootIdForUserInWave: count: ' + results.length);
                 //TODO: ha tul sok van, akkor hogyan mit???
-                MessageModel.find({waveId: wave.id})
+                MessageModel.findOne({waveId: wave.id})
                         .where('_id').in(results)
                         .select('rootId')
                         .sort('rootId')
                         .limit(1)
                         .exec(function(err, result){
-                            if (err || 0 === result.length) {
+                            if (err || !result) {
                                 return callback(true, null);
                             }
                             var res = {
-                                minRootId: _.first(result).rootId,
+                                minRootId: result.rootId,
                                 unreadIds: results
                             };
                             callback(null, res);
@@ -259,9 +259,9 @@ DAL = {
 
     /**
      * 
-     * @param UserModel user
-     * @param WaveModel wave
-     * @param Function callback
+     * @param user UserModel
+     * @param wave WaveModel
+     * @param callback Function
      */
     getUnreadIdsForUserInWave: function(user, wave, callback) {
         var key = 'unread-' + user.id + '-' + wave.id;
@@ -411,14 +411,18 @@ DAL = {
     },
             
     getWaveInvitebyCode: function(code, callback) {
-        WaveInviteModel.find({code: code}).exec(function(err, result){
-           if (err || result.length === 0) {
+        WaveInviteModel.findOne({code: code}).exec(function(err, result){
+           if (err || !result) {
                return callback(true);
            }
            
-           callback(false, _.first(result));
+           callback(false, result);
         });
-    }
+    },
+            
+    removeWaveInviteByCode: function(code, callback) {
+        WaveInviteModel.remove({code: code}).exec(callback);
+    }    
 };
 
 exports.DAL = DAL;

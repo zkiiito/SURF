@@ -89,8 +89,16 @@ var User = Backbone.Model.extend({
     },
             
     handleInvite: function(invite) {
-        console.log('Invited to: ');
-        console.log(invite.waveId);
+        var that = this;
+        DAL.removeWaveInviteByCode(invite.code, function(err, result){
+            if (!err && result > 0) {
+                var wave = WaveServer.waves.get(invite.waveId);
+                if (wave && !wave.isMember(that)) {
+                    wave.addUser(that, true);
+                    wave.save();
+                }
+            }
+        });
     }
     
     //validate: function(){
@@ -359,7 +367,7 @@ var WaveServer = {
                 socket.set('log level', 1);                    // reduce logging
             });
         }
-        
+        socket.set('log level', 1);
         socket.sockets.on('connection', function(client){
             //var userData = client.handshake.session['auth']['google']['user'];
             //console.log(userData);
@@ -378,6 +386,7 @@ var WaveServer = {
             client.curUser.init();
             
             if (client.handshake.session.invite) {
+                console.log('invitedto: ' + client.handshake.session.invite.waveId);
                 client.curUser.handleInvite(client.handshake.session.invite);
             }
         });
@@ -403,11 +412,12 @@ var WaveServer = {
         user.save();
         WaveServer.users.add(user);
 
-        var wave0 = WaveServer.waves.at(0);
         console.log('auth: newuser ' + user.id + ' (' + user.get('name') +  ')');
+        /*
+        var wave0 = WaveServer.waves.at(0);
         wave0.addUser(user, true);
         wave0.save();
-        
+        */
         return user;
     },
 	
