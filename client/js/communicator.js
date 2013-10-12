@@ -40,6 +40,7 @@ var Communicator = {
         
         Communicator.socket.on('updateUser', Communicator.onUpdateUser);
         Communicator.socket.on('updateWave', Communicator.onUpdateWave);
+        Communicator.socket.on('inviteCodeReady', Communicator.onInviteCodeReady);
     },
     
     sendMessage: function(message, waveId, parentId) {
@@ -150,5 +151,9 @@ var Communicator = {
         };
         
         Communicator.socket.emit('createInviteCode', data);
+    },
+            
+    onInviteCodeReady: function(data) {
+        console.log('Invite url: ' + document.location.protocol + '//' + document.location.host + '/invite/' + data.code);
     }
 };

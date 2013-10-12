@@ -123,8 +123,7 @@ var Message = Backbone.Model.extend({
     }
     
     //validate: function(){
-    //check: userId, waveId, parentId
-    //user member of wave
+    //check: parentId
     //parent member of wave?
     //
     //}
@@ -273,6 +272,32 @@ var Wave = Backbone.Model.extend({
             
     createInviteCode: function(user) {
         return DAL.createInviteCodeForWave(user, this);
+    },
+            
+    update: function(data) { 
+        this.set('title', data.title);
+        var notified = false;
+
+        var userIds = this.get('userIds');
+        if (!_.isEqual(data.userIds, userIds)) {
+            var newIds = _.difference(data.userIds, userIds);
+            notified = this.addUsers(newIds, true);
+
+            //kikuldeni a wave tartalmat is, amibe belepett
+            _.each(newIds, function(userId){
+                var user = WaveServer.users.get(userId);
+                this.sendOldMessagesToUser(user);
+            });
+        }
+
+        if (!notified)
+            this.notifyUsers();
+
+        this.save();
+    },
+            
+    isMember: function(user) {
+        return this.users.contains(user);
     }
     
     //validate: function() {
@@ -417,8 +442,9 @@ var WaveServer = {
             var msg = new Message(data);
 
             var wave = WaveServer.waves.get(msg.get('waveId'));
-            if (wave)
+            if (wave && wave.isMember(client.curUser)) {
                 wave.addMessage(msg);
+            }
         });
         
         client.on('readMessage', function(data) {
@@ -435,36 +461,18 @@ var WaveServer = {
             WaveServer.waves.add(wave);
             wave.notifyUsers();
         });
-        //TODO: bele a wave classba
+
         client.on('updateWave', function(data){
             console.log('updateWave: ' + client.curUser.id);
             var wave = WaveServer.waves.get(data.id);
-            if (wave) {
-                wave.set('title', data.title);
-                var notified = false;
-                
-                var userIds = wave.get('userIds');
-                if (!_.isEqual(data.userIds, userIds)) {
-                    var newIds = _.difference(data.userIds, userIds);
-                    notified = wave.addUsers(newIds, true);
-                    
-                    //kikuldeni a wave tartalmat is, amibe belepett
-                    _.each(newIds, function(userId){
-                        var user = WaveServer.users.get(userId);
-                        wave.sendOldMessagesToUser(user);
-                    });
-                }
-                
-                if (!notified)
-                    wave.notifyUsers();
-
-                wave.save();
+            if (wave && wave.isMember(client.curUser)) {
+                wave.update(data);
             }
         });
         
         client.on('getMessages', function(data){
             var wave = WaveServer.waves.get(data.waveId);
-            if (wave) {
+            if (wave && wave.isMember(client.curUser)) {
                 wave.sendPreviousMessagesToUser(client.curUser, data.minParentId, data.maxRootId);
             }
         });
@@ -472,7 +480,7 @@ var WaveServer = {
         client.on('readAllMessages', function(data) {
             console.log('readAllMessages: ' + client.curUser.id);
             var wave = WaveServer.waves.get(data.waveId);
-            if (wave) {
+            if (wave && wave.isMember(client.curUser)) {
                 wave.readAllMessagesOfUser(client.curUser);
             }
         });
@@ -494,8 +502,13 @@ var WaveServer = {
         client.on('createInviteCode', function(data) {
             console.log('createInviteCode: ' + client.curUser.id);
             var wave = WaveServer.waves.get(data.waveId);
-            if (wave) {
-                wave.createInviteCode(client.curUser);
+            if (wave && wave.isMember(client.curUser)) {
+                var code = wave.createInviteCode(client.curUser);
+                if (code)
+                {
+                    data.code = code;
+                    client.curUser.send('inviteCodeReady', data);
+                }
             }
         });
     }
