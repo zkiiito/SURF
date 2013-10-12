@@ -325,8 +325,8 @@ var WaveServer = {
         //HEROKU
         if (process.env.PORT) {
             socket.configure(function () { 
-                socket.set("transports", ["xhr-polling"]); 
-                socket.set("polling duration", 10); 
+                //socket.set("transports", ["xhr-polling"]); 
+                //socket.set("polling duration", 10); 
                 
                 socket.enable('browser client minification');  // send minified client
                 socket.enable('browser client etag');          // apply etag caching logic based on version number
@@ -444,7 +444,7 @@ var WaveServer = {
                 var notified = false;
                 
                 var userIds = wave.get('userIds');
-                if (data.userIds != userIds) {
+                if (!_.equals(data.userIds, userIds)) {
                     var newIds = _.difference(data.userIds, userIds);
                     notified = wave.addUsers(newIds, true);
                     
