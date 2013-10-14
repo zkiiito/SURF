@@ -32,7 +32,6 @@ var WaveInviteSchema = new Schema({
     userId: Schema.ObjectId,
     waveId: Schema.ObjectId,
     code: {type: String, trim: true},
-    usedById: Schema.ObjectId,
     created_at: {type: Date}
 });
 
@@ -233,7 +232,7 @@ var DAL = {
      */
     getMinUnreadRootIdForUserInWave: function(user, wave, callback) {
         DAL.getUnreadIdsForUserInWave(user, wave, function(err, results) {
-            if (0 === results.length) {
+            if (err || 0 === results.length) {
                 callback(true, null);
             } else {
                 console.log('getMinUnreadRootIdForUserInWave: count: ' + results.length);
@@ -411,13 +410,7 @@ var DAL = {
     },
             
     getWaveInvitebyCode: function(code, callback) {
-        WaveInviteModel.findOne({code: code}).exec(function(err, result){
-           if (err || !result) {
-               return callback(true);
-           }
-           
-           callback(false, result);
-        });
+        WaveInviteModel.findOne({code: code}).exec(callback);
     },
             
     removeWaveInviteByCode: function(code, callback) {

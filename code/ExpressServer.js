@@ -80,7 +80,7 @@ app.configure(function(){
 
 app.get('/invite/:inviteCode', function(req, res) {
     DAL.getWaveInvitebyCode(req.params.inviteCode, function(err, invite){
-        if (!err) {
+        if (!err && invite) {
             req.session.invite = invite;
         }
         res.redirect('/');
