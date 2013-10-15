@@ -28,4 +28,8 @@ var Message = Backbone.Model.extend({
     //}
 });
 
-module.exports = Message;
+var MessageCollection = Backbone.Collection.extend({
+    model: Message 
+});
+
+module.exports = { Model: Message, Collection: MessageCollection };

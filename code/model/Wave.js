@@ -1,6 +1,5 @@
 var _ = require('underscore'),
     Backbone =  require('backbone'),
-    UserCollection = require('./UserCollection'),
     DAL = require('../DAL');
 
 var Wave = Backbone.Model.extend({
@@ -10,6 +9,7 @@ var Wave = Backbone.Model.extend({
     },
     idAttribute: '_id',
     initialize: function() {
+        var UserCollection = require('./User').Collection;
         this.users = new UserCollection();
         if (this.get('userIds')) {
             var uids = this.get('userIds');
@@ -175,4 +175,9 @@ var Wave = Backbone.Model.extend({
     //}
 });
 
-module.exports = Wave;
+var WaveCollection = Backbone.Collection.extend({
+    model: Wave    
+});
+
+module.exports = {Model: Wave, Collection: WaveCollection};
+//module.exports = Wave;

@@ -13,7 +13,7 @@
   ],  
   "dependencies": {
     "socket.io": "0.9.x",
-    "underscore": "1.4.x",
+    "underscore": "1.5.x",
     "backbone": "1.1.x",
     "mongoose": "3.6.x",
     "redis-url": "0.1.0",

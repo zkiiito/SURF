@@ -1,8 +1,6 @@
 var _ = require('underscore'),
     Backbone =  require('backbone'),
-    WaveCollection = require('./WaveCollection'),
-    UserCollection = require('./UserCollection'),
-    MessageCollection = require('./MessageCollection'),
+    MessageCollection = require('./Message').Collection,
     DAL = require('../DAL');
 
 var User = Backbone.Model.extend({
@@ -12,6 +10,7 @@ var User = Backbone.Model.extend({
         status: 'offline'
     },
     initialize: function() {
+        var WaveCollection = require('./Wave').Collection;
         this.waves = new WaveCollection();
     },
     idAttribute: '_id',
@@ -98,4 +97,8 @@ var User = Backbone.Model.extend({
     //}
 });
 
-module.exports = User;
+var UserCollection = Backbone.Collection.extend({
+    model: User 
+});
+
+module.exports = {Model: User, Collection: UserCollection};

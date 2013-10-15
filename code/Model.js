@@ -1,9 +1,9 @@
 
 module.exports = {
-    Message: require('./model/Message'),
-    MessageCollection: require('./model/MessageCollection'),
-    User: require('./model/User'),
-    UserCollection: require('./model/UserCollection'),
-    Wave: require('./model/Wave'),
-    WaveCollection: require('./model/WaveCollection')
+    Message: require('./model/Message').Model,
+    MessageCollection: require('./model/Message').Collection,
+    User: require('./model/User').Model,
+    UserCollection: require('./model/User').Collection,
+    Wave: require('./model/Wave').Model,
+    WaveCollection: require('./model/Wave').Collection
 };
