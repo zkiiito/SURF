@@ -66,11 +66,14 @@ var Message = Backbone.Model.extend({
     
     getSortableId: function() {
         if (!this.sortableId) {
-            var timestamp = Number('0x' + this.id.substr(0, 8)),
+            var timestamp = Number('0x' + this.id.substr(0, 8));
                 //machine = Number('0x' + this.id.substr(8, 6)),
                 //pid = Number('0x' + this.id.substr(14, 4)),
-                increment = Number('0x' + this.id.substr(18, 6));
-            this.sortableId = Number(timestamp + increment);
+                //increment = Number('0x' + this.id.substr(18, 6));
+            //https://gist.github.com/zippy1981/780246
+            //#45 - volt h megkavarodott
+            //this.sortableId = Number(timestamp + increment);
+            this.sortableId = timestamp;
         }
         return this.sortableId;
     },
