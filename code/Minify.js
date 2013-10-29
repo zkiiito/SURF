@@ -1,6 +1,5 @@
 var fs = require('fs'),
-    jsp = require("uglify-js").parser,
-    pro = require("uglify-js").uglify;
+    UglifyJS = require("uglify-js");
 
 var Minify = {
     readFiles: function(dir, done) {
@@ -19,6 +18,7 @@ var Minify = {
             "view/wave.view.js",
             "view/message.view.js",
             "view/editwave.view.js",
+            "view/edituser.view.js",
             "view/surfapp.view.js",
             "communicator.js",
             "surf.js"
@@ -31,24 +31,17 @@ var Minify = {
         return done(null, contents);
     },
     
-    compress: function(fileData)
-    {
-        var ast = jsp.parse(fileData);
-        ast = pro.ast_mangle(ast); // get a new AST with mangled names
-        ast = pro.ast_squeeze(ast); // get an AST with compression optimizations
-        return pro.gen_code(ast); // compressed code here        
-    },
-    
-    minify: function(callback) {
+    minify: function() {
         var workDir = __dirname + '/../client/js',
             minFile = workDir + '/surf.min.js';
         
         if (fs.existsSync(minFile)) {   
             fs.unlinkSync(minFile);
         }
-        Minify.readFiles(workDir, function(err, fileData) {
-            fileData = Minify.compress(fileData);
-            fs.writeFileSync(minFile, fileData);
+        
+        this.readFiles(workDir, function(err, fileData) {
+            fileData = UglifyJS.minify(fileData, {fromString: true});
+            fs.writeFileSync(minFile, fileData.code);
         });
     }
 };
