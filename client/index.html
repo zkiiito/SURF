@@ -115,6 +115,35 @@
 </div>
 </script>
 
+<script id="edituser_view" type="text/html">
+<div id="edituser" class="overlay">
+  <div class="overlay-title">
+    <a class="close button R" href="">Close</a>
+    <h2 class="R">Edit profile</h2>
+  </div>
+  <div class="overlay-body">
+    <h2 class="R">Edit profile</h2>
+    <form method="post">
+      <div>
+        <label for="edituser-name" class="R">Name</label>
+        <div class="right">
+          <input id="edituser-name" class="normal" name="name" type="text" />
+        </div>
+      </div>
+      <div>
+        <label for="edituser-avatar" class="R">Avatar</label>
+        <div class="right">
+          <input id="edituser-avatar" name="avatar" class="normal" type="text" />
+        </div>
+      </div>
+      <div class="right">
+        <button id="edituser-submit" type="submit" class="button R">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+</script>
+
 <div id="header">
   <h1>Surf</h1>
   <a href="#"><img id="header-logo" src="images/surf-logo.png" /></a>
@@ -122,7 +151,7 @@
   <div id="usermenu">
     <span id="currentuser"></span>
     <!--a class="button" href="#" onclick="return false;">Ismerőseim</a-->
-    <!--a class="button" href="#" onclick="return false;">Beállítások</a-->
+    <!--a class="button edituser R" href="#">Edit profile</a-->
     <a class="button R" href="/logout">Log out</a>
   </div>
 </div>

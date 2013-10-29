@@ -1,6 +1,6 @@
 var SurfAppView = Backbone.View.extend({
     initialize: function() {
-        _.bindAll(this, 'addMessage', 'showCreateWave', 'showUpdateWave', 'hideOverlays');
+        _.bindAll(this, 'addMessage', 'showCreateWave', 'showUpdateWave', 'showEditUser', 'hideOverlays');
         this.model.waves.bind('add', this.addWave);
         this.model.waves.bind('reset', this.resetWaves, this);
         this.model.messages.bind('reset', this.resetMessages, this);
@@ -12,6 +12,7 @@ var SurfAppView = Backbone.View.extend({
     },
     events: {
         'click a.addwave' : 'showCreateWave',
+        'click a.edituser' : 'showEditUser',
         'click #darken' : 'hideOverlays'
     },        
     
@@ -65,6 +66,13 @@ var SurfAppView = Backbone.View.extend({
         this.editWaveView.show();
         return false;
     },
+            
+    showEditUser: function() {
+        if (this.editUserView) {
+            this.editUserView.show();
+        }
+        return false;
+    },
     
     hideOverlays: function() {
         $('#darken').hide();
@@ -75,6 +83,11 @@ var SurfAppView = Backbone.View.extend({
     changeCurrentUser: function() {
         var template = new UserView({model: this.model.currentUser});
         this.$el.find('#currentuser').html('').append(template.render().el).append(' <p>' + this.model.currentUser.get('name') + '</p>');
+        
+        //TODO: destruct first
+        this.editUserView = new EditUserView({model: this.model.currentUser});
+        this.$el.append(this.editUserView.render().el);        
+        
         return false;
     },
     
