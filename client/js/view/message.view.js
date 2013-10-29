@@ -74,21 +74,26 @@ var MessageView = Backbone.View.extend({
     
     replyMessage: function(e) {
         e.preventDefault();
+        var timeout = 75;
+        
+        if (this.$el.find('> div:last-child').hasClass('replyform')) {
+            return false;
+        }
         
         $('.message .replyform').find('form').unbind();
         $('.message .replyform:visible').each(function(id, el) {
             el = $(el);
             if (el.siblings('.replies').children().size() > 0) {
-                el.siblings('.threadend').show();
+                el.siblings('.threadend').delay(timeout).slideDown(timeout);
             }
-            el.remove();
+            el.slideUp(timeout, function(){el.remove();});
         });
 
         var context = _.extend(this.model.toJSON(), {id: this.model.id, user: this.model.user.toJSON()}),
             form = ich.replyform_view(context);
 
-        this.$el.append(form);
-        this.$el.children('div.threadend').hide();//ha latszik-ha nem.
+        form.hide().appendTo(this.$el).slideDown(timeout);
+        this.$el.children('div.threadend').slideUp(timeout);//ha latszik-ha nem.
         
         this.$el.find('form').submit(function(){
             var textarea = $(this).find('textarea');
@@ -116,9 +121,9 @@ var MessageView = Backbone.View.extend({
             var parent = $(this).parents('.notification');//nem lehet tobb notificationon belul
             parent.find('form').unbind();
             if (parent.siblings('.replies').children().size() > 0) {
-                parent.siblings('.threadend').show();
+                parent.siblings('.threadend').delay(timeout).slideDown(timeout);
             }
-            parent.remove();
+            parent.slideUp(timeout, function(){parent.remove();});
             return false;
         });
         

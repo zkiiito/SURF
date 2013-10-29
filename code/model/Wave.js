@@ -180,4 +180,3 @@ var WaveCollection = Backbone.Collection.extend({
 });
 
 module.exports = {Model: Wave, Collection: WaveCollection};
-//module.exports = Wave;

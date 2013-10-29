@@ -14,7 +14,7 @@ var WaveView = Backbone.View.extend({
         this.model.messages.bind('add', this.addMessage);
         this.model.users.bind('add', this.addUser);
         this.model.users.bind('remove', this.removeUser);
-        this.model.users.bind('change', this.countOfflineUsers)
+        this.model.users.bind('change', this.countOfflineUsers);
     },
     events: {
         'click a.editwave' : 'showUpdateWave',
