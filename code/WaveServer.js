@@ -83,21 +83,29 @@ WaveServer = {
     },
     
     getUserByAuth: function(auth) {
-        var userData = auth.google.user,
-            user = this.users.find(function(u){return u.get('googleId') === userData.id;});
+        var authMode = auth.google ? 'google' : 'facebook',
+            userData = auth.google ? auth.google.user : auth.facebook.user,
+            user = this.users.find(function(u){
+                return u.get('googleId') === userData.id
+                    || u.get('facebookId') === userData.id
+                    || u.get('email') === userData.email;
+            }),
+            picture = 'google' === authMode ? userData.picture : userData.picture.data.url;
         
         if (user) {
             console.log('auth: userfound ' + user.id);
-            user.set('avatar', userData.picture);
-            user.set('email', userData.email);
+            user.set(authMode + 'Id', userData.id);//ha ez az auth meg nincs lementve
+            user.set(authMode + 'Avatar', picture);//befrissites
+            user.set('email', userData.email);//?
             user.save();
             return user;
         }
-        
+
         user = new Model.User();
         user.set('name', userData.name);
-        user.set('avatar', userData.picture);
-        user.set('googleId', userData.id);
+        user.set('avatar', picture);
+        user.set(authMode + 'Avatar', picture);
+        user.set(authMode + 'Id', userData.id);
         user.set('email', userData.email);
         user.save();
         this.users.add(user);
@@ -205,8 +213,7 @@ WaveServer = {
             var wave = that.waves.get(data.waveId);
             if (wave && wave.isMember(client.curUser)) {
                 var code = wave.createInviteCode(client.curUser);
-                if (code)
-                {
+                if (code) {
                     data.code = code;
                     client.curUser.send('inviteCodeReady', data);
                 }

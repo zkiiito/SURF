@@ -8,6 +8,9 @@ var UserSchema = new Schema({
     name: {type: String, trim: true},
     avatar: {type: String, trim: true},
     googleId: {type: String, trim: true},
+    googleAvatar: {type: String, trim: true},
+    facebookId: {type: String, trim: true},
+    facebookAvatar: {type: String, trim: true},
     email: {type: String, trim: true}
 });
 var UserModel = mongoose.model('UserModel', UserSchema);
@@ -47,7 +50,15 @@ var DAL = {
         UserModel.find().exec(function(err, users){
             var usersTmp = [];
             _.each(users, function(user) {
-                usersTmp.push({name: user.name, avatar: user.avatar, _id: user._id, googleId: user.googleId});
+                usersTmp.push({name: user.name, 
+                               avatar: user.avatar, 
+                               _id: user._id, 
+                               email: user.email,
+                               googleId: user.googleId,
+                               googleAvatar: user.googleAvatar,
+                               facebookId: user.facebookId,
+                               facebookAvatar: user.facebookAvatar
+                           });
             });
             server.users.reset(usersTmp);
             usersTmp = null;
@@ -89,6 +100,9 @@ var DAL = {
             name: user.get('name'),
             avatar: user.get('avatar'),
             googleId: user.get('googleId'),
+            googleAvatar: user.get('googleAvatar'),
+            facebookId: user.get('facebookId'),
+            facebookAvatar: user.get('facebookAvatar'),
             email: user.get('email')
         }, m;
         

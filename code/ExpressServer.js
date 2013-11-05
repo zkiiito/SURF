@@ -52,6 +52,25 @@ var auth = everyauth.google
 auth.moreAuthQueryParams.access_type = 'online';
 auth.moreAuthQueryParams.approval_prompt = 'auto';
 
+var fbAuth = everyauth.facebook
+    .appId('540926909316211')
+    .appSecret('ca1521da4e2d0dac4dc3978580d25ae6')
+    .scope('email')                        // Defaults to undefined
+    .fields('id,name,email,picture')       // Controls the returned fields. Defaults to undefined
+    .handleAuthCallbackError( function (req, res) {
+      // If a user denies your app, Facebook will redirect the user to
+      // /auth/facebook/callback?error_reason=user_denied&error=access_denied&error_description=The+user+denied+your+request.
+      // This configurable route handler defines how you want to respond to
+      // that.
+      // If you do not configure this, everyauth renders a default fallback
+      // view notifying the user that their authentication failed and why.
+    })
+    .findOrCreateUser( function (session, accessToken, accessTokExtra, fbUserMetadata) {
+          //?
+          return usersByGoogleId[fbUserMetadata.id] || (usersByGoogleId[fbUserMetadata.id] = addUser('facebook', fbUserMetadata));
+    })
+    .redirectPath('/');
+
 var app = express();
 var clientDir = __dirname.replace('code', 'client');
 
