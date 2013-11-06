@@ -76,15 +76,18 @@ var MessageView = Backbone.View.extend({
     replyMessage: function(e) {
         e.preventDefault();
         var that = this;
-        //if reply form is visible under this message
-        if (this.$el.find('> div:last-child').hasClass('replyform')) {
-            return false;
-        }
+        //if reply form is visible under this message, return after hiding
+        var hideOnly = this.$el.find('> div:last-child').hasClass('replyform');
+
         //hide other replyforms
         $('.message .replyform').find('form').unbind();
         $('.message .replyform:visible').each(function(id, el) {
             that.hideReplyForm($(el));
         });
+        
+        if (hideOnly) {
+            return false;
+        }
 
         var context = _.extend(this.model.toJSON(), {id: this.model.id, user: this.model.user.toJSON()}),
             form = ich.replyform_view(context);
