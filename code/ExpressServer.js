@@ -30,14 +30,11 @@ everyauth.everymodule
         callback(null, usersById[id]);
     });
 
-var appId = process.env.PORT ? '290177368237-pne1smhvlb3g2r5c7g25d34hk3pfi96f.apps.googleusercontent.com' : '290177368237.apps.googleusercontent.com';
-var appSecret = process.env.PORT ? 'v28w9nWORgGioUdDO5JSAdBv' : 'x58fnA7rUYCqhsLeAXTakjdN';
-
 //?
 var usersByGoogleId = {};
 var auth = everyauth.google
-    .appId(appId)
-    .appSecret(appSecret)
+    .appId(process.env.GOOGLE_APPID)
+    .appSecret(process.env.GOOGLE_APPSECRET)
     .myHostname(process.env.HOSTNAME)//https miatt, configban kell megadni.
     .scope('https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email')
     .findOrCreateUser( function (sess, accessToken, extra, googleUser) {
@@ -53,10 +50,11 @@ auth.moreAuthQueryParams.access_type = 'online';
 auth.moreAuthQueryParams.approval_prompt = 'auto';
 
 var fbAuth = everyauth.facebook
-    .appId('540926909316211')
-    .appSecret('ca1521da4e2d0dac4dc3978580d25ae6')
+    .appId(process.env.FACEBOOK_APPID)
+    .appSecret(process.env.FACEBOOK_APPSECRET)
     .scope('email')                        // Defaults to undefined
     .fields('id,name,email,picture')       // Controls the returned fields. Defaults to undefined
+    .myHostname(process.env.HOSTNAME)//https miatt, configban kell megadni.
     .handleAuthCallbackError( function (req, res) {
       // If a user denies your app, Facebook will redirect the user to
       // /auth/facebook/callback?error_reason=user_denied&error=access_denied&error_description=The+user+denied+your+request.
