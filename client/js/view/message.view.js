@@ -1,6 +1,7 @@
 var MessageView = Backbone.View.extend({
     initialize: function() {
         this.hasReplyForm = false;
+        this.timeout = 75;
         _.bindAll(this, 'addMessage', 'readMessage', 'replyMessage', 'onReadMessage', 'scrollTo', 'changeUserName');
         this.model.messages.bind('add', this.addMessage);//ezt nem itt kene, hanem amikor letrejon ott a messages
         this.model.bind('change:unread', this.onReadMessage);
@@ -74,27 +75,37 @@ var MessageView = Backbone.View.extend({
     
     replyMessage: function(e) {
         e.preventDefault();
-        var timeout = 75;
-        
+        var that = this;
+        //if reply form is visible under this message
         if (this.$el.find('> div:last-child').hasClass('replyform')) {
             return false;
         }
-        
+        //hide other replyforms
         $('.message .replyform').find('form').unbind();
         $('.message .replyform:visible').each(function(id, el) {
-            el = $(el);
-            if (el.siblings('.replies').children().size() > 0) {
-                el.siblings('.threadend').delay(timeout).slideDown(timeout);
-            }
-            el.slideUp(timeout, function(){el.remove();});
+            that.hideReplyForm($(el));
         });
 
         var context = _.extend(this.model.toJSON(), {id: this.model.id, user: this.model.user.toJSON()}),
             form = ich.replyform_view(context);
 
-        form.hide().appendTo(this.$el).slideDown(timeout);
-        this.$el.children('div.threadend').slideUp(timeout);//ha latszik-ha nem.
+        //append form, show it
+        //form.hide().appendTo(this.$el).slideDown(this.timeout);
+        //this.$el.children('div.threadend').slideUp(this.timeout);//ha latszik-ha nem.
+        var threadEnd = this.$el.children('div.threadend');
+        if (threadEnd.is(':visible')) {
+            threadEnd.hide();
+            form.height(threadEnd.height()).appendTo(this.$el)
+            .animate({height: '145px'}, this.timeout, function(){
+                $(this).find('textarea').focus();
+            });
+        } else {
+            form.hide().appendTo(this.$el).slideDown(this.timeout, function(){
+                $(this).find('textarea').focus();
+            });
+        }
         
+        //submit handler
         this.$el.find('form').submit(function(){
             var textarea = $(this).find('textarea');
             if (textarea.val().length > 0) {
@@ -104,6 +115,7 @@ var MessageView = Backbone.View.extend({
             return false;
         });
 
+        //keydown handler
         this.$el.find('textarea').keydown(function(e){
             if (!e.shiftKey && 13 === e.keyCode) {
                 e.preventDefault();
@@ -112,18 +124,16 @@ var MessageView = Backbone.View.extend({
             else if (32 === e.keyCode && ' ' === $(this).val()) {
                 e.preventDefault();
                 that.scrollToNextUnread();
-            }            
+            }
             e.stopPropagation();
-        }).focus();
+        });
         
+        //cancel handler
         this.$el.find('a.cancel').click(function(e){
             e.preventDefault();
             var parent = $(this).parents('.notification');//nem lehet tobb notificationon belul
             parent.find('form').unbind();
-            if (parent.siblings('.replies').children().size() > 0) {
-                parent.siblings('.threadend').delay(timeout).slideDown(timeout);
-            }
-            parent.slideUp(timeout, function(){parent.remove();});
+            that.hideReplyForm(parent);
             return false;
         });
         
@@ -132,5 +142,20 @@ var MessageView = Backbone.View.extend({
     
     changeUserName: function() {
         this.$el.find('span.author').eq(0).text(this.model.user.get('name') + ':');
+    },
+            
+    hideReplyForm: function(el) {
+        if (el.siblings('.replies').children().size() > 0) {
+            var threadEnd = el.siblings('.threadend');
+            el.animate({height: threadEnd.height()}, this.timeout, 
+            function() {
+                el.remove();
+                threadEnd.show();
+            });
+        } else {
+            el.slideUp(this.timeout, function() {
+                el.remove();
+            });
+        }
     }
 });
