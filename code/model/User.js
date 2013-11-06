@@ -7,7 +7,12 @@ var User = Backbone.Model.extend({
     defaults: {
         name: '',
         avatar: '',
-        status: 'offline'
+        status: 'offline',
+        email: '',
+        googleId: '',
+        googleAvatar: '',
+        facebookId: '',
+        facebookAvatar: ''
     },
     initialize: function() {
         var WaveCollection = require('./Wave').Collection;

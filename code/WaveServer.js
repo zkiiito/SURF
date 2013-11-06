@@ -95,18 +95,22 @@ WaveServer = {
         if (user) {
             console.log('auth: userfound ' + user.id);
             user.set(authMode + 'Id', userData.id);//ha ez az auth meg nincs lementve
-            user.set(authMode + 'Avatar', picture);//befrissites
             user.set('email', userData.email);//?
+            if (picture) {
+                user.set(authMode + 'Avatar', picture);//befrissites
+            }            
             user.save();
             return user;
         }
 
         user = new Model.User();
         user.set('name', userData.name);
-        user.set('avatar', picture);
-        user.set(authMode + 'Avatar', picture);
         user.set(authMode + 'Id', userData.id);
         user.set('email', userData.email);
+        if (picture) {
+            user.set('avatar', picture);
+            user.set(authMode + 'Avatar', picture);
+        }        
         user.save();
         this.users.add(user);
 
