@@ -6,7 +6,7 @@ var Communicator = {
         }
         
         //var id = prompt('hanyas vagy?', Math.ceil(Math.random() * 50)) * 1 -1;
-        Communicator.socket = new io.connect(document.location.href);
+        Communicator.socket = new io.connect(document.location.href, {reconnect: false});
         //Communicator.socket.emit('auth', id);
         
         Communicator.socket.on('init', function(data){
@@ -30,12 +30,7 @@ var Communicator = {
         Communicator.socket.on('message', Communicator.onMessage);
         
         Communicator.socket.on('disconnect', function(){
-            alert('disconnected');
-            var url = document.location.protocol + '//' + document.location.host;
-            if (document.location.port) {
-                url += document.location.port;
-            }
-            document.location.href = url;
+            app.view.showDisconnected(true);
         });
         
         Communicator.socket.on('updateUser', Communicator.onUpdateUser);

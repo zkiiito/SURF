@@ -19,6 +19,7 @@ var Minify = {
             "view/message.view.js",
             "view/editwave.view.js",
             "view/edituser.view.js",
+            "view/disconnected.view.js",
             "view/surfapp.view.js",
             "communicator.js",
             "surf.js"

@@ -73,7 +73,13 @@ var SurfAppView = Backbone.View.extend({
         }
         return false;
     },
-    
+
+    showDisconnected: function(reconnect) {
+        var disconnectedView = new DisconnectedView({model: {reconnect: reconnect}});
+        this.$el.append(disconnectedView.render().el);
+        disconnectedView.show();
+    },
+
     hideOverlays: function() {
         $('#darken').hide();
         $('.overlay').hide();
