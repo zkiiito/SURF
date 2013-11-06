@@ -65,6 +65,7 @@ WaveServer = {
             client.curUser = that.getUserByAuth(client.handshake.session.auth);
 
             if (client.curUser.socket) {
+                client.curUser.send('dontReconnect', 1);
                 client.curUser.socket.disconnect();
             }
 

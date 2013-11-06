@@ -1,5 +1,6 @@
 var Communicator = {
     socket: null,
+    reconnect: true,
     initialize: function() {
         if (typeof io === 'undefined') {
             return;
@@ -30,12 +31,16 @@ var Communicator = {
         Communicator.socket.on('message', Communicator.onMessage);
         
         Communicator.socket.on('disconnect', function(){
-            app.view.showDisconnected(true);
+            app.view.showDisconnected(Communicator.reconnect);
         });
         
         Communicator.socket.on('updateUser', Communicator.onUpdateUser);
         Communicator.socket.on('updateWave', Communicator.onUpdateWave);
         Communicator.socket.on('inviteCodeReady', Communicator.onInviteCodeReady);
+        
+        Communicator.socket.on('dontReconnect', function(){
+            Communicator.reconnect = false;
+        });        
     },
     
     sendMessage: function(message, waveId, parentId) {
