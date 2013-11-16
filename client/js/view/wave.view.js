@@ -2,7 +2,7 @@ var WaveView = Backbone.View.extend({
     initialize: function() {
         _.bindAll(this, 'setCurrent', 'addMessage', 'addUser', 'removeUser', 'updateTitle', 
                         'showUpdateWave', 'scrollToNextUnread', 'scrollToBottom', 'readAllMessages',
-                        'quitWave', 'removeWave', 'countOfflineUsers');
+                        'quitWave', 'removeWave', 'countOfflineUsers', 'readAll');
         
         this.userViews = [];
         
@@ -10,6 +10,7 @@ var WaveView = Backbone.View.extend({
         this.model.bind('change:title', this.updateTitle);
         this.model.bind('noMoreUnread', this.scrollToBottom);
         this.model.bind('remove', this.removeWave);
+        this.model.bind('readAll', this.readAll);
         
         this.model.messages.bind('add', this.addMessage);
         this.model.users.bind('add', this.addUser);
@@ -180,5 +181,9 @@ var WaveView = Backbone.View.extend({
         if (wave.id === this.model.id) {
             this.$el.remove();
         }
-    }    
+    },
+
+    readAll: function() {
+        this.$el.find('table.unread').removeClass('unread');
+    }
 });

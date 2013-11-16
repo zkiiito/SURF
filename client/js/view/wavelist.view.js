@@ -6,6 +6,7 @@ var WaveListView = Backbone.View.extend({
         this.model.bind('remove', this.removeWave);
         
         this.model.messages.bind('change:unread', this.countMessages);
+        this.model.bind('readAll', this.countMessages);
         this.model.messages.bind('add', this.countMessages);
         this.model.messages.bind('add', this.updateMessages);
         

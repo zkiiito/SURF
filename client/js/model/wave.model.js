@@ -136,6 +136,7 @@ var Wave = Backbone.Model.extend({
         });
         
         if (unread) {
+            this.trigger('readAll');
             Communicator.readAllMessages(this);
         }
     },

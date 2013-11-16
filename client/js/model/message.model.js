@@ -79,7 +79,7 @@ var Message = Backbone.Model.extend({
     
     readAllMessages: function() {
         var unread = this.get('unread');
-        this.set('unread', false);
+        this.set({'unread': false}, {'silent': true});
         
         return unread;
     },
