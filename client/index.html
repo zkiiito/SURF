@@ -77,9 +77,7 @@
 <script id="replyform_view" type="text/html">
     <div class="notification replyform">
     <p><a class="button threadend cancel" href=""><span class="R">Cancel</span> &uarr;</a></p>
-    <form class="add-message threadend" method="post">    
-        <input type="hidden" name="wave_id" value="{{ waveId }}"/>
-        <input type="hidden" name="parent_id" value="{{ id }}"/>
+    <form class="add-message threadend" method="post">
         <textarea name="message" placeholder="Reply to {{ user.name }}'s message" class="R"></textarea>
         <p class="inline-help"><button type="submit" class="button sendmsg R">Save message</button> <span class="R">Press Return to send, Shift-Return to break line.</span></p>
     </form>

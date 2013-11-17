@@ -89,12 +89,11 @@ var MessageView = Backbone.View.extend({
             return false;
         }
 
-        var context = _.extend(this.model.toJSON(), {id: this.model.id, user: this.model.user.toJSON()}),
-            form = ich.replyform_view(context);
+        var formView = new ReplyFormView({model: this.model});
+        formView.setMessageView(this);
+        var form = formView.render().$el;
 
         //append form, show it
-        //form.hide().appendTo(this.$el).slideDown(this.timeout);
-        //this.$el.children('div.threadend').slideUp(this.timeout);//ha latszik-ha nem.
         var threadEnd = this.$el.children('div.threadend');
         if (threadEnd.is(':visible')) {
             threadEnd.hide();
@@ -107,38 +106,6 @@ var MessageView = Backbone.View.extend({
                 $(this).find('textarea').focus();
             });
         }
-        
-        //submit handler
-        this.$el.find('form').submit(function(){
-            var textarea = $(this).find('textarea');
-            if (textarea.val().length > 0) {
-                Communicator.sendMessage(textarea.val(), $('[name=wave_id]', $(this)).val(), $('[name=parent_id]', $(this)).val());
-            }
-            textarea.val('');
-            return false;
-        });
-
-        //keydown handler
-        this.$el.find('textarea').keydown(function(e){
-            if (!e.shiftKey && 13 === e.keyCode) {
-                e.preventDefault();
-                $(this).parents('form').submit();
-            }
-            else if (32 === e.keyCode && ' ' === $(this).val()) {
-                e.preventDefault();
-                that.scrollToNextUnread();
-            }
-            e.stopPropagation();
-        });
-        
-        //cancel handler
-        this.$el.find('a.cancel').click(function(e){
-            e.preventDefault();
-            var parent = $(this).parents('.notification');//nem lehet tobb notificationon belul
-            parent.find('form').unbind();
-            that.hideReplyForm(parent);
-            return false;
-        });
         
        return false;
     },
