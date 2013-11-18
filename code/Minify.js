@@ -17,6 +17,8 @@ var Minify = {
             "view/wavelist.view.js",
             "view/wave.view.js",
             "view/message.view.js",
+            "view/wavereplyform.view.js",
+            "view/messagereplyform.view.js",
             "view/editwave.view.js",
             "view/edituser.view.js",
             "view/disconnected.view.js",
@@ -34,15 +36,17 @@ var Minify = {
     
     minify: function() {
         var workDir = __dirname + '/../client/js',
-            minFile = workDir + '/surf.min.js';
+            minFile = workDir + '/surf.min.js',
+            mapFile = workDir + '/surf.min.js.map';
         
         if (fs.existsSync(minFile)) {   
             fs.unlinkSync(minFile);
         }
         
         this.readFiles(workDir, function(err, fileData) {
-            fileData = UglifyJS.minify(fileData, {fromString: true});
+            fileData = UglifyJS.minify(fileData, {fromString: true, outSourceMap: "surf.min.js.map"});
             fs.writeFileSync(minFile, fileData.code);
+            //fs.writeFileSync(mapFile, fileData.map);
         });
     }
 };
@@ -57,7 +61,10 @@ var Minify = {
 <script src="js/model/wave.model.js"></script>
 <script src="js/model/message.model.js"></script>
 <script src="js/model/surfapp.model.js"></script>
+<script src="js/view/wavereplyform.view.js"></script>
+<script src="js/view/messagereplyform.view.js"></script>
 <script src="js/view/user.view.js"></script>
+<script src="js/view/edituser.view.js"></script>
 <script src="js/view/wavelist.view.js"></script>
 <script src="js/view/wave.view.js"></script>
 <script src="js/view/message.view.js"></script>

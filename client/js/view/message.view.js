@@ -89,11 +89,12 @@ var MessageView = Backbone.View.extend({
             return false;
         }
 
-        var formView = new ReplyFormView({model: this.model});
+        var formView = new MessageReplyFormView({model: this.model});
         formView.setMessageView(this);
         var form = formView.render().$el;
 
         //append form, show it
+        //TODO: replyformba
         var threadEnd = this.$el.children('div.threadend');
         if (threadEnd.is(':visible')) {
             threadEnd.hide();
@@ -113,7 +114,7 @@ var MessageView = Backbone.View.extend({
     changeUserName: function() {
         this.$el.find('span.author').eq(0).text(this.model.user.get('name') + ':');
     },
-            
+    //TODO: normalis destruktor, es azt hivni
     hideReplyForm: function(el) {
         if (el.siblings('.replies').children().size() > 0) {
             var threadEnd = el.siblings('.threadend');

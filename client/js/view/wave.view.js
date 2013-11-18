@@ -11,6 +11,7 @@ var WaveView = Backbone.View.extend({
         this.model.bind('noMoreUnread', this.scrollToBottom);
         this.model.bind('remove', this.removeWave);
         this.model.bind('readAll', this.readAll);
+        this.model.bind('scrollToNextUnread', this.scrollToNextUnread);
         
         this.model.messages.bind('add', this.addMessage);
         this.model.users.bind('add', this.addUser);
@@ -26,47 +27,13 @@ var WaveView = Backbone.View.extend({
     },
     
     render: function() {
-        var context = _.extend(this.model.toJSON(), {
-            id: this.model.id
-        }),
-            template = ich.wave_view(context),
-            that = this;
+        var context = _.extend(this.model.toJSON(), {id: this.model.id}),
+            template = ich.wave_view(context);
             
         this.setElement(template);
         this.$el.hide();
-        
-        this.$el.find('form').submit(function(){
-            var textarea = $(this).find('textarea');
-            if (textarea.val().length > 0) {
-                Communicator.sendMessage(textarea.val(), $('[name=wave_id]', $(this)).val(), null);
-            }
-            textarea.val('');
-            return false;
-        });
-        
-        this.$el.find('textarea').keydown(function(e){
-            if (!e.shiftKey && 13 === e.keyCode) {
-                e.preventDefault();
-                $(this).parents('form').submit();
-            }
-            else if (32 === e.keyCode && ' ' === $(this).val()) {
-                e.preventDefault();
-                that.scrollToNextUnread();
-            }
-            e.stopPropagation();
-        });
-        
-        $('body').keydown(function(e){
-            var nodeName = $(e.target).prop('nodeName');
-            
-            if ('INPUT' === nodeName || 'TEXTBOX' === nodeName) {
-                return;
-            }
-            else if (app.currentWave === that.model.id && 32 === e.keyCode) {
-                e.preventDefault();
-                that.scrollToNextUnread();
-            }
-        });
+        var formView = new WaveReplyFormView({model: this.model});
+        formView.render().$el.appendTo(this.$el.find('.waves-container'));
         
         this.model.users.each(this.addUser);
         

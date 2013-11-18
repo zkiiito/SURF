@@ -29,6 +29,19 @@ var SurfAppView = Backbone.View.extend({
         };
         this.iconImage.src = '/images/surf-ico.png';
         
+        $('body').keydown(function(e){
+            var nodeName = $(e.target).prop('nodeName');
+
+            if ('INPUT' === nodeName || 'TEXTAREA' === nodeName) {
+                return;
+            }
+            else if (32 === e.keyCode) {
+                e.preventDefault();
+                if (app.currentWave)
+                    app.model.waves.get(app.currentWave).trigger('scrollToNextUnread');
+            }
+        });        
+        
         return this;
     },
     

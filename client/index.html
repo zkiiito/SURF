@@ -38,14 +38,26 @@
             <div class="messages">
                 <div class="notification getprevmessages"><p><a class="getprevmessages R" href="#">Older messages</a></p></div>
             </div>
-            <div class="notification replyform">
-                <form class="add-message" method="post">
-                    <input type="hidden" name="wave_id" value="{{ id }}"/>
-                    <textarea name="message" placeholder="New message" class="R"></textarea>
-                    <p class="inline-help"><button type="submit" class="button sendmsg R">Save message</button> <span class="R">Press Return to send, Shift-Return to break line.</span></p>
-                </form>
-            </div>
         </div>
+    </div>
+</script>
+
+<script id="wavereplyform_view" type="text/html">
+    <div class="notification replyform">
+        <form class="add-message" method="post">
+            <textarea name="message" placeholder="New message" class="R"></textarea>
+            <p class="inline-help"><button type="submit" class="button sendmsg R">Save message</button> <span class="R">Press Return to send, Shift-Return to break line.</span></p>
+        </form>
+    </div>
+</script>
+
+<script id="messagereplyform_view" type="text/html">
+    <div class="notification replyform">
+    <p><a class="button threadend cancel" href=""><span class="R">Cancel</span> &uarr;</a></p>
+    <form class="add-message threadend" method="post">
+        <textarea name="message" placeholder="Reply to {{ user.name }}'s message" class="R"></textarea>
+        <p class="inline-help"><button type="submit" class="button sendmsg R">Save message</button> <span class="R">Press Return to send, Shift-Return to break line.</span></p>
+    </form>
     </div>
 </script>
 
@@ -72,16 +84,6 @@
             <p><a class="button threadend" href=""><span class="R">New message</span> &darr;</a></p>
       </div>
     </div>    
-</script>
-
-<script id="replyform_view" type="text/html">
-    <div class="notification replyform">
-    <p><a class="button threadend cancel" href=""><span class="R">Cancel</span> &uarr;</a></p>
-    <form class="add-message threadend" method="post">
-        <textarea name="message" placeholder="Reply to {{ user.name }}'s message" class="R"></textarea>
-        <p class="inline-help"><button type="submit" class="button sendmsg R">Save message</button> <span class="R">Press Return to send, Shift-Return to break line.</span></p>
-    </form>
-    </div>
 </script>
 
 <script id="editwave_view" type="text/html">
