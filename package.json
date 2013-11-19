@@ -23,7 +23,8 @@
     "everyauth": "0.4.x",
     "uglify-js": "2.4.x",
     "R.js": "0.1.x",
-    "nodetime": "0.8.x"
+    "nodetime": "0.8.x",
+    "newrelic": "1.1.x"
   },
   "engines": {
     "node": "0.10.x",

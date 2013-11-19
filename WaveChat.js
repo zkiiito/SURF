@@ -4,6 +4,8 @@ if (process.env.NODETIME_ACCOUNT_KEY) {
         appName: 'surf' // optional
     });
 }
+require('newrelic');
+
 var Minify = require('./code/Minify'),
     WaveServer = require('./code/WaveServer');
 
