@@ -1,7 +1,6 @@
 var MessageView = Backbone.View.extend({
     initialize: function() {
         this.hasReplyForm = false;
-        this.timeout = 75;
         _.bindAll(this, 'addMessage', 'readMessage', 'replyMessage', 'onReadMessage', 'scrollTo', 'changeUserName');
         this.model.messages.bind('add', this.addMessage);//ezt nem itt kene, hanem amikor letrejon ott a messages
         this.model.bind('change:unread', this.onReadMessage);
@@ -75,58 +74,24 @@ var MessageView = Backbone.View.extend({
     
     replyMessage: function(e) {
         e.preventDefault();
-        var that = this;
         //if reply form is visible under this message, return after hiding
         var hideOnly = this.$el.find('> div:last-child').hasClass('replyform');
 
         //hide other replyforms
-        $('.message .replyform').find('form').unbind();
-        $('.message .replyform:visible').each(function(id, el) {
-            that.hideReplyForm($(el));
-        });
+        this.model.getWave().trigger('hideReplyForm');
         
         if (hideOnly) {
             return false;
         }
 
         var formView = new MessageReplyFormView({model: this.model});
-        formView.setMessageView(this);
-        var form = formView.render().$el;
-
-        //append form, show it
-        //TODO: replyformba
-        var threadEnd = this.$el.children('div.threadend');
-        if (threadEnd.is(':visible')) {
-            threadEnd.hide();
-            form.height(threadEnd.height()).appendTo(this.$el)
-            .animate({height: '145px'}, this.timeout, function(){
-                $(this).find('textarea').focus();
-            });
-        } else {
-            form.hide().appendTo(this.$el).slideDown(this.timeout, function(){
-                $(this).find('textarea').focus();
-            });
-        }
+        formView.render();
+        formView.show(this.$el);
         
-       return false;
+        return false;
     },
     
     changeUserName: function() {
         this.$el.find('span.author').eq(0).text(this.model.user.get('name') + ':');
-    },
-    //TODO: normalis destruktor, es azt hivni
-    hideReplyForm: function(el) {
-        if (el.siblings('.replies').children().size() > 0) {
-            var threadEnd = el.siblings('.threadend');
-            el.animate({height: threadEnd.height()}, this.timeout, 
-            function() {
-                el.remove();
-                threadEnd.show();
-            });
-        } else {
-            el.slideUp(this.timeout, function() {
-                el.remove();
-            });
-        }
     }
 });

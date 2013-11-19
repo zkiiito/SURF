@@ -31,8 +31,7 @@ var Message = Backbone.Model.extend({
     },
     
     setCurrent: function() {
-        var wave = app.model.waves.get(this.get('waveId'));
-        wave.setCurrentMessage(this.id);
+        this.getWave().setCurrentMessage(this.id);
     },
     
     setScrolled: function() {
@@ -117,8 +116,11 @@ var Message = Backbone.Model.extend({
         } else {
             return this.getSortableId();
         }
-    }
-    
+    },
+            
+    getWave: function() {
+        return app.model.waves.get(this.get('waveId'));
+    }    
 });
 
 var MessageCollection = Backbone.Collection.extend({
