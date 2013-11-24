@@ -199,12 +199,15 @@ var DAL = {
         var startTime = new Date().getTime();
         WaveModel.find().where('_id').in(user.waves.pluck('_id')).exec(function(err, waves) {
             //console.log(waves.length + " waves found");
+            var endTime = new Date().getTime();
+            console.log('QUERY LastMessagesForUser: wave query in ' + (endTime - startTime));
+            
             async.reduce(waves, [], function(memo, wave, callback_async_reduce){//ez nem parhuzamosan fut, de async mert az iteratornak callbackje van
                 DAL.getLastMessagesForUserInWave(user, wave, memo, callback_async_reduce);
             }, function(err, results) {
                 var endTime = new Date().getTime();
-                console.log('LastMessagesForUser: msg query in ' + (endTime - startTime));
-                console.log('LastMessagesForUser: msgs: ' + results.length);
+                console.log('QUERY LastMessagesForUser: msg query in ' + (endTime - startTime));
+                console.log('QUERY LastMessagesForUser: msgs: ' + results.length);
                 callback(results);
             });
 	});
@@ -218,6 +221,7 @@ var DAL = {
      * @param Function callback
      */
     getLastMessagesForUserInWave: function(user, wave, memo, callback) {
+        console.log('QUERY getLastMessagesForUserInWave');
         DAL.getMinUnreadRootIdForUserInWave(user, wave, function(err, result){
             //console.log(result);
             var minRootId = null,
@@ -249,14 +253,20 @@ var DAL = {
             if (err || 0 === results.length) {
                 callback(true, null);
             } else {
-                console.log('getMinUnreadRootIdForUserInWave: count: ' + results.length);
+                console.log('QUERY getMinUnreadRootIdForUserInWave: count: ' + results.length);
+                
                 //TODO: ha tul sok van, akkor hogyan mit???
+                var startTime = new Date().getTime();
+                
                 MessageModel.findOne({waveId: wave.id})
                         .where('_id').in(results)
                         .select('rootId')
                         .sort('rootId')
                         .limit(1)
                         .exec(function(err, result){
+                            var endTime = new Date().getTime();
+                            console.log('QUERY getMinUnreadRootIdForUserInWave: query in ' + (endTime - startTime));
+
                             if (err || !result) {
                                 return callback(true, null);
                             }
@@ -277,11 +287,17 @@ var DAL = {
      * @param callback Function
      */
     getUnreadIdsForUserInWave: function(user, wave, callback) {
+        var startTime = new Date().getTime();
         var key = 'unread-' + user.id + '-' + wave.id;
-        redis.smembers(key, callback);
+        redis.smembers(key, function(err, results) {
+            var endTime = new Date().getTime();
+            console.log('QUERY getUnreadIdsForUserInWave: query in ' + (endTime - startTime));
+            callback(err, results);
+        });
     },
     
     getMinRootIdForWave: function(wave, minRootId, maxRootId, callback) {
+        console.log('QUERY getMinRootIdForWave');
         if (null === minRootId && null !== maxRootId) {
             minRootId = maxRootId;
         }
@@ -309,7 +325,10 @@ var DAL = {
             query.where('rootId').lt(minRootId);
         }
         
+        var startTime = new Date().getTime();
         query.exec(function(err, results){
+            var endTime = new Date().getTime();
+            console.log('QUERY getNextMinRootIdForWave: query in ' + (endTime - startTime));
             if (0 === results.length) {
                 callback(true);
             } else {
@@ -329,8 +348,11 @@ var DAL = {
             if (maxRootId) {
                 query.where('rootId').lt(maxRootId);
             }
-
+            
+            var startTime = new Date().getTime();
             query.count(function(err, count) {
+                var endTime = new Date().getTime();
+                console.log('QUERY countMessagesInRange: query in ' + (endTime - startTime));
                 callback(null, count);
             });
         }
@@ -347,8 +369,11 @@ var DAL = {
         if (maxRootId) {
             query.where('rootId').lt(maxRootId);
         }
-        
+        var startTime = new Date().getTime();
         query.exec(function(err, messages){
+            var endTime = new Date().getTime();
+            console.log('QUERY getMessagesForUserInWave: query in ' + (endTime - startTime));
+            
             if (err || messages.length === 0) {
                 return callback(true);
             }
