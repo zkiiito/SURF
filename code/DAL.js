@@ -322,7 +322,8 @@ var DAL = {
         var query = MessageModel.find({waveId: wave.id, parentId: null}).sort('-_id').limit(11);
         
         if (minRootId) {
-            query.where('rootId').lt(minRootId);
+            //ha a parentId null, akkor a rootId = _id, az _id-re van index is
+            query.where('_id').lt(minRootId);
         }
         
         var startTime = new Date().getTime();
@@ -338,11 +339,10 @@ var DAL = {
     },
     
     countMessagesInRange: function(wave, minRootId, maxRootId, callback) {
-        var query = MessageModel.find({waveId: wave.id});
-        
         if (!minRootId) {
             callback(null, 0);
         } else {
+            var query = MessageModel.find({waveId: wave.id});
             query.where('rootId').gte(minRootId);
             
             if (maxRootId) {
