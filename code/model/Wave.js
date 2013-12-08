@@ -57,6 +57,7 @@ var Wave = Backbone.Model.extend({
         this.set('userIds', _.uniq(userIds));
         
         if (notify) {
+            this.notifyUserOfExistingUsers(user);
             this.notifyUsersOfNewUser(user);
             this.notifyUsers();
             return true;
@@ -82,6 +83,18 @@ var Wave = Backbone.Model.extend({
             user.send('updateWave', {
                 wave: this
             });
+        }, this);
+    },
+    
+    notifyUserOfExistingUsers: function(newuser) {
+        this.users.each(function(user){
+            //csak ha nem ismerte eddig
+            //tehat most lett 1 waven vele
+            if (user !== newuser && _.intersection(newuser.waves, user.waves).length < 2) {
+                newuser.send('updateUser', {
+                    user: user.toJSON()
+                });
+            }
         }, this);
     },
     
