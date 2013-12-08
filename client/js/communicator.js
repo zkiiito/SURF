@@ -145,7 +145,7 @@ var Communicator = {
         Communicator.socket.emit('quitWave', data);
     },
             
-    createInviteCode: function(waveId) {
+    getInviteCode: function(waveId) {
         var data = {
             waveId: waveId
         };
@@ -154,6 +154,8 @@ var Communicator = {
     },
             
     onInviteCodeReady: function(data) {
-        console.log('Invite url: ' + document.location.protocol + '//' + document.location.host + '/invite/' + data.code);
+        if (app.model.waves.get(data.waveId)) {
+            app.model.waves.get(data.waveId).trigger('inviteCodeReady', data.code);
+        }
     }
 };

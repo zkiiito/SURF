@@ -1,13 +1,14 @@
 var EditWaveView = Backbone.View.extend({
     initialize: function() {
-        _.bindAll(this, 'show', 'hide', 'setWave', 'genUserArray');
+        _.bindAll(this, 'show', 'hide', 'setWave', 'genUserArray', 'inviteCodeReady');
         this.userArray = [];
         this.model.users.bind('add', this.genUserArray, this);
         this.model.users.bind('change', this.genUserArray, this);
     },
     events: {
         'click a.close' : 'hide',
-        'submit form' : 'editWave'
+        'submit form' : 'editWave',
+        'click button#editwave-invite' : 'getInviteCode'
     },
     
     render: function() {
@@ -70,14 +71,18 @@ var EditWaveView = Backbone.View.extend({
     },
     
     show: function() {
+        this.$el.find('#editwave-invitecode-block').hide();
+        
         if (this.wave) {
             this.$el.find('input[name=title]').val(this.wave.get('title'));
             this.$el.find('h2').text(__('Edit conversation'));
             this.$el.find('#editwave-submit').text(__('Save'));
+            this.$el.find('#editwave-invite').show();
         } else {
             this.$el.find('input[name=title]').val('');
             this.$el.find('h2').text(__('New conversation'));
             this.$el.find('#editwave-submit').text(__('Create'));
+            this.$el.find('#editwave-invite').hide();
         }
         
         this.updateUserSuggest();
@@ -96,6 +101,9 @@ var EditWaveView = Backbone.View.extend({
     
     setWave: function(waveId) {
         this.wave = this.model.waves.get(waveId);
+        if (this.wave) {
+            this.wave.bind('inviteCodeReady', this.inviteCodeReady, this);
+        }
     },
     
     editWave: function() {
@@ -111,5 +119,18 @@ var EditWaveView = Backbone.View.extend({
         }
         
         return this.hide();
+    },
+            
+    getInviteCode: function(e) {
+        e.preventDefault();
+        this.$el.find('button#editwave-invite').hide();
+        Communicator.getInviteCode(this.wave.id);
+    },
+            
+    inviteCodeReady: function(code) {
+        //this.$el.find('button#editwave-invite').show(); ??
+        this.$el.find('#editwave-invitecode-block').show();
+        var invitecode = document.location.protocol + '//' + document.location.host + '/invite/' + code;
+        this.$el.find('#editwave-invitecode').val(invitecode).focus().select();
     }
 });

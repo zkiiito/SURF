@@ -26,7 +26,10 @@ var i18n = {
             "User not found.":"Nincs ilyen felhasználónk.",
             'Enter username.': 'Írj be egy felhasználónevet.',
             "Do you want to leave conversation {{ title }}?\n\nIf you want to come back later, participants can invite you":
-            "Biztosan kilépsz a következő beszélgetésből: {{ title }}?\n\nHa később vissza szeretnél lépni, a beszélgetés résztvevői újra meghívhatnak."
+            "Biztosan kilépsz a következő beszélgetésből: {{ title }}?\n\nHa később vissza szeretnél lépni, a beszélgetés résztvevői újra meghívhatnak.",
+            
+            "Get invite code": "Meghívó igénylés",
+            "Invite URL": "Meghívó URL"
         });
         
         R.setLocale('hu-HU');
