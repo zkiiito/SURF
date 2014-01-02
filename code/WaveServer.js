@@ -26,6 +26,11 @@ WaveServer = {
             }
 
             data.cookie = require('cookie').parse(data.headers.cookie);
+            
+            if (typeof data.cookie['surf.sid'] === "undefined") {
+                return accept('Session cookie invalid.', false);
+            }
+            
             data.sessionID = data.cookie['surf.sid'].substr(2,24);
             
             SessionStore.get(data.sessionID, function (err, session) {
