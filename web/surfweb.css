@@ -6,8 +6,13 @@ body {
 }
 
 #header {
-    background: url('images/header-bgr.png') center center;
-    background-size: cover;
+    background: -moz-linear-gradient(top, #bb92aa 0%, #72668a 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#bb92aa), color-stop(100%,#72668a)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top, #bb92aa 0%,#72668a 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top, #bb92aa 0%,#72668a 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top, #bb92aa 0%,#72668a 100%); /* IE10+ */
+    background: linear-gradient(to bottom, #bb92aa 0%,#72668a 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#bb92aa', endColorstr='#72668a',GradientType=0 ); /* IE6-9 */
     overflow: auto;
     text-align: center;
 }
@@ -17,14 +22,20 @@ body {
 }
 
 #header img {
-    width: 100%;
-    margin-top: 3em;
+    width: 60%;
+    margin-top: 2em;
     margin-bottom: 1em;
 }
 
-#header p {
+#header h2 {
+    font-family: 'Source Sans Pro';
     font-size: 2em;
     font-weight: bold;
     margin-top: 0.5em;
     margin-bottom: 1.2em;
+    line-height: 1.5;
+}
+
+#header form {
+    margin-bottom: 2em;
 }

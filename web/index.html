@@ -11,6 +11,7 @@
     <title>Surf</title>
     <link href="css/bootstrap.css" rel="stylesheet">
     <link href="surfweb.css" rel="stylesheet">
+    <link href="surfboot.css" rel="stylesheet">
     <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
     <!--[if lt IE 9]>
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
@@ -20,10 +21,20 @@
 
 <body>
     <div id="header">
-        <div class="col-lg-4 col-lg-offset-4 col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2 container">
-            <h1>Surf</h1>
-            <a href="" ><img src="images/surf-logo.svg" alt="Surf logo" /></a>
-            <p >A lightweight online chat client to help you keep track of your conversations.</p>
+        <div class="container">
+            <div class="col-lg-6 col-lg-offset-3 col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1 ">
+                <h1>Surf</h1>
+                <a href="" ><img src="images/surf-logo.svg" alt="Surf logo" /></a>
+                <h2>A lightweight online chat client to help you keep track of your conversations.</h2>
+                <form class="col-sm-8 col-sm-offset-2" method="POST">
+                    <div class="input-group">
+                        <input type="text" placeholder="Your email address" class="form-control">
+                        <span class="input-group-btn">
+                            <button class="btn btn-black" type="button">Sign me up!</button>
+                        </span>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
