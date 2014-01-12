@@ -1,0 +1,30 @@
+body {
+    background: #2b2b2b;
+    color: white;
+    font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+#header {
+    background: url('images/header-bgr.png') center center;
+    background-size: cover;
+    overflow: auto;
+    text-align: center;
+}
+
+#header h1 {
+    display: none;
+}
+
+#header img {
+    width: 100%;
+    margin-top: 3em;
+    margin-bottom: 1em;
+}
+
+#header p {
+    font-size: 2em;
+    font-weight: bold;
+    margin-top: 0.5em;
+    margin-bottom: 1.2em;
+}
