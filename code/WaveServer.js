@@ -55,10 +55,10 @@ var WaveServer = {
                 //socket.set("transports", ["xhr-polling"]); 
                 //socket.set("polling duration", 10); 
                 
-                this.socket.enable('browser client minification');  // send minified client
-                this.socket.enable('browser client etag');          // apply etag caching logic based on version number
-                this.socket.enable('browser client gzip');          // gzip the file
-                this.socket.set('log level', 1);                    // reduce logging
+                that.socket.enable('browser client minification');  // send minified client
+                that.socket.enable('browser client etag');          // apply etag caching logic based on version number
+                that.socket.enable('browser client gzip');          // gzip the file
+                that.socket.set('log level', 1);                    // reduce logging
             });
         }
         this.socket.set('log level', 1);
