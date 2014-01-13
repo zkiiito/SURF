@@ -1,3 +1,4 @@
+/*global SurfAppModel, SurfAppView, Communicator */
 var SurfAppRouter = Backbone.Router.extend({
     defaults: {
         currentWave: null,
@@ -25,19 +26,15 @@ var SurfAppRouter = Backbone.Router.extend({
     },
     */
     showWave: function(id) {
-        if (app.model.waves.get(id)) {
-            if (app.currentWave) {
-                app.model.waves.get(app.currentWave).set('current', false);
+        if (this.model.waves.get(id)) {
+            if (this.currentWave) {
+                this.model.waves.get(this.currentWave).set('current', false);
             }
-            app.model.waves.get(id).set('current', true);
-            app.currentWave = id;
+            this.model.waves.get(id).set('current', true);
+            this.currentWave = id;
         } else {
             this.navigate("");
         }
-    },
-
-    removeWave: function(cid) {
-    //app.model.movies.remove(app.model.movies.getByCid(cid));
     }
 });
 

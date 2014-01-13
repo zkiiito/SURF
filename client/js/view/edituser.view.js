@@ -13,7 +13,7 @@ var EditUserView = Backbone.View.extend({
         this.setElement(template);
         this.$el.hide();
         
-        this.$el.find('#edituser-name').val(this.model.get('name')),
+        this.$el.find('#edituser-name').val(this.model.get('name'));
         this.$el.find('#edituser-avatar').val(this.model.get('avatar'));
         
         return this;

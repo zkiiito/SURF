@@ -1,3 +1,4 @@
+/*global io, app, Message, Wave, User */
 var Communicator = {
     socket: null,
     reconnect: true,
@@ -5,12 +6,12 @@ var Communicator = {
         if (typeof io === 'undefined') {
             return;
         }
-        
+
         //var id = prompt('hanyas vagy?', Math.ceil(Math.random() * 50)) * 1 -1;
-        Communicator.socket = new io.connect(document.location.href, {reconnect: false});
-        //Communicator.socket.emit('auth', id);
+        this.socket = new io.connect(document.location.href, {reconnect: false});
+        //this.socket.emit('auth', id);
         
-        Communicator.socket.on('init', function(data){
+        this.socket.on('init', function(data){
             if (undefined === app.currentUser) {
                 //console.log(data.me);
                 app.currentUser = data.me._id;
@@ -28,18 +29,19 @@ var Communicator = {
             }
         });
         
-        Communicator.socket.on('message', Communicator.onMessage);
+        this.socket.on('message', this.onMessage);
+        var that = this;
         
-        Communicator.socket.on('disconnect', function(){
-            app.view.showDisconnected(Communicator.reconnect);
+        this.socket.on('disconnect', function(){
+            app.view.showDisconnected(that.reconnect);
         });
         
-        Communicator.socket.on('updateUser', Communicator.onUpdateUser);
-        Communicator.socket.on('updateWave', Communicator.onUpdateWave);
-        Communicator.socket.on('inviteCodeReady', Communicator.onInviteCodeReady);
+        this.socket.on('updateUser', this.onUpdateUser);
+        this.socket.on('updateWave', this.onUpdateWave);
+        this.socket.on('inviteCodeReady', this.onInviteCodeReady);
         
-        Communicator.socket.on('dontReconnect', function(){
-            Communicator.reconnect = false;
+        this.socket.on('dontReconnect', function(){
+            that.reconnect = false;
         });        
     },
     
@@ -50,15 +52,15 @@ var Communicator = {
             message: message, 
             parentId: parentId
         };
-        Communicator.socket.emit('message', msg);
+        this.socket.emit('message', msg);
     },
     
     readMessage: function(message) {
-        Communicator.socket.emit('readMessage', {id: message.id, waveId: message.get('waveId')});
+        this.socket.emit('readMessage', {id: message.id, waveId: message.get('waveId')});
     },
     
     readAllMessages: function(wave) {
-        Communicator.socket.emit('readAllMessages', {waveId: wave.id});
+        this.socket.emit('readAllMessages', {waveId: wave.id});
     },
     
     createWave: function(title, userIds) {
@@ -66,7 +68,7 @@ var Communicator = {
             title: title,
             userIds: userIds
         };
-        Communicator.socket.emit('createWave', wave);
+        this.socket.emit('createWave', wave);
     },
     
     updateWave: function(waveId, title, userIds) {
@@ -76,20 +78,14 @@ var Communicator = {
             userIds: userIds
         };
         
-        Communicator.socket.emit('updateWave', wave);
-    },
-    
-    onJoin: function(data) {
-        //data: user_id, wave_id, kell-e full userinfo?
-        //var user = app.model.users.at(data.userId);
-        //app.model.waves.at(data.waveId).addUser(user);
+        this.socket.emit('updateWave', wave);
     },
     
     onMessage: function(data) {
         if (data.messages) {
             _.each(data.messages, function(msg) {
-                Communicator.onMessage(msg);
-            });
+                this.onMessage(msg);
+            }, this);
             return;
         }
         
@@ -126,7 +122,7 @@ var Communicator = {
             maxRootId: maxRootId
         };
         
-        Communicator.socket.emit('getMessages', data);
+        this.socket.emit('getMessages', data);
     },
     
     getUser: function(userId) {
@@ -134,7 +130,7 @@ var Communicator = {
             userId: userId
         };
         
-        Communicator.socket.emit('getUser', data);
+        this.socket.emit('getUser', data);
     },
     
     quitUser: function(waveId) {
@@ -142,7 +138,7 @@ var Communicator = {
             waveId: waveId
         };
         
-        Communicator.socket.emit('quitWave', data);
+        this.socket.emit('quitWave', data);
     },
             
     getInviteCode: function(waveId) {
@@ -150,7 +146,7 @@ var Communicator = {
             waveId: waveId
         };
         
-        Communicator.socket.emit('createInviteCode', data);
+        this.socket.emit('createInviteCode', data);
     },
             
     onInviteCodeReady: function(data) {

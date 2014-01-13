@@ -4,8 +4,7 @@ var io = require('socket.io'),
     ExpressServer = require('./ExpressServer'),
     Model = require('./Model');
 
-//TODO: nem global? -> Wave, User model is hivatkozik ra, valami DI kellene v ilyesmi
-WaveServer = {
+var WaveServer = {
     socket: null,
 
     init: function() {
@@ -15,12 +14,13 @@ WaveServer = {
     },
     
     startServer: function() {
-        var port = process.env.PORT || 8000;
+        var port = process.env.PORT || 8000,
+            that = this;
         ExpressServer.listen(port);
         
-        socket = io.listen(ExpressServer);
+        this.socket = io.listen(ExpressServer);
         
-        socket.set('authorization', function(data, accept){
+        this.socket.set('authorization', function(data, accept){
             if (!data.headers.cookie) {
                 return accept('Session cookie required.', false);
             }
@@ -36,7 +36,8 @@ WaveServer = {
             SessionStore.get(data.sessionID, function (err, session) {
                 if (err) {
                     return accept('Error in session store.', false);
-                } else if (!session) {
+                }
+                if (!session) {
                     return accept('Session not found.', false);
                 }
                 // success! we're authenticated with a known session.
@@ -50,20 +51,19 @@ WaveServer = {
         
         //HEROKU
         if (process.env.PORT) {
-            socket.configure(function () { 
+            this.socket.configure(function () { 
                 //socket.set("transports", ["xhr-polling"]); 
                 //socket.set("polling duration", 10); 
                 
-                socket.enable('browser client minification');  // send minified client
-                socket.enable('browser client etag');          // apply etag caching logic based on version number
-                socket.enable('browser client gzip');          // gzip the file
-                socket.set('log level', 1);                    // reduce logging
+                this.socket.enable('browser client minification');  // send minified client
+                this.socket.enable('browser client etag');          // apply etag caching logic based on version number
+                this.socket.enable('browser client gzip');          // gzip the file
+                this.socket.set('log level', 1);                    // reduce logging
             });
         }
-        socket.set('log level', 1);
+        this.socket.set('log level', 1);
         
-        var that = this;
-        socket.sockets.on('connection', function(client){
+        this.socket.sockets.on('connection', function(client){
             //var userData = client.handshake.session['auth']['google']['user'];
             //console.log(userData);
             
@@ -129,20 +129,21 @@ WaveServer = {
         return user;
     },
 	
-    initData: function(app) {
+    initData: function() {
         console.log('startup: initdata');
         var users = [],
-            uids = [];
+            uids = [],
+            i, u, wave;
 
-        for (var i = 1; i <= 5; i++) {
-            var u = new User({name: 'teszt' + i, avatar: 'images/head' + (i%6 + 1) + '.png'});
+        for (i = 1; i <= 5; i++) {
+            u = new Model.User({name: 'teszt' + i, avatar: 'images/head' + (i%6 + 1) + '.png'});
             u.save();
             users.push(u);
             uids.push(u.id.toString());//userIdsbe mindig toStringkent kell!
         }
         this.users.reset(users);
 
-        var wave = new Wave({title: 'Csillag-delta tejbevávé', userIds: uids});
+        wave = new Model.Wave({title: 'Csillag-delta tejbevávé', userIds: uids});
         wave.save();
         this.waves.reset([wave]);
     },	
@@ -150,7 +151,7 @@ WaveServer = {
     authClient: function(client) {
         var that = this;
         //torolt funkciok a regibol: nick, topic, part, invite, joinchan
-        client.on('disconnect', function(data) {
+        client.on('disconnect', function() {
             console.log('disconnect: ' + client.curUser.id);
             client.curUser.disconnect();
         });
@@ -158,9 +159,9 @@ WaveServer = {
         client.on('message', function(data) {
             console.log('message: ' + client.curUser.id);
 
-            var msg = new Model.Message(data);
-
-            var wave = that.waves.get(msg.get('waveId'));
+            var msg = new Model.Message(data),
+                wave = that.waves.get(msg.get('waveId'));
+                
             if (wave && wave.isMember(client.curUser)) {
                 wave.addMessage(msg);
             }

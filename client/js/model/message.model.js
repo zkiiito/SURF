@@ -1,3 +1,4 @@
+/*global MessageCollection, app, Communicator */
 var Message = Backbone.Model.extend({
     defaults: {
         userId: null,

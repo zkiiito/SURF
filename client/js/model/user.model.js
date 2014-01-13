@@ -1,3 +1,4 @@
+/*global Communicator */
 var User = Backbone.Model.extend({
     defaults: {
         name: '',

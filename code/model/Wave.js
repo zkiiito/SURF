@@ -9,10 +9,11 @@ var Wave = Backbone.Model.extend({
     },
     idAttribute: '_id',
     initialize: function() {
-        var UserCollection = require('./User').Collection;
+        var UserCollection = require('./User').Collection,
+            uids;
         this.users = new UserCollection();
         if (this.get('userIds')) {
-            var uids = this.get('userIds');
+            uids = this.get('userIds');
             this.addUsers(uids, false);
         }
     },
@@ -30,7 +31,8 @@ var Wave = Backbone.Model.extend({
     addUsers: function(userIds, notify) {
         var newUsers = [];
         _.each(userIds, function(item){
-            var user = WaveServer.users.get(item);
+            
+            var user = require('../WaveServer').users.get(item);
             if (user) {
                 newUsers.push(user);
                 this.addUser(user, false);//itt nem notifyolunk senkit egyenkent, max globalisan
@@ -159,22 +161,24 @@ var Wave = Backbone.Model.extend({
             
     update: function(data) { 
         this.set('title', data.title);
-        var notified = false;
-
-        var userIds = this.get('userIds');
+        var notified = false,
+            userIds = this.get('userIds'),
+            newIds;
+    
         if (!_.isEqual(data.userIds, userIds)) {
-            var newIds = _.difference(data.userIds, userIds);
+            newIds = _.difference(data.userIds, userIds);
             notified = this.addUsers(newIds, true);
 
             //kikuldeni a wave tartalmat is, amibe belepett
             _.each(newIds, function(userId){
-                var user = WaveServer.users.get(userId);
+                var user = require('../WaveServer').users.get(userId);
                 this.sendOldMessagesToUser(user);
             }, this);
         }
 
-        if (!notified)
+        if (!notified) {
             this.notifyUsers();
+        }
 
         this.save();
     },

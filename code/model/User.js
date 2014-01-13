@@ -49,7 +49,7 @@ var User = Backbone.Model.extend({
             var uids = wave.get('userIds');
             _.each(uids, function(item){
                 if (item !== this.id) {
-                    var user = WaveServer.users.get(item);
+                    var user = require('../WaveServer').users.get(item);
                     friends.add(user);
                 }
             }, this);
@@ -88,7 +88,7 @@ var User = Backbone.Model.extend({
         var that = this;
         DAL.removeWaveInviteByCode(invite.code, function(err, result){
             if (!err && result > 0) {
-                var wave = WaveServer.waves.get(invite.waveId);
+                var wave = require('../WaveServer').waves.get(invite.waveId);
                 if (wave && !wave.isMember(that)) {
                     wave.addUser(that, true);
                     wave.save();
