@@ -11,23 +11,7 @@ var Communicator = {
         this.socket = new io.connect(document.location.href, {reconnect: false});
         //this.socket.emit('auth', id);
         
-        this.socket.on('init', function(data){
-            if (undefined === app.currentUser) {
-                //console.log(data.me);
-                app.currentUser = data.me._id;
-                data.users.push(data.me);
-                app.model.users.reset(data.users);
-                app.model.waves.reset(data.waves);
-                app.model.messages.reset(data.messages);
-                app.model.currentUser.set(app.model.users.get(app.currentUser).toJSON());
-
-                var lastMsg = app.model.messages.last();
-                
-                if (lastMsg) {
-                    document.location = '#wave/' + lastMsg.get('waveId');
-                }
-            }
-        });
+        this.socket.on('init', this.onInit);
         
         this.socket.on('message', this.onMessage);
         var that = this;
@@ -43,6 +27,24 @@ var Communicator = {
         this.socket.on('dontReconnect', function(){
             that.reconnect = false;
         });        
+    },
+    
+    onInit: function(data){
+        if (undefined === app.currentUser) {
+            console.log(data.me);
+            app.currentUser = data.me._id;
+            data.users.push(data.me);
+            app.model.users.reset(data.users);
+            app.model.waves.reset(data.waves);
+            app.model.messages.reset(data.messages);
+            app.model.currentUser.set(app.model.users.get(app.currentUser).toJSON());
+
+            var lastMsg = app.model.messages.last();
+
+            if (lastMsg) {
+                document.location = '#wave/' + lastMsg.get('waveId');
+            }
+        }
     },
     
     sendMessage: function(message, waveId, parentId) {

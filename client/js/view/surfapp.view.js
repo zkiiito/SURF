@@ -1,3 +1,4 @@
+/*global app, DisconnectedView, EditUserView, EditWaveView, UserView, WaveListView, WaveView*/
 var SurfAppView = Backbone.View.extend({
     initialize: function() {
         _.bindAll(this, 'addMessage', 'showCreateWave', 'showUpdateWave', 'showEditUser', 'hideOverlays');
@@ -27,7 +28,7 @@ var SurfAppView = Backbone.View.extend({
         this.iconImage.onload = function() {
             that.setTitle();
         };
-        this.iconImage.src = '/images/surf-ico.png';
+        this.iconImage.src = 'images/surf-ico.png';
         
         $('body').keydown(function(e){
             var nodeName = $(e.target).prop('nodeName');
@@ -35,10 +36,11 @@ var SurfAppView = Backbone.View.extend({
             if ('INPUT' === nodeName || 'TEXTAREA' === nodeName) {
                 return;
             }
-            else if (32 === e.keyCode) {
+            if (32 === e.keyCode) {
                 e.preventDefault();
-                if (app.currentWave)
+                if (app.currentWave) {
                     app.model.waves.get(app.currentWave).trigger('scrollToNextUnread');
+                }
             }
         });        
         
@@ -126,20 +128,20 @@ var SurfAppView = Backbone.View.extend({
             
     setIcon: function(count) {
         if (this.iconImage.complete) {
-            var canvas = document.createElement('canvas');
+            var canvas = document.createElement('canvas'), ctx, txt, link;
             canvas.width = 35;
             canvas.height = 35;
-            var ctx = canvas.getContext('2d');
+            ctx = canvas.getContext('2d');
             ctx.drawImage(this.iconImage, 0, 0);
             
             if (count > 0) {
                 ctx.fillStyle = '#444444';
                 ctx.font = 'bold 16px sans-serif';
-                var txt = count > 99 ? '99+' : count.toString();
+                txt = count > 99 ? '99+' : count.toString();
                 ctx.fillText(txt, 35 - 9 * txt.length, 35);
             }
             
-            var link = document.createElement('link');
+            link = document.createElement('link');
             link.type = 'image/x-icon';
             link.rel = 'shortcut icon';
             link.href = canvas.toDataURL("image/x-icon");
