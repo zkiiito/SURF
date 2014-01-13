@@ -106,6 +106,8 @@ var WaveView = Backbone.View.extend({
     },
     
     scrollToNextUnread: function(e) {
+        ga('send', 'event', 'WaveView', 'scrollToNextUnread');
+        
         if (e) {
             e.preventDefault();
         }
@@ -128,11 +130,15 @@ var WaveView = Backbone.View.extend({
     },
     
     readAllMessages: function(e) {
+        ga('send', 'event', 'WaveView', 'readAllMessages');
+        
         e.preventDefault();
         this.model.readAllMessages();
     },
     
     quitWave: function(e) {
+        ga('send', 'event', 'WaveView', 'quitWave');
+        
         e.preventDefault();
         
         var question =  __("Do you want to leave conversation {{ title }}" + 

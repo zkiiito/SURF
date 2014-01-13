@@ -71,6 +71,8 @@ var EditWaveView = Backbone.View.extend({
     },
     
     show: function() {
+        ga('send', 'event', 'EditWaveView', 'show');
+        
         this.$el.find('#editwave-invitecode-block').hide();
         
         if (this.wave) {
@@ -122,6 +124,8 @@ var EditWaveView = Backbone.View.extend({
     },
             
     getInviteCode: function(e) {
+        ga('send', 'event', 'EditWaveView', 'getInviteCode');
+        
         e.preventDefault();
         this.$el.find('button#editwave-invite').hide();
         Communicator.getInviteCode(this.wave.id);

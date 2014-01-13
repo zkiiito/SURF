@@ -13,6 +13,8 @@ var DisconnectedView = Backbone.View.extend({
     },
         
     show: function() {
+        ga('send', 'event', 'DisconnectedView', 'show', 'connection', this.model.reconnect ? 1 : 0);
+        
         if (this.model.reconnect) {
             var that = this;
             this.interval = setInterval(function() { that.count(); }, 1000);
