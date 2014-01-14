@@ -76,5 +76,5 @@ Communicator.getInviteCode = function(waveId) {
 };
             
 $(function() {
-    Communicator.onInit(testDataInit);
+//    Communicator.onInit(testDataInit);
 });

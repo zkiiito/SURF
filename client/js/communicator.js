@@ -31,7 +31,7 @@ var Communicator = {
     
     onInit: function(data){
         if (undefined === app.currentUser) {
-            console.log(data.me);
+            //console.log(data.me);
             app.currentUser = data.me._id;
             data.users.push(data.me);
             app.model.users.reset(data.users);
