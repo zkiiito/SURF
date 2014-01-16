@@ -1,4 +1,3 @@
-/*@global Communicator */
 var testDataInit = {
     me: {_id:3,name: 'tibor',avatar: 'images/head5.png', status: 'online'},
     users: [
@@ -7,7 +6,7 @@ var testDataInit = {
         {_id:4,name: 'klara',avatar: 'images/head4.png'}
     ],
     
-    waves: [{_id:1,title: 'Csillag-delta tejbevÃ¡vÃ©', userIds: [1,2,3,4]}],
+    waves: [{_id:1,title: 'Csillag-delta tejbevávé', userIds: [1,2,3,4]}],
     
     messages: [
         {_id:1, waveId:1, userId:1,
@@ -25,52 +24,46 @@ var testDataInit = {
     ]    
 };
 
-var ga = function(){};
-Communicator.socket = {
-    emit: function(event) {
-        console.log('emit ' + event);
-    }
-};
 
-//loopbackek
-Communicator.sendMessage = function(message, waveId, parentId) {
-    var msg = {
-        userId: app.currentUser, 
-        waveId: waveId, 
-        message: message, 
-        parentId: parentId,
-        _id: app.model.messages.max(function(msg){return msg.id;}).id + 1,
-        created_at: new Date().getTime()
-    };
 
-    this.onMessage(msg);
-};
+casper.test.begin('Google search retrieves 10 or more results', 6, function suite(test) {
+    casper.start("http://localhost/wave/surf/client/testPhantom.html", function() {
+		casper.evaluate(function(data) {
+			Communicator.onInit(data);
+		}, testDataInit);
+    });
 
-Communicator.createWave = function(title, userIds) {
-    var wave = {
-        title: title,
-        userIds: userIds,
-        _id: app.model.waves.max(function(wave){return wave.id;}).id + 1
-    };
+    casper.then(function() {
+		test.assertElementCount('.message', 6);
+		test.assertElementCount('#wave-list .waveitem', 1);
+		test.assertElementCount('.message > table.unread', 5);
+    });
+	
+	//after init, click on next unread
+	casper.then(function() {
+		test.assertElementCount('.message > table.unread', 4);
+		casper.click('a.gounread');
+	});
+	
+	//after unread, write reply
+	casper.then(function() {
+		test.assertElementCount('.message > table.unread', 3);
+		
+		casper.fill('form.add-message', {
+			'message': 'lol fsa'
+		}, true);
+	});
+	casper.wait(1200);
+	
+	casper.then(function(){
+		
+		casper.capture('f.png');
+		test.assertElementCount('.message', 7);
+	});
+	
+	
 
-    this.onUpdateWave({wave:wave});
-};
-    
-Communicator.updateWave = function(waveId, title, userIds) {
-    var wave = {
-        _id : waveId,
-        title: title,
-        userIds: userIds
-    };
-
-    this.onUpdateWave({wave:wave});
-};
-
-Communicator.getInviteCode = function(waveId) {
-    var data = {
-        waveId: waveId,
-        code: 'xxx'
-    };
-
-    this.onInviteCodeReady(data);
-};
+    casper.run(function() {
+        test.done();
+    });
+});
