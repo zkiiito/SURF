@@ -16,20 +16,20 @@ var SurfAppView = Backbone.View.extend({
         'click a.addwave' : 'showCreateWave',
         'click a.edituser' : 'showEditUser',
         'click #darken' : 'hideOverlays'
-    },        
-    
+    },
+
     render: function() {
         this.setElement($('body'));
         this.editWaveView = new EditWaveView({model: this.model});
         this.$el.append(this.editWaveView.render().el);
-        
+
         this.iconImage = new Image();
         var that = this;
         this.iconImage.onload = function() {
             that.setTitle();
         };
         this.iconImage.src = 'images/surf-ico.png';
-        
+
         $('body').keydown(function(e){
             var nodeName = $(e.target).prop('nodeName');
 
@@ -42,47 +42,47 @@ var SurfAppView = Backbone.View.extend({
                     app.model.waves.get(app.currentWave).trigger('scrollToNextUnread');
                 }
             }
-        });        
-        
+        });
+
         return this;
     },
-    
+
     addWave: function(wave) {
         var listView = new WaveListView({model: wave}),
             view = new WaveView({model: wave});
-        
-        $('#wave-list').append(listView.render().el);		
+
+        $('#wave-list').append(listView.render().el);
         $('#wave-container').append(view.render().el);
     },
-    
+
     resetWaves: function() {
         this.model.waves.map(this.addWave);
     },
-    
+
     addMessage: function(message) {
         var wave = this.model.waves.get(message.get('waveId'));
         if (wave) {
             wave.addMessage(message);
         }
     },
-    
+
     resetMessages: function() {
         this.model.messages.map(this.addMessage);
         this.setTitle();
     },
-    
+
     showCreateWave: function() {
         this.editWaveView.setWave(null);
         this.editWaveView.show();
         return false;
     },
-    
+
     showUpdateWave: function() {
         this.editWaveView.setWave(app.currentWave);
         this.editWaveView.show();
         return false;
     },
-            
+
     showEditUser: function() {
         if (this.editUserView) {
             this.editUserView.show();
@@ -103,29 +103,30 @@ var SurfAppView = Backbone.View.extend({
         }
         return false;
     },
-    
+
     changeCurrentUser: function() {
         var template = new UserView({model: this.model.currentUser});
         this.$el.find('#currentuser').html('').append(template.render().el).append(' <p>' + this.model.currentUser.get('name') + '</p>');
-        
-        //TODO: destruct first
-        this.editUserView = new EditUserView({model: this.model.currentUser});
-        this.$el.append(this.editUserView.render().el);        
-        
+
+        if (!this.editUserView) {
+            this.editUserView = new EditUserView({model: this.model.currentUser});
+            this.$el.append(this.editUserView.render().el);
+        }
+
         return false;
     },
-    
+
     setTitle: function() {
         var title = 'Surf',
             unreadCount = this.model.messages.where({unread: true}).length;
-        
+
         if (unreadCount > 0) {
             title = '[' + unreadCount + '] ' + title;
         }
         $('title').text(title);
         this.setIcon(unreadCount);
     },
-            
+
     setIcon: function(count) {
         if (this.iconImage.complete) {
             var canvas = document.createElement('canvas'), ctx, txt, link;
@@ -133,14 +134,14 @@ var SurfAppView = Backbone.View.extend({
             canvas.height = 35;
             ctx = canvas.getContext('2d');
             ctx.drawImage(this.iconImage, 0, 0);
-            
+
             if (count > 0) {
                 ctx.fillStyle = '#444444';
                 ctx.font = 'bold 16px sans-serif';
                 txt = count > 99 ? '99+' : count.toString();
                 ctx.fillText(txt, 35 - 9 * txt.length, 35);
             }
-            
+
             link = document.createElement('link');
             link.type = 'image/x-icon';
             link.rel = 'shortcut icon';
