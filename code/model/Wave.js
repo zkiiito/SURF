@@ -17,28 +17,28 @@ var Wave = Backbone.Model.extend({
             this.addUsers(uids, false);
         }
     },
-    
+
     addMessage: function(message) {
         //save, save unread
         message.save();
-        
+
         this.users.each(function(user){
             user.send('message', message);
             DAL.addUnreadMessage(user, message);
-        }, message);  
+        }, message);
     },
-    
+
     addUsers: function(userIds, notify) {
         var newUsers = [];
         _.each(userIds, function(item){
-            
+
             var user = require('../WaveServer').users.get(item);
             if (user) {
                 newUsers.push(user);
                 this.addUser(user, false);//itt nem notifyolunk senkit egyenkent, max globalisan
             }
         }, this);
-        
+
         if (notify && newUsers.length > 0) {
             _.each(newUsers, function(user){
                 this.notifyUsersOfNewUser(user);
@@ -48,16 +48,16 @@ var Wave = Backbone.Model.extend({
         }
         return false;
     },
-    
+
     addUser: function(user, notify) {
         this.users.add(user);
         user.waves.add(this);
-        
+
         //initkor pluszkoltseg, maskor nem szamit
         var userIds = this.get('userIds');
         userIds.push(user.id.toString());
         this.set('userIds', _.uniq(userIds));
-        
+
         if (notify) {
             this.notifyUserOfExistingUsers(user);
             this.notifyUsersOfNewUser(user);
@@ -66,7 +66,7 @@ var Wave = Backbone.Model.extend({
         }
         return false;
     },
-    
+
     //TODO: atszervezni multiuserre vagy nem - tobb msg
     notifyUsersOfNewUser: function(newuser) {
         this.users.each(function(user){
@@ -79,7 +79,7 @@ var Wave = Backbone.Model.extend({
             }
         }, this);
     },
-    
+
     notifyUsers: function() {
         this.users.each(function(user){
             user.send('updateWave', {
@@ -87,7 +87,7 @@ var Wave = Backbone.Model.extend({
             });
         }, this);
     },
-    
+
     notifyUserOfExistingUsers: function(newuser) {
         this.users.each(function(user){
             //csak ha nem ismerte eddig
@@ -99,13 +99,13 @@ var Wave = Backbone.Model.extend({
             }
         }, this);
     },
-    
+
     sendOldMessagesToUser: function(user) {
         DAL.getLastMessagesForUserInWave(user, this, [], function(err, msgs) {
             user.send('message', {messages: msgs});
         });
     },
-    
+
     sendPreviousMessagesToUser: function(user, minParentId, maxRootId) {
         var wave = this;
         //ha olvasatlan jott, es le kell szedni addig
@@ -129,42 +129,42 @@ var Wave = Backbone.Model.extend({
             });
         }
     },
-    
+
     readAllMessagesOfUser: function(user) {
         DAL.readAllMessagesForUserInWave(user, this);
     },
-    
+
     save: function() {
         return DAL.saveWave(this);
     },
-    
+
     quitUser: function(user) {
         if (this.users.indexOf(user) >= 0) {
             this.users.remove(user);
-            
+
             var userIds = this.get('userIds');
             userIds.splice(_.indexOf(userIds, user.id.toString()), 1);
             this.set('userIds', userIds);
-            
+
             user.quitWave(this);
-            
+
             this.save();
             this.notifyUsers();
         }
         //TODO: ha ures a wave, torolni osszes msgt + wavet
         //vagy, archive flag rajuk.
     },
-            
+
     createInviteCode: function(user) {
         return DAL.createInviteCodeForWave(user, this);
     },
-            
-    update: function(data) { 
+
+    update: function(data) {
         this.set('title', data.title);
         var notified = false,
             userIds = this.get('userIds'),
             newIds;
-    
+
         if (!_.isEqual(data.userIds, userIds)) {
             newIds = _.difference(data.userIds, userIds);
             notified = this.addUsers(newIds, true);
@@ -182,18 +182,18 @@ var Wave = Backbone.Model.extend({
 
         this.save();
     },
-            
+
     isMember: function(user) {
         return this.users.contains(user);
     }
-    
+
     //validate: function() {
     //check userids
     //}
 });
 
 var WaveCollection = Backbone.Collection.extend({
-    model: Wave    
+    model: Wave
 });
 
 module.exports = {Model: Wave, Collection: WaveCollection};

@@ -10,29 +10,29 @@ var WaveServer = {
     init: function() {
         this.users = new Model.UserCollection();
         this.waves = new Model.WaveCollection();
-        DAL.init(this);        
+        DAL.init(this);
     },
-    
+
     startServer: function() {
         var port = process.env.PORT || 8000,
             that = this;
         ExpressServer.listen(port);
-        
+
         this.socket = io.listen(ExpressServer);
-        
+
         this.socket.set('authorization', function(data, accept){
             if (!data.headers.cookie) {
                 return accept('Session cookie required.', false);
             }
 
             data.cookie = require('cookie').parse(data.headers.cookie);
-            
+
             if (typeof data.cookie['surf.sid'] === "undefined") {
                 return accept('Session cookie invalid.', false);
             }
-            
+
             data.sessionID = data.cookie['surf.sid'].substr(2,24);
-            
+
             SessionStore.get(data.sessionID, function (err, session) {
                 if (err) {
                     return accept('Error in session store.', false);
@@ -48,13 +48,13 @@ var WaveServer = {
                 return accept('Session not authenticated.', false);
             });
         });
-        
+
         //HEROKU
         if (process.env.PORT) {
-            this.socket.configure(function () { 
-                //socket.set("transports", ["xhr-polling"]); 
-                //socket.set("polling duration", 10); 
-                
+            this.socket.configure(function () {
+                //socket.set("transports", ["xhr-polling"]);
+                //socket.set("polling duration", 10);
+
                 that.socket.enable('browser client minification');  // send minified client
                 that.socket.enable('browser client etag');          // apply etag caching logic based on version number
                 that.socket.enable('browser client gzip');          // gzip the file
@@ -62,11 +62,11 @@ var WaveServer = {
             });
         }
         this.socket.set('log level', 1);
-        
+
         this.socket.sockets.on('connection', function(client){
             //var userData = client.handshake.session['auth']['google']['user'];
             //console.log(userData);
-            
+
             client.curUser = that.getUserByAuth(client.handshake.session.auth);
 
             if (client.curUser.socket) {
@@ -80,14 +80,14 @@ var WaveServer = {
 
             that.authClient(client);
             client.curUser.init();
-            
+
             if (client.handshake.session.invite) {
                 console.log('invitedto: ' + client.handshake.session.invite.waveId);
                 client.curUser.handleInvite(client.handshake.session.invite);
             }
         });
     },
-    
+
     getUserByAuth: function(auth) {
         var authMode = auth.google ? 'google' : 'facebook',
             userData = auth.google ? auth.google.user : auth.facebook.user,
@@ -97,14 +97,14 @@ var WaveServer = {
                     || u.get('email') === userData.email;
             }),
             picture = 'google' === authMode ? userData.picture : userData.picture.data.url;
-        
+
         if (user) {
             console.log('auth: userfound ' + user.id);
             user.set(authMode + 'Id', userData.id);//ha ez az auth meg nincs lementve
             user.set('email', userData.email);//?
             if (picture) {
                 user.set(authMode + 'Avatar', picture);//befrissites
-            }            
+            }
             user.save();
             return user;
         }
@@ -116,7 +116,7 @@ var WaveServer = {
         if (picture) {
             user.set('avatar', picture);
             user.set(authMode + 'Avatar', picture);
-        }        
+        }
         user.save();
         this.users.add(user);
 
@@ -128,7 +128,7 @@ var WaveServer = {
         */
         return user;
     },
-	
+
     initData: function() {
         console.log('startup: initdata');
         var users = [],
@@ -146,8 +146,8 @@ var WaveServer = {
         wave = new Model.Wave({title: 'Csillag-delta tejbevávé', userIds: uids});
         wave.save();
         this.waves.reset([wave]);
-    },	
-    
+    },
+
     authClient: function(client) {
         var that = this;
         //torolt funkciok a regibol: nick, topic, part, invite, joinchan
@@ -161,12 +161,12 @@ var WaveServer = {
 
             var msg = new Model.Message(data),
                 wave = that.waves.get(msg.get('waveId'));
-                
+
             if (wave && wave.isMember(client.curUser)) {
                 wave.addMessage(msg);
             }
         });
-        
+
         client.on('readMessage', function(data) {
             console.log('readMessage: ' + client.curUser.id);
             DAL.readMessage(client.curUser, data);
@@ -189,14 +189,15 @@ var WaveServer = {
                 wave.update(data);
             }
         });
-        
+
         client.on('getMessages', function(data){
+            console.log('getMessages: ' + client.curUser.id);
             var wave = that.waves.get(data.waveId);
             if (wave && wave.isMember(client.curUser)) {
                 wave.sendPreviousMessagesToUser(client.curUser, data.minParentId, data.maxRootId);
             }
         });
-        
+
         client.on('readAllMessages', function(data) {
             console.log('readAllMessages: ' + client.curUser.id);
             var wave = that.waves.get(data.waveId);
@@ -204,21 +205,21 @@ var WaveServer = {
                 wave.readAllMessagesOfUser(client.curUser);
             }
         });
-        
+
         client.on('getUser', function(data){
             var user = that.users.get(data.userId);
             if (user) {
                 client.curUser.send('updateUser', {user: user.toJSON()});
             }
         });
-        
+
         client.on('quitWave', function(data) {
             var wave = that.waves.get(data.waveId);
             if (wave) {
                 wave.quitUser(client.curUser);
             }
         });
-        
+
         client.on('createInviteCode', function(data) {
             console.log('createInviteCode: ' + client.curUser.id);
             var wave = that.waves.get(data.waveId);
