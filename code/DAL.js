@@ -44,15 +44,15 @@ var DAL = {
     init: function(server) {
         mongoose.connect(process.env.MONGOLAB_URI);
         redis = redis.connect(process.env.REDISCLOUD_URL);
-        
+
         //mongoose.set('debug', true);
-        
+
         UserModel.find().exec(function(err, users){
             var usersTmp = [];
             _.each(users, function(user) {
-                usersTmp.push({name: user.name, 
-                               avatar: user.avatar, 
-                               _id: user._id, 
+                usersTmp.push({name: user.name,
+                               avatar: user.avatar,
+                               _id: user._id,
                                email: user.email,
                                googleId: user.googleId,
                                googleAvatar: user.googleAvatar,
@@ -69,22 +69,17 @@ var DAL = {
                     wavesTmp.push({title: wave.title, userIds: wave.userIds, _id: wave._id});
                 });
                 server.waves.reset(wavesTmp);
-
-                if (waves.length === 0) {
-                    server.initData();
-                }
-
                 server.startServer();
             });
         });
-        
+
         //temporary fix a sajat unreadokra: ha tobb mint 1000, lenullazzuk
         UserModel.find().exec(function(err, users){
             _.each(users, function(user) {
                 redis.keys('unread-' + user._id + '-*', function(err, unreadKeys){
                     _.each(unreadKeys, function(key){
                         redis.scard(key, function(err, msgcount){
-                            if (msgcount > 1000) {
+                            if (!err && msgcount > 1000) {
                                 console.log('deleteTooMuchUnread: ' + key + ' : ' + msgcount);
                                 redis.del(key);
                             }
@@ -94,7 +89,7 @@ var DAL = {
             });
         });
     },
-   
+
     saveUser: function(user) {
         var data = {
             name: user.get('name'),
@@ -105,7 +100,7 @@ var DAL = {
             facebookAvatar: user.get('facebookAvatar'),
             email: user.get('email')
         }, m;
-        
+
         if (user.isNew()) {
             m = new UserModel(data);
             m.save();
@@ -115,13 +110,13 @@ var DAL = {
         }
         return user;
     },
-    
+
     saveWave: function(wave) {
         var data = {
             title: wave.get('title'),
             userIds: _.uniq(wave.get('userIds'))
         }, m;
-        
+
         if (wave.isNew()) {
             m = new WaveModel(data);
             m.save();
@@ -131,7 +126,7 @@ var DAL = {
         }
         return wave;
     },
-    
+
     saveMessage: function(message) {
         var m = new MessageModel({
             userId: message.get('userId'),
@@ -140,7 +135,7 @@ var DAL = {
             message: message.get('message'),
             created_at: message.get('created_at')
         });
-        
+
         if (null === m.parentId) {
             m.rootId = m._id;
             m.save();
@@ -149,11 +144,11 @@ var DAL = {
                 DAL.calcRootId(m.parentId, [m]);
             });
         }
-        
+
         message.set({_id: m._id});
         return message;
     },
-    
+
     //rekurzivan, elvileg csak az elejen vannak olyan esetek, hogy nincs root id-je
     calcRootId: function(messageId, messages, callback) {
         MessageModel.findById(messageId, function(err, message){
@@ -164,7 +159,7 @@ var DAL = {
             //ha gyokerelem, vagy tud arrol valamit
             if (null !== message.rootId || null === message.parentId) {
                 var rootId = null;
-                
+
                 if (null !== message.rootId) {
                     rootId = message.rootId;
                 }
@@ -172,11 +167,11 @@ var DAL = {
                     rootId = message._id;
                     messages.push(message);
                 }
-                
+
                 async.forEach(messages, function(msg){
                     MessageModel.update({_id: msg._id}, {rootId: rootId}).exec();
                 });
-                
+
                 if (callback) {
                     callback(null, rootId);
                 }
@@ -188,7 +183,7 @@ var DAL = {
             }
         });
     },
-    
+
     /**
      * messages queried for the user on load
      * @param User user
@@ -201,7 +196,7 @@ var DAL = {
             //console.log(waves.length + " waves found");
             var endTime = new Date().getTime();
             console.log('QUERY LastMessagesForUser: wave query in ' + (endTime - startTime));
-            
+
             async.reduce(waves, [], function(memo, wave, callback_async_reduce){//ez nem parhuzamosan fut, de async mert az iteratornak callbackje van
                 DAL.getLastMessagesForUserInWave(user, wave, memo, callback_async_reduce);
             }, function(err, results) {
@@ -230,7 +225,7 @@ var DAL = {
                 minRootId = result.minRootId;
                 unreadIds = result.unreadIds;
             }
-            
+
             DAL.getMinRootIdForWave(wave, minRootId, null, function(err, newMinRootId){
                 DAL.getMessagesForUserInWave(wave, newMinRootId, null, unreadIds, function(err, results){
                     if (!err) {
@@ -241,9 +236,9 @@ var DAL = {
             });
         });
     },
-    
+
     /**
-     * 
+     *
      * @param User user
      * @param Wave wave
      * @param Function callback
@@ -254,10 +249,10 @@ var DAL = {
                 callback(true, null);
             } else {
                 console.log('QUERY getMinUnreadRootIdForUserInWave: count: ' + results.length);
-                
+
                 //TODO: ha tul sok van, akkor hogyan mit???
                 var res, startTime = new Date().getTime();
-                
+
                 MessageModel.findOne({waveId: wave.id})
                         .where('_id').in(results)
                         .select('rootId')
@@ -281,7 +276,7 @@ var DAL = {
     },
 
     /**
-     * 
+     *
      * @param user UserModel
      * @param wave WaveModel
      * @param callback Function
@@ -295,13 +290,13 @@ var DAL = {
             callback(err, results);
         });
     },
-    
+
     getMinRootIdForWave: function(wave, minRootId, maxRootId, callback) {
         console.log('QUERY getMinRootIdForWave');
         if (null === minRootId && null !== maxRootId) {
             minRootId = maxRootId;
         }
-        
+
         DAL.countMessagesInRange(wave, minRootId, maxRootId, function(err, count){
             if (count > 10) {
                 callback(null, minRootId);
@@ -316,18 +311,18 @@ var DAL = {
             }
         });
     },
-    
+
     getNextMinRootIdForWave: function(wave, minRootId, callback) {
         //ha keves, vagy ha a minRootId null
         var startTime = new Date().getTime(),
             query = MessageModel.find({waveId: wave.id, parentId: null}).sort('-_id').limit(11);
-            
-        
+
+
         if (minRootId) {
             //ha a parentId null, akkor a rootId = _id, az _id-re van index is
             query.where('_id').lt(minRootId);
         }
-        
+
         query.exec(function(err, results){
             var endTime = new Date().getTime();
             console.log('QUERY getNextMinRootIdForWave: query in ' + (endTime - startTime));
@@ -338,7 +333,7 @@ var DAL = {
             }
         });
     },
-    
+
     countMessagesInRange: function(wave, minRootId, maxRootId, callback) {
         if (!minRootId) {
             callback(null, 0);
@@ -346,11 +341,11 @@ var DAL = {
             var startTime = new Date().getTime(),
                 query = MessageModel.find({waveId: wave.id});
             query.where('rootId').gte(minRootId);
-            
+
             if (maxRootId) {
                 query.where('rootId').lt(maxRootId);
             }
-            
+
             query.count(function(err, count) {
                 var endTime = new Date().getTime();
                 console.log('QUERY countMessagesInRange: query in ' + (endTime - startTime));
@@ -358,39 +353,39 @@ var DAL = {
             });
         }
     },
-        
+
     getMessagesForUserInWave: function(wave, minRootId, maxRootId, unreadIds, callback) {
         var startTime = new Date().getTime(),
             query = MessageModel.find({waveId: wave.id})
                     .sort('_id');
-                    
+
         if (minRootId) {
             query.where('rootId').gte(minRootId);
         }
-            
+
         if (maxRootId) {
             query.where('rootId').lt(maxRootId);
         }
-        
+
         query.exec(function(err, messages){
             var res, endTime = new Date().getTime();
             console.log('QUERY getMessagesForUserInWave: query in ' + (endTime - startTime));
-            
+
             if (err || messages.length === 0) {
                 return callback(true);
             }
-            
+
             res = _.map(messages, function(mmsg){
                 var msg = {
-                    _id: mmsg.id, 
-                    userId: mmsg.userId, 
-                    waveId: mmsg.waveId, 
-                    parentId: mmsg.parentId, 
-                    message: mmsg.message, 
-                    //unread: _.indexOf(unreadIds, mmsg.id) >= 0, 
+                    _id: mmsg.id,
+                    userId: mmsg.userId,
+                    waveId: mmsg.waveId,
+                    parentId: mmsg.parentId,
+                    message: mmsg.message,
+                    //unread: _.indexOf(unreadIds, mmsg.id) >= 0,
                     created_at: mmsg.created_at
                 };
-                
+
                 try {
                     msg.unread = _.indexOf(unreadIds, mmsg.id) >= 0;
                 }
@@ -401,27 +396,27 @@ var DAL = {
                      * valahogy a redis altal visszaadott tombbol string lesz, ha 1 elemu
                      */
                     console.log('DEBUG getMessagesForUserInWave: ' + error.message);
-                    console.log('DEBUG getMessagesForUserInWave:  messages.length: ' + messages.length + 
+                    console.log('DEBUG getMessagesForUserInWave:  messages.length: ' + messages.length +
                         ', unreadIds: ' + unreadIds.length + ' ' + (typeof unreadIds) + ' msg.id: ' + mmsg.id);
-                    
+
                     msg.unread = true;
-                    
+
                     if ('string' === typeof unreadIds) {
                         msg.unread = unreadIds === mmsg.id.toString();
                     }
                 }
                 return msg;
             });
-            
+
             callback(null, res);
         });
     },
-        
+
     readMessage: function(user, message) {
         var key = 'unread-' + user.id + '-' + message.waveId;
         redis.srem(key, message.id);
     },
-    
+
     addUnreadMessage: function(user, message) {
         if (message.get('userId') !== user.id.toString() && message.id) {
             //console.log('addUnreadMessage: userid: ' + typeof user.id + ' msguserid: ' + typeof message.get('userId') + ' msgid: ' + message.id);
@@ -429,12 +424,12 @@ var DAL = {
             redis.sadd(key, message.id);
         }
     },
-    
+
     readAllMessagesForUserInWave: function(user, wave) {
         var key = 'unread-' + user.id + '-' + wave.id;
         redis.del(key);
     },
-            
+
     createInviteCodeForWave: function(user, wave) {
         var code = (Math.random() + 1).toString(36).replace(/[^a-z0-9]+/g, ''),
         data = {
@@ -443,19 +438,19 @@ var DAL = {
             code: code,
             created_at: Date.now()
         }, m;
-        
+
         m = new WaveInviteModel(data);
         m.save();
         return code;
     },
-            
+
     getWaveInvitebyCode: function(code, callback) {
         WaveInviteModel.findOne({code: code}).exec(callback);
     },
-            
+
     removeWaveInviteByCode: function(code, callback) {
         WaveInviteModel.remove({code: code}).exec(callback);
-    }    
+    }
 };
 
 module.exports = DAL;

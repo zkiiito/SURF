@@ -121,31 +121,7 @@ var WaveServer = {
         this.users.add(user);
 
         console.log('auth: newuser ' + user.id + ' (' + user.get('name') +  ')');
-        /*
-        var wave0 = WaveServer.waves.at(0);
-        wave0.addUser(user, true);
-        wave0.save();
-        */
         return user;
-    },
-
-    initData: function() {
-        console.log('startup: initdata');
-        var users = [],
-            uids = [],
-            i, u, wave;
-
-        for (i = 1; i <= 5; i++) {
-            u = new Model.User({name: 'teszt' + i, avatar: 'images/head' + (i%6 + 1) + '.png'});
-            u.save();
-            users.push(u);
-            uids.push(u.id.toString());//userIdsbe mindig toStringkent kell!
-        }
-        this.users.reset(users);
-
-        wave = new Model.Wave({title: 'Csillag-delta tejbevávé', userIds: uids});
-        wave.save();
-        this.waves.reset([wave]);
     },
 
     authClient: function(client) {

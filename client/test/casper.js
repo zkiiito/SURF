@@ -1,130 +1,161 @@
-var testDataInit = {
-    me: {_id: 3, name: 'tibor', avatar: 'images/head5.png', status: 'online'},
-    users: [
-        {_id: 1, name: 'csabcsi', avatar: 'images/head3.png', status: 'online'},
-        {_id: 2, name: 'leguan', avatar: 'images/head2.png'},
-        {_id: 4, name: 'klara', avatar: 'images/head4.png'}
-    ],
-    waves: [{_id: 1, title: 'Csillag-delta tejbevávé', userIds: [1, 2, 3, 4]}],
-    messages: [
-        {_id: 11, waveId: 1, userId: 1,
-            message: 'Tenderloin corned beef venison sirloin, pork loin cow bresaola. Leberkas brisket turducken tri-tip, pancetta ball tip corned beef tail. Beef corned beef ham pork turkey pork chop, prosciutto fatback short loin meatloaf filet mignon turducken pastrami frankfurter chuck. Sausage cow brisket, tail drumstick shank pancetta rump beef ribs hamburger. Kielbasa sausage andouille, bresaola bacon tail ball tip. Boudin spare ribs turkey prosciutto tenderloin bresaola. Rump turkey pork loin jowl ham andouille strip steak short loin pastrami.'},
-        {_id: 12, waveId: 1, userId: 1,
-            message: 'Tenderloin corned beef venison sirloin, pork loin cow bresaola. Leberkas brisket turducken tri-tip, pancetta ball tip corned beef tail. Beef corned beef ham pork turkey pork chop, prosciutto fatback short loin meatloaf filet mignon turducken pastrami frankfurter chuck. Sausage cow brisket, tail drumstick shank pancetta rump beef ribs hamburger. Kielbasa sausage andouille, bresaola bacon tail ball tip. Boudin spare ribs turkey prosciutto tenderloin bresaola. Rump turkey pork loin jowl ham andouille strip steak short loin pastrami.'},
-        {_id: 13, waveId: 1, userId: 3, parentId: 11,
-            message: 'Leberkas brisket turducken tri-tip, pancetta ball tip corned beef tail. '},
-        {_id: 14, waveId: 1, userId: 1, parentId: 11,
-            message: 'Herp derp'},
-        {_id: 15, waveId: 1, userId: 2, parentId: 12,
-            message: 'Sausage cow brisket, tail drumstick shank pancetta rump beef ribs hamburger. Kielbasa sausage andouille, bresaola bacon tail ball tip. Boudin spare ribs turkey prosciutto tenderloin bresaola. Rump turkey pork loin jowl ham andouille strip steak short loin pastrami.'},
-        {_id: 16, waveId: 1, userId: 4, parentId: 15,
-            message: 'Leberkas brisket turducken tri-tip, pancetta ball tip corned beef tail. Sausage cow brisket, tail drumstick shank pancetta rump beef ribs hamburger. Kielbasa sausage andouille, bresaola bacon tail ball tip. Boudin spare ribs turkey prosciutto tenderloin bresaola. Rump turkey pork loin jowl ham andouille strip steak short loin pastrami.'}
-    ]
-};
-
-var testDataOldMsgs = {
-    messages: [
-        {_id: 1, waveId: 1, userId: 1, unread: false,
-            message: 'Tenderloin corned beef venison sirloin, pork loin cow bresaola. Leberkas brisket turducken tri-tip, pancetta ball tip corned beef tail. Beef corned beef ham pork turkey pork chop, prosciutto fatback short loin meatloaf filet mignon turducken pastrami frankfurter chuck. Sausage cow brisket, tail drumstick shank pancetta rump beef ribs hamburger. Kielbasa sausage andouille, bresaola bacon tail ball tip. Boudin spare ribs turkey prosciutto tenderloin bresaola. Rump turkey pork loin jowl ham andouille strip steak short loin pastrami.'},
-        {_id: 2, waveId: 1, userId: 1, unread: false,
-            message: 'Tenderloin corned beef venison sirloin, pork loin cow bresaola. Leberkas brisket turducken tri-tip, pancetta ball tip corned beef tail. Beef corned beef ham pork turkey pork chop, prosciutto fatback short loin meatloaf filet mignon turducken pastrami frankfurter chuck. Sausage cow brisket, tail drumstick shank pancetta rump beef ribs hamburger. Kielbasa sausage andouille, bresaola bacon tail ball tip. Boudin spare ribs turkey prosciutto tenderloin bresaola. Rump turkey pork loin jowl ham andouille strip steak short loin pastrami.'},
-        {_id: 3, waveId: 1, userId: 3, parentId: 1, unread: false,
-            message: 'Leberkas brisket turducken tri-tip, pancetta ball tip corned beef tail. '},
-        {_id: 4, waveId: 1, userId: 1, parentId: 1, unread: false,
-            message: 'Herp derp'},
-        {_id: 5, waveId: 1, userId: 2, parentId: 2, unread: false,
-            message: 'Sausage cow brisket, tail drumstick shank pancetta rump beef ribs hamburger. Kielbasa sausage andouille, bresaola bacon tail ball tip. Boudin spare ribs turkey prosciutto tenderloin bresaola. Rump turkey pork loin jowl ham andouille strip steak short loin pastrami.'},
-        {_id: 6, waveId: 1, userId: 4, parentId: 5, unread: false,
-            message: 'Leberkas brisket turducken tri-tip, pancetta ball tip corned beef tail. Sausage cow brisket, tail drumstick shank pancetta rump beef ribs hamburger. Kielbasa sausage andouille, bresaola bacon tail ball tip. Boudin spare ribs turkey prosciutto tenderloin bresaola. Rump turkey pork loin jowl ham andouille strip steak short loin pastrami.'}
-    ]
-};
-
+/*global casper */
 casper.on("remote.message", function(message) {
-    //this.echo("remote console.log: " + message);
+    this.echo("remote console.log: " + message);
 });
 
-casper.test.begin('Init with test data, post new messages', 17, function suite(test) {
-    casper.start("http://localhost/surf/client/test.html", function() {
-        this.evaluate(function(data) {
-            Communicator.onInit(data);
-        }, testDataInit);
-    })
-    .then(function() {
-        test.assertElementCount('#wave-list .waveitem', 1, 'got 1 wave');
-        test.assertElementCount('.message', 6, 'got 6 messages');
-        test.assertElementCount('.message > table.unread', 5, 'got 5 unread messages');
-    })
-    //test after init, new message, reply message
-    .then(function() {
-        //after init
-        test.assertElementCount('.message > table.unread', 4, '4 unread messages left');
+casper.on('page.error', function(message, trace) {
+    this.echo('remote error caught: ' + message, 'ERROR');
+});
 
-        //click on next unread
-        this.click('a.gounread');
-        test.assertElementCount('.message > table.unread', 3, '3 unread messages left after click on unread');
+var lastMsgId;
+var inviteCodeUrl;
+var waveTitle;
+var testUserId = 10000 + Math.floor(Math.random() * 10000);
 
-        //write message
-        this.fillSelectors('form.add-message', {
-            "textarea": 'lol fsa'
+casper.test.begin('Login, create wave', 0, function suite(test) {
+    casper.start("http://localhost:8000/loginTest", function() {
+        this.fillSelectors('form', {
+            "input[name='login']": testUserId
         }, true);
-        test.assertElementCount('.message', 7, 'new message ready');
-
-        //click on reply
-        this.click('#msg-17 .reply');
-        test.assertExists('form.add-message.threadend', 'replyform visible');
-
-        //reply
-        this.fillSelectors('form.add-message.threadend', {
-            "textarea": 'lol fsa'
-        }, true);
-
-        test.assertExists('#msg-17 .replies .message', 'new reply message ready');
     })
-    //test edit wave
-    .then(function(){
-        this.click('a.button.editwave');
-        test.assertVisible('#editwave', 'edit popup visible');
-
-        var title = "Teszt Wave 1";
-
-        this.fillSelectors('#editwave form', {
-            'input#editwave-title': title
-        }, true);
-
-        test.assertNotVisible('#editwave', 'edit popup hidden');
-        test.assertEquals(this.fetchText('.wave h2.wave-title'), title, 'name change successful in title');
-        test.assertEquals(this.fetchText('#wave-list .waveitem h2'), title, 'name change successful in list');
-    })
+    .wait(1000)
     //test create wave
     .then(function(){
         this.click('a.addwave');
 
         test.assertVisible('#editwave', 'new popup visible');
 
-        var title = "Teszt Wave 2";
+        waveTitle = "Teszt Wave 1";
 
         this.fillSelectors('#editwave form', {
-            'input#editwave-title': title
+            'input#editwave-title': waveTitle
         }, true);
-
-        test.assertNotVisible('#editwave', 'new popup hidden');
-        test.assertElementCount('#wave-list .waveitem', 2, '2 waves');
     })
-    //test get old messages
+    .wait(10)
     .then(function(){
-        /*
-        this.evaluate(function(data) {
-            Communicator.getMessages = function(wave, minParentId, maxRootId) {
-                this.onMessage(data);
-           };
-        }, testDataOldMsgs);
-        */
-        this.click('a.getprevmessages');
-        test.assertElementCount('.message', 14, 'got 6 new messages');
-        test.assertElementCount('.message > table.unread', 3, '3 unread messages left after click on unread');
-
+        test.assertNotVisible('#editwave', 'new popup hidden');
+        test.assertElementCount('#wave-list a.waveitem', 1, '1 wave');
+        this.click('#wave-list a.waveitem');
     })
+    .then(function(){
+        test.assertElementCount('#wave-list a.waveitem.open', 1, '1 open wave');
 
+        var i;
+        //write messages
+        for (i = 0; i < 15; i++) {
+            this.fillSelectors('form.add-message', {"textarea": 'lol fsa ' + i}, true);
+        }
+    })
+    .wait(10)
+    .then(function() {
+        test.assertElementCount('.message', 15, 'new messages ready');
+
+        lastMsgId = this.evaluate(function() {
+            return $('.message').last().attr('id');
+        });
+
+        //click on reply
+        this.click('#' + lastMsgId + ' .reply');
+        test.assertExists('form.add-message.threadend', 'replyform visible');
+
+        //reply
+        var i;
+        for (i = 0; i < 5; i++) {
+            this.fillSelectors('form.add-message.threadend', {"textarea": 'lol fsa reply ' + i}, true);
+        }
+    })
+    .wait(10)
+    .then(function(){
+        test.assertElementCount('#' + lastMsgId + ' .replies .message', 5, 'new reply messages ready');
+
+        this.click('a.button.editwave');
+        test.assertVisible('#editwave', 'edit popup visible');
+
+        waveTitle = "Teszt Wave 2";
+
+        this.fillSelectors('#editwave form', {
+            'input#editwave-title': waveTitle
+        }, true);
+        test.assertNotVisible('#editwave', 'edit popup hidden');
+    })
+    .wait(10)
+    .then(function(){
+        test.assertEquals(this.fetchText('.wave h2.wave-title'), waveTitle, 'name change successful in title');
+        test.assertEquals(this.fetchText('#wave-list .waveitem h2'), waveTitle, 'name change successful in list');
+
+        this.click('a.button.editwave');
+        test.assertVisible('#editwave', 'edit popup visible');
+        this.click('#editwave-invite');
+    })
+    .wait(10)
+    .then(function(){
+        inviteCodeUrl = this.evaluate(function() {
+            return $('#editwave-invitecode').val();
+        });
+    })
+    //kilepes a wavebol
+    /*
+    .then(function() {
+        this.click('a.quit');//confirm always returns true
+        test.assertElementCount('#wave-list .waveitem', 0, 'quit waves');
+    })
+    */
+    .thenOpen("http://localhost:8000/logoutTest")
+    .run(function() {
+        test.done();
+    });
+});
+
+casper.test.begin('Login with invite, read old messages, reply', 0, function suite(test){
+    casper.start(inviteCodeUrl)
+    .thenOpen("http://localhost:8000/loginTest", function() {
+        this.fillSelectors('form', {
+            "input[name='login']": testUserId + 1
+        }, true);
+    })
+    .wait(1500)
+    .then(function(){
+       test.assertElementCount('#wave-list .waveitem', 1, 'got 1 wave');
+       this.click('#wave-list a.waveitem');
+    })
+    .wait(10)
+    .then(function(){
+        test.assertElementCount('.message', 16, 'got 16 messages');
+        this.click('a.getprevmessages');
+    })
+    .wait(10)
+    .then(function(){
+        test.assertElementCount('.message', 20, 'got 4 new old messages');
+
+        var i;
+        for (i = 0; i < 5; i++) {
+            this.fillSelectors('form.add-message', {"textarea": 'rotfl mao ' + i}, true);
+        }
+    })
+    .wait(10)//TODO: new wave with prev user
+    .thenOpen("http://localhost:8000/logoutTest")
+    .run(function() {
+        test.done();
+    });
+});
+
+casper.test.begin('Login with original user, see unread', 0, function suite(test) {
+    casper.start("http://localhost:8000/loginTest", function() {
+        this.fillSelectors('form', {
+            "input[name='login']": testUserId
+        }, true);
+    })
+    .wait(1500)
+    //test what we got
+    .then(function() {
+        //this.capture('loginagain.png');//meg kell varni
+        test.assertElementCount('#wave-list .waveitem', 1, 'got 1 wave');
+        test.assertElementCount('.message', 21, 'got 21 messages');
+        test.assertElementCount('.message > table.unread', 4, 'got 5 unread messages, focused on 1');
+
+        this.click('a.gounread');
+        test.assertElementCount('.message > table.unread', 3, '3 unread messages left after click on unread');
+    })
     .run(function() {
         test.done();
     });
