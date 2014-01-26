@@ -115,11 +115,7 @@ casper.test.begin('Login with invite, read old messages, reply', 0, function sui
     })
     .wait(1500)
     .then(function(){
-       test.assertElementCount('#wave-list .waveitem', 1, 'got 1 wave');
-       this.click('#wave-list a.waveitem');
-    })
-    .wait(10)
-    .then(function(){
+        test.assertElementCount('#wave-list .waveitem', 1, 'got 1 wave');
         test.assertElementCount('.message', 16, 'got 16 messages');
         this.click('a.getprevmessages');
     })

@@ -116,6 +116,9 @@ var Communicator = {
             app.model.waves.get(wave._id).update(wave);
         } else {
             app.model.waves.add(new Wave(wave));
+            if (1 === app.model.waves.length) {
+                document.location = '#wave/' + wave._id;
+            }
         }
     },
 
