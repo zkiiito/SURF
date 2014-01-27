@@ -4,6 +4,9 @@ var fs = require('fs'),
 var Minify = {
     readFiles: function(dir, done) {
         var i,l,contents = '',files = [
+            "../../node_modules/underscore/underscore.js",
+            "../../node_modules/backbone/backbone.js",
+            "../../node_modules/R.js/R.js",
             "i18n.js",
             "jquery.tokeninput.js",
             "date.format.js",

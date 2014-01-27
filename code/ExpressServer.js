@@ -119,7 +119,7 @@ app.configure(function(){
     app.use('/images', express.static(__dirname + '/../client/images'));
     app.use('/fonts', express.static(__dirname + '/../client/fonts'));
 
-    app.use('/node', express.static(__dirname + '/../node_modules'));
+    //app.use('/node', express.static(__dirname + '/../node_modules'));
 
     app.use(everyauth.middleware(app));
 });
