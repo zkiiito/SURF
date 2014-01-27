@@ -5,19 +5,19 @@
   <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
   <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <link rel="shortcut icon" type="image/png" href="images/surf-ico.png" />
-  <link rel="stylesheet" type="text/css" href="css/style.css" />  
-  <link rel="stylesheet" type="text/css" href="css/token-input.css" />  
+  <link rel="stylesheet" type="text/css" href="css/style.css" />
+  <link rel="stylesheet" type="text/css" href="css/token-input.css" />
 </head>
 <body>
 
 <script id="user_view" type="text/html">
 <img class="{{ status }}" src="{{ avatar }}" alt="{{ name }}" title="{{ name }}"/>
 </script>
-    
+
 <script id="wave_list_view" type="text/html">
 <a class="waveitem" href="#wave/{{ id }}">
     <h2>{{ title }}</h2>
-    <p class="meta"><span class="usercount R">{{ usercount }} users</span> <span class="piros">{{ unreadPosts }}</span></p>
+    <p class="meta"><span class="usercount R">{ usercount } users</span> <span class="piros">{ unreadPosts }</span></p>
 </a>
 </script>
 
@@ -73,7 +73,7 @@
                     <a class="button reply" href="">&rarr;</a>
                     <p class="time">{{ dateFormatted }}</p>
                     <p class="message-text">
-                        <span class="author">{{ user.name }}:</span> {{{ messageFormatted }}}
+                        <span class="author">{{ user.name }}:</span> {| messageFormatted |}
                     </p>
                 </td>
             </tr>
@@ -84,7 +84,7 @@
     <div class="notification threadend">
         <p><a class="button threadend" href=""><span class="R">New message</span> &darr;</a></p>
   </div>
-</div>    
+</div>
 </script>
 
 <script id="editwave_view" type="text/html">

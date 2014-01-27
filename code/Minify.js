@@ -5,7 +5,6 @@ var Minify = {
     readFiles: function(dir, done) {
         var i,l,contents = '',files = [
             "i18n.js",
-            "ICanHaz.js",
             "jquery.tokeninput.js",
             "date.format.js",
             "phpjs.js",
@@ -26,23 +25,23 @@ var Minify = {
             "communicator.js",
             "surf.js"
         ];
-        
+
         for (i=0, l=files.length; i<l; i++)
         {
             contents += fs.readFileSync(dir + '/' + files[i]);
         }
         return done(null, contents);
     },
-    
+
     minify: function() {
         var workDir = __dirname + '/../client/js',
             minFile = workDir + '/surf.min.js',
             mapFile = workDir + '/surf.min.js.map';
-        
-        if (fs.existsSync(minFile)) {   
+
+        if (fs.existsSync(minFile)) {
             fs.unlinkSync(minFile);
         }
-        
+
         this.readFiles(workDir, function(err, fileData) {
             fileData = UglifyJS.minify(fileData, {fromString: true, outSourceMap: "surf.min.js.map"});
             fs.writeFileSync(minFile, fileData.code);

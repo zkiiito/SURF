@@ -3,18 +3,18 @@ var DisconnectedView = Backbone.View.extend({
         _.bindAll(this, 'show');
         this.counter = 5;
     },
-    
+
     render: function() {
-        var template = ich.disconnected_view({counter: this.counter});
+        var template = _.template($('#disconnected_view').text(), {counter: this.counter});
         this.setElement(template);
         this.$el.hide();
-        
+
         return this;
     },
-        
+
     show: function() {
         ga('send', 'event', 'DisconnectedView', 'show', 'connection', this.model.reconnect ? 1 : 0);
-        
+
         if (this.model.reconnect) {
             var that = this;
             this.interval = setInterval(function() { that.count(); }, 1000);
@@ -26,7 +26,7 @@ var DisconnectedView = Backbone.View.extend({
         $('#darken').show();
         return false;
     },
-            
+
     count: function() {
         this.counter--;
         if (this.counter > 0) {

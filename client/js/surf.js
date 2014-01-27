@@ -10,7 +10,7 @@ var SurfAppRouter = Backbone.Router.extend({
             model: this.model
         });
     },
-    
+
     routes: {
         'wave/:number': "showWave"
     },
@@ -39,6 +39,10 @@ var SurfAppRouter = Backbone.Router.extend({
 });
 
 $(function() {
+    _.templateSettings = {
+        interpolate: /{|\|(.+?)\|\}/g,
+        escape: /\{\{(.+?)\}\}/g
+    };
     var surfApp = new SurfAppRouter();
     window.app = surfApp;
     Backbone.history.start();

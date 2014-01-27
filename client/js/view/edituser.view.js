@@ -7,37 +7,37 @@ var EditUserView = Backbone.View.extend({
         'click a.close' : 'hide',
         'submit form' : 'saveUser'
     },
-    
+
     render: function() {
-        var template = ich.edituser_view();
+        var template = _.template($('#edituser_view').text(), {});
         this.setElement(template);
         this.$el.hide();
-        
+
         this.$el.find('#edituser-name').val(this.model.get('name'));
         this.$el.find('#edituser-avatar').val(this.model.get('avatar'));
-        
+
         return this;
     },
-        
+
     show: function() {
         this.$el.show();
         $('#darken').show();
         return false;
     },
-    
+
     hide: function() {
         this.$el.hide();
         $('#darken').hide();
         return false;
     },
-        
+
     saveUser: function() {
         var name = this.$el.find('#edituser-name').val(),
             avatar = this.$el.find('#edituser-avatar').val();
 
         //callback a servertol updateli majd az usert!
         //Communicator.updateUser(name, avatar);
-        
+
         return this.hide();
     }
 });

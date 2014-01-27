@@ -2,16 +2,15 @@ var WaveReplyFormView = Backbone.View.extend({
     initialize: function() {
         _.bindAll(this, 'submitForm', 'handleKeydown');
     },
-            
+
     events: {
         'submit form': 'submitForm',
         'keydown textarea': 'handleKeydown'
     },
-            
-    render: function() {
-        var template = ich.wavereplyform_view();
 
-        this.setElement(template);
+    render: function() {
+        var template = _.template($('#wavereplyform_view').text());
+        this.setElement(template());
         return this;
     },
 
@@ -36,15 +35,15 @@ var WaveReplyFormView = Backbone.View.extend({
         }
         e.stopPropagation();
     },
-            
+
     scrollToNextUnread: function() {
         this.model.trigger('scrollToNextUnread');
     },
-            
+
     getWaveId: function() {
         return this.model.id;
     },
-            
+
     getParentId: function() {
         return null;
     }

@@ -28,7 +28,7 @@ var WaveView = Backbone.View.extend({
 
     render: function() {
         var context = _.extend(this.model.toJSON(), {id: this.model.id}),
-            template = ich.wave_view(context),
+            template = _.template($('#wave_view').text(), context),
             formView = new WaveReplyFormView({model: this.model});
 
         this.setElement(template);
