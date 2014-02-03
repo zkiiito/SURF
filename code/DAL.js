@@ -197,9 +197,10 @@ var DAL = {
             var endTime = new Date().getTime();
             console.log('QUERY LastMessagesForUser: wave query in ' + (endTime - startTime));
 
-            async.reduce(waves, [], function(memo, wave, callback_async_reduce){//ez nem parhuzamosan fut, de async mert az iteratornak callbackje van
-                DAL.getLastMessagesForUserInWave(user, wave, memo, callback_async_reduce);
+            async.map(waves, function(wave, callback_async_map){
+                DAL.getLastMessagesForUserInWave(user, wave, callback_async_map);
             }, function(err, results) {
+                results = _.flatten(results);
                 var endTime2 = new Date().getTime();
                 console.log('QUERY LastMessagesForUser: msg query in ' + (endTime2 - startTime));
                 console.log('QUERY LastMessagesForUser: msgs: ' + results.length);
@@ -215,8 +216,8 @@ var DAL = {
      * @param Array memo
      * @param Function callback
      */
-    getLastMessagesForUserInWave: function(user, wave, memo, callback) {
-        console.log('QUERY getLastMessagesForUserInWave');
+    getLastMessagesForUserInWave: function(user, wave, callback) {
+        console.log('QUERY getLastMessagesForUserInWave: ' + wave.id);
         DAL.getMinUnreadRootIdForUserInWave(user, wave, function(err, result){
             //console.log(result);
             var minRootId = null,
@@ -227,11 +228,14 @@ var DAL = {
             }
 
             DAL.getMinRootIdForWave(wave, minRootId, null, function(err, newMinRootId){
+                if (err) {
+                    return callback(err);
+                }
                 DAL.getMessagesForUserInWave(wave, newMinRootId, null, unreadIds, function(err, results){
-                    if (!err) {
-                        memo = _.union(memo, results);
+                    if (err) {
+                        return callback(err);
                     }
-                    callback(null, memo);
+                    callback(null, results);
                 });
             });
         });
@@ -248,7 +252,7 @@ var DAL = {
             if (err || 0 === results.length) {
                 callback(true, null);
             } else {
-                console.log('QUERY getMinUnreadRootIdForUserInWave: count: ' + results.length);
+                console.log('QUERY getMinUnreadRootIdForUserInWave: ' + wave.id + ' count: ' + results.length);
 
                 //TODO: ha tul sok van, akkor hogyan mit???
                 var res, startTime = new Date().getTime();
@@ -260,7 +264,7 @@ var DAL = {
                         .limit(1)
                         .exec(function(err, result){
                             var endTime = new Date().getTime();
-                            console.log('QUERY getMinUnreadRootIdForUserInWave: query in ' + (endTime - startTime));
+                            console.log('QUERY getMinUnreadRootIdForUserInWave: ' + wave.id + ' query in ' + (endTime - startTime));
 
                             if (err || !result) {
                                 return callback(true, null);
@@ -286,13 +290,13 @@ var DAL = {
             key = 'unread-' + user.id + '-' + wave.id;
         redis.smembers(key, function(err, results) {
             var endTime = new Date().getTime();
-            console.log('QUERY getUnreadIdsForUserInWave: query in ' + (endTime - startTime));
+            console.log('QUERY getUnreadIdsForUserInWave: ' + wave.id + ' query in ' + (endTime - startTime));
             callback(err, results);
         });
     },
 
     getMinRootIdForWave: function(wave, minRootId, maxRootId, callback) {
-        console.log('QUERY getMinRootIdForWave');
+        console.log('QUERY getMinRootIdForWave: ' + wave.id);
         if (null === minRootId && null !== maxRootId) {
             minRootId = maxRootId;
         }
@@ -325,7 +329,7 @@ var DAL = {
 
         query.exec(function(err, results){
             var endTime = new Date().getTime();
-            console.log('QUERY getNextMinRootIdForWave: query in ' + (endTime - startTime));
+            console.log('QUERY getNextMinRootIdForWave: ' + wave.id + ' query in ' + (endTime - startTime));
             if (0 === results.length) {
                 callback(true);
             } else {
@@ -369,10 +373,14 @@ var DAL = {
 
         query.exec(function(err, messages){
             var res, endTime = new Date().getTime();
-            console.log('QUERY getMessagesForUserInWave: query in ' + (endTime - startTime));
+            console.log('QUERY getMessagesForUserInWave: ' + wave.id + ' query in ' + (endTime - startTime));
 
-            if (err || messages.length === 0) {
-                return callback(true);
+            if (err) {
+                return callback(err);
+            }
+
+            if (messages.length === 0) {
+                return callback(false, []);
             }
 
             res = _.map(messages, function(mmsg){
@@ -395,8 +403,8 @@ var DAL = {
                      * ez a hiba lokalban sosem jelentkezik, csak elesben
                      * valahogy a redis altal visszaadott tombbol string lesz, ha 1 elemu
                      */
-                    console.log('DEBUG getMessagesForUserInWave: ' + error.message);
-                    console.log('DEBUG getMessagesForUserInWave:  messages.length: ' + messages.length +
+                    console.log('DEBUG getMessagesForUserInWave: ' + wave.id + ' error: ' + error.message);
+                    console.log('DEBUG getMessagesForUserInWave: ' + wave.id + ' messages.length: ' + messages.length +
                         ', unreadIds: ' + unreadIds.length + ' ' + (typeof unreadIds) + ' msg.id: ' + mmsg.id);
 
                     msg.unread = true;

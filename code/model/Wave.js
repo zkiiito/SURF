@@ -101,7 +101,7 @@ var Wave = Backbone.Model.extend({
     },
 
     sendOldMessagesToUser: function(user) {
-        DAL.getLastMessagesForUserInWave(user, this, [], function(err, msgs) {
+        DAL.getLastMessagesForUserInWave(user, this, function(err, msgs) {
             user.send('message', {messages: msgs});
         });
     },

@@ -7,6 +7,7 @@ var UserView = Backbone.View.extend({
     render: function() {
         var template = _.template($('#user_view').text(), this.model.toJSON());
         this.setElement(template);
+        this.$el.attr('src', this.model.get('avatar'));//kesobb kell beallitani, mert kulonben nem talalja az {{}} avatar imaget
         return this;
     },
 

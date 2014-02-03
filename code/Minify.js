@@ -46,9 +46,13 @@ var Minify = {
         }
 
         this.readFiles(workDir, function(err, fileData) {
-            fileData = UglifyJS.minify(fileData, {fromString: true, outSourceMap: "surf.min.js.map"});
-            fs.writeFileSync(minFile, fileData.code);
-            //fs.writeFileSync(mapFile, fileData.map);
+            if (process.env.TESTMODE) {
+                fs.writeFileSync(minFile, fileData);
+            } else {
+                fileData = UglifyJS.minify(fileData, {fromString: true, outSourceMap: "surf.min.js.map"});
+                fs.writeFileSync(minFile, fileData.code);
+                //fs.writeFileSync(mapFile, fileData.map);
+            }
         });
     }
 };

@@ -119,7 +119,7 @@ casper.test.begin('Login with invite, read old messages, reply', 0, function sui
         test.assertElementCount('.message', 16, 'got 16 messages');
         this.click('a.getprevmessages');
     })
-    .wait(10)
+    .wait(20)
     .then(function(){
         test.assertElementCount('.message', 20, 'got 4 new old messages');
 
