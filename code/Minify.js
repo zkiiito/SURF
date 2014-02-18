@@ -29,8 +29,7 @@ var Minify = {
             "surf.js"
         ];
 
-        for (i=0, l=files.length; i<l; i++)
-        {
+        for (i=0, l=files.length; i<l; i++) {
             contents += fs.readFileSync(dir + '/' + files[i]);
         }
         return done(null, contents);
@@ -56,28 +55,5 @@ var Minify = {
         });
     }
 };
-
-/*
-<script src="js/i18n.js"></script>
-<script src="js/ICanHaz.js"></script>
-<script src="js/jquery.tokeninput.js"></script>
-<script src="js/date.format.js"></script>
-<script src="js/phpjs.js"></script>
-<script src="js/model/user.model.js"></script>
-<script src="js/model/wave.model.js"></script>
-<script src="js/model/message.model.js"></script>
-<script src="js/model/surfapp.model.js"></script>
-<script src="js/view/wavereplyform.view.js"></script>
-<script src="js/view/messagereplyform.view.js"></script>
-<script src="js/view/user.view.js"></script>
-<script src="js/view/edituser.view.js"></script>
-<script src="js/view/wavelist.view.js"></script>
-<script src="js/view/wave.view.js"></script>
-<script src="js/view/message.view.js"></script>
-<script src="js/view/editwave.view.js"></script>
-<script src="js/view/surfapp.view.js"></script>
-<script src="js/communicator.js"></script>
-<script src="js/surf.js"></script>
-*/
 
 module.exports = Minify;

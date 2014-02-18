@@ -12,7 +12,7 @@ var nextUserId = 0;
 function addUser (source, sourceUser) {
     var user;
     if (arguments.length === 1) { // password-based
-        user = sourceUser = source;
+        user = source;
         nextUserId += 1;
         user.id = nextUserId;
         usersById[nextUserId] = user;

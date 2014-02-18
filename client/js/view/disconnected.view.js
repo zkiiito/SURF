@@ -1,7 +1,8 @@
 var DisconnectedView = Backbone.View.extend({
     initialize: function() {
         _.bindAll(this, 'show');
-        this.counter = 5;
+        this.counterStart = 3;
+        this.counter = this.counterStart;
     },
 
     render: function() {
@@ -32,8 +33,19 @@ var DisconnectedView = Backbone.View.extend({
         if (this.counter > 0) {
             this.$el.find('.counter').text(this.counter);
         } else {
-            clearInterval(this.interval);
-            document.location.href = '/';
+            var that = this;
+
+            clearInterval(that.interval);
+
+            $.ajax('images/surf-ico.png?' + Math.random(), {timeout: 900})
+                .fail(function(){
+                    that.counterStart *= 2;
+                    that.counter = that.counterStart;
+                    that.interval = setInterval(function() { that.count(); }, 1000);
+                })
+                .success(function(){
+                    document.location.href = '/';
+                });
         }
     }
 });
