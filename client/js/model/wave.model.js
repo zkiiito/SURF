@@ -1,3 +1,4 @@
+/*global MessageCollection, UserCollection, Communicator, app */
 var Wave = Backbone.Model.extend({
     defaults: {
         title: '',

@@ -1,3 +1,4 @@
+/*global WaveCollection, UserCollection, MessageCollection, User */
 var SurfAppModel = Backbone.Model.extend({
     initialize: function() {
         this.waves = new WaveCollection();

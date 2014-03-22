@@ -12,11 +12,10 @@ var nextUserId = 0;
 function addUser (source, sourceUser) {
     var user;
     if (arguments.length === 1) { // password-based
-        user = sourceUser = source;
+        user = source;
         nextUserId += 1;
         user.id = nextUserId;
         usersById[nextUserId] = user;
-        return user;
     } else { // non-password-based
         nextUserId += 1;
         user = usersById[nextUserId] = {id: nextUserId};
@@ -69,6 +68,36 @@ var fbAuth = everyauth.facebook
     })
     .redirectPath('/');
 
+if (process.env.TESTMODE) {
+    everyauth.password
+        .getLoginPath('/login')
+        .postLoginPath('/login')
+        .authenticate(function(login, password) {
+            var googleUser = {
+                    id: parseInt(login, 10),
+                    email: 'test' + login + '@wavesurf.com',
+                    name: 'Surf Tester ' + parseInt(login, 10).toString(),
+                    picture: 'http://www.jigzone.com/p/jz/isA/TreeFrog.jpg'
+                };
+
+            return usersByGoogleId[googleUser.id] || (usersByGoogleId[googleUser.id] = addUser('google', googleUser));
+        })
+        .getRegisterPath('/register')
+        .postRegisterPath('/register')
+        .registerUser({})
+        .loginSuccessRedirect('/')
+        .registerSuccessRedirect('/')
+        .addToSession( function (sess, user, errors) {
+          var _auth = sess.auth || (sess.auth = {});
+          if (user) {
+            _auth.userId = user[this._userPkey];
+            _auth.google = {};
+            _auth.google.user = user.google;
+          }
+          _auth.loggedIn = !!user;
+    });
+}
+
 var app = express();
 var clientDir = __dirname.replace('code', 'client');
 
@@ -76,7 +105,7 @@ app.configure(function(){
     app.use(express.methodOverride());
     app.use(express.bodyParser());
     app.use(express.errorHandler({
-        dumpExceptions: true, 
+        dumpExceptions: true,
         showStack: true
     }));
     app.use(express.cookieParser('site secret'));
@@ -90,9 +119,9 @@ app.configure(function(){
     app.use('/images', express.static(__dirname + '/../client/images'));
     app.use('/fonts', express.static(__dirname + '/../client/fonts'));
 
-    app.use('/node', express.static(__dirname + '/../node_modules'));
-  
-    app.use(everyauth.middleware(app));  
+    //app.use('/node', express.static(__dirname + '/../node_modules'));
+
+    app.use(everyauth.middleware(app));
 });
 
 app.get('/invite/:inviteCode', function(req, res) {
@@ -110,6 +139,18 @@ app.get('/', function(req, res) {
     }
     res.sendfile(clientDir + '/index.html');
 });
+
+if (process.env.TESTMODE) {
+    app.get('/loginTest', function(req, res) {
+        console.log(req.session);
+        res.sendfile(clientDir + '/test/login.html');
+    });
+
+    app.get('/logoutTest', function(req, res){
+        req.session = null;
+        res.redirect('/');
+    });
+}
 
 var ExpressServer = http.createServer(app);
 

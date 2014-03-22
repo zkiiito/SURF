@@ -1,3 +1,4 @@
+/*global MessageCollection, app, Communicator */
 var Message = Backbone.Model.extend({
     defaults: {
         userId: null,
@@ -65,13 +66,17 @@ var Message = Backbone.Model.extend({
     
     getSortableId: function() {
         if (!this.sortableId) {
-            var timestamp = Number('0x' + this.id.substr(0, 8)),
-                //machine = Number('0x' + this.id.substr(8, 6)),
-                //pid = Number('0x' + this.id.substr(14, 4)),
-                increment = Number('0x' + this.id.substr(18, 6));
-            //https://gist.github.com/zippy1981/780246
-            //#45 - volt h megkavarodott, azota osztjuk
-            this.sortableId = timestamp + increment % 1000 / 1000;
+            if (this.id.toString().length > 8) {
+                var timestamp = Number('0x' + this.id.substr(0, 8)),
+                    //machine = Number('0x' + this.id.substr(8, 6)),
+                    //pid = Number('0x' + this.id.substr(14, 4)),
+                    increment = Number('0x' + this.id.substr(18, 6));
+                //https://gist.github.com/zippy1981/780246
+                //#45 - volt h megkavarodott, azota osztjuk
+                this.sortableId = timestamp + increment % 1000 / 1000;
+            } else {
+                this.sortableId = this.id.toString();
+            }
         }
         return this.sortableId;
     },
