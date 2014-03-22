@@ -1,6 +1,6 @@
 body {
-    background: #2b2b2b;
-    color: white;
+    background: #fff;
+    color: #222;
     font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
 }
@@ -34,8 +34,31 @@ body {
     margin-top: 0.5em;
     margin-bottom: 1.2em;
     line-height: 1.5;
+    color: #fff;
 }
 
 #header form {
     margin-bottom: 2em;
+}
+
+.screenshot {
+    margin: 2em 0;
+}
+
+h1 {
+    font-size: 2em;
+    font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
+    font-weight: 700;
+    color: #87729d;
+    margin-bottom: 0.6em;
+}
+
+p {
+    font-size: 1.4em;
+    line-height: 1.8;
+    margin-bottom: 2em;
+}
+
+.signup {
+    text-align: center;
 }
