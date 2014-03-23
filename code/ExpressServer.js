@@ -103,7 +103,8 @@ var clientDir = __dirname.replace('code', 'client');
 
 app.configure(function(){
     app.use(express.methodOverride());
-    app.use(express.bodyParser());
+    app.use(express.json());
+    app.use(express.urlencoded());
     app.use(express.errorHandler({
         dumpExceptions: true,
         showStack: true

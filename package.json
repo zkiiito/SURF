@@ -13,10 +13,10 @@
   ],
   "dependencies": {
     "socket.io": "0.9.x",
-    "underscore": "1.5.x",
+    "underscore": "1.6.x",
     "backbone": "1.1.x",
-    "mongoose": "3.6.x",
-    "redis-url": "0.1.0",
+    "mongoose": "3.8.x",
+    "redis-url": "0.2.0",
     "async": "0.2.x",
     "express": "3.x",
     "cookie": "0.0.x",
@@ -28,5 +28,8 @@
   "engines": {
     "node": "0.10.x",
     "npm": "1.2.x"
+  },
+  "scripts": {
+    "start": "node WaveChat.js"
   }
 }
