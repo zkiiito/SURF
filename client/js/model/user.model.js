@@ -3,6 +3,7 @@ var User = Backbone.Model.extend({
     defaults: {
         name: '',
         avatar: '',
+        email: '',
         status: 'offline'
     },
     idAttribute: '_id',

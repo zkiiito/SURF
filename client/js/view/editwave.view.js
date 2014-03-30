@@ -20,34 +20,30 @@ var EditWaveView = Backbone.View.extend({
     },
 
     genUserArray: function() {
-        var userArray = [];
+        this.userArray = this.model.users.reduce(function(userArray, user) {
+            var obj = {id: user.id, name: user.get('name') + ' (' + user.get('email') + ')'};
 
-        this.model.users.each(function(user) {
-            var obj = {id: user.id, name: user.get('name')};
-
-            if (user.id === app.currentUser) {
-                obj.readonly = true;
+            if (this.wave && !this.wave.users.get(user.id)) {
+                userArray.push(obj);
             }
 
-            userArray.push(obj);
-        }, this);
-
-        this.userArray = userArray;
+            return userArray;
+        }, [], this);
     },
 
     initUserSuggest: function() {
+        this.genUserArray();
+
         if (this.inited) {
             return;
         }
-
-        this.genUserArray();
 
         this.$el.find('#editwave-users').tokenInput([], {
             theme: "facebook",
             preventDuplicates: true,
             hintText: __('Enter username.'),
             noResultsText: __('User not found.'),
-            searchingText: _('Searching...')
+            searchingText: __('Searching...')
         });
         this.inited = true;
     },
