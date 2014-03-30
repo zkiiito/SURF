@@ -20,7 +20,7 @@ var WaveServer = {
 
         this.socket = io.listen(ExpressServer);
 
-        this.socket.set('authorization', function(data, accept){
+        this.socket.set('authorization', function(data, accept) {
             if (!data.headers.cookie) {
                 return accept('Session cookie required.', false);
             }
@@ -31,7 +31,7 @@ var WaveServer = {
                 return accept('Session cookie invalid.', false);
             }
 
-            data.sessionID = data.cookie['surf.sid'].substr(2,24);
+            data.sessionID = data.cookie['surf.sid'].substr(2, 24);
 
             SessionStore.get(data.sessionID, function (err, session) {
                 if (err) {
@@ -63,7 +63,7 @@ var WaveServer = {
         }
         this.socket.set('log level', 1);
 
-        this.socket.sockets.on('connection', function(client){
+        this.socket.sockets.on('connection', function(client) {
             //var userData = client.handshake.session['auth']['google']['user'];
             //console.log(userData);
 
@@ -91,7 +91,7 @@ var WaveServer = {
     getUserByAuth: function(auth) {
         var authMode = auth.google ? 'google' : 'facebook',
             userData = auth.google ? auth.google.user : auth.facebook.user,
-            user = this.users.find(function(u){
+            user = this.users.find(function(u) {
                 return u.get('googleId') === userData.id
                     || u.get('facebookId') === userData.id
                     || u.get('email') === userData.email;
@@ -158,7 +158,7 @@ var WaveServer = {
             wave.notifyUsers();
         });
 
-        client.on('updateWave', function(data){
+        client.on('updateWave', function(data) {
             console.log('updateWave: ' + client.curUser.id);
             var wave = that.waves.get(data.id);
             if (wave && wave.isMember(client.curUser)) {
@@ -166,7 +166,7 @@ var WaveServer = {
             }
         });
 
-        client.on('getMessages', function(data){
+        client.on('getMessages', function(data) {
             console.log('getMessages: ' + client.curUser.id);
             var wave = that.waves.get(data.waveId);
             if (wave && wave.isMember(client.curUser)) {
@@ -182,7 +182,7 @@ var WaveServer = {
             }
         });
 
-        client.on('getUser', function(data){
+        client.on('getUser', function(data) {
             var user = that.users.get(data.userId);
             if (user) {
                 client.curUser.send('updateUser', {user: user.toJSON()});
@@ -198,14 +198,20 @@ var WaveServer = {
 
         client.on('createInviteCode', function(data) {
             console.log('createInviteCode: ' + client.curUser.id);
-            var wave = that.waves.get(data.waveId);
+            var wave = that.waves.get(data.waveId),
+                code;
+
             if (wave && wave.isMember(client.curUser)) {
-                var code = wave.createInviteCode(client.curUser);
+                code = wave.createInviteCode(client.curUser);
                 if (code) {
                     data.code = code;
                     client.curUser.send('inviteCodeReady', data);
                 }
             }
+        });
+
+        client.on('ping', function() {
+            client.curUser.send('pong');
         });
     }
 };

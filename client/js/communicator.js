@@ -2,6 +2,7 @@
 var Communicator = {
     socket: null,
     reconnect: true,
+    pingTimeout: null,
     initialize: function() {
         if (typeof io === 'undefined') {
             return;
@@ -12,13 +13,16 @@ var Communicator = {
         this.socket = new io.connect(document.location.href, {reconnect: false});
         //this.socket.emit('auth', id);
 
-        this.socket.on('init', this.onInit);
+        this.socket.on('init', function(data) {
+            that.onInit(data);
+        });
 
         this.socket.on('message', function(data) {
             that.onMessage(data);
         });
 
-        this.socket.on('disconnect', function(){
+        this.socket.on('disconnect', function() {
+            clearTimeout(that.pingTimeout);
             app.view.showDisconnected(that.reconnect);
         });
 
@@ -26,12 +30,16 @@ var Communicator = {
         this.socket.on('updateWave', this.onUpdateWave);
         this.socket.on('inviteCodeReady', this.onInviteCodeReady);
 
-        this.socket.on('dontReconnect', function(){
+        this.socket.on('dontReconnect', function() {
             that.reconnect = false;
+        });
+
+        this.socket.on('pong', function() {
+            that.schedulePing();
         });
     },
 
-    onInit: function(data){
+    onInit: function(data) {
         if (undefined === app.currentUser) {
             //console.log(data.me);
             app.currentUser = data.me._id;
@@ -46,6 +54,7 @@ var Communicator = {
             if (lastMsg) {
                 document.location = '#wave/' + lastMsg.get('waveId');
             }
+            this.schedulePing();
         }
     },
 
@@ -86,6 +95,8 @@ var Communicator = {
     },
 
     onMessage: function(data) {
+        this.schedulePing();
+
         if (data.messages) {
             _.each(data.messages, function(msg) {
                 this.onMessage(msg);
@@ -160,5 +171,13 @@ var Communicator = {
         if (app.model.waves.get(data.waveId)) {
             app.model.waves.get(data.waveId).trigger('inviteCodeReady', data.code);
         }
+    },
+
+    schedulePing: function() {
+        var that = this;
+        clearTimeout(this.pingTimeout);
+        this.pingTimeout = setTimeout(function() {
+            that.socket.emit('ping');
+        }, 30000);
     }
 };
