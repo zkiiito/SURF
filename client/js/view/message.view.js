@@ -13,6 +13,7 @@ var MessageView = Backbone.View.extend({
     },
     events: {
         'click': 'readMessage',
+        'dblclick': 'replyMessage',
         'click a.reply' : 'replyMessage',
         'click a.threadend' : 'replyMessage'
     },
