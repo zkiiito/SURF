@@ -29,7 +29,10 @@ var User = Backbone.Model.extend({
     },
 
     sendInit: function(messages) {
-        var friends = this.getFriends();
+        var friends = this.getFriends().map(function(f) {
+            return f.toFilteredJSON();
+        });
+
         this.socket.emit('init', {
             me: this.toJSON(),
             users: friends,
@@ -49,7 +52,7 @@ var User = Backbone.Model.extend({
         var friends = this.waves.reduce(function(friends, wave) {
             var uids = wave.get('userIds');
             _.each(uids, function(item) {
-                if (item !== this.id) {
+                if (item !== this.id.toString()) {
                     var user = require('../WaveServer').users.get(item);
                     friends.add(user);
                 }
@@ -72,7 +75,7 @@ var User = Backbone.Model.extend({
 
         friends.each(function(friend) {
             friend.send('updateUser', {
-                user: this.toJSON()
+                user: this.toFilteredJSON()
             });
         }, this);
     },
@@ -97,7 +100,20 @@ var User = Backbone.Model.extend({
                 }
             }
         });
+    },
+
+    /**
+     * Filters public properties
+     * @returns {Object} Public JSON
+     */
+    toFilteredJSON: function() {
+        var json = this.toJSON(),
+            emailParts = json.email.split('@');
+
+        json.email = emailParts[0].substr(0, 2) + '..@' + emailParts[1];
+        return _.pick(json, 'id', '_id', 'name', 'avatar', 'status', 'email');
     }
+
 
     //validate: function(){
     //check: ?

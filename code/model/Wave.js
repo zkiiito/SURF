@@ -74,7 +74,7 @@ var Wave = Backbone.Model.extend({
             //tehat most lett 1 waven vele
             if (user.socket && user !== newuser && _.intersection(newuser.waves, user.waves).length < 2) {
                 user.send('updateUser', {
-                    user: newuser.toJSON()
+                    user: newuser.toFilteredJSON()
                 });
             }
         }, this);
@@ -94,7 +94,7 @@ var Wave = Backbone.Model.extend({
             //tehat most lett 1 waven vele
             if (user !== newuser && _.intersection(newuser.waves, user.waves).length < 2) {
                 newuser.send('updateUser', {
-                    user: user.toJSON()
+                    user: user.toFilteredJSON()
                 });
             }
         }, this);

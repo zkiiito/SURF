@@ -185,7 +185,7 @@ var WaveServer = {
         client.on('getUser', function(data) {
             var user = that.users.get(data.userId);
             if (user) {
-                client.curUser.send('updateUser', {user: user.toJSON()});
+                client.curUser.send('updateUser', {user: user.toFilteredJSON()});
             }
         });
 
