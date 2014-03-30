@@ -1,6 +1,7 @@
+/*global WaveReplyFormView */
 var MessageReplyFormView = WaveReplyFormView.extend({
     events: _.extend({
-       'click a.cancel': 'handleCancel'
+        'click a.cancel': 'handleCancel'
     }, WaveReplyFormView.prototype.events),
 
     initialize: function() {
@@ -18,7 +19,7 @@ var MessageReplyFormView = WaveReplyFormView.extend({
         return this;
     },
 
-    handleCancel: function(e){
+    handleCancel: function(e) {
         e.preventDefault();
         this.hide();
         return false;
@@ -41,25 +42,26 @@ var MessageReplyFormView = WaveReplyFormView.extend({
         if (threadEnd.is(':visible')) {
             threadEnd.hide();
             this.$el.height(threadEnd.height()).appendTo(parent)
-            .animate({height: '145px'}, this.timeout, function(){
-                $(this).find('textarea').focus();
-            });
+                .animate({height: '145px'}, this.timeout, function() {
+                    $(this).find('textarea').focus();
+                });
         } else {
-            this.$el.hide().appendTo(parent).slideDown(this.timeout, function(){
+            this.$el.hide().appendTo(parent).slideDown(this.timeout, function() {
                 $(this).find('textarea').focus();
             });
         }
     },
 
     hide: function() {
-        var that = this;
+        var that = this,
+            threadEnd;
         if (this.$el.siblings('.replies').children().size() > 0) {
-            var threadEnd = this.$el.siblings('.threadend');
+            threadEnd = this.$el.siblings('.threadend');
             this.$el.animate({height: threadEnd.height()}, this.timeout,
-            function() {
-                threadEnd.show();
-                that.remove();
-            });
+                function() {
+                    threadEnd.show();
+                    that.remove();
+                });
         } else {
             this.$el.slideUp(this.timeout, function() {
                 that.remove();

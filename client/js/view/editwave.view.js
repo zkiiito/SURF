@@ -1,3 +1,4 @@
+/*global Communicator, __ */
 var EditWaveView = Backbone.View.extend({
     initialize: function() {
         _.bindAll(this, 'show', 'hide', 'setWave', 'genUserArray', 'inviteCodeReady');
@@ -21,7 +22,7 @@ var EditWaveView = Backbone.View.extend({
     genUserArray: function() {
         var userArray = [];
 
-        this.model.users.each(function(user){
+        this.model.users.each(function(user) {
             var obj = {id: user.id, name: user.get('name')};
 
             if (user.id === app.currentUser) {
@@ -52,19 +53,20 @@ var EditWaveView = Backbone.View.extend({
     },
 
     updateUserSuggest: function() {
+        var suggest, currentUser;
         this.initUserSuggest();
 
         $('#editwave-users').data("settings").local_data = this.userArray;
 
-        var suggest = this.$el.find('#editwave-users');
+        suggest = this.$el.find('#editwave-users');
         suggest.tokenInput('clear');
 
         if (this.wave) {
-            this.wave.users.each(function(user){
+            this.wave.users.each(function(user) {
                 suggest.tokenInput('add', {id: user.id, name: user.get('name'), readonly: true});
             });
         } else {
-            var currentUser = this.model.users.get(app.currentUser);
+            currentUser = this.model.users.get(app.currentUser);
             suggest.tokenInput('add', {id: currentUser.id, name: currentUser.get('name'), readonly: true});
         }
 

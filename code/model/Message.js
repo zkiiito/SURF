@@ -20,7 +20,7 @@ var Message = Backbone.Model.extend({
     save: function() {
         return DAL.saveMessage(this);
     }
-    
+
     //validate: function(){
     //check: parentId
     //parent member of wave?
@@ -29,7 +29,7 @@ var Message = Backbone.Model.extend({
 });
 
 var MessageCollection = Backbone.Collection.extend({
-    model: Message 
+    model: Message
 });
 
 module.exports = { Model: Message, Collection: MessageCollection };

@@ -1,3 +1,4 @@
+/*global UserView, MessageReplyFormView */
 var MessageView = Backbone.View.extend({
     initialize: function() {
         this.hasReplyForm = false;
@@ -17,14 +18,14 @@ var MessageView = Backbone.View.extend({
     },
     render: function() {
         var context = _.extend(this.model.toJSON(), {id: this.model.id, user: this.model.user.toJSON()}),
-            template = _.template($('#message_view').text(), context);
+            template = _.template($('#message_view').text(), context),
+            userView = new UserView({model: this.model.user});
 
         this.setElement(template);
         if (!this.model.get('unread')) {
             this.$el.children('table').removeClass('unread');
         }
 
-        var userView = new UserView({model: this.model.user});
         this.$el.find('.message-header').html(userView.render().el);
         this.$el.children('div.threadend').hide();
 
@@ -75,7 +76,8 @@ var MessageView = Backbone.View.extend({
     replyMessage: function(e) {
         e.preventDefault();
         //if reply form is visible under this message, return after hiding
-        var hideOnly = this.$el.find('> div:last-child').hasClass('replyform');
+        var hideOnly = this.$el.find('> div:last-child').hasClass('replyform'),
+            formView;
 
         //hide other replyforms
         this.model.getWave().trigger('hideReplyForm');
@@ -84,7 +86,7 @@ var MessageView = Backbone.View.extend({
             return false;
         }
 
-        var formView = new MessageReplyFormView({model: this.model});
+        formView = new MessageReplyFormView({model: this.model});
         formView.render();
         formView.show(this.$el);
 

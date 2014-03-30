@@ -9,7 +9,7 @@ var express = require('express'),
 var usersById = {};
 var nextUserId = 0;
 
-function addUser (source, sourceUser) {
+function addUser(source, sourceUser) {
     var user;
     if (arguments.length === 1) { // password-based
         user = source;
@@ -54,7 +54,7 @@ var fbAuth = everyauth.facebook
     .scope('email')                        // Defaults to undefined
     .fields('id,name,email,picture')       // Controls the returned fields. Defaults to undefined
     .myHostname(process.env.HOSTNAME)//https miatt, configban kell megadni.
-    .handleAuthCallbackError( function (req, res) {
+    .handleAuthCallbackError(function(req, res) {
       // If a user denies your app, Facebook will redirect the user to
       // /auth/facebook/callback?error_reason=user_denied&error=access_denied&error_description=The+user+denied+your+request.
       // This configurable route handler defines how you want to respond to
@@ -62,9 +62,9 @@ var fbAuth = everyauth.facebook
       // If you do not configure this, everyauth renders a default fallback
       // view notifying the user that their authentication failed and why.
     })
-    .findOrCreateUser( function (session, accessToken, accessTokExtra, fbUserMetadata) {
-          //?
-          return usersByGoogleId[fbUserMetadata.id] || (usersByGoogleId[fbUserMetadata.id] = addUser('facebook', fbUserMetadata));
+    .findOrCreateUser(function (session, accessToken, accessTokExtra, fbUserMetadata) {
+        //?
+        return usersByGoogleId[fbUserMetadata.id] || (usersByGoogleId[fbUserMetadata.id] = addUser('facebook', fbUserMetadata));
     })
     .redirectPath('/');
 
@@ -87,21 +87,21 @@ if (process.env.TESTMODE) {
         .registerUser({})
         .loginSuccessRedirect('/')
         .registerSuccessRedirect('/')
-        .addToSession( function (sess, user, errors) {
-          var _auth = sess.auth || (sess.auth = {});
-          if (user) {
-            _auth.userId = user[this._userPkey];
-            _auth.google = {};
-            _auth.google.user = user.google;
-          }
-          _auth.loggedIn = !!user;
-    });
+        .addToSession(function (sess, user, errors) {
+            var _auth = sess.auth || (sess.auth = {});
+            if (user) {
+                _auth.userId = user[this._userPkey];
+                _auth.google = {};
+                _auth.google.user = user.google;
+            }
+            _auth.loggedIn = !!user;
+        });
 }
 
 var app = express();
 var clientDir = __dirname.replace('code', 'client');
 
-app.configure(function(){
+app.configure(function() {
     app.use(express.methodOverride());
     app.use(express.json());
     app.use(express.urlencoded());
@@ -147,7 +147,7 @@ if (process.env.TESTMODE) {
         res.sendfile(clientDir + '/test/login.html');
     });
 
-    app.get('/logoutTest', function(req, res){
+    app.get('/logoutTest', function(req, res) {
         req.session = null;
         res.redirect('/');
     });

@@ -3,7 +3,7 @@ var fs = require('fs'),
 
 var Minify = {
     readFiles: function(dir, done) {
-        var i,l,contents = '',files = [
+        var i, l, contents = '', files = [
             "../../node_modules/underscore/underscore.js",
             "../../node_modules/backbone/backbone.js",
             "../../node_modules/R.js/R.js",
@@ -29,7 +29,7 @@ var Minify = {
             "surf.js"
         ];
 
-        for (i=0, l=files.length; i<l; i++) {
+        for (i = 0, l = files.length; i < l; i++) {
             contents += fs.readFileSync(dir + '/' + files[i]);
         }
         return done(null, contents);

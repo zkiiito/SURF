@@ -1,3 +1,4 @@
+/*global Communicator */
 var WaveReplyFormView = Backbone.View.extend({
     initialize: function() {
         _.bindAll(this, 'submitForm', 'handleKeydown');
@@ -28,8 +29,7 @@ var WaveReplyFormView = Backbone.View.extend({
         if (!e.shiftKey && 13 === e.keyCode) {
             e.preventDefault();
             this.$el.find('form').submit();
-        }
-        else if (32 === e.keyCode && ' ' === $(e.target).val()) {
+        } else if (32 === e.keyCode && ' ' === $(e.target).val()) {
             e.preventDefault();
             this.scrollToNextUnread();
         }

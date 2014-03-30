@@ -1,3 +1,4 @@
+/*global UserCollection */
 var _ = require('underscore'),
     Backbone =  require('backbone'),
     MessageCollection = require('./Message').Collection,
@@ -45,9 +46,9 @@ var User = Backbone.Model.extend({
     },
 
     getFriends: function() {//sajat magat nem adhatja vissza!
-        var friends = this.waves.reduce(function(friends, wave){
+        var friends = this.waves.reduce(function(friends, wave) {
             var uids = wave.get('userIds');
-            _.each(uids, function(item){
+            _.each(uids, function(item) {
                 if (item !== this.id) {
                     var user = require('../WaveServer').users.get(item);
                     friends.add(user);
@@ -66,13 +67,13 @@ var User = Backbone.Model.extend({
         }
     },
 
-    notifyFriends: function(){
+    notifyFriends: function() {
         var friends = this.getFriends();
 
-        friends.each(function(friend){
-           friend.send('updateUser', {
-               user: this.toJSON()
-           });
+        friends.each(function(friend) {
+            friend.send('updateUser', {
+                user: this.toJSON()
+            });
         }, this);
     },
 
@@ -86,7 +87,7 @@ var User = Backbone.Model.extend({
 
     handleInvite: function(invite) {
         var that = this;
-        DAL.removeWaveInviteByCode(invite.code, function(err, result){
+        DAL.removeWaveInviteByCode(invite.code, function(err, result) {
             if (!err && result > 0) {
                 var wave = require('../WaveServer').waves.get(invite.waveId);
                 if (wave && !wave.isMember(that)) {

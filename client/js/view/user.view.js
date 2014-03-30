@@ -1,5 +1,5 @@
 var UserView = Backbone.View.extend({
-    initialize: function(){
+    initialize: function() {
         _.bindAll(this, 'render', 'update');
         this.model.bind('change', this.update);
     },

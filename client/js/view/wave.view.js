@@ -1,3 +1,4 @@
+/*global WaveReplyFormView, UserView, MessageView, __ */
 var WaveView = Backbone.View.extend({
     initialize: function() {
         _.bindAll(this, 'setCurrent', 'addMessage', 'addUser', 'removeUser', 'updateTitle',

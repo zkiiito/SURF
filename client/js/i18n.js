@@ -1,3 +1,4 @@
+/*global R*/
 var i18n = {
     init: function() {
         R.registerLocale('hu-HU', {
@@ -19,41 +20,40 @@ var i18n = {
             'Participants': 'Résztvevők',
             'Create': 'Létrehozás',
             'Log out': 'Kijelentkezés',
-            
+
             'Edit conversation': 'Beszélgetés szerkesztése',
             'Save': 'Mentés',
             'Searching...': 'Keresés...',
-            "User not found.":"Nincs ilyen felhasználónk.",
+            "User not found.": "Nincs ilyen felhasználónk.",
             'Enter username.': 'Írj be egy felhasználónevet.',
-            "Do you want to leave conversation {{ title }}?\n\nIf you want to come back later, participants can invite you":
-            "Biztosan kilépsz a következő beszélgetésből: {{ title }}?\n\nHa később vissza szeretnél lépni, a beszélgetés résztvevői újra meghívhatnak.",
-            
+            "Do you want to leave conversation {{ title }}?\n\nIf you want to come back later, participants can invite you": "Biztosan kilépsz a következő beszélgetésből: {{ title }}?\n\nHa később vissza szeretnél lépni, a beszélgetés résztvevői újra meghívhatnak.",
+
             "Get invite code": "Meghívó igénylés",
             "Invite URL": "Meghívó URL"
         });
-        
+
         R.setLocale('hu-HU');
-        
+
         i18n.translateTemplates();
         i18n.applyR($('body'));
     },
 
     applyR: function(context) {
-        $('.R', context).each(function(idx, el){
+        $('.R', context).each(function(idx, el) {
             el = $(el);
             //console.log(el.html() + ' ' + R(el.html()));
             if (el.prop('placeholder')) {
                 el.prop('placeholder', R(el.prop('placeholder')));
             }
-            
+
             el.html(R(el.html())).removeClass('R');
         });
     },
 
     translateTemplates: function () {
         var i, l, script, ctx,
-        scripts = document.getElementsByTagName('script');
-    
+            scripts = document.getElementsByTagName('script');
+
         for (i = 0, l = scripts.length; i < l; i++) {
             script = scripts[i];
             if (script && script.innerHTML && script.id && (script.type === "text/html" || script.type === "text/x-icanhaz")) {
@@ -63,7 +63,7 @@ var i18n = {
             }
         }
     },
-    
+
     __: function(txt) {
         return R(txt);
     }
