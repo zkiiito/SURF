@@ -166,6 +166,11 @@ var WaveServer = {
             }
         });
 
+        client.on('updateUser', function(data) {
+            console.log('updateUser: ' + client.curUser.id);
+            client.curUser.update(data);
+        });
+
         client.on('getMessages', function(data) {
             console.log('getMessages: ' + client.curUser.id);
             var wave = that.waves.get(data.waveId);

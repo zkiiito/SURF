@@ -1,7 +1,8 @@
+/*global Communicator, CryptoJS */
 var EditUserView = Backbone.View.extend({
     initialize: function() {
         _.bindAll(this, 'show', 'hide');
-        this.model.bind('change', this.render, this);
+        this.model.bind('change', this.updateFields, this);
     },
     events: {
         'click a.close' : 'hide',
@@ -12,11 +13,40 @@ var EditUserView = Backbone.View.extend({
         var template = _.template($('#edituser_view').text(), {});
         this.setElement(template);
         this.$el.hide();
+        this.updateFields();
 
+        return this;
+    },
+
+    updateFields: function() {
         this.$el.find('#edituser-name').val(this.model.get('name'));
         this.$el.find('#edituser-avatar').val(this.model.get('avatar'));
 
-        return this;
+        this.$el.find('div.avatar').remove();
+
+        var gravatarUrl = 'https://secure.gravatar.com/avatar/' + CryptoJS.MD5(this.model.get('email')).toString() + '?s=80&d=monsterid';
+
+        if (this.model.get('googleAvatar')) {
+            this.addAvatarOption(this.model.get('googleAvatar'));
+        }
+
+        if (this.model.get('facebookAvatar')) {
+            this.addAvatarOption(this.model.get('facebookAvatar'));
+        }
+
+        this.addAvatarOption(gravatarUrl);
+    },
+
+    addAvatarOption: function(url) {
+        var template = $(_.template($('#edituser_avatar_view').text(), {url: url}));
+
+        template.find('img').prop('src', url);
+
+        if (url === this.model.get('avatar')) {
+            template.find('input').prop('checked', true);
+        }
+
+        this.$el.find('.ediutuser-avatar-row .right').append(template);
     },
 
     show: function() {
@@ -31,12 +61,13 @@ var EditUserView = Backbone.View.extend({
         return false;
     },
 
-    saveUser: function() {
+    saveUser: function(e) {
+        e.preventDefault();
         var name = this.$el.find('#edituser-name').val(),
-            avatar = this.$el.find('#edituser-avatar').val();
+            avatar = this.$el.find('input[name=edituser-avatar-cb]:checked').val();
 
         //callback a servertol updateli majd az usert!
-        //Communicator.updateUser(name, avatar);
+        Communicator.updateUser(name, avatar);
 
         return this.hide();
     }

@@ -160,7 +160,7 @@ var Wave = Backbone.Model.extend({
     },
 
     update: function(data) {
-        this.set('title', data.title);
+        this.set('title', data.title || "");
         var notified = false,
             userIds = this.get('userIds'),
             newIds;

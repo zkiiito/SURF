@@ -115,6 +115,9 @@ var Communicator = {
         //console.log(user);
         if (app.model.users.get(user._id)) {
             app.model.users.get(user._id).update(user);
+            if (app.currentUser === user._id) {
+                app.model.currentUser.update(user);
+            }
         } else {
             app.model.users.add(new User(user));
         }
@@ -179,5 +182,14 @@ var Communicator = {
         this.pingTimeout = setTimeout(function() {
             that.socket.emit('ping');
         }, 30000);
+    },
+
+    updateUser: function(name, avatar) {
+        var data = {
+            name: name,
+            avatar: avatar
+        };
+
+        this.socket.emit('updateUser', data);
     }
 };

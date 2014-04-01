@@ -84,6 +84,22 @@ var User = Backbone.Model.extend({
         return DAL.saveUser(this);
     },
 
+    update: function(data) {
+        var name = data.name || "",
+            avatar = data.avatar || "";
+
+        name = name.substr(0, 30);
+
+        if (name.length && avatar.length) {
+            this.set({name: name, avatar: avatar});
+            this.save();
+            this.notifyFriends();
+            this.send('updateUser', {
+                user: this.toJSON()
+            });
+        }
+    },
+
     quitWave: function(wave) {
         this.waves.remove(wave);
     },

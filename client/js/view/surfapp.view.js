@@ -106,7 +106,7 @@ var SurfAppView = Backbone.View.extend({
 
     changeCurrentUser: function() {
         var template = new UserView({model: this.model.currentUser});
-        this.$el.find('#currentuser').html('').append(template.render().el).append(' <p>' + this.model.currentUser.get('name') + '</p>');
+        this.$el.find('#currentuser').html('').append(template.render().el).append(' <p>' + this.model.currentUser.escape('name') + '</p>');
 
         if (!this.editUserView) {
             this.editUserView = new EditUserView({model: this.model.currentUser});
