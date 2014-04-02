@@ -37,8 +37,7 @@ var Minify = {
 
     minify: function() {
         var workDir = __dirname + '/../client/js',
-            minFile = workDir + '/surf.min.js',
-            mapFile = workDir + '/surf.min.js.map';
+            minFile = workDir + '/surf.min.js';
 
         if (fs.existsSync(minFile)) {
             fs.unlinkSync(minFile);
@@ -48,9 +47,8 @@ var Minify = {
             if (process.env.TESTMODE) {
                 fs.writeFileSync(minFile, fileData);
             } else {
-                fileData = UglifyJS.minify(fileData, {fromString: true, outSourceMap: "surf.min.js.map"});
+                fileData = UglifyJS.minify(fileData, {fromString: true});
                 fs.writeFileSync(minFile, fileData.code);
-                //fs.writeFileSync(mapFile, fileData.map);
             }
         });
     }

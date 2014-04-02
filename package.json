@@ -27,13 +27,15 @@
   },
   "engines": {
     "node": "0.10.x",
-    "npm": "1.2.x"
+    "npm": "1.4.x"
   },
   "scripts": {
     "start": "node WaveChat.js"
   },
   "devDependencies": {
+    "grunt": "~0.4.4",
     "grunt-jslint": "~1.1.8",
-    "grunt": "~0.4.4"
+    "grunt-contrib-uglify": "^0.4.0",
+    "grunt-contrib-concat": "^0.4.0"
   }
 }
