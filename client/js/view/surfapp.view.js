@@ -39,6 +39,7 @@ var SurfAppView = Backbone.View.extend({
             if (32 === e.keyCode) {
                 e.preventDefault();
                 if (app.currentWave) {
+                    document.activeElement.blur();
                     app.model.waves.get(app.currentWave).trigger('scrollToNextUnread');
                 }
             }
