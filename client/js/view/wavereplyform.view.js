@@ -18,6 +18,12 @@ var WaveReplyFormView = Backbone.View.extend({
     submitForm: function(e) {
         e.preventDefault();
         var textarea = this.$el.find('textarea');
+
+        //prompt for message on mobile
+        if ($('body').hasClass('mobile') && 0 === textarea.val().length) {
+            textarea.val(prompt(textarea.prop('placeholder')));
+        }
+
         if (textarea.val().length > 0) {
             Communicator.sendMessage(textarea.val(), this.getWaveId(), this.getParentId());
         }

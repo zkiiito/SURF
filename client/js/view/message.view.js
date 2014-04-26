@@ -89,7 +89,13 @@ var MessageView = Backbone.View.extend({
 
         formView = new MessageReplyFormView({model: this.model});
         formView.render();
-        formView.show(this.$el);
+
+        //do not show reply form on mobile
+        if ($('body').hasClass('mobile')) {
+            formView.$el.find('form').submit();
+        } else {
+            formView.show(this.$el);
+        }
 
         return false;
     },

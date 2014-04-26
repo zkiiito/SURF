@@ -26,11 +26,11 @@
     <div class="wavetop">
         <h2 class="wave-title">{{ title }}</h2>
         <p class="heads">
-            <p class="offline-list">+<span class="count">19</span> offline</p>
+            <p class="offline-list">+<span class="count">19</span><span class="mhide"> offline</span></p>
         </p>
         <div class="buttons">
             <a class="button gounread R" href="#">Next unread</a>
-            <a class="button editwave R" href="#">Edit</a>
+            <a class="button editwave R mhide" href="#">Edit</a>
             <a class="button readall R" href="#">Read all</a>
             <a class="button quit R" href="#">Leave conversation</a>
         </div>
@@ -46,8 +46,9 @@
 <script id="wavereplyform_view" type="text/html">
 <div class="notification replyform">
     <form class="add-message" method="post">
-        <textarea name="message" placeholder="New message" class="R"></textarea>
-        <p class="inline-help"><button type="submit" class="button sendmsg R">Save message</button> <span class="R">Press Return to send, Shift-Return to break line.</span></p>
+        <textarea name="message" placeholder="New message" class="R mhide"></textarea>
+        <p class="inline-help mhide"><button type="submit" class="button sendmsg R">Save message</button> <span class="R hint">Press Return to send, Shift-Return to break line.</span></p>
+        <p class="inline-help mshow"><button type="submit" class="button sendmsg"><span class="R">New message</span> &darr;</a></button></p>
     </form>
 </div>
 </script>
@@ -57,7 +58,7 @@
     <p><a class="button threadend cancel" href=""><span class="R">Cancel</span> &uarr;</a></p>
     <form class="add-message threadend" method="post">
         <textarea name="message" placeholder="Reply to {{ user.name }}'s message" class="R"></textarea>
-        <p class="inline-help"><button type="submit" class="button sendmsg R">Save message</button> <span class="R">Press Return to send, Shift-Return to break line.</span></p>
+        <p class="inline-help"><button type="submit" class="button sendmsg R">Save message</button> <span class="R hint">Press Return to send, Shift-Return to break line.</span></p>
     </form>
 </div>
 </script>
@@ -182,7 +183,7 @@
     <span id="currentuser"></span>
     <!--a class="button" href="#" onclick="return false;">Ismerőseim</a-->
     <a class="button edituser R" href="#">Edit profile</a>
-    <a class="button R" href="/logout">Log out</a>
+    <a class="button R mhide" href="/logout">Log out</a>
   </div>
 </div>
 <div id="wave-list"></div>

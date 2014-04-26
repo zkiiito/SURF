@@ -21,6 +21,20 @@ body {
   font-style: normal;
 }
 
+/* show only on mobile */
+.mshow {
+    display: none;
+}
+
+body.mobile .mshow {
+    display: initial;
+}
+
+/* hide on mobile */
+body.mobile .mhide {
+    display: none;
+}
+
 table, td {
   width: 100%;
 }
@@ -86,6 +100,10 @@ a:hover {
   z-index: 4;
 }
 
+body.mobile #header {
+    height: 2em;
+}
+
 #header h1 {
   display: none;
 }
@@ -101,10 +119,18 @@ a:hover {
   margin-left: 0.2em;
 }
 
+body.mobile .addwave {
+    margin-top: 0.1em;
+}
+
 #usermenu {
   margin-top: 1.7em;
   float: right;
   margin-right: 0.7em;
+}
+
+body.mobile #usermenu {
+    margin-top: 0.1em;
 }
 
 #usermenu p {
@@ -128,8 +154,12 @@ a:hover {
   top: 5em;
   bottom: 2em;
   width: 20%;
-  overflow: auto;
+  overflow: hidden;
   z-index: 3;
+}
+
+body.mobile #wave-list {
+    top: 2em;
 }
 
 .waveitem {
@@ -199,6 +229,10 @@ a:hover {
   box-shadow: -0.5em -0.5em 2em 0 #aaa;
 }
 
+body.mobile .wavetop {
+    top: 2em;
+}
+
 .wavetop h2 {
   font-size: 1.8em;
   float: left;
@@ -256,6 +290,10 @@ a:hover {
   left: 20%;
   background:#eee;
   font-size: 0.8em;
+}
+
+body.mobile .waves-container {
+    top: 7.2em;
 }
 
 .messages {

@@ -45,6 +45,15 @@ var SurfAppView = Backbone.View.extend({
             }
         });
 
+        $(window).resize(function(e) {
+            if ($(window).width() < 1000) {
+                $('body').addClass('mobile');
+            } else {
+                $('body').removeClass('mobile');
+                //TODO: hide open reply forms
+            }
+        }).trigger('resize');
+
         return this;
     },
 
