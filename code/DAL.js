@@ -2,7 +2,8 @@ var _ = require('underscore'),
     mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     redis = require('redis-url'),
-    async = require('async');
+    async = require('async'),
+    net = require('net');
 
 var UserSchema = new Schema({
     name: {type: String, trim: true},
@@ -198,8 +199,18 @@ var DAL = {
                 DAL.getLastMessagesForUserInWave(user, wave, callback_async_map);
             }, function(err, results) {
                 results = _.flatten(results);
-                var endTime2 = new Date().getTime();
-                console.log('QUERY LastMessagesForUser: msg query in ' + (endTime2 - startTime));
+                var allTime = new Date().getTime() - startTime,
+                    socket;
+
+                //heroku
+                if (process.env.HOSTEDGRAPHITE_APIKEY) {
+                    socket = net.createConnection(2003, "carbon.hostedgraphite.com", function() {
+                        socket.write(process.env.HOSTEDGRAPHITE_APIKEY + '.lastmessagesforuser.time ' + allTime + '\n');
+                        socket.end();
+                    });
+                }
+
+                console.log('QUERY LastMessagesForUser: msg query in ' + allTime);
                 console.log('QUERY LastMessagesForUser: msgs: ' + results.length);
                 callback(results);
             });
