@@ -1,5 +1,6 @@
 /*global UserCollection */
-var _ = require('underscore'),
+var crypto = require('crypto'),
+    _ = require('underscore'),
     Backbone =  require('backbone'),
     MessageCollection = require('./Message').Collection,
     DAL = require('../DAL');
@@ -34,7 +35,7 @@ var User = Backbone.Model.extend({
         });
 
         this.socket.emit('init', {
-            me: this.toJSON(),
+            me: this.toSelfJSON(),
             users: friends,
             waves: this.waves,
             messages: new MessageCollection().reset(messages)
@@ -95,7 +96,7 @@ var User = Backbone.Model.extend({
             this.save();
             this.notifyFriends();
             this.send('updateUser', {
-                user: this.toJSON()
+                user: this.toSelfJSON()
             });
         }
     },
@@ -128,6 +129,15 @@ var User = Backbone.Model.extend({
 
         json.email = emailParts[0].substr(0, 2) + '..@' + emailParts[1];
         return _.pick(json, 'id', '_id', 'name', 'avatar', 'status', 'email');
+    },
+
+    toSelfJSON: function() {
+        var json = this.toJSON(),
+            emailMD5 = crypto.createHash('md5').update(json.email).digest('hex');
+
+        _.extend(json, {emailMD5: emailMD5});
+
+        return json;
     }
 
 

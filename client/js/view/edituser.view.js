@@ -24,7 +24,7 @@ var EditUserView = Backbone.View.extend({
 
         this.$el.find('div.avatar').remove();
 
-        var gravatarUrl = 'https://secure.gravatar.com/avatar/' + CryptoJS.MD5(this.model.get('email')).toString() + '?s=80&d=monsterid';
+        var gravatarUrl = 'https://secure.gravatar.com/avatar/' + this.model.get('emailMD5') + '?s=80&d=monsterid';
 
         if (this.model.get('googleAvatar')) {
             this.addAvatarOption(this.model.get('googleAvatar'));
