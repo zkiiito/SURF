@@ -21,20 +21,6 @@ body {
   font-style: normal;
 }
 
-/* show only on mobile */
-.mshow {
-    display: none;
-}
-
-body.mobile .mshow {
-    display: initial;
-}
-
-/* hide on mobile */
-body.mobile .mhide {
-    display: none;
-}
-
 table, td {
   width: 100%;
 }
@@ -100,8 +86,10 @@ a:hover {
   z-index: 4;
 }
 
-body.mobile #header {
-    height: 2em;
+@media (max-width: 999px) {
+    #header {
+        height: 2em;
+    }
 }
 
 #header h1 {
@@ -119,8 +107,10 @@ body.mobile #header {
   margin-left: 0.2em;
 }
 
-body.mobile .addwave {
-    margin-top: 0.1em;
+@media (max-width: 999px) {
+    .addwave {
+        margin-top: 0.1em;
+    }
 }
 
 #usermenu {
@@ -129,8 +119,10 @@ body.mobile .addwave {
   margin-right: 0.7em;
 }
 
-body.mobile #usermenu {
-    margin-top: 0.1em;
+@media (max-width: 999px) {
+    #usermenu {
+        margin-top: 0.1em;
+    }
 }
 
 #usermenu p {
@@ -158,8 +150,10 @@ body.mobile #usermenu {
   z-index: 3;
 }
 
-body.mobile #wave-list {
-    top: 2em;
+@media (max-width: 999px) {
+    #wave-list {
+        top: 2em;
+    }
 }
 
 .waveitem {
@@ -229,8 +223,10 @@ body.mobile #wave-list {
   box-shadow: -0.5em -0.5em 2em 0 #aaa;
 }
 
-body.mobile .wavetop {
-    top: 2em;
+@media (max-width: 999px) {
+    .wavetop {
+        top: 2em;
+    }
 }
 
 .wavetop h2 {
@@ -292,8 +288,10 @@ body.mobile .wavetop {
   font-size: 0.8em;
 }
 
-body.mobile .waves-container {
-    top: 7.2em;
+@media (max-width: 999px) {
+    .waves-container {
+        top: 7.2em;
+    }
 }
 
 .messages {
@@ -475,6 +473,12 @@ label {
   text-align: right;
 }
 
+@media (max-width: 999px) {
+    label {
+        width: auto;
+    }
+}
+
 form div {
   overflow: auto;
   margin-top: 0.8em;
@@ -536,6 +540,16 @@ form div.right {
   line-height: 1.5em;
 }
 
+@media (max-width: 999px) {
+    .overlay form div.right {
+        width: auto;
+    }
+
+    .overlay .normal {
+        width: auto;
+    }
+}
+
 p.inline-help  {
   margin-top: 0.2em;
   font-size: 0.8em;
@@ -569,6 +583,14 @@ textarea {
   -moz-box-shadow: 0 0 2em 0 #333;
   -webkit-box-shadow: 0 0 2em 0 #333;
   box-shadow: 0 0 2em 0 #333;
+}
+
+@media (max-width: 999px) {
+    .overlay {
+        width: auto;
+        max-width: 40em;
+        top: 2em;
+    }
 }
 
 .overlay-scrollable {
@@ -748,4 +770,19 @@ textarea {
 #edituser div.avatar label {
     text-align: center;
     width: auto;
+}
+
+/* show only on mobile */
+.mshow {
+    display: none;
+}
+
+@media (max-width: 999px) {
+    .mshow {
+        display: initial;
+    }
+
+    .mhide {
+        display: none;
+    }
 }
