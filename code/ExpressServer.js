@@ -36,7 +36,7 @@ var auth = everyauth.google
     .appSecret(process.env.GOOGLE_APPSECRET)
     .myHostname(process.env.HOSTNAME)//https miatt, configban kell megadni.
     .scope('https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email')
-    .findOrCreateUser( function (sess, accessToken, extra, googleUser) {
+    .findOrCreateUser(function (sess, accessToken, extra, googleUser) {
         googleUser.refreshToken = extra.refresh_token;
         googleUser.expiresIn = extra.expires_in;
         //?
@@ -99,6 +99,7 @@ if (process.env.TESTMODE) {
 }
 
 var app = express();
+app.disable('x-powered-by');
 var clientDir = __dirname.replace('code', 'client');
 
 app.configure(function() {
@@ -109,10 +110,15 @@ app.configure(function() {
         dumpExceptions: true,
         showStack: true
     }));
-    app.use(express.cookieParser('site secret'));
+    app.use(express.cookieParser('surfCookieParserSecret9'));
     app.use(express.session({
         key: 'surf.sid',
-        store: SessionStore
+        store: SessionStore,
+        secret: 'surfSessionSecret9',
+        cookie: {
+            httpOnly: true
+            //secure: true //csak elesben kell
+        }
     }));
     app.use(app.router);
     app.use('/css', express.static(__dirname + '/../client/css'));
