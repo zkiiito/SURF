@@ -377,6 +377,7 @@ a:hover {
 
 .message-text {
   line-height: 1.5em;
+  word-break: break-all;
 }
 
 .author {
