@@ -3,7 +3,8 @@ var _ = require('underscore'),
     Schema = mongoose.Schema,
     redis = require('redis-url'),
     async = require('async'),
-    net = require('net');
+    net = require('net'),
+    Config = require('./Config');
 
 var UserSchema = new Schema({
     name: {type: String, trim: true},
@@ -43,8 +44,8 @@ var WaveInviteModel = mongoose.model('WaveInviteModel', WaveInviteSchema);
 
 var DAL = {
     init: function(server) {
-        mongoose.connect(process.env.MONGOLAB_URI);
-        redis = redis.connect(process.env.REDISCLOUD_URL);
+        mongoose.connect(Config.mongoUrl);
+        redis = redis.connect(Config.redisUrl);
 
         //mongoose.set('debug', true);
 
@@ -203,9 +204,9 @@ var DAL = {
                     socket;
 
                 //heroku
-                if (process.env.HOSTEDGRAPHITE_APIKEY) {
+                if (Config.graphiteKey) {
                     socket = net.createConnection(2003, "carbon.hostedgraphite.com", function() {
-                        socket.write(process.env.HOSTEDGRAPHITE_APIKEY + '.lastmessagesforuser.time ' + allTime + '\n');
+                        socket.write(Config.graphiteKey + '.lastmessagesforuser.time ' + allTime + '\n');
                         socket.end();
                     });
                 }

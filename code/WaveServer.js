@@ -2,7 +2,8 @@ var io = require('socket.io'),
     DAL = require('./DAL'),
     SessionStore = require('./SessionStore'),
     ExpressServer = require('./ExpressServer'),
-    Model = require('./Model');
+    Model = require('./Model'),
+    Config = require('./Config');
 
 var WaveServer = {
     socket: null,
@@ -14,9 +15,9 @@ var WaveServer = {
     },
 
     startServer: function() {
-        var port = process.env.PORT || 8000,
-            that = this;
-        ExpressServer.listen(port);
+        var that = this;
+
+        ExpressServer.listen(Config.port);
 
         this.socket = io.listen(ExpressServer);
 
@@ -49,19 +50,12 @@ var WaveServer = {
             });
         });
 
-        //HEROKU
-        if (process.env.PORT) {
-            this.socket.configure(function () {
-                //socket.set("transports", ["xhr-polling"]);
-                //socket.set("polling duration", 10);
-
-                that.socket.enable('browser client minification');  // send minified client
-                that.socket.enable('browser client etag');          // apply etag caching logic based on version number
-                that.socket.enable('browser client gzip');          // gzip the file
-                that.socket.set('log level', 1);                    // reduce logging
-            });
-        }
-        this.socket.set('log level', 1);
+        this.socket.configure(function () {
+            that.socket.enable('browser client minification');  // send minified client
+            that.socket.enable('browser client etag');          // apply etag caching logic based on version number
+            that.socket.enable('browser client gzip');          // gzip the file
+            that.socket.set('log level', 1);                    // reduce logging
+        });
 
         this.socket.sockets.on('connection', function(client) {
             //var userData = client.handshake.session['auth']['google']['user'];

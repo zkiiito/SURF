@@ -1,5 +1,6 @@
 var fs = require('fs'),
-    UglifyJS = require("uglify-js");
+    UglifyJS = require("uglify-js"),
+    Config = require('./Config');
 
 var Minify = {
     readFiles: function(dir, done) {
@@ -44,7 +45,7 @@ var Minify = {
         }
 
         this.readFiles(workDir, function(err, fileData) {
-            if (process.env.TESTMODE) {
+            if (Config.testMode) {
                 fs.writeFileSync(minFile, fileData);
             } else {
                 fileData = UglifyJS.minify(fileData, {fromString: true});

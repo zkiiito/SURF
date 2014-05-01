@@ -2,7 +2,8 @@ var express = require('express'),
     http = require('http'),
     everyauth = require('everyauth'),
     DAL = require('./DAL'),
-    SessionStore = require('./SessionStore');
+    SessionStore = require('./SessionStore'),
+    Config = require('./Config');
 
 //everyauth.debug = true;
 //?
@@ -32,9 +33,9 @@ everyauth.everymodule
 //?
 var usersByGoogleId = {};
 var auth = everyauth.google
-    .appId(process.env.GOOGLE_APPID)
-    .appSecret(process.env.GOOGLE_APPSECRET)
-    .myHostname(process.env.HOSTNAME)//https miatt, configban kell megadni.
+    .appId(Config.googleId)
+    .appSecret(Config.googleSecret)
+    .myHostname(Config.hostName)//https miatt, configban kell megadni.
     .scope('https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email')
     .findOrCreateUser(function (sess, accessToken, extra, googleUser) {
         googleUser.refreshToken = extra.refresh_token;
@@ -49,11 +50,11 @@ auth.moreAuthQueryParams.access_type = 'online';
 auth.moreAuthQueryParams.approval_prompt = 'auto';
 
 var fbAuth = everyauth.facebook
-    .appId(process.env.FACEBOOK_APPID)
-    .appSecret(process.env.FACEBOOK_APPSECRET)
+    .appId(Config.facebookId)
+    .appSecret(Config.facebookSecret)
     .scope('email')                        // Defaults to undefined
     .fields('id,name,email,picture')       // Controls the returned fields. Defaults to undefined
-    .myHostname(process.env.HOSTNAME)//https miatt, configban kell megadni.
+    .myHostname(Config.hostName)//https miatt, configban kell megadni.
     .handleAuthCallbackError(function(req, res) {
       // If a user denies your app, Facebook will redirect the user to
       // /auth/facebook/callback?error_reason=user_denied&error=access_denied&error_description=The+user+denied+your+request.
@@ -68,7 +69,7 @@ var fbAuth = everyauth.facebook
     })
     .redirectPath('/');
 
-if (process.env.TESTMODE) {
+if (Config.testMode) {
     everyauth.password
         .getLoginPath('/login')
         .postLoginPath('/login')
@@ -147,7 +148,7 @@ app.get('/', function(req, res) {
     res.sendfile(clientDir + '/index.html');
 });
 
-if (process.env.TESTMODE) {
+if (Config.testMode) {
     app.get('/loginTest', function(req, res) {
         console.log(req.session);
         res.sendfile(clientDir + '/test/login.html');

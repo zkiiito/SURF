@@ -30,7 +30,7 @@
     "npm": "1.4.x"
   },
   "scripts": {
-    "start": "node WaveChat.js"
+    "start": "node Surf.js"
   },
   "devDependencies": {
     "grunt": "~0.4.4",
