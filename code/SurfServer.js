@@ -9,6 +9,7 @@ var io = require('socket.io'),
     WaveCollection = require('./model/Wave').Collection,
     Config = require('./Config');
 
+/** @namespace */
 var SurfServer = {
     socket: null,
 
@@ -86,6 +87,10 @@ var SurfServer = {
         });
     },
 
+    /**
+     * @param {Object} session
+     * @returns {User}
+     */
     getUserByAuth: function(session) {
         var sessionUser = session.passport.user,
             authMode = sessionUser.provider,
@@ -123,6 +128,9 @@ var SurfServer = {
         return user;
     },
 
+    /**
+     * @param client
+     */
     authClient: function(client) {
         var that = this;
         //torolt funkciok a regibol: nick, topic, part, invite, joinchan
