@@ -138,8 +138,10 @@ var Wave = Backbone.Model.extend({
     },
 
     getPreviousMessages: function() {
-        var maxRootId = this.messages.at(0).id;
-        Communicator.getMessages(this, null, maxRootId);
+        if (this.messages.length) {
+            var maxRootId = this.messages.at(0).id;
+            Communicator.getMessages(this, null, maxRootId);
+        }
     },
 
     readAllMessages: function() {

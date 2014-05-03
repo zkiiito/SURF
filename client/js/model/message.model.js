@@ -10,16 +10,18 @@ var Message = Backbone.Model.extend({
     },
     idAttribute: '_id',
     initialize: function() {
-        this.messages = new MessageCollection(); //nem itt kene
+        this.messages = null;
         this.user = app.model.users.getUser(this.get('userId'));
         this.formatMessage();
         if (!this.isNew()) {
             this.set('unread', this.get('unread') && app.currentUser !== this.get('userId'));
         }
     },
+
     addReply: function(message) {
         if (null === this.messages) {
             this.messages = new MessageCollection();
+            this.trigger('messagesCreated');
         }
         this.messages.add(message);
     },
@@ -96,7 +98,7 @@ var Message = Backbone.Model.extend({
         }
 
         //megnezzuk a gyerekeit
-        var msgs = this.messages.toArray(),
+        var msgs = this.messages ? this.messages.toArray() : [],
             nextUnread = null,
             i;
 

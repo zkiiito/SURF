@@ -3,7 +3,9 @@ var MessageView = Backbone.View.extend({
     initialize: function() {
         this.hasReplyForm = false;
         _.bindAll(this, 'addMessage', 'readMessage', 'replyMessage', 'onReadMessage', 'scrollTo', 'changeUserName');
-        this.model.messages.bind('add', this.addMessage);//ezt nem itt kene, hanem amikor letrejon ott a messages
+        this.model.bind('messagesCreated', function() {
+            this.model.messages.bind('add', this.addMessage);
+        }, this);
         this.model.bind('change:unread', this.onReadMessage);
         this.model.bind('change:scrolled', this.scrollTo);
         this.model.user.bind('change:name', this.changeUserName);
