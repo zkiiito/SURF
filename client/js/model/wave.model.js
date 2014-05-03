@@ -17,17 +17,20 @@ var Wave = Backbone.Model.extend({
 
     addMessage: function(message) {
         if (null !== message.get('parentId')) {
-            var parentMsg = this.messages.get(message.get('parentId'));
+            var parentMsg = this.messages.get(message.get('parentId')),
+                minParentId,
+                maxRootId;
+
             if (parentMsg) {
                 parentMsg.addReply(message);
                 this.messages.add(message);
             } else {
                 if (this.messages.length > 0) { //bugos adatszerkezetnel elofordulhat
-                    var minParentId = message.get('parentId'),
-                        maxRootId = this.messages.at(0).id;
+                    minParentId = message.get('parentId');
+                    maxRootId = this.messages.at(0).id;
                     Communicator.getMessages(this, minParentId, maxRootId);
                 } else {
-                    console.log(message);
+                    //console.log(message);
                 }
                 return false;
             }
@@ -92,9 +95,8 @@ var Wave = Backbone.Model.extend({
 
             if (nextUnread) {
                 return nextUnread;
-            } else {
-                minId = currentMessage.getRootId();
             }
+            minId = currentMessage.getRootId();
         }
 
         //ha nincs az aktualis korul, megyunk lefele a fo agon, az osszesben

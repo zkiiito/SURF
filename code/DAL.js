@@ -50,6 +50,10 @@ var DAL = {
         //mongoose.set('debug', true);
 
         UserModel.find().exec(function(err, users) {
+            if (err) {
+                throw err;
+            }
+
             var usersTmp = [];
             _.each(users, function(user) {
                 usersTmp.push({name: user.name,
@@ -66,6 +70,10 @@ var DAL = {
             usersTmp = null;
 
             WaveModel.find().sort('_id').exec(function(err, waves) {
+                if (err) {
+                    throw err;
+                }
+
                 var wavesTmp = [];
                 _.each(waves, function(wave) {
                     wavesTmp.push({title: wave.title, userIds: wave.userIds, _id: wave._id});
@@ -77,18 +85,22 @@ var DAL = {
 
         //temporary fix a sajat unreadokra: ha tobb mint 1000, lenullazzuk
         UserModel.find().exec(function(err, users) {
-            _.each(users, function(user) {
-                redis.keys('unread-' + user._id + '-*', function(err, unreadKeys) {
-                    _.each(unreadKeys, function(key) {
-                        redis.scard(key, function(err, msgcount) {
-                            if (!err && msgcount > 1000) {
-                                console.log('deleteTooMuchUnread: ' + key + ' : ' + msgcount);
-                                redis.del(key);
-                            }
-                        });
+            if (!err) {
+                _.each(users, function (user) {
+                    redis.keys('unread-' + user._id + '-*', function (err, unreadKeys) {
+                        if (!err) {
+                            _.each(unreadKeys, function (key) {
+                                redis.scard(key, function (err, msgcount) {
+                                    if (!err && msgcount > 1000) {
+                                        console.log('deleteTooMuchUnread: ' + key + ' : ' + msgcount);
+                                        redis.del(key);
+                                    }
+                                });
+                            });
+                        }
                     });
                 });
-            });
+            }
         });
     },
 
@@ -142,8 +154,10 @@ var DAL = {
             m.rootId = m._id;
             m.save();
         } else {
-            m.save(function(err, msg) {
-                DAL.calcRootId(m.parentId, [m]);
+            m.save(function(err) {
+                if (!err) {
+                    DAL.calcRootId(m.parentId, [m]);
+                }
             });
         }
 
@@ -192,6 +206,9 @@ var DAL = {
     getLastMessagesForUser: function(user, callback) {
         var startTime = new Date().getTime();
         WaveModel.find().where('_id').in(user.waves.pluck('_id')).exec(function(err, waves) {
+            if (err) {
+                return callback(err);
+            }
             //console.log(waves.length + " waves found");
             var endTime = new Date().getTime();
             console.log('QUERY LastMessagesForUser: wave query in ' + (endTime - startTime));
@@ -199,6 +216,9 @@ var DAL = {
             async.map(waves, function(wave, callback_async_map) {
                 DAL.getLastMessagesForUserInWave(user, wave, callback_async_map);
             }, function(err, results) {
+                if (err) {
+                    return callback(err);
+                }
                 results = _.flatten(results);
                 var allTime = new Date().getTime() - startTime,
                     socket;
@@ -213,7 +233,7 @@ var DAL = {
 
                 console.log('QUERY LastMessagesForUser: msg query in ' + allTime);
                 console.log('QUERY LastMessagesForUser: msgs: ' + results.length);
-                callback(results);
+                callback(null, results);
             });
         });
     },
@@ -311,6 +331,9 @@ var DAL = {
         }
 
         DAL.countMessagesInRange(wave, minRootId, maxRootId, function(err, count) {
+            if (err) {
+                return callback(err);
+            }
             if (count > 10) {
                 callback(null, minRootId);
             } else {
@@ -339,7 +362,7 @@ var DAL = {
         query.exec(function(err, results) {
             var endTime = new Date().getTime();
             console.log('QUERY getNextMinRootIdForWave: ' + wave.id + ' query in ' + (endTime - startTime));
-            if (0 === results.length) {
+            if (err || 0 === results.length) {
                 callback(true);
             } else {
                 callback(null, _.last(results).rootId);
@@ -360,6 +383,9 @@ var DAL = {
             }
 
             query.count(function(err, count) {
+                if (err) {
+                    return callback(err, 0);
+                }
                 var endTime = new Date().getTime();
                 console.log('QUERY countMessagesInRange: query in ' + (endTime - startTime));
                 callback(null, count);

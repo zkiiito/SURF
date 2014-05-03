@@ -2,15 +2,19 @@ var io = require('socket.io'),
     DAL = require('./DAL'),
     SessionStore = require('./SessionStore'),
     ExpressServer = require('./ExpressServer'),
-    Model = require('./Model'),
+    Message = require('./model/Message').Model,
+    User = require('./model/User').Model,
+    UserCollection = require('./model/User').Collection,
+    Wave = require('./model/Wave').Model,
+    WaveCollection = require('./model/Wave').Collection,
     Config = require('./Config');
 
-var WaveServer = {
+var SurfServer = {
     socket: null,
 
     init: function() {
-        this.users = new Model.UserCollection();
-        this.waves = new Model.WaveCollection();
+        this.users = new UserCollection();
+        this.waves = new WaveCollection();
         DAL.init(this);
     },
 
@@ -104,7 +108,7 @@ var WaveServer = {
             return user;
         }
 
-        user = new Model.User();
+        user = new User();
         user.set('name', userData.name);
         user.set(authMode + 'Id', userData.id);
         user.set('email', userData.email);
@@ -130,7 +134,7 @@ var WaveServer = {
         client.on('message', function(data) {
             console.log('message: ' + client.curUser.id);
 
-            var msg = new Model.Message(data),
+            var msg = new Message(data),
                 wave = that.waves.get(msg.get('waveId'));
 
             if (wave && wave.isMember(client.curUser)) {
@@ -146,7 +150,7 @@ var WaveServer = {
         client.on('createWave', function(data) {
             console.log('createWave: ' + client.curUser.id);
 
-            var wave = new Model.Wave(data);
+            var wave = new Wave(data);
             wave.addUser(client.curUser, false);
             wave.save();
             that.waves.add(wave);
@@ -216,4 +220,4 @@ var WaveServer = {
     }
 };
 
-module.exports = WaveServer;
+module.exports = SurfServer;

@@ -24,8 +24,10 @@ var User = Backbone.Model.extend({
     init: function() {
         var self = this;
         this.set({status: 'online'});
-        DAL.getLastMessagesForUser(this, function(msgs) {
-            self.sendInit(msgs);
+        DAL.getLastMessagesForUser(this, function(err, msgs) {
+            if (!err) {
+                self.sendInit(msgs);
+            }
         });
     },
 
@@ -54,7 +56,7 @@ var User = Backbone.Model.extend({
             var uids = wave.get('userIds');
             _.each(uids, function(item) {
                 if (item !== this.id.toString()) {
-                    var user = require('../WaveServer').users.get(item);
+                    var user = require('../SurfServer').users.get(item);
                     friends.add(user);
                 }
             }, this);
@@ -109,7 +111,7 @@ var User = Backbone.Model.extend({
         var that = this;
         DAL.removeWaveInviteByCode(invite.code, function(err, result) {
             if (!err && result > 0) {
-                var wave = require('../WaveServer').waves.get(invite.waveId);
+                var wave = require('../SurfServer').waves.get(invite.waveId);
                 if (wave && !wave.isMember(that)) {
                     wave.addUser(that, true);
                     wave.save();

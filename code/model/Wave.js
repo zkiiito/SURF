@@ -32,7 +32,7 @@ var Wave = Backbone.Model.extend({
         var newUsers = [];
         _.each(userIds, function(item) {
 
-            var user = require('../WaveServer').users.get(item);
+            var user = require('../SurfServer').users.get(item);
             if (user) {
                 newUsers.push(user);
                 this.addUser(user, false);//itt nem notifyolunk senkit egyenkent, max globalisan
@@ -102,7 +102,9 @@ var Wave = Backbone.Model.extend({
 
     sendOldMessagesToUser: function(user) {
         DAL.getLastMessagesForUserInWave(user, this, function(err, msgs) {
-            user.send('message', {messages: msgs});
+            if (!err) {
+                user.send('message', {messages: msgs});
+            }
         });
     },
 
@@ -111,21 +113,27 @@ var Wave = Backbone.Model.extend({
         //ha olvasatlan jott, es le kell szedni addig
         if (minParentId && maxRootId) {
             DAL.calcRootId(minParentId, [], function(err, minRootId) {
-                DAL.getUnreadIdsForUserInWave(user, wave, function(err, ids) {
-                    DAL.getMessagesForUserInWave(wave, minRootId, maxRootId, ids, function(err, msgs) {
+                if (!err) {
+                    DAL.getUnreadIdsForUserInWave(user, wave, function (err, ids) {
+                        if (!err) {
+                            DAL.getMessagesForUserInWave(wave, minRootId, maxRootId, ids, function (err, msgs) {
+                                if (!err) {
+                                    user.send('message', {messages: msgs});
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        } else {
+            DAL.getMinRootIdForWave(wave, maxRootId, maxRootId, function(err, newMinRootId) {
+                if (!err) {
+                    DAL.getMessagesForUserInWave(wave, newMinRootId, maxRootId, [], function (err, msgs) {
                         if (!err) {
                             user.send('message', {messages: msgs});
                         }
                     });
-                });
-            });
-        } else {
-            DAL.getMinRootIdForWave(wave, maxRootId, maxRootId, function(err, newMinRootId) {
-                DAL.getMessagesForUserInWave(wave, newMinRootId, maxRootId, [], function(err, msgs) {
-                    if (!err) {
-                        user.send('message', {messages: msgs});
-                    }
-                });
+                }
             });
         }
     },
@@ -171,7 +179,7 @@ var Wave = Backbone.Model.extend({
 
             //kikuldeni a wave tartalmat is, amibe belepett
             _.each(newIds, function(userId) {
-                var user = require('../WaveServer').users.get(userId);
+                var user = require('../SurfServer').users.get(userId);
                 this.sendOldMessagesToUser(user);
             }, this);
         }

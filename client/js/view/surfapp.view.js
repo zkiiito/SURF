@@ -45,7 +45,7 @@ var SurfAppView = Backbone.View.extend({
             }
         });
 
-        $(window).resize(function(e) {
+        $(window).resize(function() {
             if ($(window).width() < 1000) {
                 $('body').addClass('mobile');
             } else {

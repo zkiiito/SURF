@@ -5,6 +5,32 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-concat');
 
+    var jsFiles = [
+        "node_modules/underscore/underscore.js",
+        "node_modules/backbone/backbone.js",
+        "node_modules/R.js/R.js",
+        "client/js/i18n.js",
+        "client/js/jquery.tokeninput.js",
+        "client/js/date.format.js",
+        "client/js/phpjs.js",
+        "client/js/model/user.model.js",
+        "client/js/model/wave.model.js",
+        "client/js/model/message.model.js",
+        "client/js/model/surfapp.model.js",
+        "client/js/view/user.view.js",
+        "client/js/view/wavelist.view.js",
+        "client/js/view/wave.view.js",
+        "client/js/view/message.view.js",
+        "client/js/view/wavereplyform.view.js",
+        "client/js/view/messagereplyform.view.js",
+        "client/js/view/editwave.view.js",
+        "client/js/view/edituser.view.js",
+        "client/js/view/disconnected.view.js",
+        "client/js/view/surfapp.view.js",
+        "client/js/communicator.js",
+        "client/js/surf.js"
+    ];
+
     grunt.initConfig({
         jslint: {
             server: {
@@ -55,61 +81,13 @@ module.exports = function (grunt) {
         uglify: {
             prod: {
                 files: {
-                    'client/js/surf.min.js': [
-                        "node_modules/underscore/underscore.js",
-                        "node_modules/backbone/backbone.js",
-                        "node_modules/R.js/R.js",
-                        "client/js/i18n.js",
-                        "client/js/jquery.tokeninput.js",
-                        "client/js/date.format.js",
-                        "client/js/phpjs.js",
-                        "client/js/model/user.model.js",
-                        "client/js/model/wave.model.js",
-                        "client/js/model/message.model.js",
-                        "client/js/model/surfapp.model.js",
-                        "client/js/view/user.view.js",
-                        "client/js/view/wavelist.view.js",
-                        "client/js/view/wave.view.js",
-                        "client/js/view/message.view.js",
-                        "client/js/view/wavereplyform.view.js",
-                        "client/js/view/messagereplyform.view.js",
-                        "client/js/view/editwave.view.js",
-                        "client/js/view/edituser.view.js",
-                        "client/js/view/disconnected.view.js",
-                        "client/js/view/surfapp.view.js",
-                        "client/js/communicator.js",
-                        "client/js/surf.js"
-                    ]
+                    'client/js/surf.min.js': jsFiles
                 }
             }
         },
         concat: {
             dev: {
-                src: [
-                    "node_modules/underscore/underscore.js",
-                    "node_modules/backbone/backbone.js",
-                    "node_modules/R.js/R.js",
-                    "client/js/i18n.js",
-                    "client/js/jquery.tokeninput.js",
-                    "client/js/date.format.js",
-                    "client/js/phpjs.js",
-                    "client/js/model/user.model.js",
-                    "client/js/model/wave.model.js",
-                    "client/js/model/message.model.js",
-                    "client/js/model/surfapp.model.js",
-                    "client/js/view/user.view.js",
-                    "client/js/view/wavelist.view.js",
-                    "client/js/view/wave.view.js",
-                    "client/js/view/message.view.js",
-                    "client/js/view/wavereplyform.view.js",
-                    "client/js/view/messagereplyform.view.js",
-                    "client/js/view/editwave.view.js",
-                    "client/js/view/edituser.view.js",
-                    "client/js/view/disconnected.view.js",
-                    "client/js/view/surfapp.view.js",
-                    "client/js/communicator.js",
-                    "client/js/surf.js"
-                ],
+                src: jsFiles,
                 dest: 'client/js/surf.min.js'
             }
         }

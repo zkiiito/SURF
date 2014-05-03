@@ -1,4 +1,4 @@
-/*global Communicator */
+/*global Communicator, prompt */
 var WaveReplyFormView = Backbone.View.extend({
     initialize: function() {
         _.bindAll(this, 'submitForm', 'handleKeydown');

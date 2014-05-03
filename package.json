@@ -1,6 +1,6 @@
 {
   "name": "surf",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "author": {
     "name": "zooli white",
     "email": "zkiiito@gmail.com"
@@ -11,6 +11,11 @@
       "email": "schreiner.csaba@gmail.com"
     }
   ],
+  "description": "Surf is a threaded instant messaging application, like Google Wave used to be.",
+  "repository": {
+      "type": "git",
+      "url": "https://bitbucket.org/zkiiito/surf.git"
+  },
   "dependencies": {
     "socket.io": "0.9.x",
     "underscore": "1.6.x",

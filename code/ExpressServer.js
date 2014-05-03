@@ -61,7 +61,7 @@ if (Config.testMode) {
                     id: parseInt(username, 10),
                     email: 'test' + username + '@wavesurf.com',
                     name: 'Surf Tester ' + parseInt(username, 10).toString(),
-                    picture: 'http://www.jigzone.com/p/jz/isA/TreeFrog.jpg',
+                    picture: 'http://www.jigzone.com/p/jz/isA/TreeFrog.jpg'
                 }
             };
 

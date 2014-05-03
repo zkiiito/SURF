@@ -1,5 +1,5 @@
 var Minify = require('./code/Minify'),
-    WaveServer = require('./code/WaveServer'),
+    SurfServer = require('./code/SurfServer'),
     Config = require('./code/Config');
 
 if (Config.nodetimeKey) {
@@ -10,4 +10,4 @@ if (Config.nodetimeKey) {
 }
 
 Minify.minify();
-WaveServer.init();
+SurfServer.init();

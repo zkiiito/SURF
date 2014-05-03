@@ -98,7 +98,7 @@ var Message = Backbone.Model.extend({
         //megnezzuk a gyerekeit
         var msgs = this.messages.toArray(),
             nextUnread = null,
-            i = 0;
+            i;
 
         for (i = 0; i < msgs.length; i++) {
             nextUnread = msgs[i].getNextUnread(minId, true);
@@ -118,9 +118,8 @@ var Message = Backbone.Model.extend({
     getRootId: function() {
         if (this.get('parentId')) {
             return app.model.messages.get(this.get('parentId')).getRootId();
-        } else {
-            return this.getSortableId();
         }
+        return this.getSortableId();
     },
 
     getWave: function() {
