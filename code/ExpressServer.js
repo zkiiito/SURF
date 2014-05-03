@@ -20,6 +20,7 @@ passport.deserializeUser(function(obj, done) {
     done(null, obj);
 });
 
+/*jslint unparam: true*/
 passport.use(new GoogleStrategy({
         clientID: Config.googleId,
         clientSecret: Config.googleSecret,
@@ -69,6 +70,7 @@ if (Config.testMode) {
         }
     ));
 }
+/*jslint unparam: false*/
 
 var app = express();
 app.disable('x-powered-by');

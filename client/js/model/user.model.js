@@ -1,4 +1,4 @@
-/*global Communicator */
+/*global Communicator, app, randomName */
 var User = Backbone.Model.extend({
     defaults: {
         name: '',
@@ -13,6 +13,20 @@ var User = Backbone.Model.extend({
                 this.set(idx, el);
             }
         }, this);
+    },
+
+    chatInPrivateWaveWithUser: function(user) {
+        if (user !== this) {
+            var privateWaves = app.model.waves.filter(function (wave) {
+                return 2 === wave.users.length && wave.users.contains(user) && wave.users.contains(this);
+            }, this);
+
+            if (privateWaves.length) {
+                document.location = '#wave/' + privateWaves[0].id;
+            } else {
+                Communicator.createWave(randomName() + 'Room', [user.id]);
+            }
+        }
     }
 });
 

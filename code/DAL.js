@@ -283,7 +283,6 @@ var DAL = {
             } else {
                 console.log('QUERY getMinUnreadRootIdForUserInWave: ' + wave.id + ' count: ' + results.length);
 
-                //TODO: ha tul sok van, akkor hogyan mit???
                 var res, endTime, startTime = new Date().getTime();
 
                 MessageModel.findOne({waveId: wave.id})

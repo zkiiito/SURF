@@ -1,7 +1,11 @@
 var UserView = Backbone.View.extend({
     initialize: function() {
-        _.bindAll(this, 'render', 'update');
+        _.bindAll(this, 'render', 'update', 'chatInPrivate');
         this.model.bind('change', this.update);
+    },
+
+    events: {
+        'dblclick': 'chatInPrivate'
     },
 
     render: function() {
@@ -21,5 +25,9 @@ var UserView = Backbone.View.extend({
         }
 
         return this;
+    },
+
+    chatInPrivate: function() {
+        app.model.users.get(app.currentUser).chatInPrivateWaveWithUser(this.model);
     }
 });

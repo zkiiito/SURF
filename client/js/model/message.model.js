@@ -43,7 +43,7 @@ var Message = Backbone.Model.extend({
         /*global strip_tags, nl2br, wordwrap */
         var parts, i, c, matched, url, urlText,
             msg = this.get('message'),
-            urlRegex = /((https?:\/\/|www\.)[^\s"]+)/g; //TODO: improve
+            urlRegex = /((https?:\/\/|www\.)[^\s"]+)/g; //improve it!
 
         msg = strip_tags(msg);
         parts = msg.split(' ');

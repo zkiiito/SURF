@@ -2,6 +2,7 @@ var fs = require('fs'),
     UglifyJS = require("uglify-js"),
     Config = require('./Config');
 
+/*jslint stupid: true*/
 var Minify = {
     readFiles: function(dir, done) {
         var i, l, contents = '', files = [
@@ -12,6 +13,7 @@ var Minify = {
             "jquery.tokeninput.js",
             "date.format.js",
             "phpjs.js",
+            "randomname.js",
             "model/user.model.js",
             "model/wave.model.js",
             "model/message.model.js",
@@ -45,6 +47,10 @@ var Minify = {
         }
 
         this.readFiles(workDir, function(err, fileData) {
+            if (err) {
+                throw err;
+            }
+
             if (Config.testMode) {
                 fs.writeFileSync(minFile, fileData);
             } else {
@@ -54,5 +60,5 @@ var Minify = {
         });
     }
 };
-
+/*jslint stupid: false*/
 module.exports = Minify;

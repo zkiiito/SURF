@@ -1,4 +1,5 @@
 /*global R*/
+/*jslint newcap: true*/
 var i18n = {
     init: function() {
         R.registerLocale('hu-HU', {
@@ -39,8 +40,8 @@ var i18n = {
     },
 
     applyR: function(context) {
-        $('.R', context).each(function(idx, el) {
-            el = $(el);
+        $('.R', context).each(function() {
+            var el = $(this);
             //console.log(el.html() + ' ' + R(el.html()));
             if (el.prop('placeholder')) {
                 el.prop('placeholder', R(el.prop('placeholder')));
@@ -68,5 +69,6 @@ var i18n = {
         return R(txt);
     }
 };
+/*jslint newcap: false*/
 i18n.init();
 var __ = i18n.__;

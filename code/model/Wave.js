@@ -67,7 +67,7 @@ var Wave = Backbone.Model.extend({
         return false;
     },
 
-    //TODO: atszervezni multiuserre vagy nem - tobb msg
+    //if multi-login/user or multiple servers, need to change this
     notifyUsersOfNewUser: function(newuser) {
         this.users.each(function(user) {
             //csak ha be van lepve, es nem ismerte eddig
@@ -159,8 +159,7 @@ var Wave = Backbone.Model.extend({
             this.save();
             this.notifyUsers();
         }
-        //TODO: ha ures a wave, torolni osszes msgt + wavet
-        //vagy, archive flag rajuk.
+        //keeping empty waves with messages
     },
 
     createInviteCode: function(user) {

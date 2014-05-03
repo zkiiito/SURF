@@ -32,7 +32,7 @@ var SurfServer = {
 
             data.cookie = require('cookie').parse(data.headers.cookie);
 
-            if (typeof data.cookie['surf.sid'] === "undefined") {
+            if (data.cookie['surf.sid'] === undefined) {
                 return accept('Session cookie invalid.', false);
             }
 

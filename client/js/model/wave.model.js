@@ -29,9 +29,12 @@ var Wave = Backbone.Model.extend({
                     minParentId = message.get('parentId');
                     maxRootId = this.messages.at(0).id;
                     Communicator.getMessages(this, minParentId, maxRootId);
-                } else {
-                    //console.log(message);
                 }
+                /*
+                else {
+                    console.log(message);
+                }
+                */
                 return false;
             }
         } else {
@@ -68,10 +71,13 @@ var Wave = Backbone.Model.extend({
     update: function(data) {
         this.set('title', data.title);
 
-        var userIds = this.get('userIds');
+        var userIds = this.get('userIds'),
+            deletedIds,
+            newIds;
+
         if (data.userIds !== userIds) {
-            var newIds = _.difference(data.userIds, userIds),
-                deletedIds = _.difference(userIds, data.userIds);
+            newIds = _.difference(data.userIds, userIds);
+            deletedIds = _.difference(userIds, data.userIds);
             this.users.remove(deletedIds);
             this.addUsers(newIds);
             this.set('userIds', data.userIds);
@@ -153,7 +159,6 @@ var Wave = Backbone.Model.extend({
         app.currentWave = null;
         app.model.waves.remove(this);
         app.showWave(null);
-        //TODO: messageket torolni az appbol!
     }
 });
 

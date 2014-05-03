@@ -50,7 +50,8 @@ var SurfAppView = Backbone.View.extend({
                 $('body').addClass('mobile');
             } else {
                 $('body').removeClass('mobile');
-                //TODO: hide open reply forms
+                //maybe hide open reply forms
+                //change to real mobile-detection
             }
         }).trigger('resize');
 

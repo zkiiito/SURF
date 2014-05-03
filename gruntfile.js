@@ -13,6 +13,7 @@ module.exports = function (grunt) {
         "client/js/jquery.tokeninput.js",
         "client/js/date.format.js",
         "client/js/phpjs.js",
+        "client/js/randomname.js",
         "client/js/model/user.model.js",
         "client/js/model/wave.model.js",
         "client/js/model/message.model.js",
@@ -43,6 +44,7 @@ module.exports = function (grunt) {
                     maxerr: 1000,
                     nomen: true,
                     sloppy: true,
+                    plusplus: true,
                     predef: [
                         'Backbone', '_'
                     ]
@@ -68,6 +70,7 @@ module.exports = function (grunt) {
                     maxerr: 1000,
                     nomen: true,
                     sloppy: true,
+                    plusplus: true,
                     predef: [
                         'app', '$', 'Backbone', '_', '_gaq', 'ga', '__'
                     ]
