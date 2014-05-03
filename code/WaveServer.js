@@ -42,7 +42,7 @@ var WaveServer = {
                     return accept('Session not found.', false);
                 }
                 // success! we're authenticated with a known session.
-                if (session.auth !== undefined) {
+                if (session.passport.user !== undefined) {
                     data.session = session;
                     return accept(null, true);
                 }
@@ -61,7 +61,7 @@ var WaveServer = {
             //var userData = client.handshake.session['auth']['google']['user'];
             //console.log(userData);
 
-            client.curUser = that.getUserByAuth(client.handshake.session.auth);
+            client.curUser = that.getUserByAuth(client.handshake.session);
 
             if (client.curUser.socket) {
                 client.curUser.send('dontReconnect', 1);
@@ -82,9 +82,10 @@ var WaveServer = {
         });
     },
 
-    getUserByAuth: function(auth) {
-        var authMode = auth.google ? 'google' : 'facebook',
-            userData = auth.google ? auth.google.user : auth.facebook.user,
+    getUserByAuth: function(session) {
+        var sessionUser = session.passport.user,
+            authMode = sessionUser.provider,
+            userData = sessionUser._json,
             user = this.users.find(function(u) {
                 return u.get('googleId') === userData.id
                     || u.get('facebookId') === userData.id

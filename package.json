@@ -17,13 +17,18 @@
     "backbone": "1.1.x",
     "mongoose": "3.8.x",
     "redis-url": "0.2.0",
-    "async": "0.2.x",
-    "express": "3.x",
-    "cookie": "0.0.x",
-    "everyauth": "0.4.x",
+    "async": "0.8.x",
+    "cookie": "0.1.x",
+    "express": "4.x",
+    "cookie-parser": "^1.0.1",
+    "express-session": "^1.0.4",
+    "errorhandler": "^1.0.1",
     "uglify-js": "2.4.x",
     "R.js": "0.1.x",
-    "nodetime": "0.8.x"
+    "nodetime": "0.8.x",
+    "passport": "^0.2.0",
+    "passport-google-oauth": "^0.1.5",
+    "passport-facebook": "^1.0.3"
   },
   "engines": {
     "node": "0.10.x",
@@ -36,6 +41,8 @@
     "grunt": "~0.4.4",
     "grunt-jslint": "~1.1.8",
     "grunt-contrib-uglify": "^0.4.0",
-    "grunt-contrib-concat": "^0.4.0"
+    "grunt-contrib-concat": "^0.4.0",
+    "passport-local": "^1.0.0",
+    "body-parser": "^1.0.2"
   }
 }

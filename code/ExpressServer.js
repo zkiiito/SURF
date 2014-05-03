@@ -1,164 +1,145 @@
 var express = require('express'),
+    cookieParser = require('cookie-parser'),
+    session = require('express-session'),
+    errorHandler = require('errorhandler'),
     http = require('http'),
-    everyauth = require('everyauth'),
     DAL = require('./DAL'),
     SessionStore = require('./SessionStore'),
-    Config = require('./Config');
+    Config = require('./Config'),
+    passport = require('passport'),
+    GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
+    FacebookStrategy = require('passport-facebook').Strategy,
+    LocalStrategy,
+    bodyParser;
 
-//everyauth.debug = true;
-//?
-var usersById = {};
-var nextUserId = 0;
+passport.serializeUser(function(user, done) {
+    done(null, user);
+});
 
-function addUser(source, sourceUser) {
-    var user;
-    if (arguments.length === 1) { // password-based
-        user = source;
-        nextUserId += 1;
-        user.id = nextUserId;
-        usersById[nextUserId] = user;
-    } else { // non-password-based
-        nextUserId += 1;
-        user = usersById[nextUserId] = {id: nextUserId};
-        user[source] = sourceUser;
+passport.deserializeUser(function(obj, done) {
+    done(null, obj);
+});
+
+passport.use(new GoogleStrategy({
+        clientID: Config.googleId,
+        clientSecret: Config.googleSecret,
+        callbackURL: Config.hostName + "/auth/google/callback"
+    },
+    function(accessToken, refreshToken, profile, done) {
+        // asynchronous verification, for effect...
+        process.nextTick(function () {
+            // To keep the example simple, the user's Google profile is returned to
+            // represent the logged-in user.  In a typical application, you would want
+            // to associate the Google account with a user record in your database,
+            // and return that user instead.
+            return done(null, profile);
+        });
+    })
+);
+
+passport.use(new FacebookStrategy({
+        clientID: Config.facebookId,
+        clientSecret: Config.facebookSecret,
+        callbackURL: Config.hostName + "/auth/facebook/callback",
+        profileFields: ['id', 'name', 'email', 'picture']
+    },
+    function(accessToken, refreshToken, profile, done) {
+        process.nextTick(function () {
+            return done(null, profile);
+        });
     }
-    return user;
-}
-//?
-everyauth.everymodule
-    .findUserById( function (id, callback) {
-        callback(null, usersById[id]);
-    });
-
-//?
-var usersByGoogleId = {};
-var auth = everyauth.google
-    .appId(Config.googleId)
-    .appSecret(Config.googleSecret)
-    .myHostname(Config.hostName)//https miatt, configban kell megadni.
-    .scope('https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email')
-    .findOrCreateUser(function (sess, accessToken, extra, googleUser) {
-        googleUser.refreshToken = extra.refresh_token;
-        googleUser.expiresIn = extra.expires_in;
-        //?
-        return usersByGoogleId[googleUser.id] || (usersByGoogleId[googleUser.id] = addUser('google', googleUser));
-    })
-    .redirectPath('/');
-
-//auto-login
-auth.moreAuthQueryParams.access_type = 'online';
-auth.moreAuthQueryParams.approval_prompt = 'auto';
-
-var fbAuth = everyauth.facebook
-    .appId(Config.facebookId)
-    .appSecret(Config.facebookSecret)
-    .scope('email')                        // Defaults to undefined
-    .fields('id,name,email,picture')       // Controls the returned fields. Defaults to undefined
-    .myHostname(Config.hostName)//https miatt, configban kell megadni.
-    .handleAuthCallbackError(function(req, res) {
-      // If a user denies your app, Facebook will redirect the user to
-      // /auth/facebook/callback?error_reason=user_denied&error=access_denied&error_description=The+user+denied+your+request.
-      // This configurable route handler defines how you want to respond to
-      // that.
-      // If you do not configure this, everyauth renders a default fallback
-      // view notifying the user that their authentication failed and why.
-    })
-    .findOrCreateUser(function (session, accessToken, accessTokExtra, fbUserMetadata) {
-        //?
-        return usersByGoogleId[fbUserMetadata.id] || (usersByGoogleId[fbUserMetadata.id] = addUser('facebook', fbUserMetadata));
-    })
-    .redirectPath('/');
+));
 
 if (Config.testMode) {
-    everyauth.password
-        .getLoginPath('/login')
-        .postLoginPath('/login')
-        .authenticate(function(login, password) {
-            var googleUser = {
-                    id: parseInt(login, 10),
-                    email: 'test' + login + '@wavesurf.com',
-                    name: 'Surf Tester ' + parseInt(login, 10).toString(),
-                    picture: 'http://www.jigzone.com/p/jz/isA/TreeFrog.jpg'
-                };
+    LocalStrategy = require('passport-local').Strategy;
 
-            return usersByGoogleId[googleUser.id] || (usersByGoogleId[googleUser.id] = addUser('google', googleUser));
-        })
-        .getRegisterPath('/register')
-        .postRegisterPath('/register')
-        .registerUser({})
-        .loginSuccessRedirect('/')
-        .registerSuccessRedirect('/')
-        .addToSession(function (sess, user, errors) {
-            var _auth = sess.auth || (sess.auth = {});
-            if (user) {
-                _auth.userId = user[this._userPkey];
-                _auth.google = {};
-                _auth.google.user = user.google;
-            }
-            _auth.loggedIn = !!user;
-        });
+    passport.use(new LocalStrategy(
+        function (username, password, done) {
+            var user = {
+                provider: 'google',
+                _json: {
+                    id: parseInt(username, 10),
+                    email: 'test' + username + '@wavesurf.com',
+                    name: 'Surf Tester ' + parseInt(username, 10).toString(),
+                    picture: 'http://www.jigzone.com/p/jz/isA/TreeFrog.jpg',
+                }
+            };
+
+            return done(null, user);
+        }
+    ));
 }
 
 var app = express();
 app.disable('x-powered-by');
 var clientDir = __dirname.replace('code', 'client');
 
-app.configure(function() {
-    app.use(express.methodOverride());
-    app.use(express.json());
-    app.use(express.urlencoded());
-    app.use(express.errorHandler({
-        dumpExceptions: true,
-        showStack: true
-    }));
-    app.use(express.cookieParser('surfCookieParserSecret9'));
-    app.use(express.session({
-        key: 'surf.sid',
-        store: SessionStore,
-        secret: 'surfSessionSecret9',
-        cookie: {
-            httpOnly: true
-            //secure: true //csak elesben kell
-        }
-    }));
-    app.use(app.router);
-    app.use('/css', express.static(__dirname + '/../client/css'));
-    app.use('/js', express.static(__dirname + '/../client/js'));
-    app.use('/images', express.static(__dirname + '/../client/images'));
-    app.use('/fonts', express.static(__dirname + '/../client/fonts'));
+app.use(errorHandler({
+    dumpExceptions: true,
+    showStack: true
+}));
 
-    //app.use('/node', express.static(__dirname + '/../node_modules'));
+app.use(cookieParser('surfCookieParserSecret9'));
+app.use(session({
+    key: 'surf.sid',
+    store: SessionStore,
+    secret: 'surfSessionSecret9',
+    cookie: {
+        httpOnly: true
+        //secure: true //csak elesben kell
+    }
+}));
 
-    app.use(everyauth.middleware(app));
-});
+app.use('/css', express.static(__dirname + '/../client/css'));
+app.use('/js', express.static(__dirname + '/../client/js'));
+app.use('/images', express.static(__dirname + '/../client/images'));
+app.use('/fonts', express.static(__dirname + '/../client/fonts'));
 
-app.get('/invite/:inviteCode', function(req, res) {
-    DAL.getWaveInvitebyCode(req.params.inviteCode, function(err, invite){
-        if (!err && invite) {
-            req.session.invite = invite;
-        }
-        res.redirect('/');
-    });
-});
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.get('/', function(req, res) {
-    if (!req.session.auth) {
+    if (!req.isAuthenticated()) {
         return res.redirect('/auth/google');
     }
     res.sendfile(clientDir + '/index.html');
 });
 
+app.get('/auth/google', passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email'] }));
+app.get('/auth/google/callback',  passport.authenticate('google', { successRedirect: '/' }));
+
+app.get('/auth/facebook', passport.authenticate('facebook', { scope: 'email' }));
+app.get('/auth/facebook/callback',  passport.authenticate('facebook', { successRedirect: '/' }));
+
 if (Config.testMode) {
+    bodyParser = require('body-parser');
+    app.use(bodyParser());
+
     app.get('/loginTest', function(req, res) {
-        console.log(req.session);
         res.sendfile(clientDir + '/test/login.html');
     });
+
+    app.post('/loginTest', passport.authenticate('local', { successRedirect: '/', failureRedirect: '/loginTest' }));
 
     app.get('/logoutTest', function(req, res) {
         req.session = null;
         res.redirect('/');
     });
 }
+
+app.get('/logout', function(req, res) {
+    req.logout();
+    res.redirect('/');
+});
+
+app.get('/invite/:inviteCode', function(req, res) {
+    DAL.getWaveInvitebyCode(req.params.inviteCode, function(err, invite) {
+        if (!err && invite) {
+            req.session.invite = invite;
+        }
+        res.redirect('/');
+    });
+});
 
 var ExpressServer = http.createServer(app);
 

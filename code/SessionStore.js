@@ -1,3 +1,3 @@
-var express = require('express');
+var session = require('express-session');
 
-module.exports = new express.session.MemoryStore();
+module.exports = new session.MemoryStore();
