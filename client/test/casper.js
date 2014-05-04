@@ -1,4 +1,6 @@
 /*global casper */
+casper.options.viewportSize = {width: 1000, height: 600};
+
 casper.on("remote.message", function(message) {
     this.echo("remote console.log: " + message);
 });
@@ -10,12 +12,12 @@ casper.on('page.error', function(message, trace) {
 var lastMsgId;
 var inviteCodeUrl;
 var waveTitle;
-var testUserId = 10000 + Math.floor(Math.random() * 10000);
+var testUserId = Date.now();
 
 casper.test.begin('Login, create wave', 0, function suite(test) {
     casper.start("http://localhost:8000/loginTest", function() {
         this.fillSelectors('form', {
-            "input[name='login']": testUserId
+            "input[name='username']": testUserId
         }, true);
     })
     .wait(1000)
@@ -110,7 +112,7 @@ casper.test.begin('Login with invite, read old messages, reply', 0, function sui
     casper.start(inviteCodeUrl)
     .thenOpen("http://localhost:8000/loginTest", function() {
         this.fillSelectors('form', {
-            "input[name='login']": testUserId + 1
+            "input[name='username']": testUserId + 1
         }, true);
     })
     .wait(1500)
@@ -138,7 +140,7 @@ casper.test.begin('Login with invite, read old messages, reply', 0, function sui
 casper.test.begin('Login with original user, see unread', 0, function suite(test) {
     casper.start("http://localhost:8000/loginTest", function() {
         this.fillSelectors('form', {
-            "input[name='login']": testUserId
+            "input[name='username']": testUserId
         }, true);
     })
     .wait(1500)

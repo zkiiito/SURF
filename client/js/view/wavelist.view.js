@@ -1,3 +1,4 @@
+/*global __ */
 var WaveListView = Backbone.View.extend({
     initialize: function() {
         _.bindAll(this, 'setCurrent', 'countMessages', 'updateMessages', 'changeUsers', 'updateTitle', 'scrollToNextUnread', 'removeWave');

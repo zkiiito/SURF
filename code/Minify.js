@@ -1,9 +1,11 @@
 var fs = require('fs'),
-    UglifyJS = require("uglify-js");
+    UglifyJS = require("uglify-js"),
+    Config = require('./Config');
 
+/*jslint stupid: true*/
 var Minify = {
     readFiles: function(dir, done) {
-        var i,l,contents = '',files = [
+        var i, l, contents = '', files = [
             "../../node_modules/underscore/underscore.js",
             "../../node_modules/backbone/backbone.js",
             "../../node_modules/R.js/R.js",
@@ -11,6 +13,7 @@ var Minify = {
             "jquery.tokeninput.js",
             "date.format.js",
             "phpjs.js",
+            "randomname.js",
             "model/user.model.js",
             "model/wave.model.js",
             "model/message.model.js",
@@ -29,7 +32,7 @@ var Minify = {
             "surf.js"
         ];
 
-        for (i=0, l=files.length; i<l; i++) {
+        for (i = 0, l = files.length; i < l; i++) {
             contents += fs.readFileSync(dir + '/' + files[i]);
         }
         return done(null, contents);
@@ -37,23 +40,25 @@ var Minify = {
 
     minify: function() {
         var workDir = __dirname + '/../client/js',
-            minFile = workDir + '/surf.min.js',
-            mapFile = workDir + '/surf.min.js.map';
+            minFile = workDir + '/surf.min.js';
 
         if (fs.existsSync(minFile)) {
             fs.unlinkSync(minFile);
         }
 
         this.readFiles(workDir, function(err, fileData) {
-            if (process.env.TESTMODE) {
+            if (err) {
+                throw err;
+            }
+
+            if (Config.testMode) {
                 fs.writeFileSync(minFile, fileData);
             } else {
-                fileData = UglifyJS.minify(fileData, {fromString: true, outSourceMap: "surf.min.js.map"});
+                fileData = UglifyJS.minify(fileData, {fromString: true});
                 fs.writeFileSync(minFile, fileData.code);
-                //fs.writeFileSync(mapFile, fileData.map);
             }
         });
     }
 };
-
+/*jslint stupid: false*/
 module.exports = Minify;

@@ -2,36 +2,45 @@
 var Communicator = {
     socket: null,
     reconnect: true,
+    pingTimeout: null,
+    createTitle: null,
     initialize: function() {
         if (typeof io === 'undefined') {
             return;
         }
         var that = this;
 
-        //var id = prompt('hanyas vagy?', Math.ceil(Math.random() * 50)) * 1 -1;
         this.socket = new io.connect(document.location.href, {reconnect: false});
-        //this.socket.emit('auth', id);
 
-        this.socket.on('init', this.onInit);
+        this.socket.on('init', function(data) {
+            that.onInit(data);
+        });
 
         this.socket.on('message', function(data) {
             that.onMessage(data);
         });
 
-        this.socket.on('disconnect', function(){
+        this.socket.on('disconnect', function() {
+            clearTimeout(that.pingTimeout);
             app.view.showDisconnected(that.reconnect);
         });
 
         this.socket.on('updateUser', this.onUpdateUser);
-        this.socket.on('updateWave', this.onUpdateWave);
+        this.socket.on('updateWave', function(data) {
+            that.onUpdateWave(data);
+        });
         this.socket.on('inviteCodeReady', this.onInviteCodeReady);
 
-        this.socket.on('dontReconnect', function(){
+        this.socket.on('dontReconnect', function() {
             that.reconnect = false;
+        });
+
+        this.socket.on('pong', function() {
+            that.schedulePing();
         });
     },
 
-    onInit: function(data){
+    onInit: function(data) {
         if (undefined === app.currentUser) {
             //console.log(data.me);
             app.currentUser = data.me._id;
@@ -46,6 +55,7 @@ var Communicator = {
             if (lastMsg) {
                 document.location = '#wave/' + lastMsg.get('waveId');
             }
+            this.schedulePing();
         }
     },
 
@@ -72,6 +82,7 @@ var Communicator = {
             title: title,
             userIds: userIds
         };
+        this.createTitle = title;
         this.socket.emit('createWave', wave);
     },
 
@@ -86,6 +97,8 @@ var Communicator = {
     },
 
     onMessage: function(data) {
+        this.schedulePing();
+
         if (data.messages) {
             _.each(data.messages, function(msg) {
                 this.onMessage(msg);
@@ -104,20 +117,25 @@ var Communicator = {
         //console.log(user);
         if (app.model.users.get(user._id)) {
             app.model.users.get(user._id).update(user);
+            if (app.currentUser === user._id) {
+                app.model.currentUser.update(user);
+            }
         } else {
             app.model.users.add(new User(user));
         }
     },
 
     onUpdateWave: function(data) {
-        var wave = data.wave;
+        var wavedata = data.wave,
+            wave;
 
-        if (app.model.waves.get(wave._id)) {
-            app.model.waves.get(wave._id).update(wave);
+        if (app.model.waves.get(wavedata._id)) {
+            app.model.waves.get(wavedata._id).update(wavedata);
         } else {
-            app.model.waves.add(new Wave(wave));
-            if (1 === app.model.waves.length) {
-                document.location = '#wave/' + wave._id;
+            wave = new Wave(wavedata);
+            app.model.waves.add(wave);
+            if (1 === app.model.waves.length || this.createTitle === wave.get('title')) {
+                document.location = '#wave/' + wave.id;
             }
         }
     },
@@ -160,5 +178,22 @@ var Communicator = {
         if (app.model.waves.get(data.waveId)) {
             app.model.waves.get(data.waveId).trigger('inviteCodeReady', data.code);
         }
+    },
+
+    schedulePing: function() {
+        var that = this;
+        clearTimeout(this.pingTimeout);
+        this.pingTimeout = setTimeout(function() {
+            that.socket.emit('ping');
+        }, 30000);
+    },
+
+    updateUser: function(name, avatar) {
+        var data = {
+            name: name,
+            avatar: avatar
+        };
+
+        this.socket.emit('updateUser', data);
     }
 };

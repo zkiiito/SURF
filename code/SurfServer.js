@@ -2,36 +2,42 @@ var io = require('socket.io'),
     DAL = require('./DAL'),
     SessionStore = require('./SessionStore'),
     ExpressServer = require('./ExpressServer'),
-    Model = require('./Model');
+    Message = require('./model/Message').Model,
+    User = require('./model/User').Model,
+    UserCollection = require('./model/User').Collection,
+    Wave = require('./model/Wave').Model,
+    WaveCollection = require('./model/Wave').Collection,
+    Config = require('./Config');
 
-var WaveServer = {
+/** @namespace */
+var SurfServer = {
     socket: null,
 
     init: function() {
-        this.users = new Model.UserCollection();
-        this.waves = new Model.WaveCollection();
+        this.users = new UserCollection();
+        this.waves = new WaveCollection();
         DAL.init(this);
     },
 
     startServer: function() {
-        var port = process.env.PORT || 8000,
-            that = this;
-        ExpressServer.listen(port);
+        var that = this;
+
+        ExpressServer.listen(Config.port);
 
         this.socket = io.listen(ExpressServer);
 
-        this.socket.set('authorization', function(data, accept){
+        this.socket.set('authorization', function(data, accept) {
             if (!data.headers.cookie) {
                 return accept('Session cookie required.', false);
             }
 
             data.cookie = require('cookie').parse(data.headers.cookie);
 
-            if (typeof data.cookie['surf.sid'] === "undefined") {
+            if (data.cookie['surf.sid'] === undefined) {
                 return accept('Session cookie invalid.', false);
             }
 
-            data.sessionID = data.cookie['surf.sid'].substr(2,24);
+            data.sessionID = data.cookie['surf.sid'].substr(2, 24);
 
             SessionStore.get(data.sessionID, function (err, session) {
                 if (err) {
@@ -41,7 +47,7 @@ var WaveServer = {
                     return accept('Session not found.', false);
                 }
                 // success! we're authenticated with a known session.
-                if (session.auth !== undefined) {
+                if (session.passport.user !== undefined) {
                     data.session = session;
                     return accept(null, true);
                 }
@@ -49,25 +55,18 @@ var WaveServer = {
             });
         });
 
-        //HEROKU
-        if (process.env.PORT) {
-            this.socket.configure(function () {
-                //socket.set("transports", ["xhr-polling"]);
-                //socket.set("polling duration", 10);
+        this.socket.configure(function () {
+            that.socket.enable('browser client minification');  // send minified client
+            that.socket.enable('browser client etag');          // apply etag caching logic based on version number
+            that.socket.enable('browser client gzip');          // gzip the file
+            that.socket.set('log level', 1);                    // reduce logging
+        });
 
-                that.socket.enable('browser client minification');  // send minified client
-                that.socket.enable('browser client etag');          // apply etag caching logic based on version number
-                that.socket.enable('browser client gzip');          // gzip the file
-                that.socket.set('log level', 1);                    // reduce logging
-            });
-        }
-        this.socket.set('log level', 1);
-
-        this.socket.sockets.on('connection', function(client){
+        this.socket.sockets.on('connection', function(client) {
             //var userData = client.handshake.session['auth']['google']['user'];
             //console.log(userData);
 
-            client.curUser = that.getUserByAuth(client.handshake.session.auth);
+            client.curUser = that.getUserByAuth(client.handshake.session);
 
             if (client.curUser.socket) {
                 client.curUser.send('dontReconnect', 1);
@@ -88,10 +87,15 @@ var WaveServer = {
         });
     },
 
-    getUserByAuth: function(auth) {
-        var authMode = auth.google ? 'google' : 'facebook',
-            userData = auth.google ? auth.google.user : auth.facebook.user,
-            user = this.users.find(function(u){
+    /**
+     * @param {Object} session
+     * @returns {User}
+     */
+    getUserByAuth: function(session) {
+        var sessionUser = session.passport.user,
+            authMode = sessionUser.provider,
+            userData = sessionUser._json,
+            user = this.users.find(function(u) {
                 return u.get('googleId') === userData.id
                     || u.get('facebookId') === userData.id
                     || u.get('email') === userData.email;
@@ -109,7 +113,7 @@ var WaveServer = {
             return user;
         }
 
-        user = new Model.User();
+        user = new User();
         user.set('name', userData.name);
         user.set(authMode + 'Id', userData.id);
         user.set('email', userData.email);
@@ -124,6 +128,9 @@ var WaveServer = {
         return user;
     },
 
+    /**
+     * @param client
+     */
     authClient: function(client) {
         var that = this;
         //torolt funkciok a regibol: nick, topic, part, invite, joinchan
@@ -135,7 +142,7 @@ var WaveServer = {
         client.on('message', function(data) {
             console.log('message: ' + client.curUser.id);
 
-            var msg = new Model.Message(data),
+            var msg = new Message(data),
                 wave = that.waves.get(msg.get('waveId'));
 
             if (wave && wave.isMember(client.curUser)) {
@@ -151,14 +158,14 @@ var WaveServer = {
         client.on('createWave', function(data) {
             console.log('createWave: ' + client.curUser.id);
 
-            var wave = new Model.Wave(data);
+            var wave = new Wave(data);
             wave.addUser(client.curUser, false);
             wave.save();
             that.waves.add(wave);
             wave.notifyUsers();
         });
 
-        client.on('updateWave', function(data){
+        client.on('updateWave', function(data) {
             console.log('updateWave: ' + client.curUser.id);
             var wave = that.waves.get(data.id);
             if (wave && wave.isMember(client.curUser)) {
@@ -166,7 +173,12 @@ var WaveServer = {
             }
         });
 
-        client.on('getMessages', function(data){
+        client.on('updateUser', function(data) {
+            console.log('updateUser: ' + client.curUser.id);
+            client.curUser.update(data);
+        });
+
+        client.on('getMessages', function(data) {
             console.log('getMessages: ' + client.curUser.id);
             var wave = that.waves.get(data.waveId);
             if (wave && wave.isMember(client.curUser)) {
@@ -182,10 +194,10 @@ var WaveServer = {
             }
         });
 
-        client.on('getUser', function(data){
+        client.on('getUser', function(data) {
             var user = that.users.get(data.userId);
             if (user) {
-                client.curUser.send('updateUser', {user: user.toJSON()});
+                client.curUser.send('updateUser', {user: user.toFilteredJSON()});
             }
         });
 
@@ -198,16 +210,22 @@ var WaveServer = {
 
         client.on('createInviteCode', function(data) {
             console.log('createInviteCode: ' + client.curUser.id);
-            var wave = that.waves.get(data.waveId);
+            var wave = that.waves.get(data.waveId),
+                code;
+
             if (wave && wave.isMember(client.curUser)) {
-                var code = wave.createInviteCode(client.curUser);
+                code = wave.createInviteCode(client.curUser);
                 if (code) {
                     data.code = code;
                     client.curUser.send('inviteCodeReady', data);
                 }
             }
         });
+
+        client.on('ping', function() {
+            client.curUser.send('pong');
+        });
     }
 };
 
-module.exports = WaveServer;
+module.exports = SurfServer;

@@ -38,12 +38,12 @@ var DisconnectedView = Backbone.View.extend({
             clearInterval(that.interval);
 
             $.ajax('images/surf-ico.png?' + Math.random(), {timeout: 900})
-                .fail(function(){
+                .fail(function() {
                     that.counterStart *= 2;
                     that.counter = that.counterStart;
                     that.interval = setInterval(function() { that.count(); }, 1000);
                 })
-                .success(function(){
+                .success(function() {
                     document.location.href = '/';
                 });
         }

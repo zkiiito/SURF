@@ -30,7 +30,7 @@ var SurfAppView = Backbone.View.extend({
         };
         this.iconImage.src = 'images/surf-ico.png';
 
-        $('body').keydown(function(e){
+        $('body').keydown(function(e) {
             var nodeName = $(e.target).prop('nodeName');
 
             if ('INPUT' === nodeName || 'TEXTAREA' === nodeName) {
@@ -39,10 +39,21 @@ var SurfAppView = Backbone.View.extend({
             if (32 === e.keyCode) {
                 e.preventDefault();
                 if (app.currentWave) {
+                    document.activeElement.blur();
                     app.model.waves.get(app.currentWave).trigger('scrollToNextUnread');
                 }
             }
         });
+
+        $(window).resize(function() {
+            if ($(window).width() < 1000) {
+                $('body').addClass('mobile');
+            } else {
+                $('body').removeClass('mobile');
+                //maybe hide open reply forms
+                //change to real mobile-detection
+            }
+        }).trigger('resize');
 
         return this;
     },
@@ -106,7 +117,7 @@ var SurfAppView = Backbone.View.extend({
 
     changeCurrentUser: function() {
         var template = new UserView({model: this.model.currentUser});
-        this.$el.find('#currentuser').html('').append(template.render().el).append(' <p>' + this.model.currentUser.get('name') + '</p>');
+        this.$el.find('#currentuser').html('').append(template.render().el).append(' <p>' + this.model.currentUser.escape('name') + '</p>');
 
         if (!this.editUserView) {
             this.editUserView = new EditUserView({model: this.model.currentUser});

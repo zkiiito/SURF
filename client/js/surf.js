@@ -40,7 +40,7 @@ var SurfAppRouter = Backbone.Router.extend({
 
 $(function() {
     _.templateSettings = {
-        interpolate: /{|\|(.+?)\|\}/g,
+        interpolate: /\{|\|(.+?)\|\}/g,
         escape: /\{\{(.+?)\}\}/g
     };
     var surfApp = new SurfAppRouter();

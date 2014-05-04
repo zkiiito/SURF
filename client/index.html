@@ -2,16 +2,16 @@
 <html>
 <head>
   <title>Surf</title>
-  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-  <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <link rel="shortcut icon" type="image/png" href="images/surf-ico.png" />
-  <link rel="stylesheet" type="text/css" href="css/style.css" />
-  <link rel="stylesheet" type="text/css" href="css/token-input.css" />
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="shortcut icon" type="image/png" href="images/surf-ico.png">
+  <link rel="stylesheet" type="text/css" href="css/style.css">
+  <link rel="stylesheet" type="text/css" href="css/token-input.css">
 </head>
 <body>
 
 <script id="user_view" type="text/html">
-<img class="{{ status }}" src="" alt="{{ name }}" title="{{ name }}"/>
+<img class="{{ status }}" src="" alt="{{ name }}" title="{{ name }}">
 </script>
 
 <script id="wave_list_view" type="text/html">
@@ -26,11 +26,11 @@
     <div class="wavetop">
         <h2 class="wave-title">{{ title }}</h2>
         <p class="heads">
-            <p class="offline-list">+<span class="count">19</span> offline</p>
+            <p class="offline-list">+<span class="count">19</span><span class="mhide"> offline</span></p>
         </p>
         <div class="buttons">
             <a class="button gounread R" href="#">Next unread</a>
-            <a class="button editwave R" href="#">Edit</a>
+            <a class="button editwave R mhide" href="#">Edit</a>
             <a class="button readall R" href="#">Read all</a>
             <a class="button quit R" href="#">Leave conversation</a>
         </div>
@@ -46,8 +46,9 @@
 <script id="wavereplyform_view" type="text/html">
 <div class="notification replyform">
     <form class="add-message" method="post">
-        <textarea name="message" placeholder="New message" class="R"></textarea>
-        <p class="inline-help"><button type="submit" class="button sendmsg R">Save message</button> <span class="R">Press Return to send, Shift-Return to break line.</span></p>
+        <textarea name="message" placeholder="New message" class="R mhide"></textarea>
+        <p class="inline-help mhide"><button type="submit" class="button sendmsg R">Save message</button> <span class="R hint">Press Return to send, Shift-Return to break line.</span></p>
+        <p class="inline-help mshow"><button type="submit" class="button sendmsg"><span class="R">New message</span> &darr;</a></button></p>
     </form>
 </div>
 </script>
@@ -57,7 +58,7 @@
     <p><a class="button threadend cancel" href=""><span class="R">Cancel</span> &uarr;</a></p>
     <form class="add-message threadend" method="post">
         <textarea name="message" placeholder="Reply to {{ user.name }}'s message" class="R"></textarea>
-        <p class="inline-help"><button type="submit" class="button sendmsg R">Save message</button> <span class="R">Press Return to send, Shift-Return to break line.</span></p>
+        <p class="inline-help"><button type="submit" class="button sendmsg R">Save message</button> <span class="R hint">Press Return to send, Shift-Return to break line.</span></p>
     </form>
 </div>
 </script>
@@ -99,24 +100,24 @@
       <div>
         <label for="editwave-title" class="R">Title</label>
         <div class="right">
-          <input id="editwave-title" class="normal" name="title" type="text" />
+          <input id="editwave-title" class="normal" name="title" type="text">
         </div>
       </div>
       <div>
         <label for="editwave-users" class="R">Participants</label>
         <div class="right">
-          <input id="editwave-users" name="userids" class="normal" type="text" />
+          <input id="editwave-users" name="userids" class="normal" type="text">
         </div>
       </div>
       <div class="right">
         <button id="editwave-submit" type="submit" class="button R">Create</button>
         <button id="editwave-invite" class="button R">Get invite code</button>
       </div>
-      <br style="clear:both"/>
+      <br style="clear:both">
       <div id="editwave-invitecode-block">
         <label for="editwave-invitecode" class="R">Invite URL</label>
         <div class="right">
-          <input id="editwave-invitecode" class="normal" type="text" readonly="readonly"/>
+          <input id="editwave-invitecode" class="normal" type="text" readonly="readonly">
         </div>
       </div>
     </form>
@@ -133,16 +134,15 @@
   <div class="overlay-body">
     <h2 class="R">Edit profile</h2>
     <form method="post">
-      <div>
+      <div class="edituser-name-row">
         <label for="edituser-name" class="R">Name</label>
         <div class="right">
-          <input id="edituser-name" class="normal" name="name" type="text" />
+          <input id="edituser-name" class="normal" name="name" type="text" maxlength="30" required="required">
         </div>
       </div>
-      <div>
-        <label for="edituser-avatar" class="R">Avatar</label>
+      <div class="ediutuser-avatar-row">
+        <label for="edituser-avatar-cb" class="R">Avatar</label>
         <div class="right">
-          <input id="edituser-avatar" name="avatar" class="normal" type="text" />
         </div>
       </div>
       <div class="right">
@@ -150,6 +150,15 @@
       </div>
     </form>
   </div>
+</div>
+</script>
+
+<script id="edituser_avatar_view" type="text/html">
+<div class="avatar">
+    <label>
+        <img width="80"><br>
+        <input type="radio" value="{{ url }}" name="edituser-avatar-cb" required="required">
+    </label>
 </div>
 </script>
 
@@ -168,13 +177,13 @@
 
 <div id="header">
   <h1>Surf</h1>
-  <a href="#"><img id="header-logo" src="images/surf-logo.png" /></a>
+  <a href="#"><img id="header-logo" src="images/surf-logo.png"></a>
   <a class="button addwave R" href="#">New conversation +</a>
   <div id="usermenu">
     <span id="currentuser"></span>
     <!--a class="button" href="#" onclick="return false;">Ismerőseim</a-->
-    <!--a class="button edituser R" href="#">Edit profile</a-->
-    <a class="button R" href="/logout">Log out</a>
+    <a class="button edituser R" href="#">Edit profile</a>
+    <!--a class="button R mhide" href="/logout">Log out</a-->
   </div>
 </div>
 <div id="wave-list"></div>

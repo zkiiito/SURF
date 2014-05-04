@@ -1,3 +1,4 @@
+/*global Communicator, prompt */
 var WaveReplyFormView = Backbone.View.extend({
     initialize: function() {
         _.bindAll(this, 'submitForm', 'handleKeydown');
@@ -17,6 +18,12 @@ var WaveReplyFormView = Backbone.View.extend({
     submitForm: function(e) {
         e.preventDefault();
         var textarea = this.$el.find('textarea');
+
+        //prompt for message on mobile
+        if ($('body').hasClass('mobile') && 0 === textarea.val().length) {
+            textarea.val(prompt(textarea.prop('placeholder')));
+        }
+
         if (textarea.val().length > 0) {
             Communicator.sendMessage(textarea.val(), this.getWaveId(), this.getParentId());
         }
@@ -28,8 +35,7 @@ var WaveReplyFormView = Backbone.View.extend({
         if (!e.shiftKey && 13 === e.keyCode) {
             e.preventDefault();
             this.$el.find('form').submit();
-        }
-        else if (32 === e.keyCode && ' ' === $(e.target).val()) {
+        } else if (32 === e.keyCode && ' ' === $(e.target).val()) {
             e.preventDefault();
             this.scrollToNextUnread();
         }
