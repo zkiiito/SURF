@@ -40,6 +40,9 @@ var Communicator = {
         });
     },
 
+    /**
+     * @param {Object} data
+     */
     onInit: function(data) {
         if (undefined === app.currentUser) {
             //console.log(data.me);
@@ -53,12 +56,17 @@ var Communicator = {
             var lastMsg = app.model.messages.last();
 
             if (lastMsg) {
-                document.location = '#wave/' + lastMsg.get('waveId');
+                app.navigate('wave/' + lastMsg.get('waveId'), {trigger: true});
             }
             this.schedulePing();
         }
     },
 
+    /**
+     * @param {string} message
+     * @param {number} waveId
+     * @param {number} parentId
+     */
     sendMessage: function(message, waveId, parentId) {
         var msg = {
             userId: app.currentUser,
@@ -69,14 +77,24 @@ var Communicator = {
         this.socket.emit('message', msg);
     },
 
+    /**
+     * @param {Message} message
+     */
     readMessage: function(message) {
         this.socket.emit('readMessage', {id: message.id, waveId: message.get('waveId')});
     },
 
+    /**
+     * @param {Wave} wave
+     */
     readAllMessages: function(wave) {
         this.socket.emit('readAllMessages', {waveId: wave.id});
     },
 
+    /**
+     * @param {string} title
+     * @param {Array} userIds
+     */
     createWave: function(title, userIds) {
         var wave = {
             title: title,
@@ -86,6 +104,11 @@ var Communicator = {
         this.socket.emit('createWave', wave);
     },
 
+    /**
+     * @param {number} waveId
+     * @param {string} title
+     * @param {Array} userIds
+     */
     updateWave: function(waveId, title, userIds) {
         var wave = {
             id : waveId,
@@ -96,6 +119,9 @@ var Communicator = {
         this.socket.emit('updateWave', wave);
     },
 
+    /**
+     * @param {Object} data
+     */
     onMessage: function(data) {
         this.schedulePing();
 
@@ -112,6 +138,9 @@ var Communicator = {
         }
     },
 
+    /**
+     * @param {Object} data
+     */
     onUpdateUser: function(data) {
         var user = data.user;
         //console.log(user);
@@ -125,6 +154,9 @@ var Communicator = {
         }
     },
 
+    /**
+     * @param {Object} data
+     */
     onUpdateWave: function(data) {
         var wavedata = data.wave,
             wave;
@@ -135,11 +167,16 @@ var Communicator = {
             wave = new Wave(wavedata);
             app.model.waves.add(wave);
             if (1 === app.model.waves.length || this.createTitle === wave.get('title')) {
-                document.location = '#wave/' + wave.id;
+                app.navigate('wave/' + wave.id, {trigger: true});
             }
         }
     },
 
+    /**
+     * @param {Wave} wave
+     * @param {number} minParentId
+     * @param {number} maxRootId
+     */
     getMessages: function(wave, minParentId, maxRootId) {
         var data = {
             waveId: wave.id,
@@ -150,6 +187,9 @@ var Communicator = {
         this.socket.emit('getMessages', data);
     },
 
+    /**
+     * @param {number} data
+     */
     getUser: function(userId) {
         var data = {
             userId: userId
@@ -158,6 +198,9 @@ var Communicator = {
         this.socket.emit('getUser', data);
     },
 
+    /**
+     * @param {number} waveId
+     */
     quitUser: function(waveId) {
         var data = {
             waveId: waveId
@@ -166,6 +209,9 @@ var Communicator = {
         this.socket.emit('quitWave', data);
     },
 
+    /**
+     * @param {number} waveId
+     */
     getInviteCode: function(waveId) {
         var data = {
             waveId: waveId
@@ -174,6 +220,9 @@ var Communicator = {
         this.socket.emit('createInviteCode', data);
     },
 
+    /**
+     * @param {Object} data
+     */
     onInviteCodeReady: function(data) {
         if (app.model.waves.get(data.waveId)) {
             app.model.waves.get(data.waveId).trigger('inviteCodeReady', data.code);
@@ -188,6 +237,10 @@ var Communicator = {
         }, 30000);
     },
 
+    /**
+     * @param {string} name
+     * @param {string} avatar
+     */
     updateUser: function(name, avatar) {
         var data = {
             name: name,

@@ -23,12 +23,6 @@ var Message = Backbone.Model.extend(
         save: function() {
             return DAL.saveMessage(this);
         }
-
-        //validate: function(){
-        //check: parentId
-        //parent member of wave?
-        //
-        //}
     }
 );
 
