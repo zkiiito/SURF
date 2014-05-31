@@ -168,9 +168,9 @@
     <h2 class="R">Disconnected</h2>
   </div>
   <div class="overlay-body">
-    <h2 class="R">Disconnect történt</h2>
-        <p class="countdown">Automatikus: <span class="counter">{{ counter }}</span></p>
-        <a href="/">Újracsatlakozás</a>
+    <h2 class="R">You're disconnected</h2>
+        <p class="countdown"><span class="R">Retrying in:</span> <span class="counter">{{ counter }}</span></p>
+        <a href="/" class="R">Reconnect</a>
   </div>
 </div>
 </script>
@@ -181,14 +181,12 @@
   <a class="button addwave R" href="#">New conversation +</a>
   <div id="usermenu">
     <span id="currentuser"></span>
-    <!--a class="button" href="#" onclick="return false;">Ismerőseim</a-->
     <a class="button edituser R" href="#">Edit profile</a>
-    <!--a class="button R mhide" href="/logout">Log out</a-->
   </div>
 </div>
 <div id="wave-list"></div>
 <div id="wavelist-bottom">
-  <p>Surf &copy; 2014 <a href="mailto:zkiiito+surf@gmail.com">the Surf team</a></p>
+  <p>Surf &copy; 2014 <a href="mailto:info@surfchat.io">the Surf team</a></p>
 </div>
 <div id="wave-container"></div>
 

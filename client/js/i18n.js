@@ -2,6 +2,7 @@
 /*jslint newcap: true*/
 var i18n = {
     init: function() {
+        R.registerLocale('en-GB', {});
         R.registerLocale('hu-HU', {
             'Next unread': 'Köv. olvasatlan',
             'Edit': 'Szerkesztés',
@@ -30,10 +31,19 @@ var i18n = {
             "Do you want to leave conversation {{ title }}?\n\nIf you want to come back later, participants can invite you": "Biztosan kilépsz a következő beszélgetésből: {{ title }}?\n\nHa később vissza szeretnél lépni, a beszélgetés résztvevői újra meghívhatnak.",
 
             "Get invite code": "Meghívó igénylés",
-            "Invite URL": "Meghívó URL"
+            "Invite URL": "Meghívó URL",
+
+            "Edit profile": "Profil",
+            "Name": "Név",
+            "Avatar": "Avatár",
+
+            "Disconnected": "Megszakadt a kapcsolat",
+            "You're disconnected": "Megszakadt a kapcsolat",
+            "Retrying in:": "Újracsatlakozás:",
+            "Reconnect": "Újracsatlakozás most"
         });
 
-        R.setLocale('hu-HU');
+        //R.setLocale('hu-HU');
 
         i18n.translateTemplates();
         i18n.applyR($('body'));
