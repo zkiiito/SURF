@@ -6,6 +6,7 @@ var fs = require('fs'),
 var Minify = {
     readFiles: function(dir, done) {
         var i, l, contents = '', files = [
+            "../../node_modules/socket.io/node_modules/socket.io-client/socket.io.js",
             "../../node_modules/underscore/underscore.js",
             "../../node_modules/backbone/backbone.js",
             "../../node_modules/R.js/R.js",

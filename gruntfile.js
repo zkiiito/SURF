@@ -6,6 +6,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-concat');
 
     var jsFiles = [
+        "node_modules/socket.io/node_modules/socket.io-client/socket.io.js",
         "node_modules/underscore/underscore.js",
         "node_modules/backbone/backbone.js",
         "node_modules/R.js/R.js",

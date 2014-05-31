@@ -9,8 +9,8 @@ var express = require('express'),
     passport = require('passport'),
     GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
     FacebookStrategy = require('passport-facebook').Strategy,
-    LocalStrategy,
-    bodyParser;
+    bodyParser = require('body-parser'),
+    LocalStrategy;
 
 passport.serializeUser(function(user, done) {
     done(null, user);
@@ -21,7 +21,8 @@ passport.deserializeUser(function(obj, done) {
 });
 
 /*jslint unparam: true*/
-passport.use(new GoogleStrategy({
+passport.use(new GoogleStrategy(
+    {
         clientID: Config.googleId,
         clientSecret: Config.googleSecret,
         callbackURL: Config.hostName + "/auth/google/callback"
@@ -35,10 +36,11 @@ passport.use(new GoogleStrategy({
             // and return that user instead.
             return done(null, profile);
         });
-    })
-);
+    }
+));
 
-passport.use(new FacebookStrategy({
+passport.use(new FacebookStrategy(
+    {
         clientID: Config.facebookId,
         clientSecret: Config.facebookSecret,
         callbackURL: Config.hostName + "/auth/facebook/callback",
@@ -82,6 +84,7 @@ app.use(errorHandler({
 }));
 
 app.use(cookieParser('surfCookieParserSecret9'));
+app.use(bodyParser());
 app.use(session({
     key: 'surf.sid',
     store: SessionStore,
@@ -114,9 +117,6 @@ app.get('/auth/facebook', passport.authenticate('facebook', { scope: 'email' }))
 app.get('/auth/facebook/callback',  passport.authenticate('facebook', { successRedirect: '/' }));
 
 if (Config.testMode) {
-    bodyParser = require('body-parser');
-    app.use(bodyParser());
-
     app.get('/loginTest', function(req, res) {
         res.sendfile(clientDir + '/test/login.html');
     });
@@ -124,7 +124,7 @@ if (Config.testMode) {
     app.post('/loginTest', passport.authenticate('local', { successRedirect: '/', failureRedirect: '/loginTest' }));
 
     app.get('/logoutTest', function(req, res) {
-        req.session = null;
+        req.logout();
         res.redirect('/');
     });
 }

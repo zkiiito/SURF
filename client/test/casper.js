@@ -48,7 +48,7 @@ casper.test.begin('Login, create wave', 0, function suite(test) {
             this.fillSelectors('form.add-message', {"textarea": 'lol fsa ' + i}, true);
         }
     })
-    .wait(10)
+    .wait(30)
     .then(function() {
         test.assertElementCount('.message', 15, 'new messages ready');
 
@@ -66,7 +66,7 @@ casper.test.begin('Login, create wave', 0, function suite(test) {
             this.fillSelectors('form.add-message.threadend', {"textarea": 'lol fsa reply ' + i}, true);
         }
     })
-    .wait(10)
+    .wait(30)
     .then(function(){
         test.assertElementCount('#' + lastMsgId + ' .replies .message', 5, 'new reply messages ready');
 
@@ -143,7 +143,7 @@ casper.test.begin('Login with original user, see unread', 0, function suite(test
             "input[name='username']": testUserId
         }, true);
     })
-    .wait(1500)
+    .wait(1000)
     //test what we got
     .then(function() {
         //this.capture('loginagain.png');//meg kell varni

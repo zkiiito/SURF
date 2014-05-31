@@ -24,49 +24,41 @@ var SurfServer = {
 
         ExpressServer.listen(Config.port);
 
-        this.socket = io.listen(ExpressServer);
+        this.socket = new io(ExpressServer);
 
-        this.socket.set('authorization', function(data, accept) {
+        this.socket.use(function(socket, next) {
+            var data = socket.request;
+
             if (!data.headers.cookie) {
-                return accept('Session cookie required.', false);
+                return next(new Error('Session cookie required.'));
             }
 
             data.cookie = require('cookie').parse(data.headers.cookie);
 
             if (data.cookie['surf.sid'] === undefined) {
-                return accept('Session cookie invalid.', false);
+                return next(new Error('Session cookie invalid.'));
             }
 
             data.sessionID = data.cookie['surf.sid'].substr(2, 24);
 
             SessionStore.get(data.sessionID, function (err, session) {
                 if (err) {
-                    return accept('Error in session store.', false);
+                    return next(new Error('Error in session store.'));
                 }
                 if (!session) {
-                    return accept('Session not found.', false);
+                    return next(new Error('Session not found.'));
                 }
                 // success! we're authenticated with a known session.
                 if (session.passport.user !== undefined) {
-                    data.session = session;
-                    return accept(null, true);
+                    socket.session = session;
+                    return next();
                 }
-                return accept('Session not authenticated.', false);
+                return next(new Error('Session not authenticated.'));
             });
         });
 
-        this.socket.configure(function () {
-            that.socket.enable('browser client minification');  // send minified client
-            that.socket.enable('browser client etag');          // apply etag caching logic based on version number
-            that.socket.enable('browser client gzip');          // gzip the file
-            that.socket.set('log level', 1);                    // reduce logging
-        });
-
         this.socket.sockets.on('connection', function(client) {
-            //var userData = client.handshake.session['auth']['google']['user'];
-            //console.log(userData);
-
-            client.curUser = that.getUserByAuth(client.handshake.session);
+            client.curUser = that.getUserByAuth(client.session);
 
             if (client.curUser.socket) {
                 client.curUser.send('dontReconnect', 1);
@@ -80,9 +72,10 @@ var SurfServer = {
             that.authClient(client);
             client.curUser.init();
 
-            if (client.handshake.session.invite) {
-                console.log('invitedto: ' + client.handshake.session.invite.waveId);
-                client.curUser.handleInvite(client.handshake.session.invite);
+            if (client.session.invite) {
+                console.log('invitedto: ' + client.session.invite.waveId);
+                client.curUser.handleInvite(client.session.invite);
+                client.session.invite = null;
             }
         });
     },
