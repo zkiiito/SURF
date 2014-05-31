@@ -67,7 +67,7 @@ var SurfServer = {
 
             console.log('login: ' + client.curUser.id);
             client.curUser.socket = client;
-            client.curUser.ip = client.handshake.address.address;
+            //client.curUser.ip = client.handshake.address.address;
 
             that.authClient(client);
             client.curUser.init();
