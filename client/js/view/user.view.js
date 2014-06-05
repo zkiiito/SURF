@@ -28,6 +28,6 @@ var UserView = Backbone.View.extend({
     },
 
     chatInPrivate: function() {
-        app.model.users.get(app.currentUser).chatInPrivateWaveWithUser(this.model);
+        app.model.currentUser.chatInPrivateWaveWithUser(this.model);
     }
 });

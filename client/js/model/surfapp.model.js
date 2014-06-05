@@ -6,7 +6,15 @@ var SurfAppModel = Backbone.Model.extend(
             this.waves = new WaveCollection();
             this.users = new UserCollection();
             this.messages = new MessageCollection();
-            this.currentUser = new User();
+            this.currentUser = null;
+        },
+
+        /**
+         * @param {User} user
+         */
+        initCurrentUser: function(user) {
+            this.currentUser = user;
+            this.trigger('initCurrentUser');
         }
     }
 );

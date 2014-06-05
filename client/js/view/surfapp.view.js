@@ -8,7 +8,7 @@ var SurfAppView = Backbone.View.extend({
         this.model.messages.bind('add', this.setTitle, this);
         this.model.messages.bind('change:unread', this.setTitle, this);
         this.model.waves.bind('readAll', this.setTitle, this);
-        this.model.currentUser.bind('all', this.changeCurrentUser, this);
+        this.model.bind('initCurrentUser', this.initCurrentUser, this);
         //this.createView = null;//gag
         this.render();
     },
@@ -38,9 +38,9 @@ var SurfAppView = Backbone.View.extend({
             }
             if (32 === e.keyCode) {
                 e.preventDefault();
-                if (app.currentWave) {
+                if (app.currentWaveId) {
                     document.activeElement.blur();
-                    app.model.waves.get(app.currentWave).trigger('scrollToNextUnread');
+                    app.model.waves.get(app.currentWaveId).trigger('scrollToNextUnread');
                 }
             }
         });
@@ -115,15 +115,20 @@ var SurfAppView = Backbone.View.extend({
         return false;
     },
 
-    changeCurrentUser: function() {
+    initCurrentUser: function() {
         var template = new UserView({model: this.model.currentUser});
-        this.$el.find('#currentuser').html('').append(template.render().el).append(' <p>' + this.model.currentUser.escape('name') + '</p>');
+        this.$el.find('#currentuser').html('').append(template.render().el).append(' <p class="currentuser_name">' + this.model.currentUser.escape('name') + '</p>');
 
-        if (!this.editUserView) {
-            this.editUserView = new EditUserView({model: this.model.currentUser});
-            this.$el.append(this.editUserView.render().el);
-        }
+        this.model.currentUser.bind('change:name', this.changeCurrentUserName, this);
 
+        this.editUserView = new EditUserView({model: this.model.currentUser});
+        this.$el.append(this.editUserView.render().el);
+
+        return false;
+    },
+
+    changeCurrentUserName: function() {
+        this.$el.find('p.currentuser_name').text(this.model.currentUser.escape('name'));
         return false;
     },
 

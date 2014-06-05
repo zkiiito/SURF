@@ -62,8 +62,7 @@ var EditWaveView = Backbone.View.extend({
                 suggest.tokenInput('add', {id: user.id, name: user.get('name'), readonly: true});
             });
         } else {
-            currentUser = this.model.users.get(app.currentUser);
-            suggest.tokenInput('add', {id: currentUser.id, name: currentUser.get('name'), readonly: true});
+            suggest.tokenInput('add', {id: app.model.currentUser.id, name: app.model.currentUser.get('name'), readonly: true});
         }
 
     },
@@ -110,7 +109,6 @@ var EditWaveView = Backbone.View.extend({
         var title = this.$el.find('#editwave-title').val(),
             users = this.$el.find('#editwave-users').tokenInput('get'),
             userIds = _.pluck(users, 'id');
-        //userIds.push(app.currentUser);
 
         if (this.wave) {
             Communicator.updateWave(this.wave.id, title, userIds);

@@ -189,7 +189,7 @@ var Wave = Backbone.Model.extend(
 
         quit: function() {
             Communicator.quitUser(this.id);
-            app.currentWave = null;
+            app.currentWaveId = null;
             app.model.waves.remove(this);
             app.showWave(null);
         }

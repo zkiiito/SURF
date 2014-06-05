@@ -44,14 +44,13 @@ var Communicator = {
      * @param {Object} data
      */
     onInit: function(data) {
-        if (undefined === app.currentUser) {
+        if (null === app.model.currentUser) {
             //console.log(data.me);
-            app.currentUser = data.me._id;
             data.users.push(data.me);
             app.model.users.reset(data.users);
+            app.model.initCurrentUser(app.model.users.get(data.me._id));
             app.model.waves.reset(data.waves);
             app.model.messages.reset(data.messages);
-            app.model.currentUser.set(app.model.users.get(app.currentUser).toJSON());
 
             var lastMsg = app.model.messages.last();
 
@@ -69,7 +68,7 @@ var Communicator = {
      */
     sendMessage: function(message, waveId, parentId) {
         var msg = {
-            userId: app.currentUser,
+            userId: app.model.currentUser.id,
             waveId: waveId,
             message: message,
             parentId: parentId
@@ -146,9 +145,6 @@ var Communicator = {
         //console.log(user);
         if (app.model.users.get(user._id)) {
             app.model.users.get(user._id).update(user);
-            if (app.currentUser === user._id) {
-                app.model.currentUser.update(user);
-            }
         } else {
             app.model.users.add(new User(user));
         }

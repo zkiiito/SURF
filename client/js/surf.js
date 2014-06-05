@@ -1,8 +1,7 @@
 /*global SurfAppModel, SurfAppView, Communicator */
 var SurfAppRouter = Backbone.Router.extend({
     defaults: {
-        currentWave: null,
-        currentUser: null
+        currentWaveId: null
     },
     initialize: function() {
         this.model = new SurfAppModel();
@@ -17,11 +16,11 @@ var SurfAppRouter = Backbone.Router.extend({
 
     showWave: function(id) {
         if (this.model.waves.get(id)) {
-            if (this.currentWave) {
-                this.model.waves.get(this.currentWave).set('current', false);
+            if (this.currentWaveId) {
+                this.model.waves.get(this.currentWaveId).set('current', false);
             }
             this.model.waves.get(id).set('current', true);
-            this.currentWave = id;
+            this.currentWaveId = id;
         } else {
             this.navigate("");
         }
