@@ -5,7 +5,7 @@ var Communicator = {
     pingTimeout: null,
     createTitle: null,
     initialize: function() {
-        if (typeof io === 'undefined') {
+        if (window.io === undefined) {
             return;
         }
         var that = this;

@@ -1,4 +1,4 @@
-var io = require('socket.io'),
+var IO = require('socket.io'),
     DAL = require('./DAL'),
     SessionStore = require('./SessionStore'),
     ExpressServer = require('./ExpressServer'),
@@ -24,7 +24,7 @@ var SurfServer = {
 
         ExpressServer.listen(Config.port);
 
-        this.socket = new io(ExpressServer);
+        this.socket = new IO(ExpressServer);
 
         this.socket.use(function(socket, next) {
             var data = socket.request;
