@@ -66,7 +66,7 @@ var EditUserView = Backbone.View.extend({
         var name = this.$el.find('#edituser-name').val(),
             avatar = this.$el.find('input[name=edituser-avatar-cb]:checked').val();
 
-        //callback a servertol updateli majd az usert!
+        //callback updates current user
         Communicator.updateUser(name, avatar);
 
         return this.hide();

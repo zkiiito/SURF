@@ -51,7 +51,7 @@ var Message = Backbone.Model.extend(
             /*global strip_tags, nl2br, wordwrap */
             var parts, i, c, matched, url, urlText,
                 msg = this.get('message'),
-                urlRegex = /((https?:\/\/|www\.)[^\s"]+)/g; //improve it!
+                urlRegex = /((https?:\/\/|www\.)[^\s"]+)/g; //TODO: improve it!
 
             msg = strip_tags(msg);
             parts = msg.split(' ');
@@ -84,7 +84,7 @@ var Message = Backbone.Model.extend(
                         //pid = Number('0x' + this.id.substr(14, 4)),
                         increment = Number('0x' + this.id.substr(18, 6));
                     //https://gist.github.com/zippy1981/780246
-                    //#45 - volt h megkavarodott, azota osztjuk
+                    //#45 - was not working, refactored
                     this.sortableId = timestamp + increment % 1000 / 1000;
                 } else {
                     this.sortableId = this.id.toString();
@@ -109,12 +109,12 @@ var Message = Backbone.Model.extend(
          * @returns {Message}
          */
         getNextUnread: function(minId, downOnly) {
-            //megnezzuk sajat magat
+            //check this
             if (this.getSortableId() > minId && this.get('unread')) {
                 return this;
             }
 
-            //megnezzuk a gyerekeit
+            //check children
             var msgs = this.messages ? this.messages.toArray() : [],
                 nextUnread = null,
                 i;
@@ -126,7 +126,7 @@ var Message = Backbone.Model.extend(
                 }
             }
 
-            //megnezzuk a szulojet
+            //check parent
             if (!nextUnread && this.get('parentId') && !downOnly) {
                 return app.model.messages.get(this.get('parentId')).getNextUnread(0, false);
             }

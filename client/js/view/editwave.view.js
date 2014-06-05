@@ -49,12 +49,11 @@ var EditWaveView = Backbone.View.extend({
     },
 
     updateUserSuggest: function() {
-        var suggest, currentUser;
         this.initUserSuggest();
 
         $('#editwave-users').data("settings").local_data = this.userArray;
 
-        suggest = this.$el.find('#editwave-users');
+        var suggest = this.$el.find('#editwave-users');
         suggest.tokenInput('clear');
 
         if (this.wave) {

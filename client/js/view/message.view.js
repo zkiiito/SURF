@@ -65,7 +65,6 @@ var MessageView = Backbone.View.extend({
         //console.log('scroll');
         var scrollTop = this.$el.position().top,
             wavesContainer = this.$el.parents('.waves-container');
-            //wavesContainer = $('.wave').filter(':visible').find('.waves-container');
 
         this.$el.triggerHandler('click');
 

@@ -9,7 +9,6 @@ var SurfAppView = Backbone.View.extend({
         this.model.messages.bind('change:unread', this.setTitle, this);
         this.model.waves.bind('readAll', this.setTitle, this);
         this.model.bind('initCurrentUser', this.initCurrentUser, this);
-        //this.createView = null;//gag
         this.render();
     },
     events: {

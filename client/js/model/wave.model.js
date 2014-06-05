@@ -32,7 +32,7 @@ var Wave = Backbone.Model.extend(
                     parentMsg.addReply(message);
                     this.messages.add(message);
                 } else {
-                    if (this.messages.length > 0) { //bugos adatszerkezetnel elofordulhat
+                    if (this.messages.length > 0) { //errors can occur with buggy data
                         minParentId = message.get('parentId');
                         maxRootId = this.messages.at(0).id;
                         Communicator.getMessages(this, minParentId, maxRootId);
@@ -127,7 +127,7 @@ var Wave = Backbone.Model.extend(
                 currentMessage = this.messages.get(this.currentMessageId);
                 minId = currentMessage.getSortableId();
 
-                //ha van current, akkor eloszor a gyerekei kozott keresunk, majd attol felfele egyre inkabb
+                //if we have a current message, check its children, then its parents recursive
                 nextUnread = currentMessage.getNextUnread(minId, false);
 
                 if (nextUnread) {
@@ -136,7 +136,7 @@ var Wave = Backbone.Model.extend(
                 minId = currentMessage.getRootId();
             }
 
-            //ha nincs az aktualis korul, megyunk lefele a fo agon, az osszesben
+            //if no unread found around the current, or no current, check the main thread, for all root elements below the current root
             msgs = this.messages.filter(function(msg) {
                 return msg.getSortableId() > minId && msg.get('parentId') === null;
             });
@@ -147,7 +147,7 @@ var Wave = Backbone.Model.extend(
                 }
             }
 
-            //ha nem volt a fo agon, lefele semmi, akkor az elejetol kezdjuk ott ugyanugy
+            //if none found, check root elements from the top
             if (minId > 0) {
                 msgs = this.messages.filter(function(msg) {
                     return msg.getSortableId() < minId && msg.get('parentId') === null;
