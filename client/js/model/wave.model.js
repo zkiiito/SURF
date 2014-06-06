@@ -128,7 +128,7 @@ var Wave = Backbone.Model.extend(
                 minId = currentMessage.getSortableId();
 
                 //if we have a current message, check its children, then its parents recursive
-                nextUnread = currentMessage.getNextUnread(minId, false);
+                nextUnread = currentMessage.getNextUnread(minId, false, []);
 
                 if (nextUnread) {
                     return nextUnread;
@@ -141,7 +141,7 @@ var Wave = Backbone.Model.extend(
                 return msg.getSortableId() > minId && msg.get('parentId') === null;
             });
             for (i = 0; i < msgs.length; i++) {
-                nextUnread = msgs[i].getNextUnread(minId, true);
+                nextUnread = msgs[i].getNextUnread(minId, true, []);
                 if (nextUnread) {
                     return nextUnread;
                 }
@@ -154,7 +154,7 @@ var Wave = Backbone.Model.extend(
                 });
 
                 for (i = 0; i < msgs.length; i++) {
-                    nextUnread = msgs[i].getNextUnread(0, true);
+                    nextUnread = msgs[i].getNextUnread(0, true, []);
                     if (nextUnread) {
                         return nextUnread;
                     }

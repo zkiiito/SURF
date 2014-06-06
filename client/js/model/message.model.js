@@ -108,8 +108,14 @@ var Message = Backbone.Model.extend(
          * @param {boolean} downOnly
          * @returns {Message}
          */
-        getNextUnread: function (minId, downOnly) {
+        getNextUnread: function (minId, downOnly, checkedIds) {
+            if (_.indexOf(checkedIds, this.getSortableId()) > -1) {
+                return null;
+            }
+
             //check this
+            checkedIds.push(this.getSortableId());
+
             if (this.getSortableId() > minId && this.get('unread')) {
                 return this;
             }
@@ -128,7 +134,7 @@ var Message = Backbone.Model.extend(
 
             //check parent
             if (!nextUnread && this.get('parentId') && !downOnly) {
-                return app.model.messages.get(this.get('parentId')).getNextUnread(0, false);
+                return app.model.messages.get(this.get('parentId')).getNextUnread(0, false, checkedIds);
             }
 
             return nextUnread;
