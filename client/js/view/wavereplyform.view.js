@@ -1,6 +1,6 @@
 /*global Communicator, prompt */
 var WaveReplyFormView = Backbone.View.extend({
-    initialize: function() {
+    initialize: function () {
         _.bindAll(this, 'submitForm', 'handleKeydown');
     },
 
@@ -9,13 +9,13 @@ var WaveReplyFormView = Backbone.View.extend({
         'keydown textarea': 'handleKeydown'
     },
 
-    render: function() {
+    render: function () {
         var template = _.template($('#wavereplyform_view').text());
         this.setElement(template());
         return this;
     },
 
-    submitForm: function(e) {
+    submitForm: function (e) {
         e.preventDefault();
         var textarea = this.$el.find('textarea');
 
@@ -31,7 +31,7 @@ var WaveReplyFormView = Backbone.View.extend({
         return false;
     },
 
-    handleKeydown: function(e) {
+    handleKeydown: function (e) {
         if (!e.shiftKey && 13 === e.keyCode) {
             e.preventDefault();
             this.$el.find('form').submit();
@@ -42,15 +42,15 @@ var WaveReplyFormView = Backbone.View.extend({
         e.stopPropagation();
     },
 
-    scrollToNextUnread: function() {
+    scrollToNextUnread: function () {
         this.model.trigger('scrollToNextUnread');
     },
 
-    getWaveId: function() {
+    getWaveId: function () {
         return this.model.id;
     },
 
-    getParentId: function() {
+    getParentId: function () {
         return null;
     }
 });

@@ -1,11 +1,11 @@
 var DisconnectedView = Backbone.View.extend({
-    initialize: function() {
+    initialize: function () {
         _.bindAll(this, 'show');
         this.counterStart = 3;
         this.counter = this.counterStart;
     },
 
-    render: function() {
+    render: function () {
         var template = _.template($('#disconnected_view').text(), {counter: this.counter});
         this.setElement(template);
         this.$el.hide();
@@ -13,12 +13,12 @@ var DisconnectedView = Backbone.View.extend({
         return this;
     },
 
-    show: function() {
+    show: function () {
         ga('send', 'event', 'DisconnectedView', 'show', 'connection', this.model.reconnect ? 1 : 0);
 
         if (this.model.reconnect) {
             var that = this;
-            this.interval = setInterval(function() { that.count(); }, 1000);
+            this.interval = setInterval(function () { that.count(); }, 1000);
         } else {
             this.$el.find('.countdown').hide();
         }
@@ -28,7 +28,7 @@ var DisconnectedView = Backbone.View.extend({
         return false;
     },
 
-    count: function() {
+    count: function () {
         this.counter--;
         if (this.counter > 0) {
             this.$el.find('.counter').text(this.counter);
@@ -38,12 +38,12 @@ var DisconnectedView = Backbone.View.extend({
             clearInterval(that.interval);
 
             $.ajax('images/surf-ico.png?' + Math.random(), {timeout: 900})
-                .fail(function() {
+                .fail(function () {
                     that.counterStart *= 2;
                     that.counter = that.counterStart;
-                    that.interval = setInterval(function() { that.count(); }, 1000);
+                    that.interval = setInterval(function () { that.count(); }, 1000);
                 })
-                .success(function() {
+                .success(function () {
                     document.location.href = '/';
                 });
         }

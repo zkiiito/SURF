@@ -13,20 +13,20 @@ var IO = require('socket.io'),
 var SurfServer = {
     socket: null,
 
-    init: function() {
+    init: function () {
         this.users = new UserCollection();
         this.waves = new WaveCollection();
         DAL.init(this);
     },
 
-    startServer: function() {
+    startServer: function () {
         var that = this;
 
         ExpressServer.listen(Config.port);
 
         this.socket = new IO(ExpressServer);
 
-        this.socket.use(function(socket, next) {
+        this.socket.use(function (socket, next) {
             var data = socket.request;
 
             if (!data.headers.cookie) {
@@ -57,7 +57,7 @@ var SurfServer = {
             });
         });
 
-        this.socket.sockets.on('connection', function(client) {
+        this.socket.sockets.on('connection', function (client) {
             client.curUser = that.getUserByAuth(client.session);
 
             if (client.curUser.socket) {
@@ -84,11 +84,11 @@ var SurfServer = {
      * @param {Object} session
      * @returns {User}
      */
-    getUserByAuth: function(session) {
+    getUserByAuth: function (session) {
         var sessionUser = session.passport.user,
             authMode = sessionUser.provider,
             userData = sessionUser._json,
-            user = this.users.find(function(u) {
+            user = this.users.find(function (u) {
                 return u.get('googleId') === userData.id
                     || u.get('facebookId') === userData.id
                     || u.get('email') === userData.email;
@@ -124,15 +124,15 @@ var SurfServer = {
     /**
      * @param client
      */
-    authClient: function(client) {
+    authClient: function (client) {
         var that = this;
         //torolt funkciok a regibol: nick, topic, part, invite, joinchan
-        client.on('disconnect', function() {
+        client.on('disconnect', function () {
             console.log('disconnect: ' + client.curUser.id);
             client.curUser.disconnect();
         });
 
-        client.on('message', function(data) {
+        client.on('message', function (data) {
             console.log('message: ' + client.curUser.id);
 
             var msg = new Message(data),
@@ -143,12 +143,12 @@ var SurfServer = {
             }
         });
 
-        client.on('readMessage', function(data) {
+        client.on('readMessage', function (data) {
             console.log('readMessage: ' + client.curUser.id);
             DAL.readMessage(client.curUser, data);
         });
 
-        client.on('createWave', function(data) {
+        client.on('createWave', function (data) {
             console.log('createWave: ' + client.curUser.id);
 
             var wave = new Wave(data);
@@ -158,7 +158,7 @@ var SurfServer = {
             wave.notifyUsers();
         });
 
-        client.on('updateWave', function(data) {
+        client.on('updateWave', function (data) {
             console.log('updateWave: ' + client.curUser.id);
             var wave = that.waves.get(data.id);
             if (wave && wave.isMember(client.curUser)) {
@@ -166,12 +166,12 @@ var SurfServer = {
             }
         });
 
-        client.on('updateUser', function(data) {
+        client.on('updateUser', function (data) {
             console.log('updateUser: ' + client.curUser.id);
             client.curUser.update(data);
         });
 
-        client.on('getMessages', function(data) {
+        client.on('getMessages', function (data) {
             console.log('getMessages: ' + client.curUser.id);
             var wave = that.waves.get(data.waveId);
             if (wave && wave.isMember(client.curUser)) {
@@ -179,7 +179,7 @@ var SurfServer = {
             }
         });
 
-        client.on('readAllMessages', function(data) {
+        client.on('readAllMessages', function (data) {
             console.log('readAllMessages: ' + client.curUser.id);
             var wave = that.waves.get(data.waveId);
             if (wave && wave.isMember(client.curUser)) {
@@ -187,21 +187,21 @@ var SurfServer = {
             }
         });
 
-        client.on('getUser', function(data) {
+        client.on('getUser', function (data) {
             var user = that.users.get(data.userId);
             if (user) {
                 client.curUser.send('updateUser', {user: user.toFilteredJSON()});
             }
         });
 
-        client.on('quitWave', function(data) {
+        client.on('quitWave', function (data) {
             var wave = that.waves.get(data.waveId);
             if (wave) {
                 wave.quitUser(client.curUser);
             }
         });
 
-        client.on('createInviteCode', function(data) {
+        client.on('createInviteCode', function (data) {
             console.log('createInviteCode: ' + client.curUser.id);
             var wave = that.waves.get(data.waveId),
                 code;
@@ -215,7 +215,7 @@ var SurfServer = {
             }
         });
 
-        client.on('ping', function() {
+        client.on('ping', function () {
             client.curUser.send('pong');
         });
     }

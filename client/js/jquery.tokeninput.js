@@ -36,12 +36,12 @@ var DEFAULT_SETTINGS = {
 
     enableHTML: false,
 
-    resultsFormatter: function(item) {
+    resultsFormatter: function (item) {
       var string = item[this.propertyToSearch];
       return "<li>" + (this.enableHTML ? string : _escapeHTML(string)) + "</li>";
     },
 
-    tokenFormatter: function(item) {
+    tokenFormatter: function (item) {
       var string = item[this.propertyToSearch];
       return "<li><p>" + (this.enableHTML ? string : _escapeHTML(string)) + "</p></li>";
     },
@@ -129,14 +129,14 @@ function coerceToString(val) {
 }
 
 function _escapeHTML(text) {
-  return coerceToString(text).replace(HTML_ESCAPE_CHARS, function(match) {
+  return coerceToString(text).replace(HTML_ESCAPE_CHARS, function (match) {
     return HTML_ESCAPES[match];
   });
 }
 
 // Additional public (exposed) methods
 var methods = {
-    init: function(url_or_data_or_function, options) {
+    init: function (url_or_data_or_function, options) {
         var settings = $.extend({}, DEFAULT_SETTINGS, options || {});
 
         return this.each(function () {
@@ -144,26 +144,26 @@ var methods = {
             $(this).data("tokenInputObject", new $.TokenList(this, url_or_data_or_function, settings));
         });
     },
-    clear: function() {
+    clear: function () {
         this.data("tokenInputObject").clear();
         return this;
     },
-    add: function(item) {
+    add: function (item) {
         this.data("tokenInputObject").add(item);
         return this;
     },
-    remove: function(item) {
+    remove: function (item) {
         this.data("tokenInputObject").remove(item);
         return this;
     },
-    get: function() {
+    get: function () {
         return this.data("tokenInputObject").getTokens();
     },
-    toggleDisabled: function(disable) {
+    toggleDisabled: function (disable) {
         this.data("tokenInputObject").toggleDisabled(disable);
         return this;
     },
-    setOptions: function(options){
+    setOptions: function (options){
         $(this).data("settings", $.extend({}, $(this).data("settings"), options || {}));
         return this;
     }
@@ -213,7 +213,7 @@ $.TokenList = function (input, url_or_data, settings) {
     } else if($(input).data("settings").theme) {
         // Use theme-suffixed default class names
         $(input).data("settings").classes = {};
-        $.each(DEFAULT_CLASSES, function(key, value) {
+        $.each(DEFAULT_CLASSES, function (key, value) {
             $(input).data("settings").classes[key] = value + "-" + $(input).data("settings").theme;
         });
     } else {
@@ -321,7 +321,7 @@ $.TokenList = function (input, url_or_data, settings) {
                         hide_dropdown();
                     } else {
                         // set a timeout just long enough to let this function finish.
-                        setTimeout(function(){do_search();}, 5);
+                        setTimeout(function (){do_search();}, 5);
                     }
                     break;
 
@@ -350,7 +350,7 @@ $.TokenList = function (input, url_or_data, settings) {
                 default:
                     if(String.fromCharCode(event.which)) {
                         // set a timeout just long enough to let this function finish.
-                        setTimeout(function(){do_search();}, 5);
+                        setTimeout(function (){do_search();}, 5);
                     }
                     break;
             }
@@ -433,7 +433,7 @@ $.TokenList = function (input, url_or_data, settings) {
     // Pre-populate list if items exist
     hidden_input.val("");
     var li_data = $(input).data("settings").prePopulate || hidden_input.data("pre");
-    if($(input).data("settings").processPrePopulate && $.isFunction($(input).data("settings").onResult)) {
+    if($(input).data("settings").processPrePopulate && $.isfunction ($(input).data("settings").onResult)) {
         li_data = $(input).data("settings").onResult.call(hidden_input, li_data);
     }
     if(li_data && li_data.length) {
@@ -449,7 +449,7 @@ $.TokenList = function (input, url_or_data, settings) {
     }
 
     // Initialization is done
-    if($.isFunction($(input).data("settings").onReady)) {
+    if($.isfunction ($(input).data("settings").onReady)) {
         $(input).data("settings").onReady.call();
     }
 
@@ -457,20 +457,20 @@ $.TokenList = function (input, url_or_data, settings) {
     // Public functions
     //
 
-    this.clear = function() {
-        token_list.children("li").each(function() {
+    this.clear = function () {
+        token_list.children("li").each(function () {
             if ($(this).children("input").length === 0) {
                 delete_token($(this));
             }
         });
     }
 
-    this.add = function(item) {
+    this.add = function (item) {
         add_token(item);
     }
 
-    this.remove = function(item) {
-        token_list.children("li").each(function() {
+    this.remove = function (item) {
+        token_list.children("li").each(function () {
             if ($(this).children("input").length === 0) {
                 var currToken = $(this).data("tokeninput");
                 var match = true;
@@ -487,11 +487,11 @@ $.TokenList = function (input, url_or_data, settings) {
         });
     }
 
-    this.getTokens = function() {
+    this.getTokens = function () {
         return saved_tokens;
     }
 
-    this.toggleDisabled = function(disable) {
+    this.toggleDisabled = function (disable) {
         toggleDisabled(disable);
     }
 
@@ -546,12 +546,12 @@ $.TokenList = function (input, url_or_data, settings) {
     function add_freetagging_tokens() {
         var value = $.trim(input_box.val());
         var tokens = value.split($(input).data("settings").tokenDelimiter);
-        $.each(tokens, function(i, token) {
+        $.each(tokens, function (i, token) {
           if (!token) {
             return;
           }
 
-          if ($.isFunction($(input).data("settings").onFreeTaggingAdd)) {
+          if ($.isfunction ($(input).data("settings").onFreeTaggingAdd)) {
             token = $(input).data("settings").onFreeTaggingAdd.call(hidden_input, token);
           }
           var object = {};
@@ -642,7 +642,7 @@ $.TokenList = function (input, url_or_data, settings) {
         hide_dropdown();
 
         // Execute the onAdd callback if defined
-        if($.isFunction(callback)) {
+        if($.isfunction (callback)) {
             callback.call(hidden_input,item);
         }
     }
@@ -729,7 +729,7 @@ $.TokenList = function (input, url_or_data, settings) {
         }
 
         // Execute the onDelete callback if defined
-        if($.isFunction(callback)) {
+        if($.isfunction (callback)) {
             callback.call(hidden_input,token_data);
         }
     }
@@ -789,7 +789,7 @@ $.TokenList = function (input, url_or_data, settings) {
           new RegExp(
             "(?![^&;]+;)(?!<[^<>]*)(" + regexp_escape(term) + ")(?![^<>]*>)(?![^&;]+;)",
             "gi"
-          ), function(match, p1) {
+          ), function (match, p1) {
             return "<b>" + escapeHTML(p1) + "</b>";
           }
         );
@@ -819,7 +819,7 @@ $.TokenList = function (input, url_or_data, settings) {
                 results = results.slice(0, $(input).data("settings").resultsLimit);
             }
 
-            $.each(results, function(index, value) {
+            $.each(results, function (index, value) {
                 var this_li = $(input).data("settings").resultsFormatter(value);
 
                 this_li = find_value_and_highlight_term(this_li ,value[$(input).data("settings").propertyToSearch], query);
@@ -886,7 +886,7 @@ $.TokenList = function (input, url_or_data, settings) {
                 show_dropdown_searching();
                 clearTimeout(timeout);
 
-                timeout = setTimeout(function(){
+                timeout = setTimeout(function (){
                     run_search(query);
                 }, $(input).data("settings").searchDelay);
             } else {
@@ -900,7 +900,7 @@ $.TokenList = function (input, url_or_data, settings) {
         var cache_key = query + computeURL();
         var cached_results = cache.get(cache_key);
         if(cached_results) {
-            if ($.isFunction($(input).data("settings").onCachedResult)) {
+            if ($.isfunction ($(input).data("settings").onCachedResult)) {
               cached_results = $(input).data("settings").onCachedResult.call(hidden_input, cached_results);
             }
             populate_dropdown(query, cached_results);
@@ -933,9 +933,9 @@ $.TokenList = function (input, url_or_data, settings) {
                 }
 
                 // Attach the success callback
-                ajax_params.success = function(results) {
+                ajax_params.success = function (results) {
                   cache.add(cache_key, $(input).data("settings").jsonContainer ? results[$(input).data("settings").jsonContainer] : results);
-                  if($.isFunction($(input).data("settings").onResult)) {
+                  if($.isfunction ($(input).data("settings").onResult)) {
                       results = $(input).data("settings").onResult.call(hidden_input, results);
                   }
 
@@ -954,7 +954,7 @@ $.TokenList = function (input, url_or_data, settings) {
                 });
 
                 cache.add(cache_key, results);
-                if($.isFunction($(input).data("settings").onResult)) {
+                if($.isfunction ($(input).data("settings").onResult)) {
                     results = $(input).data("settings").onResult.call(hidden_input, results);
                 }
                 populate_dropdown(query, results);
@@ -977,7 +977,7 @@ $.TokenList = function (input, url_or_data, settings) {
     //
     // obj: a jQuery object to focus()
     function focus_with_timeout(obj) {
-        setTimeout(function() { obj.focus(); }, 50);
+        setTimeout(function () { obj.focus(); }, 50);
     }
 
 };

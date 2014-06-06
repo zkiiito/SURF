@@ -41,7 +41,6 @@ module.exports = function (grunt) {
                 ],
                 directives: {
                     node: true,
-                    white: true,
                     maxerr: 1000,
                     nomen: true,
                     sloppy: true,
@@ -66,7 +65,6 @@ module.exports = function (grunt) {
                     'client/js/date.format.js'
                 ],
                 directives: {
-                    white: true,
                     browser: true,
                     maxerr: 1000,
                     nomen: true,

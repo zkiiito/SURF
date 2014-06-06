@@ -1,6 +1,6 @@
 /*global Communicator, __ */
 var EditWaveView = Backbone.View.extend({
-    initialize: function() {
+    initialize: function () {
         _.bindAll(this, 'show', 'hide', 'setWave', 'genUserArray', 'inviteCodeReady');
         this.userArray = [];
         this.model.users.bind('add', this.genUserArray, this);
@@ -12,15 +12,15 @@ var EditWaveView = Backbone.View.extend({
         'click button#editwave-invite' : 'getInviteCode'
     },
 
-    render: function() {
+    render: function () {
         var template = _.template($('#editwave_view').text(), {});
         this.setElement(template);
         this.$el.hide();
         return this;
     },
 
-    genUserArray: function() {
-        this.userArray = this.model.users.reduce(function(userArray, user) {
+    genUserArray: function () {
+        this.userArray = this.model.users.reduce(function (userArray, user) {
             var obj = {id: user.id, name: user.get('name') + ' (' + user.get('email') + ')'};
 
             if (this.wave && !this.wave.users.get(user.id)) {
@@ -31,7 +31,7 @@ var EditWaveView = Backbone.View.extend({
         }, [], this);
     },
 
-    initUserSuggest: function() {
+    initUserSuggest: function () {
         this.genUserArray();
 
         if (this.inited) {
@@ -48,7 +48,7 @@ var EditWaveView = Backbone.View.extend({
         this.inited = true;
     },
 
-    updateUserSuggest: function() {
+    updateUserSuggest: function () {
         this.initUserSuggest();
 
         $('#editwave-users').data("settings").local_data = this.userArray;
@@ -57,7 +57,7 @@ var EditWaveView = Backbone.View.extend({
         suggest.tokenInput('clear');
 
         if (this.wave) {
-            this.wave.users.each(function(user) {
+            this.wave.users.each(function (user) {
                 suggest.tokenInput('add', {id: user.id, name: user.get('name'), readonly: true});
             });
         } else {
@@ -66,7 +66,7 @@ var EditWaveView = Backbone.View.extend({
 
     },
 
-    show: function() {
+    show: function () {
         ga('send', 'event', 'EditWaveView', 'show');
 
         this.$el.find('#editwave-invitecode-block').hide();
@@ -91,20 +91,20 @@ var EditWaveView = Backbone.View.extend({
         return false;
     },
 
-    hide: function() {
+    hide: function () {
         this.$el.hide();
         $('#darken').hide();
         return false;
     },
 
-    setWave: function(waveId) {
+    setWave: function (waveId) {
         this.wave = this.model.waves.get(waveId);
         if (this.wave) {
             this.wave.bind('inviteCodeReady', this.inviteCodeReady, this);
         }
     },
 
-    editWave: function() {
+    editWave: function () {
         var title = this.$el.find('#editwave-title').val(),
             users = this.$el.find('#editwave-users').tokenInput('get'),
             userIds = _.pluck(users, 'id');
@@ -118,7 +118,7 @@ var EditWaveView = Backbone.View.extend({
         return this.hide();
     },
 
-    getInviteCode: function(e) {
+    getInviteCode: function (e) {
         ga('send', 'event', 'EditWaveView', 'getInviteCode');
 
         e.preventDefault();
@@ -126,7 +126,7 @@ var EditWaveView = Backbone.View.extend({
         Communicator.getInviteCode(this.wave.id);
     },
 
-    inviteCodeReady: function(code) {
+    inviteCodeReady: function (code) {
         //this.$el.find('button#editwave-invite').show(); ??
         this.$el.find('#editwave-invitecode-block').show();
         var invitecode = document.location.protocol + '//' + document.location.host + '/invite/' + code;

@@ -1,6 +1,6 @@
 /*global WaveReplyFormView, UserView, MessageView, __, confirm */
 var WaveView = Backbone.View.extend({
-    initialize: function() {
+    initialize: function () {
         _.bindAll(this, 'setCurrent', 'addMessage', 'addUser', 'removeUser', 'updateTitle',
                         'showUpdateWave', 'scrollToNextUnread', 'scrollToBottom', 'readAllMessages',
                         'quitWave', 'removeWave', 'countOfflineUsers', 'readAll');
@@ -27,7 +27,7 @@ var WaveView = Backbone.View.extend({
         'click a.quit' : 'quitWave'
     },
 
-    render: function() {
+    render: function () {
         var context = _.extend(this.model.toJSON(), {id: this.model.id}),
             template = _.template($('#wave_view').text(), context),
             formView = new WaveReplyFormView({model: this.model});
@@ -42,7 +42,7 @@ var WaveView = Backbone.View.extend({
         return this;
     },
 
-    setCurrent: function() {
+    setCurrent: function () {
         if (this.model.get('current')) {
             $('.wave').hide();
             this.$el.show();
@@ -50,7 +50,7 @@ var WaveView = Backbone.View.extend({
         }
     },
 
-    addMessage: function(message) {
+    addMessage: function (message) {
         if (null === message.get('parentId')) {
             var view = new MessageView({model: message}),
                 targetPos = this.model.messages.where({parentId: null}).indexOf(message),
@@ -66,12 +66,12 @@ var WaveView = Backbone.View.extend({
         }
     },
 
-    changeUsers: function() {
+    changeUsers: function () {
         var usernames = this.model.getUserNames();
         this.$el.find('span.usernames').text(usernames);
     },
 
-    addUser: function(user) {
+    addUser: function (user) {
         this.changeUsers();
         var userView = new UserView({model: user});
         this.userViews[user.id] = userView;
@@ -80,14 +80,14 @@ var WaveView = Backbone.View.extend({
         this.countOfflineUsers();
     },
 
-    removeUser: function(user) {
+    removeUser: function (user) {
         this.changeUsers();
         this.userViews[user.id].remove();
         delete this.userViews[user.id];
         this.countOfflineUsers();
     },
 
-    countOfflineUsers: function() {
+    countOfflineUsers: function () {
         var counter = this.$el.find('.offline-list'),
             offlineCount = this.model.users.where({status: 'offline'}).length;
 
@@ -99,15 +99,15 @@ var WaveView = Backbone.View.extend({
         }
     },
 
-    updateTitle: function() {
+    updateTitle: function () {
         this.$el.find('h2').text(this.model.get('title'));
     },
 
-    showUpdateWave: function() {
+    showUpdateWave: function () {
         return app.view.showUpdateWave();
     },
 
-    scrollToNextUnread: function(e) {
+    scrollToNextUnread: function (e) {
         ga('send', 'event', 'WaveView', 'scrollToNextUnread');
 
         if (e) {
@@ -120,26 +120,26 @@ var WaveView = Backbone.View.extend({
         }
     },
 
-    scrollToBottom: function() {
+    scrollToBottom: function () {
         var wavesContainer = this.$el.find('.waves-container');
         wavesContainer.scrollTop(wavesContainer.prop('scrollHeight')).focus();
     },
 
-    getPreviousMessages: function(e) {
+    getPreviousMessages: function (e) {
         e.preventDefault();
         //this.$el.find('div.getprevmessages').hide();
         ga('send', 'event', 'WaveView', 'getPreviousMessages');
         this.model.getPreviousMessages();
     },
 
-    readAllMessages: function(e) {
+    readAllMessages: function (e) {
         ga('send', 'event', 'WaveView', 'readAllMessages');
 
         e.preventDefault();
         this.model.readAllMessages();
     },
 
-    quitWave: function(e) {
+    quitWave: function (e) {
         ga('send', 'event', 'WaveView', 'quitWave');
 
         e.preventDefault();
@@ -153,13 +153,13 @@ var WaveView = Backbone.View.extend({
         }
     },
 
-    removeWave: function(wave) {
+    removeWave: function (wave) {
         if (wave.id === this.model.id) {
             this.$el.remove();
         }
     },
 
-    readAll: function() {
+    readAll: function () {
         this.$el.find('table.unread').removeClass('unread');
     }
 });

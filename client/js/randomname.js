@@ -1,4 +1,4 @@
-var randomName = (function() {
+var randomName = (function () {
     var colors = ['Aqua', 'Black', 'Blue', 'Fuchsia', 'Gray', 'Green', 'Lime', 'Maroon', 'Navy', 'Olive', 'Orange', 'Purple', 'Red', 'Silver', 'Teal', 'White', 'Yellow'],
         animals = [
             'Aardvark',
@@ -222,7 +222,7 @@ var randomName = (function() {
             'Zebra'
         ];
 
-    return function() {
+    return function () {
         return colors[Math.floor(Math.random() * colors.length)] + animals[Math.floor(Math.random() * animals.length)];
     };
 }());

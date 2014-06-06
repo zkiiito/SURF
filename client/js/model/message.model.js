@@ -12,7 +12,7 @@ var Message = Backbone.Model.extend(
         },
         idAttribute: '_id',
         /** @constructs */
-        initialize: function() {
+        initialize: function () {
             this.messages = null;
             this.user = app.model.users.getUser(this.get('userId'));
             this.formatMessage();
@@ -24,7 +24,7 @@ var Message = Backbone.Model.extend(
         /**
          * @param {Message} message
          */
-        addReply: function(message) {
+        addReply: function (message) {
             if (null === this.messages) {
                 this.messages = new MessageCollection();
                 this.trigger('messagesCreated');
@@ -32,22 +32,22 @@ var Message = Backbone.Model.extend(
             this.messages.add(message);
         },
 
-        read: function() {
+        read: function () {
             if (this.get('unread')) {
                 this.set('unread', false);
                 Communicator.readMessage(this);
             }
         },
 
-        setCurrent: function() {
+        setCurrent: function () {
             this.getWave().setCurrentMessage(this.id);
         },
 
-        setScrolled: function() {
+        setScrolled: function () {
             this.trigger('change:scrolled');
         },
 
-        formatMessage: function() {
+        formatMessage: function () {
             /*global strip_tags, nl2br, wordwrap */
             var parts, i, c, matched, url, urlText,
                 msg = this.get('message'),
@@ -76,7 +76,7 @@ var Message = Backbone.Model.extend(
         /**
          * @returns {number}
          */
-        getSortableId: function() {
+        getSortableId: function () {
             if (!this.sortableId) {
                 if (this.id.toString().length > 8) {
                     var timestamp = Number('0x' + this.id.substr(0, 8)),
@@ -96,7 +96,7 @@ var Message = Backbone.Model.extend(
         /**
          * @returns {boolean}
          */
-        readAllMessages: function() {
+        readAllMessages: function () {
             var unread = this.get('unread');
             this.set({'unread': false}, {'silent': true});
 
@@ -108,7 +108,7 @@ var Message = Backbone.Model.extend(
          * @param {boolean} downOnly
          * @returns {Message}
          */
-        getNextUnread: function(minId, downOnly) {
+        getNextUnread: function (minId, downOnly) {
             //check this
             if (this.getSortableId() > minId && this.get('unread')) {
                 return this;
@@ -137,7 +137,7 @@ var Message = Backbone.Model.extend(
         /**
          * @returns {number}
          */
-        getRootId: function() {
+        getRootId: function () {
             if (this.get('parentId')) {
                 return app.model.messages.get(this.get('parentId')).getRootId();
             }
@@ -147,7 +147,7 @@ var Message = Backbone.Model.extend(
         /**
          * @returns {Wave}
          */
-        getWave: function() {
+        getWave: function () {
             return app.model.waves.get(this.get('waveId'));
         }
     }
@@ -163,7 +163,7 @@ var MessageCollection = Backbone.Collection.extend(
          * @param {Message} msg
          * @returns {number}
          */
-        comparator: function(msg) {
+        comparator: function (msg) {
             return msg.getSortableId();
         }
     }

@@ -2,7 +2,7 @@
 var SurfAppModel = Backbone.Model.extend(
     /** @lends SurfAppModel.prototype */
     {
-        initialize: function() {
+        initialize: function () {
             this.waves = new WaveCollection();
             this.users = new UserCollection();
             this.messages = new MessageCollection();
@@ -12,7 +12,7 @@ var SurfAppModel = Backbone.Model.extend(
         /**
          * @param {User} user
          */
-        initCurrentUser: function(user) {
+        initCurrentUser: function (user) {
             this.currentUser = user;
             this.trigger('initCurrentUser');
         }

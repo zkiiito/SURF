@@ -1,5 +1,5 @@
 var UserView = Backbone.View.extend({
-    initialize: function() {
+    initialize: function () {
         _.bindAll(this, 'render', 'update', 'chatInPrivate');
         this.model.bind('change', this.update);
     },
@@ -8,14 +8,14 @@ var UserView = Backbone.View.extend({
         'dblclick': 'chatInPrivate'
     },
 
-    render: function() {
+    render: function () {
         var template = _.template($('#user_view').text(), this.model.toJSON());
         this.setElement(template);
         this.$el.attr('src', this.model.get('avatar'));//kesobb kell beallitani, mert kulonben nem talalja az {{}} avatar imaget
         return this;
     },
 
-    update: function() {
+    update: function () {
         this.$el.removeClass('online offline').addClass(this.model.get('status'));
         this.$el.attr('title', this.model.get('name'));
         this.$el.attr('alt', this.model.get('name'));
@@ -27,7 +27,7 @@ var UserView = Backbone.View.extend({
         return this;
     },
 
-    chatInPrivate: function() {
+    chatInPrivate: function () {
         app.model.currentUser.chatInPrivateWaveWithUser(this.model);
     }
 });

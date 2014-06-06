@@ -14,8 +14,8 @@ var User = Backbone.Model.extend(
         /**
          * @param {Object} data
          */
-        update: function(data) {
-            _.each(data, function(el, idx) {
+        update: function (data) {
+            _.each(data, function (el, idx) {
                 if (this.idAttribute !== idx) {
                     this.set(idx, el);
                 }
@@ -25,7 +25,7 @@ var User = Backbone.Model.extend(
         /**
          * @param {User} user
          */
-        chatInPrivateWaveWithUser: function(user) {
+        chatInPrivateWaveWithUser: function (user) {
             if (user !== this) {
                 var privateWaves = app.model.waves.filter(function (wave) {
                     return 2 === wave.users.length && wave.users.contains(user) && wave.users.contains(this);
@@ -51,7 +51,7 @@ var UserCollection = Backbone.Collection.extend(
          * @param {number} id
          * @returns {User}
          */
-        getUser: function(id) {
+        getUser: function (id) {
             var user = this.get(id);
 
             if (undefined === user) {

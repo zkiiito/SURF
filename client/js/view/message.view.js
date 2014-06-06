@@ -1,9 +1,9 @@
 /*global UserView, MessageReplyFormView */
 var MessageView = Backbone.View.extend({
-    initialize: function() {
+    initialize: function () {
         this.hasReplyForm = false;
         _.bindAll(this, 'addMessage', 'readMessage', 'replyMessage', 'onReadMessage', 'scrollTo', 'changeUserName');
-        this.model.bind('messagesCreated', function() {
+        this.model.bind('messagesCreated', function () {
             this.model.messages.bind('add', this.addMessage);
         }, this);
         this.model.bind('change:unread', this.onReadMessage);
@@ -19,7 +19,7 @@ var MessageView = Backbone.View.extend({
         'click a.reply' : 'replyMessage',
         'click a.threadend' : 'replyMessage'
     },
-    render: function() {
+    render: function () {
         var context = _.extend(this.model.toJSON(), {id: this.model.id, user: this.model.user.toJSON()}),
             template = _.template($('#message_view').text(), context),
             userView = new UserView({model: this.model.user});
@@ -35,7 +35,7 @@ var MessageView = Backbone.View.extend({
         return this;
     },
 
-    addMessage: function(message) {
+    addMessage: function (message) {
         var view = new MessageView({
             model: message
         });
@@ -49,19 +49,19 @@ var MessageView = Backbone.View.extend({
         }
     },
 
-    readMessage: function(e) {
+    readMessage: function (e) {
         e.stopPropagation();
         this.model.read();
         this.model.setCurrent();
     },
 
-    onReadMessage: function() {
+    onReadMessage: function () {
         if (!this.model.get('unread')) {
             this.$el.children('table').removeClass('unread');
         }
     },
 
-    scrollTo: function() {
+    scrollTo: function () {
         //console.log('scroll');
         var scrollTop = this.$el.position().top,
             wavesContainer = this.$el.parents('.waves-container');
@@ -75,7 +75,7 @@ var MessageView = Backbone.View.extend({
         this.$el.children('table').focus();
     },
 
-    replyMessage: function(e) {
+    replyMessage: function (e) {
         e.preventDefault();
         //if reply form is visible under this message, return after hiding
         var hideOnly = this.$el.find('> div:last-child').hasClass('replyform'),
@@ -101,7 +101,7 @@ var MessageView = Backbone.View.extend({
         return false;
     },
 
-    changeUserName: function() {
+    changeUserName: function () {
         this.$el.find('span.author').eq(0).text(this.model.user.get('name') + ':');
     }
 });

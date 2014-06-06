@@ -3,7 +3,7 @@ var SurfAppRouter = Backbone.Router.extend({
     defaults: {
         currentWaveId: null
     },
-    initialize: function() {
+    initialize: function () {
         this.model = new SurfAppModel();
         this.view = new SurfAppView({
             model: this.model
@@ -14,7 +14,7 @@ var SurfAppRouter = Backbone.Router.extend({
         'wave/:number': "showWave"
     },
 
-    showWave: function(id) {
+    showWave: function (id) {
         if (this.model.waves.get(id)) {
             if (this.currentWaveId) {
                 this.model.waves.get(this.currentWaveId).set('current', false);
@@ -27,7 +27,7 @@ var SurfAppRouter = Backbone.Router.extend({
     }
 });
 
-$(function() {
+$(function () {
     _.templateSettings = {
         interpolate: /\{|\|(.+?)\|\}/g,
         escape: /\{\{(.+?)\}\}/g

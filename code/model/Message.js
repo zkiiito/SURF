@@ -15,12 +15,12 @@ var Message = Backbone.Model.extend(
         },
         idAttribute: '_id',
         /** @constructs */
-        initialize: function() {
+        initialize: function () {
             if (this.isNew()) {
                 this.set('created_at', Date.now());
             }
         },
-        save: function() {
+        save: function () {
             return DAL.saveMessage(this);
         }
     }

@@ -1,6 +1,6 @@
 /*global __ */
 var WaveListView = Backbone.View.extend({
-    initialize: function() {
+    initialize: function () {
         _.bindAll(this, 'setCurrent', 'countMessages', 'updateMessages', 'changeUsers', 'updateTitle', 'scrollToNextUnread', 'removeWave');
         this.model.bind('change:current', this.setCurrent);
         this.model.bind('change:title', this.updateTitle);
@@ -19,7 +19,7 @@ var WaveListView = Backbone.View.extend({
         'click' : 'scrollToNextUnread'
     },
 
-    render: function() {
+    render: function () {
         var context = _.extend(this.model.toJSON(), {
             id: this.model.id
         }),
@@ -30,14 +30,14 @@ var WaveListView = Backbone.View.extend({
         return this;
     },
 
-    setCurrent: function() {
+    setCurrent: function () {
         if (this.model.get('current')) {
             $('.waveitem').removeClass('open');
             this.$el.addClass('open');
         }
     },
 
-    countMessages: function() {
+    countMessages: function () {
         var msgs = this.model.getUnreadCount();
         if (msgs > 0) {
             this.$el.find('.piros').text('| ' + msgs + ' új üzenet');
@@ -47,22 +47,22 @@ var WaveListView = Backbone.View.extend({
         }
     },
 
-    updateMessages: function(message) {
+    updateMessages: function (message) {
         if (message.get('userId') !== app.model.currentUser.id && message.get('unread')) {
             this.$el.addClass('updated');
         }
     },
 
-    changeUsers: function() {
+    changeUsers: function () {
         var usercount = __('{{ usercount }} users').replace('{{ usercount }}', this.model.getUserCount());
         this.$el.find('.usercount').text(usercount);
     },
 
-    updateTitle: function() {
+    updateTitle: function () {
         this.$el.find('h2').text(this.model.get('title'));
     },
 
-    scrollToNextUnread: function(e) {
+    scrollToNextUnread: function (e) {
         //ilyenkor nem kell hrefelni a routernek
         if (app.currentWaveId === this.model.id) {
             e.preventDefault();
@@ -74,7 +74,7 @@ var WaveListView = Backbone.View.extend({
         }
     },
 
-    removeWave: function(wave) {
+    removeWave: function (wave) {
         if (wave.id === this.model.id) {
             this.$el.remove();
         }

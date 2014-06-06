@@ -1,6 +1,6 @@
 /*global Communicator, CryptoJS */
 var EditUserView = Backbone.View.extend({
-    initialize: function() {
+    initialize: function () {
         _.bindAll(this, 'show', 'hide');
         this.model.bind('change', this.updateFields, this);
     },
@@ -9,7 +9,7 @@ var EditUserView = Backbone.View.extend({
         'submit form' : 'saveUser'
     },
 
-    render: function() {
+    render: function () {
         var template = _.template($('#edituser_view').text(), {});
         this.setElement(template);
         this.$el.hide();
@@ -18,7 +18,7 @@ var EditUserView = Backbone.View.extend({
         return this;
     },
 
-    updateFields: function() {
+    updateFields: function () {
         this.$el.find('#edituser-name').val(this.model.get('name'));
         this.$el.find('#edituser-avatar').val(this.model.get('avatar'));
 
@@ -37,7 +37,7 @@ var EditUserView = Backbone.View.extend({
         this.addAvatarOption(gravatarUrl);
     },
 
-    addAvatarOption: function(url) {
+    addAvatarOption: function (url) {
         var template = $(_.template($('#edituser_avatar_view').text(), {url: url}));
 
         template.find('img').prop('src', url);
@@ -49,19 +49,19 @@ var EditUserView = Backbone.View.extend({
         this.$el.find('.ediutuser-avatar-row .right').append(template);
     },
 
-    show: function() {
+    show: function () {
         this.$el.show();
         $('#darken').show();
         return false;
     },
 
-    hide: function() {
+    hide: function () {
         this.$el.hide();
         $('#darken').hide();
         return false;
     },
 
-    saveUser: function(e) {
+    saveUser: function (e) {
         e.preventDefault();
         var name = this.$el.find('#edituser-name').val(),
             avatar = this.$el.find('input[name=edituser-avatar-cb]:checked').val();

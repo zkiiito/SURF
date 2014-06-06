@@ -47,19 +47,19 @@ var DAL = {
     /**
      * @param {SurfServer} server
      */
-    init: function(server) {
+    init: function (server) {
         mongoose.connect(Config.mongoUrl);
         redis = redis.connect(Config.redisUrl);
 
         //mongoose.set('debug', true);
 
-        UserModel.find().exec(function(err, users) {
+        UserModel.find().exec(function (err, users) {
             if (err) {
                 throw err;
             }
 
             var usersTmp = [];
-            _.each(users, function(user) {
+            _.each(users, function (user) {
                 usersTmp.push({name: user.name,
                                avatar: user.avatar,
                                _id: user._id,
@@ -73,13 +73,13 @@ var DAL = {
             server.users.reset(usersTmp);
             usersTmp = null;
 
-            WaveModel.find().sort('_id').exec(function(err, waves) {
+            WaveModel.find().sort('_id').exec(function (err, waves) {
                 if (err) {
                     throw err;
                 }
 
                 var wavesTmp = [];
-                _.each(waves, function(wave) {
+                _.each(waves, function (wave) {
                     wavesTmp.push({title: wave.title, userIds: wave.userIds, _id: wave._id});
                 });
                 server.waves.reset(wavesTmp);
@@ -88,7 +88,7 @@ var DAL = {
         });
 
         //temporary fix a sajat unreadokra: ha tobb mint 1000, lenullazzuk
-        UserModel.find().exec(function(err, users) {
+        UserModel.find().exec(function (err, users) {
             if (!err) {
                 _.each(users, function (user) {
                     redis.keys('unread-' + user._id + '-*', function (err, unreadKeys) {
@@ -112,7 +112,7 @@ var DAL = {
      * @param {User} user
      * @returns {User}
      */
-    saveUser: function(user) {
+    saveUser: function (user) {
         var data = {
             name: user.get('name'),
             avatar: user.get('avatar'),
@@ -137,7 +137,7 @@ var DAL = {
      * @param {Wave} wave
      * @returns {Wave}
      */
-    saveWave: function(wave) {
+    saveWave: function (wave) {
         var data = {
             title: wave.get('title'),
             userIds: _.uniq(wave.get('userIds'))
@@ -157,7 +157,7 @@ var DAL = {
      * @param {Message} message
      * @returns {Message}
      */
-    saveMessage: function(message) {
+    saveMessage: function (message) {
         var m = new MessageModel({
             userId: message.get('userId'),
             waveId: message.get('waveId'),
@@ -170,7 +170,7 @@ var DAL = {
             m.rootId = m._id;
             m.save();
         } else {
-            m.save(function(err) {
+            m.save(function (err) {
                 if (!err) {
                     DAL.calcRootId(m.parentId, [m]);
                 }
@@ -187,8 +187,8 @@ var DAL = {
      * @param {number} messages
      * @param {Function} callback
      */
-    calcRootId: function(messageId, messages, callback) {
-        MessageModel.findById(messageId, function(err, message) {
+    calcRootId: function (messageId, messages, callback) {
+        MessageModel.findById(messageId, function (err, message) {
             if (err) {
                 console.log('calcRootId: error');
                 return;
@@ -204,7 +204,7 @@ var DAL = {
                     messages.push(message);
                 }
 
-                async.forEach(messages, function(msg) {
+                async.forEach(messages, function (msg) {
                     MessageModel.update({_id: msg._id}, {rootId: rootId}).exec();
                 });
 
@@ -223,9 +223,9 @@ var DAL = {
      * @param {User} user
      * @param {Function} callback
      */
-    getLastMessagesForUser: function(user, callback) {
+    getLastMessagesForUser: function (user, callback) {
         var startTime = new Date().getTime();
-        WaveModel.find().where('_id').in(user.waves.pluck('_id')).exec(function(err, waves) {
+        WaveModel.find().where('_id').in(user.waves.pluck('_id')).exec(function (err, waves) {
             if (err) {
                 return callback(err);
             }
@@ -233,9 +233,9 @@ var DAL = {
             var endTime = new Date().getTime();
             console.log('QUERY LastMessagesForUser: wave query in ' + (endTime - startTime));
 
-            async.map(waves, function(wave, callback_async_map) {
+            async.map(waves, function (wave, callback_async_map) {
                 DAL.getLastMessagesForUserInWave(user, wave, callback_async_map);
-            }, function(err, results) {
+            }, function (err, results) {
                 if (err) {
                     return callback(err);
                 }
@@ -245,7 +245,7 @@ var DAL = {
 
                 //heroku
                 if (Config.graphiteKey) {
-                    socket = net.createConnection(2003, "carbon.hostedgraphite.com", function() {
+                    socket = net.createConnection(2003, "carbon.hostedgraphite.com", function () {
                         socket.write(Config.graphiteKey + '.lastmessagesforuser.time ' + allTime + '\n');
                         socket.end();
                     });
@@ -265,9 +265,9 @@ var DAL = {
      * @param {Array} memo
      * @param {Function} callback
      */
-    getLastMessagesForUserInWave: function(user, wave, callback) {
+    getLastMessagesForUserInWave: function (user, wave, callback) {
         console.log('QUERY getLastMessagesForUserInWave: ' + wave.id);
-        DAL.getMinUnreadRootIdForUserInWave(user, wave, function(err, result) {
+        DAL.getMinUnreadRootIdForUserInWave(user, wave, function (err, result) {
             //console.log(result);
             var minRootId = null,
                 unreadIds = [];
@@ -276,11 +276,11 @@ var DAL = {
                 unreadIds = result.unreadIds;
             }
 
-            DAL.getMinRootIdForWave(wave, minRootId, null, function(err, newMinRootId) {
+            DAL.getMinRootIdForWave(wave, minRootId, null, function (err, newMinRootId) {
                 if (err) {
                     return callback(err);
                 }
-                DAL.getMessagesForUserInWave(wave, newMinRootId, null, unreadIds, function(err, results) {
+                DAL.getMessagesForUserInWave(wave, newMinRootId, null, unreadIds, function (err, results) {
                     if (err) {
                         return callback(err);
                     }
@@ -296,8 +296,8 @@ var DAL = {
      * @param {Wave} wave
      * @param {Function} callback
      */
-    getMinUnreadRootIdForUserInWave: function(user, wave, callback) {
-        DAL.getUnreadIdsForUserInWave(user, wave, function(err, results) {
+    getMinUnreadRootIdForUserInWave: function (user, wave, callback) {
+        DAL.getUnreadIdsForUserInWave(user, wave, function (err, results) {
             if (err || 0 === results.length) {
                 callback(true, null);
             } else {
@@ -311,7 +311,7 @@ var DAL = {
                     .sort('rootId')
                     .limit(1)
                     .exec(
-                        function(err, result) {
+                        function (err, result) {
                             endTime = new Date().getTime();
                             console.log('QUERY getMinUnreadRootIdForUserInWave: ' + wave.id + ' query in ' + (endTime - startTime));
 
@@ -335,10 +335,10 @@ var DAL = {
      * @param {Wave} wave
      * @param {Function} callback
      */
-    getUnreadIdsForUserInWave: function(user, wave, callback) {
+    getUnreadIdsForUserInWave: function (user, wave, callback) {
         var startTime = new Date().getTime(),
             key = 'unread-' + user.id + '-' + wave.id;
-        redis.smembers(key, function(err, results) {
+        redis.smembers(key, function (err, results) {
             var endTime = new Date().getTime();
             console.log('QUERY getUnreadIdsForUserInWave: ' + wave.id + ' query in ' + (endTime - startTime));
             callback(err, results);
@@ -352,20 +352,20 @@ var DAL = {
      * @param {number} maxRootId
      * @param {Function} callback
      */
-    getMinRootIdForWave: function(wave, minRootId, maxRootId, callback) {
+    getMinRootIdForWave: function (wave, minRootId, maxRootId, callback) {
         console.log('QUERY getMinRootIdForWave: ' + wave.id);
         if (null === minRootId && null !== maxRootId) {
             minRootId = maxRootId;
         }
 
-        DAL.countMessagesInRange(wave, minRootId, maxRootId, function(err, count) {
+        DAL.countMessagesInRange(wave, minRootId, maxRootId, function (err, count) {
             if (err) {
                 return callback(err);
             }
             if (count > 10) {
                 callback(null, minRootId);
             } else {
-                DAL.getNextMinRootIdForWave(wave, minRootId, function(err, newMinRootId) {
+                DAL.getNextMinRootIdForWave(wave, minRootId, function (err, newMinRootId) {
                     if (err || minRootId === newMinRootId) {
                         callback(null, minRootId);
                     } else {
@@ -381,7 +381,7 @@ var DAL = {
      * @param {number} minRootId
      * @param {Function} callback
      */
-    getNextMinRootIdForWave: function(wave, minRootId, callback) {
+    getNextMinRootIdForWave: function (wave, minRootId, callback) {
         //ha keves, vagy ha a minRootId null
         var startTime = new Date().getTime(),
             query = MessageModel.find({waveId: wave.id, parentId: null}).sort('-_id').limit(11);
@@ -392,7 +392,7 @@ var DAL = {
             query.where('_id').lt(minRootId);
         }
 
-        query.exec(function(err, results) {
+        query.exec(function (err, results) {
             var endTime = new Date().getTime();
             console.log('QUERY getNextMinRootIdForWave: ' + wave.id + ' query in ' + (endTime - startTime));
             if (err || 0 === results.length) {
@@ -409,7 +409,7 @@ var DAL = {
      * @param {number} maxRootId
      * @param {Function} callback
      */
-    countMessagesInRange: function(wave, minRootId, maxRootId, callback) {
+    countMessagesInRange: function (wave, minRootId, maxRootId, callback) {
         if (!minRootId) {
             callback(null, 0);
         } else {
@@ -421,7 +421,7 @@ var DAL = {
                 query.where('rootId').lt(maxRootId);
             }
 
-            query.count(function(err, count) {
+            query.count(function (err, count) {
                 if (err) {
                     return callback(err, 0);
                 }
@@ -439,7 +439,7 @@ var DAL = {
      * @param {Array} unreadIds
      * @param {Function} callback
      */
-    getMessagesForUserInWave: function(wave, minRootId, maxRootId, unreadIds, callback) {
+    getMessagesForUserInWave: function (wave, minRootId, maxRootId, unreadIds, callback) {
         var startTime = new Date().getTime(),
             query = MessageModel.find({waveId: wave.id})
                     .sort('_id');
@@ -452,7 +452,7 @@ var DAL = {
             query.where('rootId').lt(maxRootId);
         }
 
-        query.exec(function(err, messages) {
+        query.exec(function (err, messages) {
             var res, endTime = new Date().getTime();
             console.log('QUERY getMessagesForUserInWave: ' + wave.id + ' query in ' + (endTime - startTime));
 
@@ -464,7 +464,7 @@ var DAL = {
                 return callback(false, []);
             }
 
-            res = _.map(messages, function(mmsg) {
+            res = _.map(messages, function (mmsg) {
                 var msg = {
                     _id: mmsg.id,
                     userId: mmsg.userId,
@@ -504,7 +504,7 @@ var DAL = {
      * @param {User} user
      * @param {Message} message
      */
-    readMessage: function(user, message) {
+    readMessage: function (user, message) {
         var key = 'unread-' + user.id + '-' + message.waveId;
         redis.srem(key, message.id);
     },
@@ -513,7 +513,7 @@ var DAL = {
      * @param {User} user
      * @param {Message} message
      */
-    addUnreadMessage: function(user, message) {
+    addUnreadMessage: function (user, message) {
         if (message.get('userId') !== user.id.toString() && message.id) {
             //console.log('addUnreadMessage: userid: ' + typeof user.id + ' msguserid: ' + typeof message.get('userId') + ' msgid: ' + message.id);
             var key = 'unread-' + user.id + '-' + message.get('waveId');
@@ -525,7 +525,7 @@ var DAL = {
      * @param {User} user
      * @param {Wave} wave
      */
-    readAllMessagesForUserInWave: function(user, wave) {
+    readAllMessagesForUserInWave: function (user, wave) {
         var key = 'unread-' + user.id + '-' + wave.id;
         redis.del(key);
     },
@@ -534,7 +534,7 @@ var DAL = {
      * @param {User} user
      * @param {Wave} wave
      */
-    createInviteCodeForWave: function(user, wave) {
+    createInviteCodeForWave: function (user, wave) {
         var m,
             code = (Math.random() + 1).toString(36).replace(/[^a-z0-9]+/g, ''),
             data = {
@@ -553,7 +553,7 @@ var DAL = {
      * @param {string} code
      * @param {Function} callback
      */
-    getWaveInvitebyCode: function(code, callback) {
+    getWaveInvitebyCode: function (code, callback) {
         WaveInviteModel.findOne({code: code}).exec(callback);
     },
 
@@ -561,7 +561,7 @@ var DAL = {
      * @param {string} code
      * @param {Function} callback
      */
-    removeWaveInviteByCode: function(code, callback) {
+    removeWaveInviteByCode: function (code, callback) {
         WaveInviteModel.remove({code: code}).exec(callback);
     }
 };

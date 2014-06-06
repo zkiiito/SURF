@@ -1,6 +1,6 @@
 /*global app, DisconnectedView, EditUserView, EditWaveView, UserView, WaveListView, WaveView*/
 var SurfAppView = Backbone.View.extend({
-    initialize: function() {
+    initialize: function () {
         _.bindAll(this, 'addMessage', 'showCreateWave', 'showUpdateWave', 'showEditUser', 'hideOverlays');
         this.model.waves.bind('add', this.addWave);
         this.model.waves.bind('reset', this.resetWaves, this);
@@ -17,19 +17,19 @@ var SurfAppView = Backbone.View.extend({
         'click #darken' : 'hideOverlays'
     },
 
-    render: function() {
+    render: function () {
         this.setElement($('body'));
         this.editWaveView = new EditWaveView({model: this.model});
         this.$el.append(this.editWaveView.render().el);
 
         this.iconImage = new Image();
         var that = this;
-        this.iconImage.onload = function() {
+        this.iconImage.onload = function () {
             that.setTitle();
         };
         this.iconImage.src = 'images/surf-ico.png';
 
-        $('body').keydown(function(e) {
+        $('body').keydown(function (e) {
             var nodeName = $(e.target).prop('nodeName');
 
             if ('INPUT' === nodeName || 'TEXTAREA' === nodeName) {
@@ -44,7 +44,7 @@ var SurfAppView = Backbone.View.extend({
             }
         });
 
-        $(window).resize(function() {
+        $(window).resize(function () {
             if ($(window).width() < 1000) {
                 $('body').addClass('mobile');
             } else {
@@ -57,7 +57,7 @@ var SurfAppView = Backbone.View.extend({
         return this;
     },
 
-    addWave: function(wave) {
+    addWave: function (wave) {
         var listView = new WaveListView({model: wave}),
             view = new WaveView({model: wave});
 
@@ -65,48 +65,48 @@ var SurfAppView = Backbone.View.extend({
         $('#wave-container').append(view.render().el);
     },
 
-    resetWaves: function() {
+    resetWaves: function () {
         this.model.waves.map(this.addWave);
     },
 
-    addMessage: function(message) {
+    addMessage: function (message) {
         var wave = this.model.waves.get(message.get('waveId'));
         if (wave) {
             wave.addMessage(message);
         }
     },
 
-    resetMessages: function() {
+    resetMessages: function () {
         this.model.messages.map(this.addMessage);
         this.setTitle();
     },
 
-    showCreateWave: function() {
+    showCreateWave: function () {
         this.editWaveView.setWave(null);
         this.editWaveView.show();
         return false;
     },
 
-    showUpdateWave: function() {
+    showUpdateWave: function () {
         this.editWaveView.setWave(app.currentWave);
         this.editWaveView.show();
         return false;
     },
 
-    showEditUser: function() {
+    showEditUser: function () {
         if (this.editUserView) {
             this.editUserView.show();
         }
         return false;
     },
 
-    showDisconnected: function(reconnect) {
+    showDisconnected: function (reconnect) {
         this.disconnectedView = new DisconnectedView({model: {reconnect: reconnect}});
         this.$el.append(this.disconnectedView.render().el);
         this.disconnectedView.show();
     },
 
-    hideOverlays: function() {
+    hideOverlays: function () {
         if (_.isUndefined(this.disconnectedView)) {
             $('#darken').hide();
             $('.overlay').hide();
@@ -114,7 +114,7 @@ var SurfAppView = Backbone.View.extend({
         return false;
     },
 
-    initCurrentUser: function() {
+    initCurrentUser: function () {
         var template = new UserView({model: this.model.currentUser});
         this.$el.find('#currentuser').html('').append(template.render().el).append(' <p class="currentuser_name">' + this.model.currentUser.escape('name') + '</p>');
 
@@ -126,12 +126,12 @@ var SurfAppView = Backbone.View.extend({
         return false;
     },
 
-    changeCurrentUserName: function() {
+    changeCurrentUserName: function () {
         this.$el.find('p.currentuser_name').text(this.model.currentUser.escape('name'));
         return false;
     },
 
-    setTitle: function() {
+    setTitle: function () {
         var title = 'Surf',
             unreadCount = this.model.messages.where({unread: true}).length;
 
@@ -142,7 +142,7 @@ var SurfAppView = Backbone.View.extend({
         this.setIcon(unreadCount);
     },
 
-    setIcon: function(count) {
+    setIcon: function (count) {
         if (this.iconImage.complete) {
             var canvas = document.createElement('canvas'), ctx, txt, link;
             canvas.width = 35;

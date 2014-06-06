@@ -12,11 +12,11 @@ var express = require('express'),
     bodyParser = require('body-parser'),
     LocalStrategy;
 
-passport.serializeUser(function(user, done) {
+passport.serializeUser(function (user, done) {
     done(null, user);
 });
 
-passport.deserializeUser(function(obj, done) {
+passport.deserializeUser(function (obj, done) {
     done(null, obj);
 });
 
@@ -27,7 +27,7 @@ passport.use(new GoogleStrategy(
         clientSecret: Config.googleSecret,
         callbackURL: Config.hostName + "/auth/google/callback"
     },
-    function(accessToken, refreshToken, profile, done) {
+    function (accessToken, refreshToken, profile, done) {
         // asynchronous verification, for effect...
         process.nextTick(function () {
             // To keep the example simple, the user's Google profile is returned to
@@ -46,7 +46,7 @@ passport.use(new FacebookStrategy(
         callbackURL: Config.hostName + "/auth/facebook/callback",
         profileFields: ['id', 'name', 'email', 'picture']
     },
-    function(accessToken, refreshToken, profile, done) {
+    function (accessToken, refreshToken, profile, done) {
         process.nextTick(function () {
             return done(null, profile);
         });
@@ -103,7 +103,7 @@ app.use('/fonts', express.static(__dirname + '/../client/fonts'));
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.get('/', function(req, res) {
+app.get('/', function (req, res) {
     if (!req.isAuthenticated()) {
         return res.redirect('/auth/google');
     }
@@ -117,25 +117,25 @@ app.get('/auth/facebook', passport.authenticate('facebook', { scope: 'email' }))
 app.get('/auth/facebook/callback',  passport.authenticate('facebook', { successRedirect: '/' }));
 
 if (Config.testMode) {
-    app.get('/loginTest', function(req, res) {
+    app.get('/loginTest', function (req, res) {
         res.sendfile(clientDir + '/test/login.html');
     });
 
     app.post('/loginTest', passport.authenticate('local', { successRedirect: '/', failureRedirect: '/loginTest' }));
 
-    app.get('/logoutTest', function(req, res) {
+    app.get('/logoutTest', function (req, res) {
         req.logout();
         res.redirect('/');
     });
 }
 
-app.get('/logout', function(req, res) {
+app.get('/logout', function (req, res) {
     req.logout();
     res.redirect('/');
 });
 
-app.get('/invite/:inviteCode', function(req, res) {
-    DAL.getWaveInvitebyCode(req.params.inviteCode, function(err, invite) {
+app.get('/invite/:inviteCode', function (req, res) {
+    DAL.getWaveInvitebyCode(req.params.inviteCode, function (err, invite) {
         if (!err && invite) {
             req.session.invite = invite;
         }

@@ -12,7 +12,7 @@ var Wave = Backbone.Model.extend(
         idAttribute: '_id',
 
         /** @constructs */
-        initialize: function() {
+        initialize: function () {
             var UserCollection = require('./User').Collection,
                 uids;
             this.users = new UserCollection();
@@ -25,11 +25,11 @@ var Wave = Backbone.Model.extend(
         /**
          * @param {Message} message
          */
-        addMessage: function(message) {
+        addMessage: function (message) {
             //save, save unread
             message.save();
 
-            this.users.each(function(user) {
+            this.users.each(function (user) {
                 user.send('message', message);
                 DAL.addUnreadMessage(user, message);
             }, message);
@@ -40,9 +40,9 @@ var Wave = Backbone.Model.extend(
          * @param {boolean} notify
          * @returns {boolean}
          */
-        addUsers: function(userIds, notify) {
+        addUsers: function (userIds, notify) {
             var newUsers = [];
-            _.each(userIds, function(item) {
+            _.each(userIds, function (item) {
 
                 var user = require('../SurfServer').users.get(item);
                 if (user) {
@@ -52,7 +52,7 @@ var Wave = Backbone.Model.extend(
             }, this);
 
             if (notify && newUsers.length > 0) {
-                _.each(newUsers, function(user) {
+                _.each(newUsers, function (user) {
                     this.notifyUsersOfNewUser(user);
                 }, this);
                 this.notifyUsers();
@@ -66,7 +66,7 @@ var Wave = Backbone.Model.extend(
          * @param {boolean} notify
          * @returns {boolean}
          */
-        addUser: function(user, notify) {
+        addUser: function (user, notify) {
             this.users.add(user);
             user.waves.add(this);
 
@@ -88,8 +88,8 @@ var Wave = Backbone.Model.extend(
          * @param {User} newuser
          */
         //if multi-login/user or multiple servers, need to change this
-        notifyUsersOfNewUser: function(newuser) {
-            this.users.each(function(user) {
+        notifyUsersOfNewUser: function (newuser) {
+            this.users.each(function (user) {
                 //csak ha be van lepve, es nem ismerte eddig
                 //tehat most lett 1 waven vele
                 if (user.socket && user !== newuser && _.intersection(newuser.waves, user.waves).length < 2) {
@@ -100,8 +100,8 @@ var Wave = Backbone.Model.extend(
             }, this);
         },
 
-        notifyUsers: function() {
-            this.users.each(function(user) {
+        notifyUsers: function () {
+            this.users.each(function (user) {
                 user.send('updateWave', {
                     wave: this
                 });
@@ -111,8 +111,8 @@ var Wave = Backbone.Model.extend(
         /**
          * @param {User} newuser
          */
-        notifyUserOfExistingUsers: function(newuser) {
-            this.users.each(function(user) {
+        notifyUserOfExistingUsers: function (newuser) {
+            this.users.each(function (user) {
                 //csak ha nem ismerte eddig
                 //tehat most lett 1 waven vele
                 if (user !== newuser && _.intersection(newuser.waves, user.waves).length < 2) {
@@ -126,8 +126,8 @@ var Wave = Backbone.Model.extend(
         /**
          * @param {User} user
          */
-        sendOldMessagesToUser: function(user) {
-            DAL.getLastMessagesForUserInWave(user, this, function(err, msgs) {
+        sendOldMessagesToUser: function (user) {
+            DAL.getLastMessagesForUserInWave(user, this, function (err, msgs) {
                 if (!err) {
                     user.send('message', {messages: msgs});
                 }
@@ -140,11 +140,11 @@ var Wave = Backbone.Model.extend(
          * @param {number} minParentId
          * @param {number} maxRootId
          */
-        sendPreviousMessagesToUser: function(user, minParentId, maxRootId) {
+        sendPreviousMessagesToUser: function (user, minParentId, maxRootId) {
             var wave = this;
             //ha olvasatlan jott, es le kell szedni addig
             if (minParentId && maxRootId) {
-                DAL.calcRootId(minParentId, [], function(err, minRootId) {
+                DAL.calcRootId(minParentId, [], function (err, minRootId) {
                     if (!err) {
                         DAL.getUnreadIdsForUserInWave(user, wave, function (err, ids) {
                             if (!err) {
@@ -158,7 +158,7 @@ var Wave = Backbone.Model.extend(
                     }
                 });
             } else {
-                DAL.getMinRootIdForWave(wave, maxRootId, maxRootId, function(err, newMinRootId) {
+                DAL.getMinRootIdForWave(wave, maxRootId, maxRootId, function (err, newMinRootId) {
                     if (!err) {
                         DAL.getMessagesForUserInWave(wave, newMinRootId, maxRootId, [], function (err, msgs) {
                             if (!err) {
@@ -173,18 +173,18 @@ var Wave = Backbone.Model.extend(
         /**
          * @param {User} user
          */
-        readAllMessagesOfUser: function(user) {
+        readAllMessagesOfUser: function (user) {
             DAL.readAllMessagesForUserInWave(user, this);
         },
 
-        save: function() {
+        save: function () {
             return DAL.saveWave(this);
         },
 
         /**
          * @param {User} user
          */
-        quitUser: function(user) {
+        quitUser: function (user) {
             if (this.users.indexOf(user) >= 0) {
                 this.users.remove(user);
 
@@ -203,14 +203,14 @@ var Wave = Backbone.Model.extend(
         /**
          * @param {User} user
          */
-        createInviteCode: function(user) {
+        createInviteCode: function (user) {
             return DAL.createInviteCodeForWave(user, this);
         },
 
         /**
          * @param {Object} data
          */
-        update: function(data) {
+        update: function (data) {
             this.set('title', data.title || "");
             var notified = false,
                 userIds = this.get('userIds'),
@@ -221,7 +221,7 @@ var Wave = Backbone.Model.extend(
                 notified = this.addUsers(newIds, true);
 
                 //kikuldeni a wave tartalmat is, amibe belepett
-                _.each(newIds, function(userId) {
+                _.each(newIds, function (userId) {
                     var user = require('../SurfServer').users.get(userId);
                     this.sendOldMessagesToUser(user);
                 }, this);
@@ -237,11 +237,11 @@ var Wave = Backbone.Model.extend(
         /**
          * @param {User} user
          */
-        isMember: function(user) {
+        isMember: function (user) {
             return this.users.contains(user);
         }
 
-        //validate: function() {
+        //validate: function () {
         //check userids
         //}
     }

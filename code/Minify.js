@@ -4,7 +4,7 @@ var fs = require('fs'),
 
 /*jslint stupid: true*/
 var Minify = {
-    readFiles: function(dir, done) {
+    readFiles: function (dir, done) {
         var i, l, contents = '', files = [
             "../../node_modules/socket.io/node_modules/socket.io-client/socket.io.js",
             "../../node_modules/underscore/underscore.js",
@@ -39,7 +39,7 @@ var Minify = {
         return done(null, contents);
     },
 
-    minify: function() {
+    minify: function () {
         var workDir = __dirname + '/../client/js',
             minFile = workDir + '/surf.min.js';
 
@@ -47,7 +47,7 @@ var Minify = {
             fs.unlinkSync(minFile);
         }
 
-        this.readFiles(workDir, function(err, fileData) {
+        this.readFiles(workDir, function (err, fileData) {
             if (err) {
                 throw err;
             }

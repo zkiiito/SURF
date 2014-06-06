@@ -19,7 +19,7 @@ function strip_tags (input, allowed) {
     // +    revised by: Rafał Kukawski (http://blog.kukawski.pl/)
     // *     example 1: strip_tags('<p>Kevin</p> <br /><b>van</b> <i>Zonneveld</i>', '<i><b>');
     // *     returns 1: 'Kevin <b>van</b> <i>Zonneveld</i>'
-    // *     example 2: strip_tags('<p>Kevin <img src="someimage.png" onmouseover="someFunction()">van <i>Zonneveld</i></p>', '<p>');
+    // *     example 2: strip_tags('<p>Kevin <img src="someimage.png" onmouseover="somefunction ()">van <i>Zonneveld</i></p>', '<p>');
     // *     returns 2: '<p>Kevin van Zonneveld</p>'
     // *     example 3: strip_tags("<a href='http://kevin.vanzonneveld.net'>Kevin van Zonneveld</a>", "<a>");
     // *     returns 3: '<a href='http://kevin.vanzonneveld.net'>Kevin van Zonneveld</a>'

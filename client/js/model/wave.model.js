@@ -9,7 +9,7 @@ var Wave = Backbone.Model.extend(
         },
         idAttribute: '_id',
         /** @constructs */
-        initialize: function() {
+        initialize: function () {
             this.messages = new MessageCollection();
             this.users = new UserCollection();
             if (this.get('userIds')) {
@@ -22,7 +22,7 @@ var Wave = Backbone.Model.extend(
          * @param {Message} message
          * @returns {boolean}
          */
-        addMessage: function(message) {
+        addMessage: function (message) {
             if (null !== message.get('parentId')) {
                 var parentMsg = this.messages.get(message.get('parentId')),
                     minParentId,
@@ -53,15 +53,15 @@ var Wave = Backbone.Model.extend(
         /**
          * @param {User} user
          */
-        addUser: function(user) {
+        addUser: function (user) {
             this.users.add(user);
         },
 
         /**
          * @param {Array} ids
          */
-        addUsers: function(ids) {
-            _.each(ids, function(item) {
+        addUsers: function (ids) {
+            _.each(ids, function (item) {
                 var user = app.model.users.get(item);
                 this.addUser(user);
             }, this);
@@ -70,8 +70,8 @@ var Wave = Backbone.Model.extend(
         /**
          * @returns {number}
          */
-        getUnreadCount: function() {
-            return this.messages.reduce(function(unread, msg) {
+        getUnreadCount: function () {
+            return this.messages.reduce(function (unread, msg) {
                 return unread + (msg.get('unread') ? 1 : 0);
             }, 0);
         },
@@ -79,21 +79,21 @@ var Wave = Backbone.Model.extend(
         /**
          * @returns {string}
          */
-        getUserNames: function() {
+        getUserNames: function () {
             return this.users.pluck('name').join(', ');
         },
 
         /**
          * @returns {number}
          */
-        getUserCount: function() {
+        getUserCount: function () {
             return this.users.length;
         },
 
         /**
          * @param {Object} data
          */
-        update: function(data) {
+        update: function (data) {
             this.set('title', data.title);
 
             var userIds = this.get('userIds'),
@@ -112,14 +112,14 @@ var Wave = Backbone.Model.extend(
         /**
          * @param {number} messageId
          */
-        setCurrentMessage: function(messageId) {
+        setCurrentMessage: function (messageId) {
             this.currentMessageId = messageId;
         },
 
         /**
          * @returns {Message}
          */
-        getNextUnreadMessage: function() {
+        getNextUnreadMessage: function () {
             var nextUnread, msgs, i, currentMessage,
                 minId = 0;
 
@@ -137,7 +137,7 @@ var Wave = Backbone.Model.extend(
             }
 
             //if no unread found around the current, or no current, check the main thread, for all root elements below the current root
-            msgs = this.messages.filter(function(msg) {
+            msgs = this.messages.filter(function (msg) {
                 return msg.getSortableId() > minId && msg.get('parentId') === null;
             });
             for (i = 0; i < msgs.length; i++) {
@@ -149,7 +149,7 @@ var Wave = Backbone.Model.extend(
 
             //if none found, check root elements from the top
             if (minId > 0) {
-                msgs = this.messages.filter(function(msg) {
+                msgs = this.messages.filter(function (msg) {
                     return msg.getSortableId() < minId && msg.get('parentId') === null;
                 });
 
@@ -168,16 +168,16 @@ var Wave = Backbone.Model.extend(
             return nextUnread;
         },
 
-        getPreviousMessages: function() {
+        getPreviousMessages: function () {
             if (this.messages.length) {
                 var maxRootId = this.messages.at(0).id;
                 Communicator.getMessages(this, null, maxRootId);
             }
         },
 
-        readAllMessages: function() {
+        readAllMessages: function () {
             var unread = false;
-            this.messages.each(function(msg) {
+            this.messages.each(function (msg) {
                 unread = msg.readAllMessages() || unread;
             });
 
@@ -187,7 +187,7 @@ var Wave = Backbone.Model.extend(
             }
         },
 
-        quit: function() {
+        quit: function () {
             Communicator.quitUser(this.id);
             app.currentWaveId = null;
             app.model.waves.remove(this);

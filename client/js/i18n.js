@@ -1,7 +1,7 @@
 /*global R*/
 /*jslint newcap: true*/
 var i18n = {
-    init: function() {
+    init: function () {
         R.registerLocale('en-GB', {});
         R.registerLocale('hu-HU', {
             'Next unread': 'Köv. olvasatlan',
@@ -49,8 +49,8 @@ var i18n = {
         i18n.applyR($('body'));
     },
 
-    applyR: function(context) {
-        $('.R', context).each(function() {
+    applyR: function (context) {
+        $('.R', context).each(function () {
             var el = $(this);
             //console.log(el.html() + ' ' + R(el.html()));
             if (el.prop('placeholder')) {
@@ -75,7 +75,7 @@ var i18n = {
         }
     },
 
-    __: function(txt) {
+    __: function (txt) {
         return R(txt);
     }
 };
