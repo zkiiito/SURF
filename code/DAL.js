@@ -87,7 +87,7 @@ var DAL = {
             });
         });
 
-        //temporary fix a sajat unreadokra: ha tobb mint 1000, lenullazzuk
+        //temporary fix: delete all unread, if user has more than 1000
         UserModel.find().exec(function (err, users) {
             if (!err) {
                 _.each(users, function (user) {
@@ -193,7 +193,7 @@ var DAL = {
                 console.log('calcRootId: error');
                 return;
             }
-            //ha gyokerelem, vagy tud arrol valamit
+            //if knows root element, or IS a root element
             if (null !== message.rootId || null === message.parentId) {
                 var rootId = null;
 
@@ -271,7 +271,7 @@ var DAL = {
             //console.log(result);
             var minRootId = null,
                 unreadIds = [];
-            if (!err) {//ha van unread
+            if (!err) {//we have unread messages!
                 minRootId = result.minRootId;
                 unreadIds = result.unreadIds;
             }
@@ -382,13 +382,13 @@ var DAL = {
      * @param {Function} callback
      */
     getNextMinRootIdForWave: function (wave, minRootId, callback) {
-        //ha keves, vagy ha a minRootId null
+        //if not enough, or minRootId is null
         var startTime = new Date().getTime(),
             query = MessageModel.find({waveId: wave.id, parentId: null}).sort('-_id').limit(11);
 
 
         if (minRootId) {
-            //ha a parentId null, akkor a rootId = _id, az _id-re van index is
+            //if parentId is null, rootId = _id, we have index on _id
             query.where('_id').lt(minRootId);
         }
 
@@ -480,8 +480,7 @@ var DAL = {
                 } catch (error) {
                     /*
                      * quickfix:
-                     * ez a hiba lokalban sosem jelentkezik, csak elesben
-                     * valahogy a redis altal visszaadott tombbol string lesz, ha 1 elemu
+                     * sometimes redis returning an array with 1 item, it becomes a string. mostly on heroku.
                      */
                     console.log('DEBUG getMessagesForUserInWave: ' + wave.id + ' error: ' + error.message);
                     console.log('DEBUG getMessagesForUserInWave: ' + wave.id + ' messages.length: ' + messages.length +

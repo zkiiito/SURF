@@ -28,7 +28,6 @@ passport.use(new GoogleStrategy(
         callbackURL: Config.hostName + "/auth/google/callback"
     },
     function (accessToken, refreshToken, profile, done) {
-        // asynchronous verification, for effect...
         process.nextTick(function () {
             // To keep the example simple, the user's Google profile is returned to
             // represent the logged-in user.  In a typical application, you would want
@@ -58,15 +57,16 @@ if (Config.testMode) {
 
     passport.use(new LocalStrategy(
         function (username, password, done) {
-            var user = {
-                provider: 'google',
-                _json: {
-                    id: parseInt(username, 10),
-                    email: 'test' + username + '@wavesurf.com',
-                    name: 'Surf Tester ' + parseInt(username, 10).toString(),
-                    picture: 'http://www.jigzone.com/p/jz/isA/TreeFrog.jpg'
-                }
-            };
+            var id = parseInt(username, 10),
+                user = {
+                    provider: 'google',
+                    _json: {
+                        id: id,
+                        email: 'test' + username + '@wavesurf.com',
+                        name: 'Surf Tester ' + id.toString(),
+                        picture: 'http://lorempixel.com/100/100/people/'
+                    }
+                };
 
             return done(null, user);
         }
@@ -91,7 +91,7 @@ app.use(session({
     secret: 'surfSessionSecret9',
     cookie: {
         httpOnly: true
-        //secure: true //csak elesben kell
+        //secure: true //in prod?
     }
 }));
 

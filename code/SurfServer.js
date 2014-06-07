@@ -67,7 +67,6 @@ var SurfServer = {
 
             console.log('login: ' + client.curUser.id);
             client.curUser.socket = client;
-            //client.curUser.ip = client.handshake.address.address;
 
             that.authClient(client);
             client.curUser.init();
@@ -97,10 +96,10 @@ var SurfServer = {
 
         if (user) {
             console.log('auth: userfound ' + user.id);
-            user.set(authMode + 'Id', userData.id);//ha ez az auth meg nincs lementve
+            user.set(authMode + 'Id', userData.id);//refresh id, usually simply save if new
             user.set('email', userData.email);//?
             if (picture) {
-                user.set(authMode + 'Avatar', picture);//befrissites
+                user.set(authMode + 'Avatar', picture);//refresh default picture for auth provider
             }
             user.save();
             return user;
@@ -126,7 +125,6 @@ var SurfServer = {
      */
     authClient: function (client) {
         var that = this;
-        //torolt funkciok a regibol: nick, topic, part, invite, joinchan
         client.on('disconnect', function () {
             console.log('disconnect: ' + client.curUser.id);
             client.curUser.disconnect();

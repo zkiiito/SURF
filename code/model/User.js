@@ -58,9 +58,12 @@ var User = Backbone.Model.extend(
         },
 
         /**
+         * get user's friends
+         * exluding himself
+         *
          * @returns {UserCollection}
          */
-        getFriends: function () {//sajat magat nem adhatja vissza!
+        getFriends: function () {
             var friends = this.waves.reduce(function (friends, wave) {
                 var uids = wave.get('userIds');
                 _.each(uids, function (item) {
@@ -166,11 +169,6 @@ var User = Backbone.Model.extend(
 
             return json;
         }
-
-
-        //validate: function (){
-        //check: ?
-        //}
     }
 );
 

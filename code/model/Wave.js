@@ -47,7 +47,7 @@ var Wave = Backbone.Model.extend(
                 var user = require('../SurfServer').users.get(item);
                 if (user) {
                     newUsers.push(user);
-                    this.addUser(user, false);//itt nem notifyolunk senkit egyenkent, max globalisan
+                    this.addUser(user, false);//do not notify anyone here, only in next step
                 }
             }, this);
 
@@ -90,8 +90,7 @@ var Wave = Backbone.Model.extend(
         //if multi-login/user or multiple servers, need to change this
         notifyUsersOfNewUser: function (newuser) {
             this.users.each(function (user) {
-                //csak ha be van lepve, es nem ismerte eddig
-                //tehat most lett 1 waven vele
+                //only if logged in and now they have one common wave
                 if (user.socket && user !== newuser && _.intersection(newuser.waves, user.waves).length < 2) {
                     user.send('updateUser', {
                         user: newuser.toFilteredJSON()
@@ -113,8 +112,7 @@ var Wave = Backbone.Model.extend(
          */
         notifyUserOfExistingUsers: function (newuser) {
             this.users.each(function (user) {
-                //csak ha nem ismerte eddig
-                //tehat most lett 1 waven vele
+                //only if logged in and now they have one common wave
                 if (user !== newuser && _.intersection(newuser.waves, user.waves).length < 2) {
                     newuser.send('updateUser', {
                         user: user.toFilteredJSON()
@@ -142,7 +140,7 @@ var Wave = Backbone.Model.extend(
          */
         sendPreviousMessagesToUser: function (user, minParentId, maxRootId) {
             var wave = this;
-            //ha olvasatlan jott, es le kell szedni addig
+            //if user got an unread message, and does not have it's parents
             if (minParentId && maxRootId) {
                 DAL.calcRootId(minParentId, [], function (err, minRootId) {
                     if (!err) {
@@ -220,7 +218,7 @@ var Wave = Backbone.Model.extend(
                 newIds = _.difference(data.userIds, userIds);
                 notified = this.addUsers(newIds, true);
 
-                //kikuldeni a wave tartalmat is, amibe belepett
+                //send old messages from the wave to the new user
                 _.each(newIds, function (userId) {
                     var user = require('../SurfServer').users.get(userId);
                     this.sendOldMessagesToUser(user);
@@ -240,10 +238,6 @@ var Wave = Backbone.Model.extend(
         isMember: function (user) {
             return this.users.contains(user);
         }
-
-        //validate: function () {
-        //check userids
-        //}
     }
 );
 

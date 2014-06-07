@@ -63,7 +63,6 @@ var WaveListView = Backbone.View.extend({
     },
 
     scrollToNextUnread: function (e) {
-        //ilyenkor nem kell hrefelni a routernek
         if (app.currentWaveId === this.model.id) {
             e.preventDefault();
             var nextUnread = this.model.getNextUnreadMessage();
