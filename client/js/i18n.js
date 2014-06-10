@@ -13,6 +13,7 @@ var i18n = {
             'Save message' : 'Üzenet mentése',
             'Older messages': 'Régebbi üzenetek',
             'New message' : 'Új üzenet',
+            'new messages' : 'új üzenet',
             'Reply to {{ user.name }}\'s message': 'Válasz {{ user.name }} üzenetére',
             'Cancel': 'Mégse',
             'Close': 'Bezárás',
