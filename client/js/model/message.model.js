@@ -126,7 +126,7 @@ var Message = Backbone.Model.extend(
                 i;
 
             for (i = 0; i < msgs.length; i++) {
-                nextUnread = msgs[i].getNextUnread(minId, true);
+                nextUnread = msgs[i].getNextUnread(minId, true, checkedIds);
                 if (nextUnread) {
                     return nextUnread;
                 }
