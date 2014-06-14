@@ -2,8 +2,8 @@
 /*jslint newcap: true*/
 var i18n = {
     init: function () {
-        R.registerLocale('en-GB', {});
-        R.registerLocale('hu-HU', {
+        R.registerLocale('en-US', {});
+        R.registerLocale('hu', {
             'Next unread': 'Köv. olvasatlan',
             'Edit': 'Szerkesztés',
             'Read all': 'Mindet olvasottá',
