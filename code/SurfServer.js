@@ -49,7 +49,7 @@ var SurfServer = {
                     return next(new Error('Session not found.'));
                 }
                 // success! we're authenticated with a known session.
-                if (session.passport.user !== undefined) {
+                if (session.passport !== undefined && session.passport.user !== undefined) {
                     socket.session = session;
                     return next();
                 }
