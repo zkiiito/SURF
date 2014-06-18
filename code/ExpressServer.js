@@ -83,7 +83,7 @@ app.use(errorHandler({
     showStack: true
 }));
 
-app.use(cookieParser('surfCookieParserSecret9'));
+app.use(cookieParser());
 app.use(bodyParser());
 app.use(session({
     key: 'surf.sid',

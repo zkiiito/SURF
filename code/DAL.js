@@ -53,7 +53,9 @@ var DAL = {
 
         var redisURL = url.parse(Config.redisUrl);
         redis = redis.createClient(redisURL.port, redisURL.hostname, {no_ready_check: true});
-        redis.auth(redisURL.auth.split(":")[1]);
+        if (redisURL.auth) {
+            redis.auth(redisURL.auth.split(":")[1]);
+        }
 
         //mongoose.set('debug', true);
 
