@@ -433,7 +433,7 @@ $.TokenList = function (input, url_or_data, settings) {
     // Pre-populate list if items exist
     hidden_input.val("");
     var li_data = $(input).data("settings").prePopulate || hidden_input.data("pre");
-    if($(input).data("settings").processPrePopulate && $.isfunction ($(input).data("settings").onResult)) {
+    if($(input).data("settings").processPrePopulate && $.isFunction ($(input).data("settings").onResult)) {
         li_data = $(input).data("settings").onResult.call(hidden_input, li_data);
     }
     if(li_data && li_data.length) {
@@ -449,7 +449,7 @@ $.TokenList = function (input, url_or_data, settings) {
     }
 
     // Initialization is done
-    if($.isfunction ($(input).data("settings").onReady)) {
+    if($.isFunction ($(input).data("settings").onReady)) {
         $(input).data("settings").onReady.call();
     }
 
@@ -551,7 +551,7 @@ $.TokenList = function (input, url_or_data, settings) {
             return;
           }
 
-          if ($.isfunction ($(input).data("settings").onFreeTaggingAdd)) {
+          if ($.isFunction ($(input).data("settings").onFreeTaggingAdd)) {
             token = $(input).data("settings").onFreeTaggingAdd.call(hidden_input, token);
           }
           var object = {};
@@ -642,7 +642,7 @@ $.TokenList = function (input, url_or_data, settings) {
         hide_dropdown();
 
         // Execute the onAdd callback if defined
-        if($.isfunction (callback)) {
+        if($.isFunction (callback)) {
             callback.call(hidden_input,item);
         }
     }
@@ -729,7 +729,7 @@ $.TokenList = function (input, url_or_data, settings) {
         }
 
         // Execute the onDelete callback if defined
-        if($.isfunction (callback)) {
+        if($.isFunction (callback)) {
             callback.call(hidden_input,token_data);
         }
     }
@@ -900,7 +900,7 @@ $.TokenList = function (input, url_or_data, settings) {
         var cache_key = query + computeURL();
         var cached_results = cache.get(cache_key);
         if(cached_results) {
-            if ($.isfunction ($(input).data("settings").onCachedResult)) {
+            if ($.isFunction ($(input).data("settings").onCachedResult)) {
               cached_results = $(input).data("settings").onCachedResult.call(hidden_input, cached_results);
             }
             populate_dropdown(query, cached_results);
@@ -935,7 +935,7 @@ $.TokenList = function (input, url_or_data, settings) {
                 // Attach the success callback
                 ajax_params.success = function (results) {
                   cache.add(cache_key, $(input).data("settings").jsonContainer ? results[$(input).data("settings").jsonContainer] : results);
-                  if($.isfunction ($(input).data("settings").onResult)) {
+                  if($.isFunction ($(input).data("settings").onResult)) {
                       results = $(input).data("settings").onResult.call(hidden_input, results);
                   }
 
@@ -954,7 +954,7 @@ $.TokenList = function (input, url_or_data, settings) {
                 });
 
                 cache.add(cache_key, results);
-                if($.isfunction ($(input).data("settings").onResult)) {
+                if($.isFunction ($(input).data("settings").onResult)) {
                     results = $(input).data("settings").onResult.call(hidden_input, results);
                 }
                 populate_dropdown(query, results);
