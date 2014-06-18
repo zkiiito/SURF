@@ -1,9 +1,10 @@
 var _ = require('underscore'),
     mongoose = require('mongoose'),
     Schema = mongoose.Schema,
-    redis = require('redis-url'),
+    redis = require('redis'),
     async = require('async'),
     net = require('net'),
+    url = require('url'),
     Config = require('./Config');
 
 var UserSchema = new Schema({
@@ -49,7 +50,10 @@ var DAL = {
      */
     init: function (server) {
         mongoose.connect(Config.mongoUrl);
-        redis = redis.connect(Config.redisUrl);
+
+        var redisURL = url.parse(Config.redisUrl);
+        redis = redis.createClient(redisURL.port, redisURL.hostname, {no_ready_check: true});
+        redis.auth(redisURL.auth.split(":")[1]);
 
         //mongoose.set('debug', true);
 
