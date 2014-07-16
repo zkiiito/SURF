@@ -88,7 +88,7 @@ var SurfAppView = Backbone.View.extend({
     },
 
     showUpdateWave: function () {
-        this.editWaveView.setWave(app.currentWave);
+        this.editWaveView.setWave(app.model.waves.get(app.currentWaveId));
         this.editWaveView.show();
         return false;
     },
