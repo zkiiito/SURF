@@ -78,7 +78,7 @@ var EditWaveView = Backbone.View.extend({
             this.$el.find('#editwave-invite').show();
         } else {
             this.$el.find('input[name=title]').val('');
-            this.$el.find('h2').text(__('New conversation'));
+            this.$el.find('h2').text(__('Add conversation'));
             this.$el.find('#editwave-submit').text(__('Create'));
             this.$el.find('#editwave-invite').hide();
         }

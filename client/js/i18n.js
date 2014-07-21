@@ -6,23 +6,23 @@ var i18n = {
         R.registerLocale('hu', {
             'Next unread': 'Köv. olvasatlan',
             'Edit': 'Szerkesztés',
-            'Read all': 'Mindet olvasottá',
+            'All read': 'Mindet olvasottá',
             'Leave conversation': 'Kilépés',
-            '{{ usercount }} users' : '{{ usercount }} résztvevő',
+            '{{ usercount }} participants' : '{{ usercount }} résztvevő',
             'Press Return to send, Shift-Return to break line.': 'Nyomj Entert a mentéshez, Shift-Entert a sortöréshez.',
             'Save message' : 'Üzenet mentése',
-            'Older messages': 'Régebbi üzenetek',
-            'New message' : 'Új üzenet',
+            'Earlier messages': 'Régebbi üzenetek',
+            'Add message' : 'Új üzenet',
             'new messages' : 'új üzenet',
             'Reply to {{ user.name }}\'s message': 'Válasz {{ user.name }} üzenetére',
             'Cancel': 'Mégse',
             'Close': 'Bezárás',
-            'New conversation': 'Új beszélgetés',
-            'New conversation +': 'Új beszélgetés +',
+            'Add conversation': 'Új beszélgetés',
+            'Add conversation +': 'Új beszélgetés +',
             'Title': 'Beszélgetés címe',
             'Participants': 'Résztvevők',
             'Create': 'Létrehozás',
-            'Log out': 'Kijelentkezés',
+            'Sign out': 'Kijelentkezés',
 
             'Edit conversation': 'Beszélgetés szerkesztése',
             'Save': 'Mentés',
@@ -44,7 +44,7 @@ var i18n = {
             "Reconnect": "Újracsatlakozás most"
         });
 
-        //R.setLocale('hu-HU');
+        R.setLocale(navigator.language || navigator.browserLanguage);
 
         i18n.translateTemplates();
         i18n.applyR($('body'));
