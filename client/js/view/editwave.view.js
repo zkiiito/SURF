@@ -23,7 +23,7 @@ var EditWaveView = Backbone.View.extend({
         this.userArray = this.model.users.reduce(function (userArray, user) {
             var obj = {id: user.id, name: user.get('name') + ' (' + user.get('email') + ')'};
 
-            if (this.wave && !this.wave.users.get(user.id)) {
+            if (!this.wave || (this.wave && !this.wave.users.get(user.id))) {
                 userArray.push(obj);
             }
 
