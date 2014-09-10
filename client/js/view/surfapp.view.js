@@ -1,9 +1,10 @@
 /*global app, DisconnectedView, EditUserView, EditWaveView, UserView, WaveListView, WaveView*/
 var SurfAppView = Backbone.View.extend({
     initialize: function () {
-        _.bindAll(this, 'addMessage', 'showCreateWave', 'showUpdateWave', 'showEditUser', 'hideOverlays');
-        this.model.waves.bind('add', this.addWave);
+        _.bindAll(this, 'addMessage', 'showCreateWave', 'showUpdateWave', 'showEditUser', 'hideOverlays', 'addWave');
+        this.model.waves.bind('add', this.addWave, this);
         this.model.waves.bind('reset', this.resetWaves, this);
+        this.model.waves.bind('remove', this.handleEmpty);
         this.model.messages.bind('reset', this.resetMessages, this);
         this.model.messages.bind('add', this.setTitle, this);
         this.model.messages.bind('change:unread', this.setTitle, this);
@@ -28,6 +29,8 @@ var SurfAppView = Backbone.View.extend({
             that.setTitle();
         };
         this.iconImage.src = 'images/surf-ico.png';
+
+        $('.empty').hide();
 
         $('body').keydown(function (e) {
             var nodeName = $(e.target).prop('nodeName');
@@ -61,12 +64,13 @@ var SurfAppView = Backbone.View.extend({
         var listView = new WaveListView({model: wave}),
             view = new WaveView({model: wave});
 
+        this.handleEmpty();
         $('#wave-list').append(listView.render().el);
         $('#wave-container').append(view.render().el);
     },
 
     resetWaves: function () {
-        this.model.waves.map(this.addWave);
+        this.model.waves.map(this.addWave, this);
     },
 
     addMessage: function (message) {
@@ -163,6 +167,14 @@ var SurfAppView = Backbone.View.extend({
             link.href = canvas.toDataURL("image/x-icon");
             $('link[rel="shortcut icon"]').remove();
             $('head').append(link);
+        }
+    },
+
+    handleEmpty: function () {
+        if (0 === app.model.waves.length) {
+            $('.empty').show();
+        } else {
+            $('.empty').hide();
         }
     }
 });

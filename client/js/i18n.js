@@ -17,6 +17,7 @@ var i18n = {
             'Reply to {{ user.name }}\'s message': 'Válasz {{ user.name }} üzenetére',
             'Cancel': 'Mégse',
             'Close': 'Bezárás',
+            'You have no conversations.': 'Nincs aktív beszélgetésed',
             'Add conversation': 'Új beszélgetés',
             'Add conversation +': 'Új beszélgetés +',
             'Title': 'Beszélgetés címe',

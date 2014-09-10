@@ -191,7 +191,9 @@ var Wave = Backbone.Model.extend(
             Communicator.quitUser(this.id);
             app.currentWaveId = null;
             app.model.waves.remove(this);
-            app.showWave(null);
+            app.model.messages.remove(app.model.messages.where({waveId: this.id}), {silent: true});
+
+            app.showLastWave();
         }
     }
 );

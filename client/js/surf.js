@@ -22,7 +22,19 @@ var SurfAppRouter = Backbone.Router.extend({
             this.model.waves.get(id).set('current', true);
             this.currentWaveId = id;
         } else {
-            this.navigate("");
+            this.showLastWave();
+        }
+    },
+
+    showLastWave: function () {
+        var lastMsg, lastWave;
+
+        lastMsg = this.model.messages.last();
+        if (lastMsg) {
+            this.navigate('wave/' + lastMsg.get('waveId'), {trigger: true});
+        } else {
+            lastWave = this.model.waves.last();
+            this.showWave(lastWave ? lastWave.id : null);
         }
     }
 });
