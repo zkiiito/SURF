@@ -33,11 +33,17 @@ var WaveReplyFormView = Backbone.View.extend({
 
     handleKeydown: function (e) {
         if (!e.shiftKey && 13 === e.keyCode) {
+            //enter
             e.preventDefault();
             this.$el.find('form').submit();
         } else if (32 === e.keyCode && ' ' === $(e.target).val()) {
+            //space
             e.preventDefault();
             this.scrollToNextUnread();
+        } else if (!e.shiftKey && 9 === e.keyCode) {
+            //tab
+            e.preventDefault();
+            this.mentionUser();
         }
         e.stopPropagation();
     },
@@ -50,7 +56,46 @@ var WaveReplyFormView = Backbone.View.extend({
         return this.model.id;
     },
 
+    getWave: function () {
+        return app.model.waves.get(this.getWaveId());
+    },
+
     getParentId: function () {
         return null;
+    },
+
+    mentionUser: function () {
+        var search, users, replace,
+            replaceSelect = 0,
+            textarea = this.$el.find('textarea'),
+            caretPos = textarea[0].selectionEnd || 0,
+            atpos = textarea.val().lastIndexOf('@', caretPos);
+
+        if (atpos > -1 && caretPos - atpos < 50) {
+            search = textarea.val().substring(atpos + 1, caretPos).toLowerCase();
+            users = this.getWave().users.filter(function (user) {
+                return user.get('name').toLowerCase().indexOf(search) === 0;
+            });
+
+            if (users.length > 0) {
+                if (1 === users.length) {
+                    replace = users[0].get('name');
+                } else {
+                    replace = users[0].get('name').substr(0, search.length);
+
+                    while (_.all(users, function (user) {
+                            return user.get('name').substr(0, replace.length) === replace;
+                    })) {
+                        replace = users[0].get('name').substr(0, replace.length + 1);
+                    }
+
+                    replace = replace.substr(0, replace.length - 1) + '?';
+                    replaceSelect = 1;
+                }
+                textarea.val(textarea.val().substring(0, atpos + 1) + replace + textarea.val().substr(caretPos));
+                textarea[0].selectionStart = atpos + 1 + replace.length - replaceSelect;
+                textarea[0].selectionEnd = atpos + 1 + replace.length;
+            }
+        }
     }
 });
