@@ -23,6 +23,9 @@ var SurfAppRouter = Backbone.Router.extend({
             this.currentWaveId = id;
         } else if (this.model.waves.length) {
             this.showLastWave();
+        } else {
+            //navigate back to root
+            this.navigate('/');
         }
     },
 
