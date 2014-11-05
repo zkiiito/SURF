@@ -148,25 +148,29 @@ var SurfAppView = Backbone.View.extend({
 
     setIcon: function (count) {
         if (this.iconImage.complete) {
-            var canvas = document.createElement('canvas'), ctx, txt, link;
-            canvas.width = 35;
-            canvas.height = 35;
-            ctx = canvas.getContext('2d');
-            ctx.drawImage(this.iconImage, 0, 0);
+            try {
+                var canvas = document.createElement('canvas'), ctx, txt, link;
+                canvas.width = 35;
+                canvas.height = 35;
+                ctx = canvas.getContext('2d');
+                ctx.drawImage(this.iconImage, 0, 0);
 
-            if (count > 0) {
-                ctx.fillStyle = '#444444';
-                ctx.font = 'bold 16px sans-serif';
-                txt = count > 99 ? '99+' : count.toString();
-                ctx.fillText(txt, 35 - 9 * txt.length, 35);
+                if (count > 0) {
+                    ctx.fillStyle = '#444444';
+                    ctx.font = 'bold 16px sans-serif';
+                    txt = count > 99 ? '99+' : count.toString();
+                    ctx.fillText(txt, 35 - 9 * txt.length, 35);
+                }
+
+                link = document.createElement('link');
+                link.type = 'image/x-icon';
+                link.rel = 'shortcut icon';
+                link.href = canvas.toDataURL("image/x-icon");
+                $('link[rel="shortcut icon"]').remove();
+                $('head').append(link);
+            } catch (e) {
+                return e;
             }
-
-            link = document.createElement('link');
-            link.type = 'image/x-icon';
-            link.rel = 'shortcut icon';
-            link.href = canvas.toDataURL("image/x-icon");
-            $('link[rel="shortcut icon"]').remove();
-            $('head').append(link);
         }
     },
 
