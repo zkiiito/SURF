@@ -42,7 +42,9 @@ var i18n = {
             "Disconnected": "Megszakadt a kapcsolat",
             "You're disconnected": "Megszakadt a kapcsolat",
             "Retrying in:": "Újracsatlakozás:",
-            "Reconnect": "Újracsatlakozás most"
+            "Reconnect": "Újracsatlakozás most",
+
+            "{{ participantName }} mentioned you in {{ waveName }}!": "{{ participantName }} emlegetette a neved itt: {{ waveName }}!"
         });
 
         R.setLocale(navigator.language || navigator.browserLanguage);

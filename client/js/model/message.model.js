@@ -155,6 +155,11 @@ var Message = Backbone.Model.extend(
          */
         getWave: function () {
             return app.model.waves.get(this.get('waveId'));
+        },
+
+        isCurrentUserMentioned: function () {
+            var searchString = '@'  + app.model.currentUser.get('name');
+            return this.get('message').indexOf(searchString) >= 0;
         }
     }
 );

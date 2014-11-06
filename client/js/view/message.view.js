@@ -32,6 +32,10 @@ var MessageView = Backbone.View.extend({
         this.$el.find('.message-header').html(userView.render().el);
         this.$el.children('div.threadend').hide();
 
+        if (this.model.isCurrentUserMentioned()) {
+            this.mention();
+        }
+
         return this;
     },
 
@@ -103,5 +107,44 @@ var MessageView = Backbone.View.extend({
 
     changeUserName: function () {
         this.$el.find('span.author').eq(0).text(this.model.user.get('name') + ':');
+    },
+
+    mention: function () {
+        if (!(window.Notification)) {
+            return;
+        }
+
+        var notification,
+            that = this,
+            notificationText = __('{{ participantName }} mentioned you in {{ waveName }}!')
+                .replace('{{ participantName }}', this.model.user.get('name'))
+                .replace('{{ waveName }}', this.model.getWave().get('title'));
+
+        if (Notification.permission === "granted") {
+            // If it's okay let's create a notification
+            notification = new Notification(notificationText, {tag: 'mentionNotification', icon: '/images/surf-ico.png'});
+        }
+        // Otherwise, we need to ask the user for permission
+        // Note, Chrome does not implement the permission static property
+        // So we have to check for NOT 'denied' instead of 'default'
+        else if (Notification.permission !== 'denied') {
+            Notification.requestPermission(function (permission) {
+                // If the user is okay, let's create a notification
+                if (permission === "granted") {
+                    notification = new Notification(notificationText, {tag: 'mentionNotification', icon: '/images/surf-ico.png'});
+                }
+            });
+        }
+
+        if (notification) {
+            notification.onclick = function () {
+                //TODO: showWave
+                that.model.setScrolled();
+            };
+
+            notification.onshow = function () {
+                setTimeout(notification.close.bind(notification), 5000);
+            };
+        }
     }
 });
