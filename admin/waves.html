@@ -29,17 +29,17 @@
 <script src="js/backbone-min.js"></script>
 <script src="js/backbone.paginator.min.js"></script>
 <script src="js/bootstrap.js"></script>
-<script src="js/backgrid.js"></script>
+<script src="js/backgrid.min.js"></script>
 <script src="js/extensions/paginator/backgrid-paginator.js"></script>
 <script src="js/extensions/text-cell/backgrid-text-cell.js"></script>
 <script>
-    var User = Backbone.Model.extend(
-            /** @lends User.prototype */
+    var Wave = Backbone.Model.extend(
+            /** @lends Wave.prototype */
             {
                 defaults: {
-                    name: '',
-                    avatar: '',
-                    email: ''
+                    title: '',
+                    userIds: [],
+                    current: false
                 },
                 idAttribute: '_id',
                 initialize: function () {
@@ -51,8 +51,9 @@
                 }
             });
 
-    var Users = Backbone.PageableCollection.extend({
-        url: "/api/user",
+    var Waves = Backbone.PageableCollection.extend({
+
+        url: "/api/wave",
 
         // Initial pagination states
         state: {
@@ -73,50 +74,44 @@
         parseState: function (resp, queryParams, state, options) {
             return {totalRecords: resp.total_count};
         },
+
         parseRecords: function (resp, options) {
             return resp.items;
         },
-        model: User
+
+        model: Wave
     });
 
-    var users = new Users();
+    var waves = new Waves();
 
     var grid = new Backgrid.Grid({
         columns: [{
             name: "_id",
             cell: "string",
+            sortable: true,
             editable: false
         }, {
-            name: "name",
-            cell: "string"
+            name: "title",
+            cell: "string",
+            sortable: true,
+            editable: true
         }, {
-            name: "email",
-            cell: "email"
-        }, {
-            name: "avatar",
-            cell: Backgrid.Cell.extend({
-                render: function () {
-                    this.$el.empty();
-                    var rawValue = this.model.get(this.column.get("name"));
-                    var formattedValue = $('<img src="' + this.formatter.fromRaw(rawValue, this.model) + '" width="50">');
-                    this.$el.append(formattedValue);
-                    this.delegateEvents();
-                    return this;
-                }
-            }),
+            name: "userIds",
+            cell: "string",
             sortable: false
         }],
-        collection: users
+
+        collection: waves
     });
 
     var paginator = new Backgrid.Extension.Paginator({
-        collection: users
+        collection: waves
     });
 
     $("#grid").append(grid.render().$el);
     $("#paginator").append(paginator.render().$el);
 
-    users.fetch({reset: true});
+    waves.fetch({reset: true});
 </script>
 </body>
 </html>

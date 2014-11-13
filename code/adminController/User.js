@@ -1,4 +1,5 @@
-var Model = require('../MongooseModels').UserModel;
+var Model = require('../MongooseModels').UserModel,
+    _ = require('underscore');
 
 module.exports = {
     index: function (req, res) {
@@ -6,24 +7,21 @@ module.exports = {
             limit = Math.max(parseInt(req.param('per_page'), 10), 1) || 20;
 
         Model.find({}).skip((page - 1) * limit).limit(limit).exec(function (err, data) {
-            Model.count(function (err, count) {
-                if (err) {
-                    res.json({error: err});
-                } else {
-                    Model.count(function (err, count) {
-                        if (err) {
-                            res.json({error: err});
-                        } else {
-                            res.json({
-                                total_count: count,
-                                items: data
-                            });
-                        }
-                    });
-                }
-            });
+            if (!err) {
+                Model.count(function (err, count) {
+                    if (err) {
+                        res.status(500).json({error: err});
+                    } else {
+                        res.json({
+                            total_count: count,
+                            items: data
+                        });
+                    }
+                });
+            }
         });
     },
+    /*
     getById: function (req, res) {
         Model.find({_id: req.params.id}, function (err, contact) {
             if (err) {
@@ -43,16 +41,17 @@ module.exports = {
             }
         });
     },
-    // update: function(req, res) {
-    //     console.log(req.body);
-    //     Model.update({ _id: req.body.id }, req.body, function(err, updated) {
-    //         if (err) {
-    //             res.json({error: 'Contact not found.'});
-    //         } else {
-    //             res.json(updated);
-    //         }
-    //     })
-    // },
+    */
+    update: function (req, res) {
+        delete req.body._id;
+        Model.update({_id: req.params.id}, req.body, function (err, updated) {
+            if (err) {
+                res.status(500).json({error: err});
+            } else {
+                res.json(updated);
+            }
+        });
+    },
     delete: function (req, res) {
         Model.findOne({_id: req.params.id}, function (err, contact) {
             if (err) {

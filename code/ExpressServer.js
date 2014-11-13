@@ -9,8 +9,8 @@ var express = require('express'),
     passport = require('passport'),
     GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
     FacebookStrategy = require('passport-facebook').Strategy,
-    bodyParser = require('body-parser'),
-    LocalStrategy;
+    LocalStrategy = require('passport-local').Strategy,
+    bodyParser = require('body-parser');
 
 passport.serializeUser(function (user, done) {
     done(null, user);
@@ -52,11 +52,15 @@ passport.use(new FacebookStrategy(
     }
 ));
 
-if (Config.testMode) {
-    LocalStrategy = require('passport-local').Strategy;
-
-    passport.use(new LocalStrategy(
-        function (username, password, done) {
+passport.use(new LocalStrategy(
+    function (username, password, done) {
+        if ('admin' === username) {
+            if (password === Config.adminPass) {
+                return done(null, {
+                    admin: true
+                });
+            }
+        } else if (Config.testMode) {
             var id = parseInt(username, 10),
                 user = {
                     provider: 'google',
@@ -70,8 +74,9 @@ if (Config.testMode) {
 
             return done(null, user);
         }
-    ));
-}
+        return done('auth error');
+    }
+));
 /*jslint unparam: false*/
 
 var app = express();
@@ -148,9 +153,34 @@ app.get('/invite/:inviteCode', function (req, res) {
 });
 
 var UserController = require('./adminController/User');
-app.use('/admin', express.static(__dirname + '/../admin'));
-app.get('/api/user', UserController.index);
-app.get('/api/user/:id', UserController.getById);
+var WaveController = require('./adminController/Wave');
+
+app.use('/admin', function (req, res, next) {
+    if (!req.isAuthenticated() || !req.session.passport.user.admin) {
+        return res.redirect('/loginAdmin');
+    }
+    next();
+}, express.static(__dirname + '/../admin'));
+
+app.get('/loginAdmin', function (req, res) {
+    res.sendFile(__dirname + '/loginAdmin.html');
+});
+app.post('/loginAdmin', passport.authenticate('local', { successRedirect: '/admin/users.html', failureRedirect: '/loginAdmin' }));
+
+
+var apiAuth = function (callback) {
+    return function (req, res) {
+        if (!req.isAuthenticated() || !req.session.passport.user.admin) {
+            return res.status(403).json({error: 'Authentication failed'});
+        }
+        return callback(req, res);
+    };
+};
+
+app.get('/api/user', apiAuth(UserController.index));
+app.get('/api/wave', apiAuth(WaveController.index));
+app.put('/api/user/:id', apiAuth(UserController.update));
+app.put('/api/wave/:id', apiAuth(WaveController.update));
 
 var ExpressServer = http.createServer(app);
 

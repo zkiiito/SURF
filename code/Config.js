@@ -11,7 +11,8 @@ var config = {
     testMode: process.env.TESTMODE || 0,
     port: process.env.PORT || 8000,
     graphiteKey: process.env.HOSTEDGRAPHITE_APIKEY || null,
-    nodetimeKey: process.env.NODETIME_ACCOUNT_KEY || null
+    nodetimeKey: process.env.NODETIME_ACCOUNT_KEY || null,
+    adminPass: process.env.ADMINPASS || 'adminPass'
 };
 
 module.exports = config;
