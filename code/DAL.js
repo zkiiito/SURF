@@ -1,47 +1,14 @@
 var _ = require('underscore'),
     mongoose = require('mongoose'),
-    Schema = mongoose.Schema,
     redis = require('redis'),
     async = require('async'),
     net = require('net'),
     url = require('url'),
-    Config = require('./Config');
-
-var UserSchema = new Schema({
-    name: {type: String, trim: true},
-    avatar: {type: String, trim: true},
-    googleId: {type: String, trim: true},
-    googleAvatar: {type: String, trim: true},
-    facebookId: {type: String, trim: true},
-    facebookAvatar: {type: String, trim: true},
-    email: {type: String, trim: true}
-});
-var UserModel = mongoose.model('UserModel', UserSchema);
-
-var MessageSchema = new Schema({
-    userId: Schema.ObjectId,
-    waveId: Schema.ObjectId,
-    parentId: Schema.ObjectId,
-    rootId: Schema.ObjectId,
-    message: {type: String, trim: true},
-    created_at: {type: Date}
-});
-var MessageModel = mongoose.model('MessageModel', MessageSchema);
-
-var WaveSchema = new Schema({
-    title: {type: String, trim: true},
-    userIds: {type: [String]}
-});
-var WaveModel = mongoose.model('WaveModel', WaveSchema);
-
-var WaveInviteSchema = new Schema({
-    userId: Schema.ObjectId,
-    waveId: Schema.ObjectId,
-    code: {type: String, trim: true},
-    created_at: {type: Date}
-});
-
-var WaveInviteModel = mongoose.model('WaveInviteModel', WaveInviteSchema);
+    Config = require('./Config'),
+    UserModel = require('./MongooseModels').UserModel,
+    WaveModel = require('./MongooseModels').WaveModel,
+    MessageModel = require('./MongooseModels').MessageModel,
+    WaveInviteModel = require('./MongooseModels').WaveInviteModel;
 
 /** @namespace */
 var DAL = {

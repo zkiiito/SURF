@@ -147,6 +147,11 @@ app.get('/invite/:inviteCode', function (req, res) {
     });
 });
 
+var UserController = require('./adminController/User');
+app.use('/admin', express.static(__dirname + '/../admin'));
+app.get('/api/user', UserController.index);
+app.get('/api/user/:id', UserController.getById);
+
 var ExpressServer = http.createServer(app);
 
 module.exports = ExpressServer;
