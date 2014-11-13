@@ -1,4 +1,4 @@
-/*global UserView, MessageReplyFormView */
+/*global UserView, MessageReplyFormView, Notification, __ */
 var MessageView = Backbone.View.extend({
     initialize: function () {
         this.hasReplyForm = false;
