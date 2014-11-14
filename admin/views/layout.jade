@@ -1,0 +1,28 @@
+doctype html
+html(lang="en")
+    head
+        meta(charset="utf8")
+        title= pageTitle
+        link(rel="stylesheet", href="/admin/css/bootstrap.css")
+        link(rel="stylesheet", href="/admin/css/bootstrap-theme.css")
+        link(rel="stylesheet", href="/admin/css/backgrid.css")
+        link(rel="stylesheet", href="/admin/css/extensions/paginator/backgrid-paginator.css")
+        link(rel="stylesheet", href="/admin/css/extensions/text-cell/backgrid-text-cell.css")
+        block csss
+    body
+        div#main
+            div.container
+                div.row
+                    div.col-md-12
+                        div#grid
+                        div#paginator
+
+        script(src="https://code.jquery.com/jquery-2.1.1.min.js")
+        script(src="/admin/js/underscore-min.js")
+        script(src="/admin/js/backbone-min.js")
+        script(src="/admin/js/backbone.paginator.min.js")
+        script(src="/admin/js/bootstrap.js")
+        script(src="/admin/js/backgrid.js")
+        script(src="/admin/js/extensions/paginator/backgrid-paginator.js")
+        script(src="/admin/js/extensions/text-cell/backgrid-text-cell.js")
+        block scripts

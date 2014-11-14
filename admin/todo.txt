@@ -1,0 +1,14 @@
+global:
+minified file
+sorting
+
+waves:
+list users - user model
+last msg date
+msg count (?)
+
+messages:
+list
+
+users:
+list waves (?)

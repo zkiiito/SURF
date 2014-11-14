@@ -152,35 +152,45 @@ app.get('/invite/:inviteCode', function (req, res) {
     });
 });
 
+// ADMIN BLOCK //
 var UserController = require('./adminController/User');
 var WaveController = require('./adminController/Wave');
+var MessageController = require('./adminController/Message');
 
-app.use('/admin', function (req, res, next) {
-    if (!req.isAuthenticated() || !req.session.passport.user.admin) {
-        return res.redirect('/loginAdmin');
-    }
-    next();
-}, express.static(__dirname + '/../admin'));
+app.set('views', __dirname + '/../admin/views');
+app.set('view engine', 'jade');
 
-app.get('/loginAdmin', function (req, res) {
-    res.sendFile(__dirname + '/loginAdmin.html');
+
+app.use('/admin/css', express.static(__dirname + '/../admin/css'));
+app.use('/admin/img', express.static(__dirname + '/../admin/img'));
+app.use('/admin/js', express.static(__dirname + '/../admin/js'));
+
+
+app.get('/admin/login', function (req, res) {
+    res.render('login');
 });
-app.post('/loginAdmin', passport.authenticate('local', { successRedirect: '/admin/users.html', failureRedirect: '/loginAdmin' }));
+app.post('/admin/login', passport.authenticate('local', { successRedirect: '/admin/waves', failureRedirect: '/admin/login' }));
 
 
 var apiAuth = function (callback) {
     return function (req, res) {
         if (!req.isAuthenticated() || !req.session.passport.user.admin) {
-            return res.status(403).json({error: 'Authentication failed'});
+            return res.redirect('/admin/login');
         }
         return callback(req, res);
     };
 };
 
+app.get('/admin/users', apiAuth(function (req, res) {res.render('users'); }));
+app.get('/admin/waves', apiAuth(function (req, res) {res.render('waves'); }));
+app.get('/admin/messages/:waveId', apiAuth(function (req, res) {res.render('messages', {waveId: req.params.waveId }); }));
+
 app.get('/api/user', apiAuth(UserController.index));
 app.get('/api/wave', apiAuth(WaveController.index));
+app.get('/api/message/:waveId', apiAuth(MessageController.index));
 app.put('/api/user/:id', apiAuth(UserController.update));
 app.put('/api/wave/:id', apiAuth(WaveController.update));
+app.put('/api/message/:id', apiAuth(MessageController.update));
 
 var ExpressServer = http.createServer(app);
 

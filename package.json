@@ -13,8 +13,8 @@
   ],
   "description": "Surf is a threaded instant messaging application, like Google Wave used to be.",
   "repository": {
-      "type": "git",
-      "url": "https://bitbucket.org/zkiiito/surf.git"
+    "type": "git",
+    "url": "https://bitbucket.org/zkiiito/surf.git"
   },
   "dependencies": {
     "socket.io": "1.0.x",
@@ -34,7 +34,8 @@
     "nodetime": "0.8.x",
     "passport": "^0.2.0",
     "passport-google-oauth": "^0.1.5",
-    "passport-facebook": "^1.0.3"
+    "passport-facebook": "^1.0.3",
+    "jade": "^1.7.0"
   },
   "engines": {
     "node": "0.10.x",
