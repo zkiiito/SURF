@@ -8,7 +8,6 @@ last msg date
 msg count (?)
 
 messages:
-list
 list user
 
 users:

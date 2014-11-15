@@ -28,7 +28,7 @@ var Waves = Backbone.PageableCollection.extend({
 
 var waves = new Waves();
 
-var grid = new Backgrid.Grid({
+var waveGrid = new Backgrid.Grid({
     columns: [{
         name: "_id",
         cell: Backgrid.Cell.extend({
@@ -57,11 +57,11 @@ var grid = new Backgrid.Grid({
     collection: waves
 });
 
-var paginator = new Backgrid.Extension.Paginator({
+var wavePaginator = new Backgrid.Extension.Paginator({
     collection: waves
 });
 
-$("#grid").append(grid.render().$el);
-$("#paginator").append(paginator.render().$el);
+$("#grid").append(waveGrid.render().$el);
+$("#paginator").append(wavePaginator.render().$el);
 
 waves.fetch({reset: true});

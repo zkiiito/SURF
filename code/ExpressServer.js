@@ -190,7 +190,7 @@ app.get('/api/wave', apiAuth(WaveController.index));
 app.get('/api/message/:waveId', apiAuth(MessageController.index));
 app.put('/api/user/:id', apiAuth(UserController.update));
 app.put('/api/wave/:id', apiAuth(WaveController.update));
-app.put('/api/message/:id', apiAuth(MessageController.update));
+app.put('/api/message/:waveId/:id', apiAuth(MessageController.update));
 
 var ExpressServer = http.createServer(app);
 

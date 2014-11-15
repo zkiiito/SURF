@@ -28,7 +28,7 @@ var Users = Backbone.PageableCollection.extend({
 
 var users = new Users();
 
-var grid = new Backgrid.Grid({
+var userGrid = new Backgrid.Grid({
     columns: [{
         name: "_id",
         cell: "string",
@@ -56,11 +56,11 @@ var grid = new Backgrid.Grid({
     collection: users
 });
 
-var paginator = new Backgrid.Extension.Paginator({
+var userPaginator = new Backgrid.Extension.Paginator({
     collection: users
 });
 
-$("#grid").append(grid.render().$el);
-$("#paginator").append(paginator.render().$el);
+$("#grid").append(userGrid.render().$el);
+$("#paginator").append(userPaginator.render().$el);
 
 users.fetch({reset: true});
