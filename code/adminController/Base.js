@@ -1,10 +1,19 @@
 module.exports = function (Model) {
-    return {
+    var that =  {
         index: function (req, res) {
-            var page = Math.max(parseInt(req.param('page'), 10), 1) || 1,
-                limit = Math.max(parseInt(req.param('per_page'), 10), 1) || 20;
+            var page = that.parsePage(req),
+                limit = that.parseLimit(req),
+                sort = that.parseSort(req),
+                query;
 
-            Model.find({}).skip((page - 1) * limit).limit(limit).exec(function (err, data) {
+
+            query = Model.find({}).skip((page - 1) * limit).limit(limit);
+
+            if (sort) {
+                query.sort(sort);
+            }
+
+            query.exec(function (err, data) {
                 if (!err) {
                     Model.count(function (err, count) {
                         if (err) {
@@ -49,7 +58,7 @@ module.exports = function (Model) {
                     res.json(updated);
                 }
             });
-        }/*,
+        },/*
          delete: function (req, res) {
          Model.findOne({_id: req.params.id}, function (err, contact) {
          if (err) {
@@ -61,5 +70,28 @@ module.exports = function (Model) {
          }
          });
          }*/
+        parsePage: function (req) {
+            return Math.max(parseInt(req.param('page'), 10), 1) || 1;
+        },
+        parseLimit: function (req) {
+            return Math.max(parseInt(req.param('per_page'), 10), 1) || 20;
+        },
+        parseSort: function (req) {
+            var field = req.param('sort_by'),
+                sortOrder = that.parseSortOrder(req),
+                sortObj = {};
+
+            if (field) {
+                sortObj[field.toString()] = sortOrder;
+                return sortObj;
+            }
+            return null;
+        },
+        parseSortOrder: function (req) {
+            var order = req.param('order');
+            return 'asc' === order ? 1 : -1;
+        }
     };
+
+    return that;
 };

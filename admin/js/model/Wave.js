@@ -30,22 +30,18 @@ var waves = new Waves();
 
 var waveGrid = new Backgrid.Grid({
     columns: [{
-        name: "_id",
+        name: "title",
         cell: Backgrid.Cell.extend({
             render: function () {
                 this.$el.empty();
                 var id = this.model.get("_id");
-                var formattedValue = $('<a href="/admin/messages/' + id + '">' + id + '</a>');
+                var title = this.model.get("title");
+                var formattedValue = $('<a href="/admin/messages/' + id + '">' + this.formatter.fromRaw(title) + '</a>');
                 this.$el.append(formattedValue);
                 this.delegateEvents();
                 return this;
             }
         }),
-        sortable: true,
-        editable: false
-    }, {
-        name: "title",
-        cell: "string",
         sortable: true,
         editable: true
     }, {
