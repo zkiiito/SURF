@@ -9,6 +9,7 @@ msg count (?)
 
 messages:
 list
+list user
 
 users:
 list waves (?)

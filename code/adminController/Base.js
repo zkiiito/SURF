@@ -10,10 +10,10 @@ module.exports = function (Model) {
                         if (err) {
                             res.status(500).json({error: err});
                         } else {
-                            res.json({
-                                total_count: count,
-                                items: data
-                            });
+                            res.json([
+                                {total_entries: count},
+                                data
+                            ]);
                         }
                     });
                 }

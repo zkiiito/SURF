@@ -19,28 +19,10 @@ var User = Backbone.Model.extend(
 var Users = Backbone.PageableCollection.extend({
     url: "/api/user",
 
-    // Initial pagination states
     state: {
         pageSize: 10
-        /*sortKey: "updated",
-         order: 1*/
     },
 
-    // You can remap the query parameters from `state` keys from
-    // the default to those your server supports
-    queryParams: {
-        totalPages: null,
-        totalRecords: null,
-        sortKey: "sort"
-        /*q: "state:closed repo:jashkenas/backbone"*/
-    },
-
-    parseState: function (resp, queryParams, state, options) {
-        return {totalRecords: resp.total_count};
-    },
-    parseRecords: function (resp, options) {
-        return resp.items;
-    },
     model: User
 });
 

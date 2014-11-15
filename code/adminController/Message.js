@@ -20,10 +20,10 @@ module.exports = _.extend(base(Model), {
                                 res.status(500).json({error: err});
                             }
 
-                            res.json({
-                                total_count: count,
-                                items: data
-                            });
+                            res.json([
+                                {total_entries: count},
+                                data
+                            ]);
                         });
                     }
                 });
