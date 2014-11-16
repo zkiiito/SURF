@@ -1,3 +1,4 @@
+/*global app, Backgrid */
 var User = Backbone.Model.extend(
     /** @lends User.prototype */
     {
@@ -42,16 +43,16 @@ var Users = Backbone.PageableCollection.extend({
     }
 });
 
-var users = new Users();
+app.users = new Users();
 
-var userGrid = new Backgrid.Grid({
+app.userGrid = new Backgrid.Grid({
     columns: [{
         name: "avatar",
         cell: Backgrid.Cell.extend({
             render: function () {
                 this.$el.empty();
-                var rawValue = this.model.get("avatar");
-                var formattedValue = $('<img src="' + rawValue + '" width="50">');
+                var rawValue = this.model.get("avatar"),
+                    formattedValue = $('<img src="' + rawValue + '" width="50">');
                 this.$el.append(formattedValue);
                 this.delegateEvents();
                 return this;
@@ -69,7 +70,7 @@ var userGrid = new Backgrid.Grid({
         cell: "string",
         editable: false
     }],
-    collection: users
+    collection: app.users
 });
 
 var UserView = Backbone.View.extend({

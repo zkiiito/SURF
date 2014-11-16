@@ -1,3 +1,4 @@
+/*global app, Backgrid, UserView */
 var Wave = Backbone.Model.extend(
     /** @lends Wave.prototype */
     {
@@ -10,11 +11,14 @@ var Wave = Backbone.Model.extend(
         initialize: function () {
             Backbone.Model.prototype.initialize.apply(this, arguments);
             this.on("change", function (model, options) {
-                if (options && options.save === false) return;
+                if (options && options.save === false) {
+                    return;
+                }
                 model.save();
             });
         }
-    });
+    }
+);
 
 var Waves = Backbone.PageableCollection.extend({
     url: "/api/wave",
@@ -26,17 +30,17 @@ var Waves = Backbone.PageableCollection.extend({
     model: Wave
 });
 
-var waves = new Waves();
+app.waves = new Waves();
 
-var waveGrid = new Backgrid.Grid({
+app.waveGrid = new Backgrid.Grid({
     columns: [{
         name: "title",
         cell: Backgrid.Cell.extend({
             render: function () {
                 this.$el.empty();
-                var id = this.model.get("_id");
-                var title = this.model.get("title");
-                var formattedValue = $('<a href="/admin#messages/' + id + '">' + this.formatter.fromRaw(title) + '</a>');
+                var id = this.model.get("_id"),
+                    title = this.model.get("title"),
+                    formattedValue = $('<a href="/admin#messages/' + id + '">' + this.formatter.fromRaw(title) + '</a>');
                 this.$el.append(formattedValue);
                 this.delegateEvents();
                 return this;
@@ -52,8 +56,8 @@ var waveGrid = new Backgrid.Grid({
                 var ids = this.model.get("userIds");
 
                 ids.forEach(function (id) {
-                    var user = users.getUser(id);
-                    var view = new UserView({model: user});
+                    var user = app.users.getUser(id),
+                        view = new UserView({model: user});
                     this.$el.append(view.render().el);
                 }, this);
                 this.delegateEvents();
@@ -64,5 +68,5 @@ var waveGrid = new Backgrid.Grid({
         sortable: false
     }],
 
-    collection: waves
+    collection: app.waves
 });

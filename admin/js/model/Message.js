@@ -1,3 +1,4 @@
+/*global app, Backgrid, UserView */
 var Message = Backbone.Model.extend(
     /** @lends Message.prototype */
     {
@@ -60,7 +61,7 @@ var Messages = Backbone.PageableCollection.extend({
 
     model: Message,
 
-    comparator: function(msgA, msgB) {
+    comparator: function (msgA, msgB) {
         /*
          ha a parentidjuk azonos: tehat 1 szinten vannak, akkor a datumuk alapjan.
 
@@ -101,16 +102,16 @@ var Messages = Backbone.PageableCollection.extend({
     }
 });
 
-var messages = new Messages();
+app.messages = new Messages();
 
-var messageGrid = new Backgrid.Grid({
+app.messageGrid = new Backgrid.Grid({
     columns: [{
         name: "user",
         cell: Backgrid.Cell.extend({
             render: function () {
                 this.$el.empty();
-                var user = users.getUser(this.model.get('userId'));
-                var view = new UserView({model: user});
+                var user = app.users.getUser(this.model.get('userId')),
+                    view = new UserView({model: user});
                 this.$el.append(view.render().el);
                 this.delegateEvents();
                 return this;
@@ -123,9 +124,9 @@ var messageGrid = new Backgrid.Grid({
         cell: Backgrid.Cell.extend({
             render: function () {
                 this.$el.empty();
-                var depth = this.model.getDepth(messageGrid.collection);
-                var rawValue = this.model.get('message');
-                var formattedValue = this.formatter.fromRaw(rawValue);
+                var depth = this.model.getDepth(app.messageGrid.collection),
+                    rawValue = this.model.get('message'),
+                    formattedValue = this.formatter.fromRaw(rawValue);
 
                 this.$el.append($('<div>').css('margin-left', depth * 20 + 'px').text(formattedValue));
                 this.delegateEvents();
@@ -133,12 +134,12 @@ var messageGrid = new Backgrid.Grid({
             }
         }),
         editable: true,
-        sortable:false
+        sortable: false
     }, {
         name: "created_at",
         cell: "datetime",
         editable: false,
         sortable: false
     }],
-    collection: messages
+    collection: app.messages
 });

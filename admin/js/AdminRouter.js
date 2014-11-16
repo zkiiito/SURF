@@ -1,3 +1,6 @@
+/*global Backgrid */
+var app = {};
+
 var AdminRouter = Backbone.Router.extend({
     defaults: {
         currentGrid: null,
@@ -29,24 +32,26 @@ var AdminRouter = Backbone.Router.extend({
 
     initUserAdmin: function () {
         $('h1').text('Users');
-        this.setCurrentGrid(userGrid);
-        users.fetch({reset: true});
+        this.setCurrentGrid(app.userGrid);
+        app.users.fetch({reset: true});
     },
 
     initMessageAdmin: function (waveId) {
         $('h1').text('Messages');
-        messages.reset();
-        this.setCurrentGrid(messageGrid);
-        messages.url = "/api/message/" + waveId;
-        messages.fetch({reset: true});
+        app.messages.reset();
+        this.setCurrentGrid(app.messageGrid);
+        app.messages.url = "/api/message/" + waveId;
+        app.messages.fetch({reset: true});
     },
 
     initWaveAdmin: function () {
         $('h1').text('Waves');
-        this.setCurrentGrid(waveGrid);
-        waves.fetch({reset: true});
+        this.setCurrentGrid(app.waveGrid);
+        app.waves.fetch({reset: true});
     }
 });
 
-var adminRouter = new AdminRouter();
-Backbone.history.start();
+$(function () {
+    app.adminRouter = new AdminRouter();
+    Backbone.history.start();
+});

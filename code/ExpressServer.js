@@ -115,7 +115,7 @@ app.get('/', function (req, res) {
     res.sendfile(clientDir + '/index.html');
 });
 
-app.post('/logError', function (req, res) {
+app.post('/logError', function (req) {
     console.log('JSERROR : ' + req.body.errorMessage);
 });
 
@@ -159,7 +159,9 @@ var MessageController = require('./adminController/Message');
 
 app.set('views', __dirname + '/../admin/views');
 app.set('view engine', 'jade');
-app.locals.pretty = true;
+if (Config.testMode) {
+    app.locals.pretty = true;
+}
 
 
 app.use('/admin/css', express.static(__dirname + '/../admin/css'));

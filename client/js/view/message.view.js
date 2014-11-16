@@ -1,4 +1,4 @@
-/*global UserView, MessageReplyFormView */
+/*global UserView, MessageReplyFormView, Notification, __ */
 var MessageView = Backbone.View.extend({
     initialize: function () {
         this.hasReplyForm = false;
@@ -123,11 +123,11 @@ var MessageView = Backbone.View.extend({
         if (Notification.permission === "granted") {
             // If it's okay let's create a notification
             notification = new Notification(notificationText, {tag: 'mentionNotification', icon: '/images/surf-ico.png'});
-        }
-        // Otherwise, we need to ask the user for permission
-        // Note, Chrome does not implement the permission static property
-        // So we have to check for NOT 'denied' instead of 'default'
-        else if (Notification.permission !== 'denied') {
+        } else if (Notification.permission !== 'denied') {
+            // Otherwise, we need to ask the user for permission
+            // Note, Chrome does not implement the permission static property
+            // So we have to check for NOT 'denied' instead of 'default'
+
             Notification.requestPermission(function (permission) {
                 // If the user is okay, let's create a notification
                 if (permission === "granted") {

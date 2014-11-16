@@ -1,4 +1,4 @@
-var Base = require('./Base'),
+var base = require('./Base'),
     Model = require('../MongooseModels').UserModel;
 
-module.exports = Base(Model);
+module.exports = base(Model);
