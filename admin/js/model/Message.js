@@ -14,7 +14,9 @@ var Message = Backbone.Model.extend(
         initialize: function () {
             Backbone.Model.prototype.initialize.apply(this, arguments);
             this.on("change", function (model, options) {
-                if (options && options.save === false) return;
+                if (options && options.save === false) {
+                    return;
+                }
                 model.save();
             });
         },
@@ -28,22 +30,22 @@ var Message = Backbone.Model.extend(
         },
 
         getDepth: function (collection) {
-            if (this.isRoot()) {
-                return 0;
+            if (this.depth === undefined) {
+                this.depth = this.isRoot() ? 0 : 1 + this.getParent(collection).getDepth(collection);
             }
-
-            return 1 + this.getParent(collection).getDepth(collection);
+            return this.depth;
         },
 
-        getPath: function (collection, path) {
-            path = path || [];
-            path.unshift(this.get('_id'));
-
-            if (this.isRoot()) {
-                return path;
+        getPath: function (collection) {
+            if (this.path === undefined) {
+                if (this.isRoot()) {
+                    this.path = [this.get('_id')];
+                } else {
+                    this.path = this.getParent(collection).getPath(collection);//ezt itt letarolni! de ures arrayyal hivni!
+                    this.path.push(this.get('_id'));
+                }
             }
-
-            return this.getParent(collection).getPath(collection, path);
+            return this.path.slice(); //just a copy of a copy of a
         }
     }
 );
