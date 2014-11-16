@@ -49,7 +49,7 @@ var Message = Backbone.Model.extend(
 );
 
 var Messages = Backbone.PageableCollection.extend({
-    url: "/api/message/" + waveId,
+    url: "/api/message/",
 
     // Initial pagination states
     state: {
@@ -103,6 +103,20 @@ var messages = new Messages();
 
 var messageGrid = new Backgrid.Grid({
     columns: [{
+        name: "user",
+        cell: Backgrid.Cell.extend({
+            render: function () {
+                this.$el.empty();
+                var user = users.getUser(this.model.get('userId'));
+                var view = new UserView({model: user});
+                this.$el.append(view.render().el);
+                this.delegateEvents();
+                return this;
+            }
+        }),
+        editable: false,
+        sortable: false
+    }, {
         name: "message",
         cell: Backgrid.Cell.extend({
             render: function () {
@@ -111,18 +125,13 @@ var messageGrid = new Backgrid.Grid({
                 var rawValue = this.model.get('message');
                 var formattedValue = this.formatter.fromRaw(rawValue);
 
-                this.$el.append($('<div>').css('margin-left', depth * 10 + 'px').text(formattedValue));
+                this.$el.append($('<div>').css('margin-left', depth * 20 + 'px').text(formattedValue));
                 this.delegateEvents();
                 return this;
             }
         }),
         editable: true,
         sortable:false
-    }, {
-        name: "userId",
-        cell: "string",
-        editable: false,
-        sortable: false
     }, {
         name: "created_at",
         cell: "datetime",
@@ -131,12 +140,3 @@ var messageGrid = new Backgrid.Grid({
     }],
     collection: messages
 });
-
-var messagePaginator = new Backgrid.Extension.Paginator({
-    collection: messages
-});
-
-$("#grid").append(messageGrid.render().$el);
-$("#paginator").append(messagePaginator.render().$el);
-
-messages.fetch({reset: true});

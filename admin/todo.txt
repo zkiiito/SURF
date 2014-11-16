@@ -1,14 +1,14 @@
 global:
 minified file
-sorting
+design
+
+login:
+bootstrap - design
 
 waves:
-list users - user model
+delete user
 last msg date
 msg count (?)
 
-messages:
-list user
-
 users:
-list waves (?)
+list waves (?) - sajat edit oldalon esetleg

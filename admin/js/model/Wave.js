@@ -36,7 +36,7 @@ var waveGrid = new Backgrid.Grid({
                 this.$el.empty();
                 var id = this.model.get("_id");
                 var title = this.model.get("title");
-                var formattedValue = $('<a href="/admin/messages/' + id + '">' + this.formatter.fromRaw(title) + '</a>');
+                var formattedValue = $('<a href="/admin#messages/' + id + '">' + this.formatter.fromRaw(title) + '</a>');
                 this.$el.append(formattedValue);
                 this.delegateEvents();
                 return this;
@@ -45,19 +45,24 @@ var waveGrid = new Backgrid.Grid({
         sortable: true,
         editable: true
     }, {
-        name: "userIds",
-        cell: "string",
+        name: "users",
+        cell: Backgrid.Cell.extend({
+            render: function () {
+                this.$el.empty();
+                var ids = this.model.get("userIds");
+
+                ids.forEach(function (id) {
+                    var user = users.getUser(id);
+                    var view = new UserView({model: user});
+                    this.$el.append(view.render().el);
+                }, this);
+                this.delegateEvents();
+                return this;
+            }
+        }),
+        editable: false,
         sortable: false
     }],
 
     collection: waves
 });
-
-var wavePaginator = new Backgrid.Extension.Paginator({
-    collection: waves
-});
-
-$("#grid").append(waveGrid.render().$el);
-$("#paginator").append(wavePaginator.render().$el);
-
-waves.fetch({reset: true});

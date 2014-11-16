@@ -1,5 +1,5 @@
 module.exports = function (Model) {
-    var that =  {
+    var that = {
         index: function (req, res) {
             var page = that.parsePage(req),
                 limit = that.parseLimit(req),
@@ -28,27 +28,27 @@ module.exports = function (Model) {
                 }
             });
         },
+        getById: function (req, res) {
+            Model.findOne({_id: req.params.id}, function (err, entry) {
+                if (err) {
+                    res.json({error: err});
+                } else {
+                    res.json(entry);
+                }
+            });
+        },
         /*
-         getById: function (req, res) {
-         Model.find({_id: req.params.id}, function (err, contact) {
-         if (err) {
-         res.json({error: 'Contact not found.'});
-         } else {
-         res.json(contact);
-         }
-         });
-         },
-         add: function (req, res) {
-         var newContact = new Model(req.body);
-         newContact.save(function (err, contact) {
-         if (err) {
-         res.json({error: 'Error adding contact.'});
-         } else {
-         res.json(contact);
-         }
-         });
-         },
-         */
+        add: function (req, res) {
+            var newContact = new Model(req.body);
+            newContact.save(function (err, contact) {
+                if (err) {
+                    res.json({error: 'Error adding contact.'});
+                } else {
+                    res.json(contact);
+                }
+            });
+        },
+        */
         update: function (req, res) {
             delete req.body._id;
             Model.update({_id: req.params.id}, req.body, function (err, updated) {
@@ -58,7 +58,7 @@ module.exports = function (Model) {
                     res.json(updated);
                 }
             });
-        },/*
+        }, /*
          delete: function (req, res) {
          Model.findOne({_id: req.params.id}, function (err, contact) {
          if (err) {

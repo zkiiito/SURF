@@ -169,7 +169,7 @@ app.use('/admin/js', express.static(__dirname + '/../admin/js'));
 app.get('/admin/login', function (req, res) {
     res.render('login');
 });
-app.post('/admin/login', passport.authenticate('local', { successRedirect: '/admin/waves', failureRedirect: '/admin/login' }));
+app.post('/admin/login', passport.authenticate('local', { successRedirect: '/admin#waves', failureRedirect: '/admin/login' }));
 
 
 var apiAuth = function (callback) {
@@ -181,11 +181,10 @@ var apiAuth = function (callback) {
     };
 };
 
-app.get('/admin/users', apiAuth(function (req, res) {res.render('users'); }));
-app.get('/admin/waves', apiAuth(function (req, res) {res.render('waves'); }));
-app.get('/admin/messages/:waveId', apiAuth(function (req, res) {res.render('messages', {waveId: req.params.waveId }); }));
+app.get('/admin', apiAuth(function (req, res) {res.render('layout'); }));
 
 app.get('/api/user', apiAuth(UserController.index));
+app.get('/api/user/:id', apiAuth(UserController.getById));
 app.get('/api/wave', apiAuth(WaveController.index));
 app.get('/api/message/:waveId', apiAuth(MessageController.index));
 app.put('/api/user/:id', apiAuth(UserController.update));
