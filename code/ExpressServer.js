@@ -159,11 +159,13 @@ var MessageController = require('./adminController/Message');
 
 app.set('views', __dirname + '/../admin/views');
 app.set('view engine', 'jade');
+app.locals.pretty = true;
 
 
 app.use('/admin/css', express.static(__dirname + '/../admin/css'));
-app.use('/admin/img', express.static(__dirname + '/../admin/img'));
+app.use('/admin/fonts', express.static(__dirname + '/../admin/fonts'));
 app.use('/admin/js', express.static(__dirname + '/../admin/js'));
+app.use('/admin/font-awesome-4.1.0', express.static(__dirname + '/../admin/font-awesome-4.1.0'));
 
 
 app.get('/admin/login', function (req, res) {

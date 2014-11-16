@@ -23,15 +23,18 @@ var AdminRouter = Backbone.Router.extend({
         });
 
         $("#grid").append(grid.render().$el);
+        $('#grid').find('table').addClass('table');
         $("#paginator").append(this.currentPaginator.render().$el);
     },
 
     initUserAdmin: function () {
+        $('h1').text('Users');
         this.setCurrentGrid(userGrid);
         users.fetch({reset: true});
     },
 
     initMessageAdmin: function (waveId) {
+        $('h1').text('Messages');
         messages.reset();
         this.setCurrentGrid(messageGrid);
         messages.url = "/api/message/" + waveId;
@@ -39,6 +42,7 @@ var AdminRouter = Backbone.Router.extend({
     },
 
     initWaveAdmin: function () {
+        $('h1').text('Waves');
         this.setCurrentGrid(waveGrid);
         waves.fetch({reset: true});
     }

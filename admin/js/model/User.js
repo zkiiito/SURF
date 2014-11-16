@@ -46,16 +46,6 @@ var users = new Users();
 
 var userGrid = new Backgrid.Grid({
     columns: [{
-        name: "_id",
-        cell: "string",
-        editable: false
-    }, {
-        name: "name",
-        cell: "string"
-    }, {
-        name: "email",
-        cell: "email"
-    }, {
         name: "avatar",
         cell: Backgrid.Cell.extend({
             render: function () {
@@ -68,6 +58,16 @@ var userGrid = new Backgrid.Grid({
             }
         }),
         sortable: false
+    }, {
+        name: "name",
+        cell: "string"
+    }, {
+        name: "email",
+        cell: "email"
+    }, {
+        name: "_id",
+        cell: "string",
+        editable: false
     }],
     collection: users
 });
