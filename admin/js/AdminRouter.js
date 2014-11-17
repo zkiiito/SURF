@@ -10,6 +10,7 @@ var AdminRouter = Backbone.Router.extend({
     routes: {
         "waves": "initWaveAdmin",
         "users": "initUserAdmin",
+        "waveinvites": "initWaveInviteAdmin",
         "messages/:waveId": "initMessageAdmin"
     },
 
@@ -48,6 +49,12 @@ var AdminRouter = Backbone.Router.extend({
         $('h1').text('Waves');
         this.setCurrentGrid(app.waveGrid);
         app.waves.fetch({reset: true});
+    },
+
+    initWaveInviteAdmin: function () {
+        $('h1').text('WaveInvites');
+        this.setCurrentGrid(app.waveInviteGrid);
+        app.waveInvites.fetch({reset: true});
     }
 });
 

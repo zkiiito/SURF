@@ -10,5 +10,4 @@ users:
 list waves (?) - sajat edit oldalon esetleg
 
 invites:
-list
-delete invite (?)
+delete invite

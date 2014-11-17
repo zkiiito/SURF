@@ -89,7 +89,10 @@ app.use(errorHandler({
 }));
 
 app.use(cookieParser());
-app.use(bodyParser());
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
+app.use(bodyParser.json());
 app.use(session({
     key: 'surf.sid',
     store: SessionStore,
@@ -155,6 +158,7 @@ app.get('/invite/:inviteCode', function (req, res) {
 // ADMIN BLOCK //
 var UserController = require('./adminController/User');
 var WaveController = require('./adminController/Wave');
+var WaveInviteController = require('./adminController/WaveInvite');
 var MessageController = require('./adminController/Message');
 
 app.set('views', __dirname + '/../admin/views');
@@ -167,7 +171,6 @@ if (Config.testMode) {
 app.use('/admin/css', express.static(__dirname + '/../admin/css'));
 app.use('/admin/fonts', express.static(__dirname + '/../admin/fonts'));
 app.use('/admin/js', express.static(__dirname + '/../admin/js'));
-app.use('/admin/font-awesome-4.1.0', express.static(__dirname + '/../admin/font-awesome-4.1.0'));
 
 
 app.get('/admin/login', function (req, res) {
@@ -191,9 +194,11 @@ app.get('/api/user', apiAuth(UserController.index));
 app.get('/api/user/:id', apiAuth(UserController.getById));
 app.get('/api/wave', apiAuth(WaveController.index));
 app.get('/api/message/:waveId', apiAuth(MessageController.index));
+app.get('/api/waveinvite', apiAuth(WaveInviteController.index));
 app.put('/api/user/:id', apiAuth(UserController.update));
 app.put('/api/wave/:id', apiAuth(WaveController.update));
 app.put('/api/message/:waveId/:id', apiAuth(MessageController.update));
+app.put('/api/waveinvite/:id', apiAuth(WaveInviteController.update));
 
 var ExpressServer = http.createServer(app);
 
