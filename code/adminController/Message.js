@@ -2,10 +2,10 @@ var base = require('./Base'),
     Model = require('../MongooseModels').MessageModel,
     _ = require('underscore');
 
-module.exports = _.extend(base(Model), {
+var MessageController = _.extend(base(Model), {
     index: function (req, res) {
-        var page = Math.max(parseInt(req.param('page'), 10), 1) || 1,
-            limit = Math.max(parseInt(req.param('per_page'), 10), 1) || 20;
+        var page = MessageController.parsePage(req),
+            limit = MessageController.parseLimit(req);
 
         Model.find({waveId: req.params.waveId}).skip((page - 1) * limit).limit(limit).exec(function (err, data) {
             if (!err) {
@@ -31,3 +31,5 @@ module.exports = _.extend(base(Model), {
         });
     }
 });
+
+module.exports = MessageController;

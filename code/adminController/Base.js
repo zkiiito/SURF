@@ -1,11 +1,18 @@
 module.exports = function (Model) {
     var that = {
         index: function (req, res) {
+            that.queryAll(req, res, function (count, data) {
+                res.json([
+                    {total_entries: count},
+                    data
+                ]);
+            });
+        },
+        queryAll: function (req, res, callback) {
             var page = that.parsePage(req),
                 limit = that.parseLimit(req),
                 sort = that.parseSort(req),
                 query;
-
 
             query = Model.find({}).skip((page - 1) * limit).limit(limit);
 
@@ -19,10 +26,7 @@ module.exports = function (Model) {
                         if (err) {
                             res.status(500).json({error: err});
                         } else {
-                            res.json([
-                                {total_entries: count},
-                                data
-                            ]);
+                            callback(count, data);
                         }
                     });
                 }

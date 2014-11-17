@@ -5,7 +5,8 @@ var Wave = Backbone.Model.extend(
         defaults: {
             title: '',
             userIds: [],
-            current: false
+            msgCount: 0,
+            lastMsgCreatedAt: null
         },
         idAttribute: '_id',
         initialize: function () {
@@ -75,6 +76,18 @@ app.waveGrid = new Backgrid.Grid({
         }),
         editable: false,
         sortable: false
+    }, {
+        name: "msgCount",
+        label: "Message count",
+        cell: "integer",
+        sortable: false,
+        editable: false
+    }, {
+        name: "lastMsgCreatedAt",
+        label: "Last message",
+        cell: "datetime",
+        sortable: false,
+        editable: false
     }],
 
     collection: app.waves
