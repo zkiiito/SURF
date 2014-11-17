@@ -16,6 +16,11 @@ var Wave = Backbone.Model.extend(
                 }
                 model.save();
             });
+        },
+        removeUser: function (userId) {
+            if (this.get('userIds').indexOf(userId) >= 0) {
+                this.set('userIds', _.without(this.get('userIds'), userId));
+            }
         }
     }
 );
@@ -57,8 +62,12 @@ app.waveGrid = new Backgrid.Grid({
 
                 ids.forEach(function (id) {
                     var user = app.users.getUser(id),
-                        view = new UserView({model: user});
+                        view = new UserView({model: user}),
+                        removeView = new WaveRemoveUserView({model: this.model});
+
+                    removeView.userView = view;
                     this.$el.append(view.render().el);
+                    this.$el.append(removeView.render().el);
                 }, this);
                 this.delegateEvents();
                 return this;
@@ -69,4 +78,29 @@ app.waveGrid = new Backgrid.Grid({
     }],
 
     collection: app.waves
+});
+
+var WaveRemoveUserView = Backbone.View.extend({
+    initialize: function () {
+        _.bindAll(this, 'render', 'removeUser');
+    },
+
+    events: {
+        'click button' : 'removeUser'
+    },
+
+    render: function () {
+        this.$el.empty();
+        this.$el.append($('<button type="button" class="btn btn-xs btn-danger">Remove</button>'));
+
+        return this;
+    },
+
+    removeUser: function () {
+        if (confirm('Are you sure?')) {
+            this.model.removeUser(this.userView.model.get('_id'));
+            this.remove();
+            this.userView.remove();
+        }
+    }
 });

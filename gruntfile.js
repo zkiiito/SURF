@@ -45,7 +45,7 @@ module.exports = function (grunt) {
         "admin/js/model/Message.js",
         "admin/js/model/User.js",
         "admin/js/model/Wave.js",
-        "admin/js/model/WaveInvite.js",
+        "admin/js/model/WaveInvite.js"
     ];
 
     grunt.initConfig({

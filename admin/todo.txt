@@ -2,7 +2,6 @@ login:
 bootstrap - design
 
 waves:
-delete user
 last msg date
 msg count (?)
 
