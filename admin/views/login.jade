@@ -1,0 +1,16 @@
+doctype html
+html
+    head(land="en")
+        meta(charset="utf8")
+        title SURF Admin Login
+    body
+        form(action="/admin/login", method="post")
+            div#login
+                label(for="login") Login
+                input(type="text", name="username")
+            div#password
+                label(for="password") Password
+                input(type="password", name="password")
+            div#submit
+                button(type="submit") Login
+

@@ -1,0 +1,51 @@
+doctype html
+html(lang="en")
+    head
+        meta(charset="utf8")
+        title SURF Admin
+        link(rel="shortcut icon" type="image/png" href="images/surf-ico.png")
+        link(rel="stylesheet", href="/admin/css/bootstrap.min.css")
+        link(rel="stylesheet", href="/admin/css/font-awesome.min.css")
+        link(rel="stylesheet", href="/admin/css/sb-admin.css")
+        link(rel="stylesheet", href="/admin/css/backgrid.css")
+        link(rel="stylesheet", href="/admin/css/extensions/paginator/backgrid-paginator.css")
+        link(rel="stylesheet", href="/admin/css/extensions/text-cell/backgrid-text-cell.css")
+        link(rel="stylesheet", href="/admin/css/style.css")
+        block csss
+    body
+        div#wrapper
+            nav(role="navigation").navbar.navbar-inverse.navbar-fixed-top
+                button(type="button" data-toggle="collapse" data-target=".navbar-ex1-collapse").navbar-toggle
+                    span.sr-only Toggle navigation
+                    span.icon-bar
+                    span.icon-bar
+                    span.icon-bar
+
+                div.navbar-header
+                    a.navbar-brand(href="/admin") SURF Admin
+                div.collapse.navbar-collapse.navbar-ex1-collapse
+                    ul.nav.navbar-nav.side-nav
+                        li
+                            a(href="#waves")
+                                i.fa.fa-fw.fa-table
+                                span  Waves
+                        li
+                            a(href="#users")
+                                i.fa.fa-fw.fa-table
+                                span  Users
+                        li
+                            a(href="#waveinvites")
+                                i.fa.fa-fw.fa-table
+                                span  Wave Invites
+
+
+            div#page-wrapper
+                div.container-fluid
+                    div.row
+                        div.col-md-12
+                            h1.page-header
+                            div#grid.table-responsive
+                            div#paginator
+
+        script(src="/js/jquery/jquery-2.1.1.min.js")
+        script(src="/admin/js/admin.min.js")

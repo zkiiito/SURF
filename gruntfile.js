@@ -33,6 +33,21 @@ module.exports = function (grunt) {
         "client/js/surf.js"
     ];
 
+    var jsFilesAdmin = [
+        "node_modules/underscore/underscore.js",
+        "node_modules/backbone/backbone.js",
+        "admin/js/lib/backbone.paginator.js",
+        "admin/js/lib/bootstrap.js",
+        "admin/js/lib/backgrid.js",
+        "admin/js/lib/extensions/paginator/backgrid-paginator.js",
+        "admin/js/lib/extensions/text-cell/backgrid-text-cell.js",
+        "admin/js/AdminRouter.js",
+        "admin/js/model/Message.js",
+        "admin/js/model/User.js",
+        "admin/js/model/Wave.js",
+        "admin/js/model/WaveInvite.js"
+    ];
+
     grunt.initConfig({
         jslint: {
             server: {
@@ -78,19 +93,51 @@ module.exports = function (grunt) {
                     errorsOnly: true, // only display errors
                     failOnError: false // defaults to true
                 }
+            },
+            admin: {
+                src: [
+                    'admin/js/**/*.js'
+                ],
+                exclude: [
+                    'admin/js/lib/**/*.js',
+                    'admin/js/admin.min.js'
+                ],
+                directives: {
+                    browser: true,
+                    maxerr: 1000,
+                    nomen: true,
+                    sloppy: true,
+                    plusplus: true,
+                    predef: [
+                        '$', 'Backbone', '_', 'Backgrid'
+                    ]
+                },
+                options: {
+                    errorsOnly: true, // only display errors
+                    failOnError: false // defaults to true
+                }
             }
         },
         uglify: {
-            prod: {
+            client: {
                 files: {
                     'client/js/surf.min.js': jsFiles
+                }
+            },
+            admin: {
+                files: {
+                    'admin/js/admin.min.js': jsFilesAdmin
                 }
             }
         },
         concat: {
-            dev: {
+            client: {
                 src: jsFiles,
                 dest: 'client/js/surf.min.js'
+            },
+            admin: {
+                src: jsFilesAdmin,
+                dest: 'admin/js/admin.min.js'
             }
         }
     });

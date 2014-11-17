@@ -9,8 +9,8 @@ var express = require('express'),
     passport = require('passport'),
     GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
     FacebookStrategy = require('passport-facebook').Strategy,
-    bodyParser = require('body-parser'),
-    LocalStrategy;
+    LocalStrategy = require('passport-local').Strategy,
+    bodyParser = require('body-parser');
 
 passport.serializeUser(function (user, done) {
     done(null, user);
@@ -52,11 +52,15 @@ passport.use(new FacebookStrategy(
     }
 ));
 
-if (Config.testMode) {
-    LocalStrategy = require('passport-local').Strategy;
-
-    passport.use(new LocalStrategy(
-        function (username, password, done) {
+passport.use(new LocalStrategy(
+    function (username, password, done) {
+        if ('admin' === username) {
+            if (password === Config.adminPass) {
+                return done(null, {
+                    admin: true
+                });
+            }
+        } else if (Config.testMode) {
             var id = parseInt(username, 10),
                 user = {
                     provider: 'google',
@@ -70,8 +74,9 @@ if (Config.testMode) {
 
             return done(null, user);
         }
-    ));
-}
+        return done('auth error');
+    }
+));
 /*jslint unparam: false*/
 
 var app = express();
@@ -84,7 +89,10 @@ app.use(errorHandler({
 }));
 
 app.use(cookieParser());
-app.use(bodyParser());
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
+app.use(bodyParser.json());
 app.use(session({
     key: 'surf.sid',
     store: SessionStore,
@@ -110,7 +118,7 @@ app.get('/', function (req, res) {
     res.sendfile(clientDir + '/index.html');
 });
 
-app.post('/logError', function (req, res) {
+app.post('/logError', function (req) {
     console.log('JSERROR : ' + req.body.errorMessage);
 });
 
@@ -146,6 +154,51 @@ app.get('/invite/:inviteCode', function (req, res) {
         res.redirect('/');
     });
 });
+
+// ADMIN BLOCK //
+var UserController = require('./adminController/User');
+var WaveController = require('./adminController/Wave');
+var WaveInviteController = require('./adminController/WaveInvite');
+var MessageController = require('./adminController/Message');
+
+app.set('views', __dirname + '/../admin/views');
+app.set('view engine', 'jade');
+if (Config.testMode) {
+    app.locals.pretty = true;
+}
+
+
+app.use('/admin/css', express.static(__dirname + '/../admin/css'));
+app.use('/admin/fonts', express.static(__dirname + '/../admin/fonts'));
+app.use('/admin/js', express.static(__dirname + '/../admin/js'));
+
+
+app.get('/admin/login', function (req, res) {
+    res.render('login');
+});
+app.post('/admin/login', passport.authenticate('local', { successRedirect: '/admin#waves', failureRedirect: '/admin/login' }));
+
+
+var apiAuth = function (callback) {
+    return function (req, res) {
+        if (!req.isAuthenticated() || !req.session.passport.user.admin) {
+            return res.redirect('/admin/login');
+        }
+        return callback(req, res);
+    };
+};
+
+app.get('/admin', apiAuth(function (req, res) {res.render('layout'); }));
+
+app.get('/api/user', apiAuth(UserController.index));
+app.get('/api/user/:id', apiAuth(UserController.getById));
+app.get('/api/wave', apiAuth(WaveController.index));
+app.get('/api/message/:waveId', apiAuth(MessageController.index));
+app.get('/api/waveinvite', apiAuth(WaveInviteController.index));
+app.put('/api/user/:id', apiAuth(UserController.update));
+app.put('/api/wave/:id', apiAuth(WaveController.update));
+app.put('/api/message/:waveId/:id', apiAuth(MessageController.update));
+app.put('/api/waveinvite/:id', apiAuth(WaveInviteController.update));
 
 var ExpressServer = http.createServer(app);
 
