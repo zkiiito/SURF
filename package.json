@@ -25,7 +25,6 @@
     "async": "0.9.x",
     "cookie": "0.1.x",
     "express": "4.x",
-    "cookie-parser": "1.3.x",
     "body-parser": "1.9.x",
     "express-session": "1.9.x",
     "errorhandler": "1.2.x",
@@ -44,7 +43,8 @@
     "npm": "1.4.x"
   },
   "scripts": {
-    "start": "node Surf.js"
+    "start": "node Surf.js",
+    "test": "casperjs test client/test/casper.js"
   },
   "devDependencies": {
     "grunt": "~0.4.4",

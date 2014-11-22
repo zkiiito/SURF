@@ -1,5 +1,5 @@
 var express = require('express'),
-    cookieParser = require('cookie-parser'),
+    fs = require('fs'),
     session = require('express-session'),
     errorHandler = require('errorhandler'),
     http = require('http'),
@@ -89,7 +89,6 @@ app.use(errorHandler({
     showStack: true
 }));
 
-app.use(cookieParser());
 app.use(bodyParser.urlencoded({
     extended: true
 }));
@@ -114,11 +113,23 @@ app.use('/fonts', express.static(__dirname + '/../client/fonts'));
 app.use(passport.initialize());
 app.use(passport.session());
 
+var clientIndexHtml = '';
+
 app.get('/', function (req, res) {
     if (!req.isAuthenticated()) {
         return res.redirect('/auth/google');
     }
-    res.sendFile(clientDir + '/index.html');
+
+    if (!clientIndexHtml) {
+        fs.readFile(clientDir + '/index.html', {encoding: 'utf-8'}, function (err, data) {
+            if (!err) {
+                clientIndexHtml = data.replace('ANALYTICS_ID', Config.analyticsId);
+                res.send(clientIndexHtml);
+            }
+        });
+    } else {
+        res.send(clientIndexHtml);
+    }
 });
 
 app.post('/logError', function (req) {

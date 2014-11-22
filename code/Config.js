@@ -12,7 +12,8 @@ var config = {
     port: process.env.PORT || 8000,
     graphiteKey: process.env.HOSTEDGRAPHITE_APIKEY || null,
     nodetimeKey: process.env.NODETIME_ACCOUNT_KEY || null,
-    adminPass: process.env.ADMINPASS || 'adminPass'
+    adminPass: process.env.ADMINPASS || 'adminPass',
+    analyticsId: process.env.ANALYTICS_ID || null
 };
 
 module.exports = config;
