@@ -1,9 +1,8 @@
 var _ = require('underscore'),
     mongoose = require('mongoose'),
-    redis = require('redis'),
+    redis = require('./RedisClient'),
     async = require('async'),
     net = require('net'),
-    url = require('url'),
     Config = require('./Config'),
     UserModel = require('./MongooseModels').UserModel,
     WaveModel = require('./MongooseModels').WaveModel,
@@ -17,13 +16,6 @@ var DAL = {
      */
     init: function (server) {
         mongoose.connect(Config.mongoUrl);
-
-        var redisURL = url.parse(Config.redisUrl);
-        redis = redis.createClient(redisURL.port, redisURL.hostname, {no_ready_check: true});
-        if (redisURL.auth) {
-            redis.auth(redisURL.auth.split(":")[1]);
-        }
-
         //mongoose.set('debug', true);
 
         UserModel.find().exec(function (err, users) {

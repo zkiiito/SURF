@@ -15,7 +15,38 @@ var User = Backbone.Model.extend(
                     return;
                 }
                 model.save();
+            }, this);
+        },
+
+        getUnreadCountByWaveId: function (waveId) {
+            var that = this,
+                key = 'unread-' + waveId;
+            if (undefined !== this[key]) {
+                return this[key];
+            }
+
+            $.getJSON('/api/unread/' + this.id + '/' + waveId, function (data) {
+                that[key] = data;
+                that.trigger('changeUnread');
             });
+
+            this[key] = '*';
+            return this[key];
+        },
+
+        deleteUnreadCountByWaveId: function (waveId) {
+            var that = this,
+                key = 'unread-' + waveId;
+
+            if (this[key] > 0) {
+                $.ajax('/api/unread/' + this.id + '/' + waveId, {
+                    type: 'DELETE',
+                    success: function () {
+                        that[key] = 0;
+                        that.trigger('changeUnread');
+                    }
+                });
+            }
         }
     }
 );

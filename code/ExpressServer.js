@@ -211,6 +211,9 @@ app.put('/api/wave/:id', apiAuth(WaveController.update));
 app.put('/api/message/:waveId/:id', apiAuth(MessageController.update));
 app.put('/api/waveinvite/:id', apiAuth(WaveInviteController.update));
 
+app.get('/api/unread/:userId/:waveId', apiAuth(UserController.getUnreadCountByWave));
+app.delete('/api/unread/:userId/:waveId', apiAuth(UserController.deleteUnreadCountByWave));
+
 var ExpressServer = http.createServer(app);
 
 module.exports = ExpressServer;
