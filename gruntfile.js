@@ -4,6 +4,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-jslint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-text-replace');
 
     var jsFiles = [
         "node_modules/socket.io/node_modules/socket.io-client/socket.io.js",
@@ -140,6 +141,19 @@ module.exports = function (grunt) {
             admin: {
                 src: jsFilesAdmin,
                 dest: 'admin/js/admin.min.js'
+            }
+        },
+        replace: {
+            test: {
+                src: 'client/index.html',
+                dest: 'client/test.html',
+                replacements: [{
+                    from: '<script src="js/surf.min.js"></script>',
+                    to: '<script src="js/surf.min.js"></script><script src="test/test.js"></script>'
+                }, {
+                    from: '//code.jquery',
+                    to: 'http://code.jquery'
+                }]
             }
         }
     });

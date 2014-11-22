@@ -1,4 +1,5 @@
 #!/bin/sh
-grunt uglify
+grunt uglify replace
 git add client/js/surf.min.js
 git add admin/js/admin.min.js
+git add client/test.html
