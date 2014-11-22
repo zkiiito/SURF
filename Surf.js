@@ -1,5 +1,4 @@
-var Minify = require('./code/Minify'),
-    SurfServer = require('./code/SurfServer'),
+var SurfServer = require('./code/SurfServer'),
     Config = require('./code/Config');
 
 if (Config.nodetimeKey) {
@@ -9,5 +8,4 @@ if (Config.nodetimeKey) {
     });
 }
 
-Minify.minify();
 SurfServer.init();

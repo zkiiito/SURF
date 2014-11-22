@@ -1,0 +1,4 @@
+#!/bin/sh
+grunt uglify
+git add client/js/surf.min.js
+git add admin/js/admin.min.js
