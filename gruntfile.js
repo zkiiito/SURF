@@ -44,7 +44,7 @@ module.exports = function (grunt) {
         "admin/js/lib/backgrid.js",
         "admin/js/lib/extensions/paginator/backgrid-paginator.js",
         "admin/js/lib/extensions/text-cell/backgrid-text-cell.js",
-        "admin/js/AdminRouter.js",
+        "admin/js/admin.js",
         "admin/js/model/message.model.js",
         "admin/js/model/user.model.js",
         "admin/js/model/wave.model.js",
