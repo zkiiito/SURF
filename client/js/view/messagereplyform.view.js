@@ -13,9 +13,9 @@ var MessageReplyFormView = WaveReplyFormView.extend({
     },
 
     render: function () {
-        var template = _.template($('#messagereplyform_view').text(), {user: this.model.user.toJSON()});
+        var template = _.template($('#messagereplyform_view').text());
 
-        this.setElement(template);
+        this.setElement(template({user: this.model.user.toJSON()}));
         return this;
     },
 

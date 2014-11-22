@@ -23,9 +23,9 @@ var WaveListView = Backbone.View.extend({
         var context = _.extend(this.model.toJSON(), {
             id: this.model.id
         }),
-            template = _.template($('#wave_list_view').text(), context);
+            template = _.template($('#wave_list_view').text());
 
-        this.setElement(template);
+        this.setElement(template(context));
         this.changeUsers();
         return this;
     },

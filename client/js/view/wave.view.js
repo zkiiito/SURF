@@ -29,10 +29,10 @@ var WaveView = Backbone.View.extend({
 
     render: function () {
         var context = _.extend(this.model.toJSON(), {id: this.model.id}),
-            template = _.template($('#wave_view').text(), context),
+            template = _.template($('#wave_view').text()),
             formView = new WaveReplyFormView({model: this.model});
 
-        this.setElement(template);
+        this.setElement(template(context));
         this.$el.hide();
 
         formView.render().$el.appendTo(this.$el.find('.waves-container'));

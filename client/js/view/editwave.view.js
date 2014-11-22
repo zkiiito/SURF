@@ -13,8 +13,8 @@ var EditWaveView = Backbone.View.extend({
     },
 
     render: function () {
-        var template = _.template($('#editwave_view').text(), {});
-        this.setElement(template);
+        var template = _.template($('#editwave_view').text());
+        this.setElement(template());
         this.$el.hide();
         return this;
     },

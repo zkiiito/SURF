@@ -95,13 +95,15 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 app.use(session({
-    key: 'surf.sid',
+    name: 'surf.sid',
     store: SessionStore,
     secret: 'surfSessionSecret9',
     cookie: {
         httpOnly: true
         //secure: true //in prod?
-    }
+    },
+    saveUninitialized: true,
+    resave: true
 }));
 
 app.use('/css', express.static(__dirname + '/../client/css'));

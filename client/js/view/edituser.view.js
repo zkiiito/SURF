@@ -10,8 +10,8 @@ var EditUserView = Backbone.View.extend({
     },
 
     render: function () {
-        var template = _.template($('#edituser_view').text(), {});
-        this.setElement(template);
+        var template = _.template($('#edituser_view').text());
+        this.setElement(template());
         this.$el.hide();
         this.updateFields();
 
@@ -38,7 +38,7 @@ var EditUserView = Backbone.View.extend({
     },
 
     addAvatarOption: function (url) {
-        var template = $(_.template($('#edituser_avatar_view').text(), {url: url}));
+        var template = $(_.template($('#edituser_avatar_view').text())({url: url}));
 
         template.find('img').prop('src', url);
 

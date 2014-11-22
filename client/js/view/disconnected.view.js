@@ -6,8 +6,8 @@ var DisconnectedView = Backbone.View.extend({
     },
 
     render: function () {
-        var template = _.template($('#disconnected_view').text(), {counter: this.counter});
-        this.setElement(template);
+        var template = _.template($('#disconnected_view').text());
+        this.setElement(template({counter: this.counter}));
         this.$el.hide();
 
         return this;

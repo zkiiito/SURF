@@ -21,10 +21,10 @@ var MessageView = Backbone.View.extend({
     },
     render: function () {
         var context = _.extend(this.model.toJSON(), {id: this.model.id, user: this.model.user.toJSON()}),
-            template = _.template($('#message_view').text(), context),
+            template = _.template($('#message_view').text()),
             userView = new UserView({model: this.model.user});
 
-        this.setElement(template);
+        this.setElement(template(context));
         if (!this.model.get('unread')) {
             this.$el.children('table').removeClass('unread');
         }

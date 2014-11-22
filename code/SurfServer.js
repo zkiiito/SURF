@@ -1,4 +1,5 @@
 var IO = require('socket.io'),
+    signature = require('cookie-signature'),
     DAL = require('./DAL'),
     SessionStore = require('./SessionStore'),
     ExpressServer = require('./ExpressServer'),
@@ -40,7 +41,7 @@ var SurfServer = {
                 return next(new Error('Session cookie invalid.'));
             }
 
-            data.sessionID = data.cookie['surf.sid'].substr(2, 24);
+            data.sessionID = signature.unsign(data.cookie['surf.sid'].slice(2), 'surfSessionSecret9');
 
             SessionStore.get(data.sessionID, function (err, session) {
                 if (err) {
