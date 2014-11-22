@@ -4,6 +4,7 @@ var SurfAppView = Backbone.View.extend({
         _.bindAll(this, 'addMessage', 'showCreateWave', 'showUpdateWave', 'showEditUser', 'hideOverlays', 'addWave');
         this.model.waves.bind('add', this.addWave, this);
         this.model.waves.bind('reset', this.resetWaves, this);
+        this.model.waves.bind('reset', this.handleEmpty);
         this.model.waves.bind('remove', this.handleEmpty);
         this.model.messages.bind('reset', this.resetMessages, this);
         this.model.messages.bind('add', this.setTitle, this);

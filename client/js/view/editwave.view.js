@@ -88,6 +88,7 @@ var EditWaveView = Backbone.View.extend({
         //this.$el.find('form').reset();???
         this.$el.show();
         $('#darken').show();
+        this.$el.find('#editwave-title').focus();
         return false;
     },
 
