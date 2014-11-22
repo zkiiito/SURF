@@ -136,7 +136,7 @@ var SurfAppView = Backbone.View.extend({
     },
 
     setTitle: function () {
-        var title = 'Surf',
+        var title = 'SURF',
             unreadCount = this.model.messages.where({unread: true}).length;
 
         if (unreadCount > 0) {

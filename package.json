@@ -11,7 +11,7 @@
       "email": "schreiner.csaba@gmail.com"
     }
   ],
-  "description": "Surf is a threaded instant messaging application, like Google Wave used to be.",
+  "description": "SURF is a threaded instant messaging application, like Google Wave used to be.",
   "repository": {
     "type": "git",
     "url": "https://bitbucket.org/zkiiito/surf.git"
