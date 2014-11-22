@@ -1,6 +1,5 @@
 /nbproject
 /node_modules
-/client/js/surf.min.js
 .idea/
 .env
 out/
