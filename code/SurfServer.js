@@ -23,6 +23,7 @@ var SurfServer = {
         var that = this;
 
         ExpressServer.listen(Config.port);
+        console.log('SURF is running, listening on port ' + Config.port);
 
         this.socket = new IO(ExpressServer);
 

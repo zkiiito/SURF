@@ -82,6 +82,7 @@ passport.use(new LocalStrategy(
 var app = express();
 app.disable('x-powered-by');
 var clientDir = __dirname.replace('code', 'client');
+var adminDir = __dirname.replace('code', 'admin');
 
 app.use(errorHandler({
     dumpExceptions: true,
@@ -115,7 +116,7 @@ app.get('/', function (req, res) {
     if (!req.isAuthenticated()) {
         return res.redirect('/auth/google');
     }
-    res.sendfile(clientDir + '/index.html');
+    res.sendFile(clientDir + '/index.html');
 });
 
 app.post('/logError', function (req) {
@@ -130,7 +131,7 @@ app.get('/auth/facebook/callback',  passport.authenticate('facebook', { successR
 
 if (Config.testMode) {
     app.get('/loginTest', function (req, res) {
-        res.sendfile(clientDir + '/test/login.html');
+        res.sendFile(clientDir + '/test/login.html');
     });
 
     app.post('/loginTest', passport.authenticate('local', { successRedirect: '/', failureRedirect: '/loginTest' }));
@@ -161,20 +162,13 @@ var WaveController = require('./adminController/Wave');
 var WaveInviteController = require('./adminController/WaveInvite');
 var MessageController = require('./adminController/Message');
 
-app.set('views', __dirname + '/../admin/views');
-app.set('view engine', 'jade');
-if (Config.testMode) {
-    app.locals.pretty = true;
-}
-
-
 app.use('/admin/css', express.static(__dirname + '/../admin/css'));
 app.use('/admin/fonts', express.static(__dirname + '/../admin/fonts'));
 app.use('/admin/js', express.static(__dirname + '/../admin/js'));
 
 
 app.get('/admin/login', function (req, res) {
-    res.render('login');
+    res.sendFile(adminDir + '/login.html');
 });
 app.post('/admin/login', passport.authenticate('local', { successRedirect: '/admin#waves', failureRedirect: '/admin/login' }));
 
@@ -188,7 +182,7 @@ var apiAuth = function (callback) {
     };
 };
 
-app.get('/admin', apiAuth(function (req, res) {res.render('layout'); }));
+app.get('/admin', apiAuth(function (req, res) {res.sendFile(adminDir + '/index.html'); }));
 
 app.get('/api/user', apiAuth(UserController.index));
 app.get('/api/user/:id', apiAuth(UserController.getById));
