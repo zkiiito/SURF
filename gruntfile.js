@@ -13,7 +13,9 @@ module.exports = function (grunt) {
         "client/js/i18n.js",
         "client/js/jquery.tokeninput.js",
         "client/js/date.format.js",
-        "client/js/phpjs.js",
+        "node_modules/phpjs/functions/strings/strip_tags.js",
+        "node_modules/phpjs/functions/strings/nl2br.js",
+        "node_modules/phpjs/functions/strings/wordwrap.js",
         "client/js/randomname.js",
         "client/js/model/user.model.js",
         "client/js/model/wave.model.js",
@@ -75,7 +77,6 @@ module.exports = function (grunt) {
                 ],
                 exclude: [
                     'client/js/**/jquery*',
-                    'client/js/phpjs.js',
                     'client/js/surf.min.js',
                     'client/js/date.format.js'
                 ],

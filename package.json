@@ -29,14 +29,14 @@
     "body-parser": "^1.0.2",
     "express-session": "1.3.x",
     "errorhandler": "^1.0.1",
-    "uglify-js": "2.4.x",
     "R.js": "0.1.x",
     "nodetime": "0.8.x",
     "passport": "^0.2.0",
     "passport-google-oauth": "^0.1.5",
     "passport-facebook": "^1.0.3",
     "passport-local": "^1.0.0",
-    "jade": "^1.7.0"
+    "jade": "^1.7.0",
+    "phpjs": "^1.3.2"
   },
   "engines": {
     "node": "0.10.x",
