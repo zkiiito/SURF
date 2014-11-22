@@ -11,8 +11,8 @@ module.exports = function (grunt) {
         "node_modules/backbone/backbone.js",
         "node_modules/R.js/R.js",
         "client/js/i18n.js",
-        "client/js/jquery.tokeninput.js",
-        "client/js/date.format.js",
+        "client/js/jquery/jquery.tokeninput.js",
+        "node_modules/dateformat/lib/dateformat.js",
         "node_modules/phpjs/functions/strings/strip_tags.js",
         "node_modules/phpjs/functions/strings/nl2br.js",
         "node_modules/phpjs/functions/strings/wordwrap.js",
@@ -77,8 +77,7 @@ module.exports = function (grunt) {
                 ],
                 exclude: [
                     'client/js/**/jquery*',
-                    'client/js/surf.min.js',
-                    'client/js/date.format.js'
+                    'client/js/surf.min.js'
                 ],
                 directives: {
                     browser: true,
