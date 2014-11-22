@@ -1,4 +1,4 @@
-/*global app, Backgrid, UserView, WaveRemoveUserView */
+/*global app, Backgrid, UserView */
 var Wave = Backbone.Model.extend(
     /** @lends Wave.prototype */
     {
@@ -63,12 +63,10 @@ app.waveGrid = new Backgrid.Grid({
 
                 ids.forEach(function (id) {
                     var user = app.users.getUser(id),
-                        view = new UserView({model: user}),
-                        removeView = new WaveRemoveUserView({model: this.model});
+                        view = new UserView({model: user});
 
-                    removeView.userView = view;
+                    view.setWave(this.model);
                     this.$el.append(view.render().el);
-                    this.$el.append(removeView.render().el);
                 }, this);
                 this.delegateEvents();
                 return this;

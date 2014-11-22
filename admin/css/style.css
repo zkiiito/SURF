@@ -10,3 +10,10 @@
     width: 20%;
 }
 
+.userview {
+    clear: both;
+}
+
+.userview button {
+    float: right;
+}

@@ -49,8 +49,7 @@ module.exports = function (grunt) {
         "admin/js/model/user.model.js",
         "admin/js/model/wave.model.js",
         "admin/js/model/waveinvite.model.js",
-        "admin/js/view/user.view.js",
-        "admin/js/view/waveremoveuser.view.js"
+        "admin/js/view/user.view.js"
     ];
 
     grunt.initConfig({
