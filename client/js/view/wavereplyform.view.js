@@ -65,7 +65,7 @@ var WaveReplyFormView = Backbone.View.extend({
     },
 
     mentionUser: function () {
-        var search, users, replace,
+        var search, users, replace, allFunc,
             replaceSelect = 0,
             textarea = this.$el.find('textarea'),
             caretPos = textarea[0].selectionEnd || 0,
@@ -82,10 +82,11 @@ var WaveReplyFormView = Backbone.View.extend({
                     replace = users[0].get('name');
                 } else {
                     replace = users[0].get('name').substr(0, search.length);
+                    allFunc = function (user) {
+                        return user.get('name').substr(0, replace.length) === replace;
+                    };
 
-                    while (_.all(users, function (user) {
-                            return user.get('name').substr(0, replace.length) === replace;
-                    })) {
+                    while (_.all(users, allFunc)) {
                         replace = users[0].get('name').substr(0, replace.length + 1);
                     }
 

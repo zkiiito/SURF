@@ -1,4 +1,4 @@
-/*global app, Backgrid */
+/*global app, Backgrid, UserView */
 var User = Backbone.Model.extend(
     /** @lends User.prototype */
     {
@@ -71,19 +71,4 @@ app.userGrid = new Backgrid.Grid({
         editable: false
     }],
     collection: app.users
-});
-
-var UserView = Backbone.View.extend({
-    initialize: function () {
-        _.bindAll(this, 'render');
-        this.listenTo(this.model, 'change', this.render);
-    },
-
-    render: function () {
-        this.$el.empty();
-        this.$el.append($('<img src="' + this.model.get("avatar") + '" width="20">'));
-        this.$el.append($('<span>').text(this.model.get('name')));
-
-        return this;
-    }
 });

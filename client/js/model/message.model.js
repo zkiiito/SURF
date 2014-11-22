@@ -51,13 +51,14 @@ var Message = Backbone.Model.extend(
             /*global strip_tags, nl2br, wordwrap */
             var parts, i, c, matched, url, urlText,
                 msg = this.get('message'),
-                urlRegex = /((https?:\/\/|www\.)[^\s"]+)/g; //TODO: improve it!
+                urlRegex = /((https?:\/\/|www\.)\S+)/g;
 
+            msg = msg.replace(/\n/g, " \n");
             msg = strip_tags(msg);
             parts = msg.split(' ');
             for (i = 0, c = parts.length; i < c; i++) {
                 matched = parts[i].match(urlRegex);
-                if (matched) {//ha link
+                if (matched) {
                     url = urlText = matched[0];
                     urlText = urlText.length > 53 ? urlText.substr(0, 50) + '...' : urlText;
                     url = 'http' === url.substr(0, 4) ? url : 'http://' + url;

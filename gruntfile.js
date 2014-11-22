@@ -44,10 +44,12 @@ module.exports = function (grunt) {
         "admin/js/lib/extensions/paginator/backgrid-paginator.js",
         "admin/js/lib/extensions/text-cell/backgrid-text-cell.js",
         "admin/js/AdminRouter.js",
-        "admin/js/model/Message.js",
-        "admin/js/model/User.js",
-        "admin/js/model/Wave.js",
-        "admin/js/model/WaveInvite.js"
+        "admin/js/model/message.model.js",
+        "admin/js/model/user.model.js",
+        "admin/js/model/wave.model.js",
+        "admin/js/model/waveinvite.model.js",
+        "admin/js/view/user.view.js",
+        "admin/js/view/waveremoveuser.view.js"
     ];
 
     grunt.initConfig({

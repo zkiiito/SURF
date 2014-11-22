@@ -138,7 +138,7 @@ var MessageView = Backbone.View.extend({
 
         if (notification) {
             notification.onclick = function () {
-                //TODO: showWave
+                //showWave?
                 that.model.setScrolled();
             };
 

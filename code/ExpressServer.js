@@ -132,9 +132,11 @@ app.get('/auth/facebook', passport.authenticate('facebook', { scope: 'email' }))
 app.get('/auth/facebook/callback',  passport.authenticate('facebook', { successRedirect: '/' }));
 
 if (Config.testMode) {
+    /*jslint unparam: true*/
     app.get('/loginTest', function (req, res) {
         res.sendFile(clientDir + '/test/login.html');
     });
+    /*jslint unparam: false*/
 
     app.post('/loginTest', passport.authenticate('local', { successRedirect: '/', failureRedirect: '/loginTest' }));
 
@@ -168,13 +170,6 @@ app.use('/admin/css', express.static(__dirname + '/../admin/css'));
 app.use('/admin/fonts', express.static(__dirname + '/../admin/fonts'));
 app.use('/admin/js', express.static(__dirname + '/../admin/js'));
 
-
-app.get('/admin/login', function (req, res) {
-    res.sendFile(adminDir + '/login.html');
-});
-app.post('/admin/login', passport.authenticate('local', { successRedirect: '/admin#waves', failureRedirect: '/admin/login' }));
-
-
 var apiAuth = function (callback) {
     return function (req, res) {
         if (!req.isAuthenticated() || !req.session.passport.user.admin) {
@@ -184,7 +179,16 @@ var apiAuth = function (callback) {
     };
 };
 
-app.get('/admin', apiAuth(function (req, res) {res.sendFile(adminDir + '/index.html'); }));
+/*jslint unparam: true*/
+app.get('/admin', apiAuth(function (req, res) {
+    res.sendFile(adminDir + '/index.html');
+}));
+
+app.get('/admin/login', function (req, res) {
+    res.sendFile(adminDir + '/login.html');
+});
+/*jslint unparam: false*/
+app.post('/admin/login', passport.authenticate('local', { successRedirect: '/admin#waves', failureRedirect: '/admin/login' }));
 
 app.get('/api/user', apiAuth(UserController.index));
 app.get('/api/user/:id', apiAuth(UserController.getById));

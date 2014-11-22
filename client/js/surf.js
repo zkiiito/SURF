@@ -51,10 +51,12 @@ window.onerror = function (message, file, line) {
 };
 
 $(function () {
+    /*jslint regexp: true*/
     _.templateSettings = {
         interpolate: /\{|\|(.+?)\|\}/g,
         escape: /\{\{(.+?)\}\}/g
     };
+    /*jslint regexp: false */
     var surfApp = new SurfAppRouter();
     window.app = surfApp;
     Backbone.history.start();

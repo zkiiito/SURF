@@ -508,7 +508,7 @@ var DAL = {
      */
     createInviteCodeForWave: function (user, wave) {
         var m,
-            code = (Math.random() + 1).toString(36).replace(/[^a-z0-9]+/g, ''),
+            code = (Math.random() + 1).toString(36).replace(/\W/g, ''),
             data = {
                 userId: user.id,
                 waveId: wave.id,
