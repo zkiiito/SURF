@@ -1,4 +1,4 @@
-/*global UserView, MessageReplyFormView, Notification, __ */
+/*global UserView, MessageReplyFormView, Notification, __, dateFormat */
 var MessageView = Backbone.View.extend({
     initialize: function () {
         this.hasReplyForm = false;
@@ -11,7 +11,7 @@ var MessageView = Backbone.View.extend({
         this.model.user.bind('change:name', this.changeUserName);
 
         var date = new Date(this.model.get('created_at'));
-        this.model.set('dateFormatted', date.format('mmm d HH:MM'));
+        this.model.set('dateFormatted', dateFormat(date, 'mmm d HH:MM'));
     },
     events: {
         'click': 'readMessage',
