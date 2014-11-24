@@ -208,11 +208,13 @@ var Wave = Backbone.Model.extend(
         /**
          * @param {Object} data
          */
-        update: function (data) {
+        update: function (data, withRemove) {
+            withRemove = withRemove || false;
             this.set('title', data.title || "");
             var notified = false,
                 userIds = this.get('userIds'),
-                newIds;
+                newIds,
+                removedIds;
 
             if (!_.isEqual(data.userIds, userIds)) {
                 newIds = _.difference(data.userIds, userIds);
@@ -223,6 +225,14 @@ var Wave = Backbone.Model.extend(
                     var user = require('../SurfServer').users.get(userId);
                     this.sendOldMessagesToUser(user);
                 }, this);
+
+                if (withRemove) {
+                    removedIds = _.difference(userIds, data.userIds);
+                    _.each(removedIds, function (userId) {
+                        var user = require('../SurfServer').users.get(userId);
+                        this.quitUser(user);
+                    }, this);
+                }
             }
 
             if (!notified) {

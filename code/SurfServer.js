@@ -162,7 +162,7 @@ var SurfServer = {
             console.log('updateWave: ' + client.curUser.id);
             var wave = that.waves.get(data.id);
             if (wave && wave.isMember(client.curUser)) {
-                wave.update(data);
+                wave.update(data, false);
             }
         });
 

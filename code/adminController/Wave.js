@@ -41,6 +41,15 @@ var WaveController = _.extend(base(Model), {
                 ]);
             });
         });
+    },
+
+    update: function (req, res) {
+        var wave = require('../SurfServer').waves.get(req.params.id);
+        if (wave) {
+            delete req.body._id;
+            wave.update(req.body, true);
+            return res.json(true);
+        }
     }
 });
 

@@ -4,6 +4,15 @@ var base = require('./Base'),
     _ = require('underscore');
 
 module.exports = _.extend(base(Model), {
+    update: function (req, res) {
+        var user = require('../SurfServer').users.get(req.params.id);
+        if (user) {
+            delete req.body._id;
+            user.update(req.body);
+            return res.json(true);
+        }
+    },
+
     getUnreadCountByWave: function (req, res) {
         var key = 'unread-' + req.param('userId') + '-' + req.param('waveId');
         redisClient.scard(key, function (err, result) {
