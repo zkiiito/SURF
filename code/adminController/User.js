@@ -24,8 +24,12 @@ module.exports = _.extend(base(Model), {
     },
 
     deleteUnreadCountByWave: function (req, res) {
-        var key = 'unread-' + req.param('userId') + '-' + req.param('waveId');
-        redisClient.del(key);
+        var wave = require('../SurfServer').waves.get(req.param('waveId')),
+            user = require('../SurfServer').users.get(req.param('userId'));
+
+        if (wave && user) {
+            wave.readAllMessagesOfUser(user);
+        }
         return res.json(1);
     }
 
