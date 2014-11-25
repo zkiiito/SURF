@@ -157,7 +157,7 @@ var SurfAppView = Backbone.View.extend({
                 ctx.drawImage(this.iconImage, 0, 0);
 
                 if (count > 0) {
-                    ctx.fillStyle = '#444444';
+                    ctx.fillStyle = '#847099';
                     ctx.font = 'bold 16px sans-serif';
                     txt = count > 99 ? '99+' : count.toString();
                     ctx.fillText(txt, 35 - 9 * txt.length, 35);
