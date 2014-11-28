@@ -4,7 +4,9 @@
 
 SURF is a threaded instant messaging application, like Google Wave used to be.
 
-### Features / usage
+Try it at <http://beta.surfchat.io> - website at <http://surfchat.io>.
+
+## Features / usage
 * create new conversation
 * add friends from the *Edit* menu
  * if they share a conversation with you, the autosuggested *Participants* field can find them
@@ -19,7 +21,7 @@ SURF is a threaded instant messaging application, like Google Wave used to be.
  * by pressing spacebar
  * clicking the *Next unread* button
  * clicking on the current conversation on the left side
-* start a private conversation with a friend by double-clicking his avatar
+* start a private conversation with a friend by double-clicking their avatar
 
 
 ## Installation
@@ -71,15 +73,24 @@ You want to develop? Cool!
 * copy hooks/pre-commit to your .git/hooks directory
 
 ##### Test
-install [casperjs], start the server and
+Install [casperjs], start the server and
 ```
 $ npm test
 ```
 should do the rest!
 
+## Creators
+
+**Csaba Schreiner** design, sitebuild
+* <https://www.behance.net/csaba-schreiner>
+
+**Zoltan Feher** code
+- <http://github.com/zkiiito>
+- <http://twitter.com/zkiiito>
+
 ## License
 
-GPLv3
+All code released under the [GNU GPL v3.0](LICENSE).
 
 [node.js]:http://nodejs.org
 [mongodb]:http://www.mongodb.org

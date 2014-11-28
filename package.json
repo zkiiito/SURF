@@ -1,20 +1,16 @@
 {
-  "name": "surf",
+  "name": "SURF",
   "version": "1.0.0",
-  "author": {
-    "name": "zooli white",
-    "email": "zkiiito@gmail.com"
-  },
-  "contributors": [
-    {
-      "name": "duke flipchart",
-      "email": "schreiner.csaba@gmail.com"
-    }
-  ],
+  "author": "SURF team",
+  "homepage": "http://surfchat.io",
   "description": "SURF is a threaded instant messaging application, like Google Wave used to be.",
   "repository": {
     "type": "git",
     "url": "https://bitbucket.org/zkiiito/surf.git"
+  },
+  "license": {
+    "type": "GNU General Public License v3.0",
+    "url": "http://opensource.org/licenses/GPL-3.0"
   },
   "dependencies": {
     "socket.io": "1.2.x",
