@@ -33,7 +33,7 @@ Try it at <http://beta.surfchat.io> - website at <http://surfchat.io>.
 
 ### Steps for you local (development) copy
 ```sh
-$ git clone [git-repo-url] surf
+$ git clone git@github.com:zkiiito/SURF.git surf
 $ cd surf
 $ export TESTMODE=1
 $ npm install
@@ -86,7 +86,7 @@ should do the rest!
 
 **Zoltan Feher** code
 - <http://github.com/zkiiito>
-- <http://twitter.com/zkiiito>
+- <http://twitter.com/zooli>
 
 ## License
 
