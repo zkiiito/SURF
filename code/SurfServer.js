@@ -127,6 +127,14 @@ var SurfServer = {
      */
     authClient: function (client) {
         var that = this;
+
+        client.on('error', function (err) {
+            console.log("Socket client error");
+            console.log(err.stack);
+            client.curUser.disconnect();
+            client.destroy();
+        });
+
         client.on('disconnect', function () {
             console.log('disconnect: ' + client.curUser.id);
             client.curUser.disconnect();
