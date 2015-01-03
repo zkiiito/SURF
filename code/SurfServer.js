@@ -60,7 +60,13 @@ var SurfServer = {
         });
 
         this.socket.sockets.on('connection', function (client) {
-            client.curUser = that.getUserByAuth(client.session);
+            try {
+                client.curUser = that.getUserByAuth(client.session);
+            } catch (e) {
+                console.log('User auth error: ' + e.message);
+                client.destroy();
+                return;
+            }
 
             if (client.curUser.socket) {
                 client.curUser.send('dontReconnect', 1);
@@ -89,12 +95,19 @@ var SurfServer = {
         var sessionUser = session.passport.user,
             authMode = sessionUser.provider,
             userData = sessionUser._json,
-            user = this.users.find(function (u) {
+            user,
+            picture;
+
+        if (undefined === userData) {
+            throw new Error('sessionUser._json undefined');
+        }
+
+        user = this.users.find(function (u) {
                 return u.get('googleId') === userData.id
                     || u.get('facebookId') === userData.id
                     || u.get('email') === userData.email;
-            }),
-            picture = 'google' === authMode ? userData.picture : userData.picture.data.url;
+        });
+        picture = 'google' === authMode ? userData.picture : userData.picture.data.url;
 
         if (user) {
             console.log('auth: userfound ' + user.id);
