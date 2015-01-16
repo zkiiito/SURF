@@ -145,7 +145,7 @@ var SurfServer = {
             console.log("Socket client error");
             console.log(err.stack);
             client.curUser.disconnect();
-            client.destroy();
+            client.close();
         });
 
         client.on('disconnect', function () {
