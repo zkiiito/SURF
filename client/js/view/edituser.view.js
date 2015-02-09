@@ -1,12 +1,13 @@
-/*global Communicator, CryptoJS */
+/*global Communicator, Notification */
 var EditUserView = Backbone.View.extend({
     initialize: function () {
-        _.bindAll(this, 'show', 'hide');
+        _.bindAll(this, 'show', 'hide', 'testNotification');
         this.model.bind('change', this.updateFields, this);
     },
     events: {
         'click a.close' : 'hide',
-        'submit form' : 'saveUser'
+        'submit form' : 'saveUser',
+        'click button#edituser-notification-test' : 'testNotification'
     },
 
     render: function () {
@@ -52,6 +53,7 @@ var EditUserView = Backbone.View.extend({
     show: function () {
         this.$el.show();
         $('#darken').show();
+        this.checkNotification();
         return false;
     },
 
@@ -70,5 +72,32 @@ var EditUserView = Backbone.View.extend({
         Communicator.updateUser(name, avatar);
 
         return this.hide();
+    },
+
+    checkNotification: function () {
+        if (!(window.Notification)) {
+            this.$el.find('#edituser-notification-status').text(__('Not supported'));
+            this.$el.find('#edituser-notification-test').hide();
+        }
+
+        if (Notification.permission === "granted") {
+            this.$el.find('#edituser-notification-status').text(__('Enabled'));
+        } else {
+            this.$el.find('#edituser-notification-status').text(__('Disabled'));
+        }
+    },
+
+    testNotification: function () {
+        var that = this;
+        Notification.requestPermission(function (permission) {
+            if (permission === "granted") {
+                var notification = new Notification('Test notification', {tag: 'mentionNotification', icon: '/images/surf-ico.png'});
+                notification.onshow = function () {
+                    setTimeout(notification.close.bind(notification), 5000);
+                };
+
+                that.checkNotification();
+            }
+        });
     }
 });

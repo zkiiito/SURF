@@ -38,6 +38,11 @@ var i18n = {
             "Edit profile": "Profil",
             "Name": "Név",
             "Avatar": "Avatár",
+            "Notifications": "Értesítések",
+            "Not supported": "Nem támogatott",
+            "Enabled": "Bekapcsolva",
+            "Disabled": "Kikapcsolva",
+            "Test": "Teszt",
 
             "Disconnected": "Megszakadt a kapcsolat",
             "You're disconnected": "Megszakadt a kapcsolat",
