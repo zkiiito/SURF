@@ -22,6 +22,11 @@ var Message = Backbone.Model.extend(
         },
         save: function () {
             return DAL.saveMessage(this);
+        },
+        validate: function (attrs) {
+            if (0 === attrs.message.trim().length) {
+                return 'Empty message';
+            }
         }
     }
 );

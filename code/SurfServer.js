@@ -159,7 +159,7 @@ var SurfServer = {
             var msg = new Message(data),
                 wave = that.waves.get(msg.get('waveId'));
 
-            if (wave && wave.isMember(client.curUser)) {
+            if (msg.isValid() && wave && wave.isMember(client.curUser)) {
                 wave.addMessage(msg);
             }
         });
@@ -173,10 +173,12 @@ var SurfServer = {
             console.log('createWave: ' + client.curUser.id);
 
             var wave = new Wave(data);
-            wave.addUser(client.curUser, false);
-            wave.save();
-            that.waves.add(wave);
-            wave.notifyUsers();
+            if (wave.isValid()) {
+                wave.addUser(client.curUser, false);
+                wave.save();
+                that.waves.add(wave);
+                wave.notifyUsers();
+            }
         });
 
         client.on('updateWave', function (data) {

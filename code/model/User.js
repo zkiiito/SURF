@@ -111,15 +111,17 @@ User = Backbone.Model.extend(
             var name = data.name || "",
                 avatar = data.avatar || "";
 
-            name = name.substr(0, 30);
+            if (undefined === this.validate(data)) {
+                name = name.substr(0, 30);
 
-            if (name.length && avatar.length) {
-                this.set({name: name, avatar: avatar});
+                this.set({name: name.trim(), avatar: avatar.trim()});
                 this.save();
                 this.notifyFriends();
                 this.send('updateUser', {
                     user: this.toSelfJSON()
                 });
+            } else {
+                console.log(this.validate(data));
             }
         },
 
@@ -169,6 +171,16 @@ User = Backbone.Model.extend(
             _.extend(json, {emailMD5: emailMD5});
 
             return json;
+        },
+
+        validate: function (attrs) {
+            if (0 === attrs.name.trim().length) {
+                return 'Empty name';
+            }
+
+            if (0 === attrs.avatar.trim().length) {
+                return 'Empty name';
+            }
         }
     }
 );

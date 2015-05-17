@@ -207,6 +207,7 @@ var Wave = Backbone.Model.extend(
 
         /**
          * @param {Object} data
+         * @param {bool} withRemove
          */
         update: function (data, withRemove) {
             withRemove = withRemove || false;
@@ -216,30 +217,32 @@ var Wave = Backbone.Model.extend(
                 newIds,
                 removedIds;
 
-            if (!_.isEqual(data.userIds, userIds)) {
-                newIds = _.difference(data.userIds, userIds);
-                notified = this.addUsers(newIds, true);
+            if (this.isValid()) {
+                if (!_.isEqual(data.userIds, userIds)) {
+                    newIds = _.difference(data.userIds, userIds);
+                    notified = this.addUsers(newIds, true);
 
-                //send old messages from the wave to the new user
-                _.each(newIds, function (userId) {
-                    var user = require('../SurfServer').users.get(userId);
-                    this.sendOldMessagesToUser(user);
-                }, this);
-
-                if (withRemove) {
-                    removedIds = _.difference(userIds, data.userIds);
-                    _.each(removedIds, function (userId) {
+                    //send old messages from the wave to the new user
+                    _.each(newIds, function (userId) {
                         var user = require('../SurfServer').users.get(userId);
-                        this.quitUser(user);
+                        this.sendOldMessagesToUser(user);
                     }, this);
+
+                    if (withRemove) {
+                        removedIds = _.difference(userIds, data.userIds);
+                        _.each(removedIds, function (userId) {
+                            var user = require('../SurfServer').users.get(userId);
+                            this.quitUser(user);
+                        }, this);
+                    }
                 }
-            }
 
-            if (!notified) {
-                this.notifyUsers();
-            }
+                if (!notified) {
+                    this.notifyUsers();
+                }
 
-            this.save();
+                this.save();
+            }
         },
 
         /**
@@ -247,6 +250,12 @@ var Wave = Backbone.Model.extend(
          */
         isMember: function (user) {
             return this.users.contains(user);
+        },
+
+        validate: function (attrs) {
+            if (0 === attrs.title.trim().length) {
+                return 'Empty name';
+            }
         }
     }
 );
