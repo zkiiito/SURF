@@ -245,6 +245,7 @@ a:hover {
 @media (max-width: 999px) {
     .wavetop {
         top: 2em;
+        padding: 0 0.75em
     }
 }
 
@@ -309,7 +310,7 @@ a:hover {
 
 @media (max-width: 999px) {
     .waves-container {
-        top: 7.2em;
+        top: 5.2em;
     }
 }
 
@@ -608,9 +609,10 @@ textarea {
 
 @media (max-width: 999px) {
     .overlay {
-        width: auto;
-        max-width: 40em;
+        width: 100%;
         top: 2em;
+        left: 0;
+        margin-left: 0;
     }
 }
 
@@ -807,7 +809,7 @@ textarea {
         display: none;
     }
 
-    .message .message {
+    .message .message, .message .notification {
         padding-left: 100001em;
     }
 
@@ -841,11 +843,7 @@ textarea {
         padding-left: 0.5em;
     }
 
-    .wavetop {
-        padding: 0 0.75em
-    }
-
-    .waves-container {
-        top: 5.2em;
+    #currentuser .currentuser_name {
+        display: none;
     }
 }
