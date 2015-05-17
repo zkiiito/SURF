@@ -68,12 +68,13 @@ var MessageView = Backbone.View.extend({
     scrollTo: function () {
         //console.log('scroll');
         var scrollTop = this.$el.position().top,
-            wavesContainer = this.$el.parents('.waves-container');
+            wavesContainer = this.$el.parents('.waves-container'),
+            wh = wavesContainer.height();
 
         this.$el.triggerHandler('click');
 
-        if (scrollTop < 0 || scrollTop > wavesContainer.height()) {
-            wavesContainer.scrollTop(this.$el.position().top + wavesContainer.scrollTop() - wavesContainer.height() * 0.3);
+        if (scrollTop < 0 || scrollTop > wh) {
+            wavesContainer.scrollTop(scrollTop + wavesContainer.scrollTop() - wh * 0.3);
         }
 
         this.$el.children('table').focus();

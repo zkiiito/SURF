@@ -64,7 +64,7 @@ var SurfServer = {
                 client.curUser = that.getUserByAuth(client.session);
             } catch (e) {
                 console.log('User auth error: ' + e.message);
-                client.destroy();
+                client.close();
                 return;
             }
 
