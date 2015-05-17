@@ -17,22 +17,22 @@
 <script id="wave_list_view" type="text/html">
 <a class="waveitem" href="#wave/{{ id }}">
     <h2>{{ title }}</h2>
-    <p class="meta"><span class="usercount R">{ usercount } participants</span> <span class="piros"><!-- { unreadPosts } --></span></p>
+    <p class="meta mhide"><span class="usercount R">{ usercount } participants</span> <span class="piros"><!-- { unreadPosts } --></span></p>
 </a>
 </script>
 
 <script id="wave_view" type="text/html">
 <div class="wave">
     <div class="wavetop">
-        <h2 class="wave-title">{{ title }}</h2>
+        <h2 class="wave-title mhide">{{ title }}</h2>
         <p class="heads">
             <p class="offline-list">+<span class="count">19</span><span class="mhide"> offline</span></p>
         </p>
         <div class="buttons">
-            <a class="button gounread R" href="#">Next unread</a>
+            <a class="button gounread" href="#"><span class="R mhide">Next unread</span><span class="mshow">Next</span></a>
             <a class="button editwave R mhide" href="#">Edit</a>
-            <a class="button readall R" href="#">All read</a>
-            <a class="button quit R" href="#">Leave conversation</a>
+            <a class="button readall R mhide" href="#">All read</a>
+            <a class="button quit" href="#"><span class="R mhide">Leave conversation</span><span class="mshow">X</span></a>
         </div>
     </div>
     <div class="waves-container">

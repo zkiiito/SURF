@@ -806,4 +806,46 @@ textarea {
     .mhide {
         display: none;
     }
+
+    .message .message {
+        padding-left: 100001em;
+    }
+
+    .threadend {
+        margin-left: 0;
+    }
+
+    .time {
+        font-size: 60%;
+        text-align: right;
+        max-width: 3.5em;
+    }
+
+    .message-header {
+        padding: 0.2em 0;
+    }
+
+    .message-body {
+        padding: 0.2em 1em 0.2em 0;
+    }
+
+    .wavetop .heads {
+        margin-left: 0;
+    }
+
+    .waveitem h2 {
+        font-size: 0.8em;
+    }
+
+    .waveitem {
+        padding-left: 0.5em;
+    }
+
+    .wavetop {
+        padding: 0 0.75em
+    }
+
+    .waves-container {
+        top: 5.2em;
+    }
 }
