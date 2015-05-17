@@ -1,7 +1,6 @@
 /*global UserView, MessageReplyFormView, Notification, __, dateFormat */
 var MessageView = Backbone.View.extend({
     initialize: function () {
-        this.hasReplyForm = false;
         _.bindAll(this, 'addMessage', 'readMessage', 'replyMessage', 'onReadMessage', 'scrollTo', 'changeUserName');
         this.model.bind('messagesCreated', function () {
             this.model.messages.bind('add', this.addMessage);
@@ -116,36 +115,42 @@ var MessageView = Backbone.View.extend({
         }
 
         var notification,
+            notificationsEnabled = false,
             that = this,
-            notificationText = __('{{ participantName }} mentioned you in {{ waveName }}!')
-                .replace('{{ participantName }}', this.model.user.get('name'))
-                .replace('{{ waveName }}', this.model.getWave().get('title'));
+            notificationText;
 
         if (Notification.permission === "granted") {
-            // If it's okay let's create a notification
-            notification = new Notification(notificationText, {tag: 'mentionNotification', icon: '/images/surf-ico.png'});
+            notificationsEnabled = true;
         } else if (Notification.permission !== 'denied') {
-            // Otherwise, we need to ask the user for permission
-            // Note, Chrome does not implement the permission static property
-            // So we have to check for NOT 'denied' instead of 'default'
-
             Notification.requestPermission(function (permission) {
-                // If the user is okay, let's create a notification
                 if (permission === "granted") {
-                    notification = new Notification(notificationText, {tag: 'mentionNotification', icon: '/images/surf-ico.png'});
+                    notificationsEnabled = true;
                 }
             });
         }
 
-        if (notification) {
-            notification.onclick = function () {
-                //showWave?
-                that.model.setScrolled();
-            };
+        if (notificationsEnabled) {
+            notificationText = __('{{ participantName }} mentioned you in {{ waveName }}!')
+                .replace('{{ participantName }}', this.model.user.get('name'))
+                .replace('{{ waveName }}', this.model.getWave().get('title'));
 
-            notification.onshow = function () {
-                setTimeout(notification.close.bind(notification), 5000);
-            };
+            try {
+                notification = new Notification(notificationText, {
+                    tag: 'mentionNotification',
+                    icon: '/images/surf-ico.png'
+                });
+
+                notification.onclick = function () {
+                    //showWave?
+                    that.model.setScrolled();
+                };
+
+                notification.onshow = function () {
+                    setTimeout(notification.close.bind(notification), 5000);
+                };
+            } catch (e) {
+                //notification constructor not supported on chrome mobile
+            }
         }
     }
 });
