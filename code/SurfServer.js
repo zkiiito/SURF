@@ -103,9 +103,9 @@ var SurfServer = {
         }
 
         user = this.users.find(function (u) {
-                return u.get('googleId') === userData.id
-                    || u.get('facebookId') === userData.id
-                    || u.get('email') === userData.email;
+            return u.get('googleId') === userData.id
+                || u.get('facebookId') === userData.id
+                || u.get('email') === userData.email;
         });
         picture = 'google' === authMode ? userData.picture : userData.picture.data.url;
 

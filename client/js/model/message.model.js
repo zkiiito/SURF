@@ -1,5 +1,7 @@
-/*global MessageCollection, app, Communicator */
-var Message = Backbone.Model.extend(
+/*global app, Communicator */
+var Message, MessageCollection;
+
+Message = Backbone.Model.extend(
     /** @lends Message.prototype */
     {
         defaults: {
@@ -172,7 +174,7 @@ var Message = Backbone.Model.extend(
 );
 
 /** @class */
-var MessageCollection = Backbone.Collection.extend(
+MessageCollection = Backbone.Collection.extend(
     /** @lends MessageCollection.prototype */
     {
         model: Message,

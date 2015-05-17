@@ -148,7 +148,7 @@ var MessageView = Backbone.View.extend({
                 notification.onshow = function () {
                     setTimeout(notification.close.bind(notification), 5000);
                 };
-            } catch (e) {
+            } catch (ignore) {
                 //notification constructor not supported on chrome mobile
             }
         }

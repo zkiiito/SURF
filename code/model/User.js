@@ -1,11 +1,12 @@
-/*global UserCollection */
 var crypto = require('crypto'),
     _ = require('underscore'),
     Backbone =  require('backbone'),
     MessageCollection = require('./Message').Collection,
-    DAL = require('../DAL');
+    DAL = require('../DAL'),
+    User,
+    UserCollection;
 
-var User = Backbone.Model.extend(
+User = Backbone.Model.extend(
     /** @lends User.prototype */
     {
         defaults: {
@@ -173,7 +174,7 @@ var User = Backbone.Model.extend(
 );
 
 /** @class */
-var UserCollection = Backbone.Collection.extend(
+UserCollection = Backbone.Collection.extend(
     /** @lends UserCollection.prototype */
     {
         model: User
