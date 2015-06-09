@@ -72,6 +72,8 @@ Message = Backbone.Model.extend(
 
             msg = parts.join(' ');
             msg = nl2br(msg, true);
+            msg = msg.replace(/</g, '&lt;');
+            msg = msg.replace(/>/g, '&gt;');
 
             this.set('messageFormatted', msg);
         },
