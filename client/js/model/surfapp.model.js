@@ -14,6 +14,7 @@ var SurfAppModel = Backbone.Model.extend(
          */
         initCurrentUser: function (user) {
             this.currentUser = user;
+            this.currentUser.loadLocalAttributes();
             this.trigger('initCurrentUser');
         }
     }

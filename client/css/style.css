@@ -795,6 +795,10 @@ textarea {
     width: auto;
 }
 
+#edituser .edituser-localsettings-row div.right label {
+    text-align: left;
+}
+
 /* show only on mobile */
 .mshow {
     display: none;

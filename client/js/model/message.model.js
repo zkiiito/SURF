@@ -53,8 +53,13 @@ Message = Backbone.Model.extend(
             /*global strip_tags, nl2br, wordwrap */
             var parts, i, c, matched, url, urlText,
                 msg = this.get('message'),
-                urlRegex = /((https?:\/\/|www\.)\S+)/g;
+                urlRegex = /((https?:\/\/|www\.)\S+)/g,
+                urlPictureRegex = /\.(jpg|png|gif)$/ig,
+                urlVideoRegex = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/gim,
+                replacement = '';
 
+            msg = msg.replace(/</g, '&lt;');
+            msg = msg.replace(/>/g, '&gt;');
             msg = msg.replace(/\n/g, " \n");
             msg = strip_tags(msg);
             parts = msg.split(' ');
@@ -64,7 +69,17 @@ Message = Backbone.Model.extend(
                     url = urlText = matched[0];
                     urlText = urlText.length > 53 ? urlText.substr(0, 50) + '...' : urlText;
                     url = 'http' === url.substr(0, 4) ? url : 'http://' + url;
-                    parts[i] = parts[i].replace(matched[0], '<a href="' + url + '" target="_blank">' + urlText + '</a>');
+
+                    if (app.model.currentUser.get('showPictures') && url.match(urlPictureRegex)) {
+                        replacement = '<a href="' + url + '" target="_blank"><img width="420" src="' + url + '"></a>';
+                    } else if (app.model.currentUser.get('showVideos') && url.match(urlVideoRegex)) {
+                        url = urlVideoRegex.exec(url);
+                        replacement = '<iframe width="420" height="315" src="http://youtube.com/embed/' + url[2] + '" frameborder="0" allowfullscreen></iframe>';
+                    } else {
+                        replacement = '<a href="' + url + '" target="_blank">' + urlText + '</a>';
+                    }
+
+                    parts[i] = parts[i].replace(matched[0], replacement);
                 } else {
                     parts[i] = wordwrap(parts[i], 200, ' ', true);
                 }
@@ -72,8 +87,6 @@ Message = Backbone.Model.extend(
 
             msg = parts.join(' ');
             msg = nl2br(msg, true);
-            msg = msg.replace(/</g, '&lt;');
-            msg = msg.replace(/>/g, '&gt;');
 
             this.set('messageFormatted', msg);
         },

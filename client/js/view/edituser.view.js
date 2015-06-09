@@ -22,6 +22,8 @@ var EditUserView = Backbone.View.extend({
     updateFields: function () {
         this.$el.find('#edituser-name').val(this.model.get('name'));
         this.$el.find('#edituser-avatar').val(this.model.get('avatar'));
+        this.$el.find('input#edituser-show-pictures').attr('checked', this.model.get('showPictures'));
+        this.$el.find('input#edituser-show-videos').attr('checked', this.model.get('showVideos'));
 
         this.$el.find('div.avatar').remove();
 
@@ -70,6 +72,10 @@ var EditUserView = Backbone.View.extend({
 
         //callback updates current user
         Communicator.updateUser(name, avatar);
+
+        this.model.set('showPictures', this.$el.find('input#edituser-show-pictures').is(':checked'));
+        this.model.set('showVideos', this.$el.find('input#edituser-show-videos').is(':checked'));
+        this.model.saveLocalAttributes();
 
         return this.hide();
     },

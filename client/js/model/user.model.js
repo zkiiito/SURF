@@ -7,9 +7,12 @@ var User = Backbone.Model.extend(
             name: '',
             avatar: '',
             email: '',
-            status: 'offline'
+            status: 'offline',
+            showPictures: false,
+            showVideos: false
         },
         idAttribute: '_id',
+        localAttributes: ['showPictures', 'showVideos'],
 
         /**
          * @param {Object} data
@@ -36,6 +39,24 @@ var User = Backbone.Model.extend(
                 } else {
                     Communicator.createWave(randomName() + 'Room', [user.id]);
                 }
+            }
+        },
+
+        loadLocalAttributes: function () {
+            if (window.localStorage !== undefined) {
+                _.each(this.localAttributes, function (attr) {
+                    var key = this.id + attr;
+                    this.set(attr, localStorage.getItem(key) > 0);
+                }, this);
+            }
+        },
+
+        saveLocalAttributes: function () {
+            if (window.localStorage !== undefined) {
+                _.each(this.localAttributes, function (attr) {
+                    var key = this.id + attr;
+                    localStorage.setItem(key, this.get(attr) ? 1 : 0);
+                }, this);
             }
         }
     }
