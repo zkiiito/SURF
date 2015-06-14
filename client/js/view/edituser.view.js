@@ -70,12 +70,12 @@ var EditUserView = Backbone.View.extend({
         var name = this.$el.find('#edituser-name').val(),
             avatar = this.$el.find('input[name=edituser-avatar-cb]:checked').val();
 
+        this.model.set('showPictures', this.$el.find('input#edituser-show-pictures').is(':checked'), {silent: true});
+        this.model.set('showVideos', this.$el.find('input#edituser-show-videos').is(':checked'), {silent: true});
+        this.model.saveLocalAttributes();
+
         //callback updates current user
         Communicator.updateUser(name, avatar);
-
-        this.model.set('showPictures', this.$el.find('input#edituser-show-pictures').is(':checked'));
-        this.model.set('showVideos', this.$el.find('input#edituser-show-videos').is(':checked'));
-        this.model.saveLocalAttributes();
 
         return this.hide();
     },
