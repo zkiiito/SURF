@@ -80,6 +80,10 @@ var MessageView = Backbone.View.extend({
     },
 
     replyMessage: function (e) {
+        if ('TEXTAREA' === e.target.nodeName) {
+            return;
+        }
+
         e.preventDefault();
         //if reply form is visible under this message, return after hiding
         var hideOnly = this.$el.find('> div:last-child').hasClass('replyform'),
