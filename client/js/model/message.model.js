@@ -54,7 +54,7 @@ Message = Backbone.Model.extend(
             var parts, i, c, matched, url, urlText,
                 msg = this.get('message'),
                 urlRegex = /((https?:\/\/|www\.)\S+)/g,
-                urlPictureRegex = /\.(jpg|png|gif)$/ig,
+                urlPictureRegex = /\.(jpg|png|gif)(\?.*)?$/ig,
                 urlVideoRegex = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/gim,
                 replacement = '';
 
@@ -71,10 +71,10 @@ Message = Backbone.Model.extend(
                     url = 'http' === url.substr(0, 4) ? url : 'http://' + url;
 
                     if (app.model.currentUser.get('showPictures') && url.match(urlPictureRegex)) {
-                        replacement = '<a href="' + url + '" target="_blank"><img width="420" src="' + url + '"></a>';
+                        replacement = '<br><a href="' + url + '" target="_blank"><img width="420" src="' + url + '"></a>';
                     } else if (app.model.currentUser.get('showVideos') && url.match(urlVideoRegex)) {
                         url = urlVideoRegex.exec(url);
-                        replacement = '<iframe width="420" height="315" src="https://youtube.com/embed/' + url[2] + '" frameborder="0" allowfullscreen></iframe>';
+                        replacement = '<br><iframe width="420" height="315" src="https://youtube.com/embed/' + url[2] + '" frameborder="0" allowfullscreen></iframe>';
                     } else {
                         replacement = '<a href="' + url + '" target="_blank">' + urlText + '</a>';
                     }

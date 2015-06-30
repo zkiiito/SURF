@@ -400,10 +400,6 @@ a:hover {
   word-break: break-all;
 }
 
-.message-text a img {
-    display: block;
-}
-
 .author {
   color: #999;
   font-size: 1em;
