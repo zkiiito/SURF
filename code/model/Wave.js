@@ -112,7 +112,7 @@ var Wave = Backbone.Model.extend(
          */
         notifyUserOfExistingUsers: function (newuser) {
             this.users.each(function (user) {
-                //only if logged in and now they have one common wave
+                //only if now they have one common wave
                 if (user !== newuser && _.intersection(newuser.waves, user.waves).length < 2) {
                     newuser.send('updateUser', {
                         user: user.toFilteredJSON()

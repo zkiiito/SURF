@@ -25,12 +25,15 @@ User = Backbone.Model.extend(
             this.waves = new WaveCollection();
         },
         idAttribute: '_id',
-        init: function () {
+        init: function (invite) {
             var self = this;
             this.set({status: 'online'});
             DAL.getLastMessagesForUser(this, function (err, msgs) {
                 if (!err) {
                     self.sendInit(msgs);
+                    if (invite) {
+                        self.handleInvite(invite);
+                    }
                 }
             });
         },
@@ -138,7 +141,7 @@ User = Backbone.Model.extend(
         handleInvite: function (invite) {
             var that = this;
             DAL.removeWaveInviteByCode(invite.code, function (err, result) {
-                if (!err && result > 0) {
+                if (!err && result.result.ok > 0) {
                     var wave = require('../SurfServer').waves.get(invite.waveId);
                     if (wave && !wave.isMember(that)) {
                         wave.addUser(that, true);

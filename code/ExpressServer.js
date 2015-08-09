@@ -66,7 +66,7 @@ passport.use(new LocalStrategy(
                     provider: 'google',
                     _json: {
                         id: id,
-                        email: 'test' + username + '@wavesurf.com',
+                        emails: [{value: 'test' + username + '@wavesurf.com'}],
                         name: 'Surf Tester ' + id.toString(),
                         picture: 'http://lorempixel.com/100/100/people/'
                     }

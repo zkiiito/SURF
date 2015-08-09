@@ -5,9 +5,14 @@ casper.on("remote.message", function (message) {
     this.echo("remote console.log: " + message);
 });
 
-casper.on('page.error', function (message, trace) {
+casper.on('page.error', function (message) {
     this.capture('error.png');
     this.echo('remote error caught: ' + message, 'ERROR');
+});
+
+casper.test.on('fail', function () {
+    casper.capture('fail.png');
+    casper.exit();
 });
 
 var lastMsgId;

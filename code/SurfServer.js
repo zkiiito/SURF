@@ -77,13 +77,15 @@ var SurfServer = {
             client.curUser.socket = client;
 
             that.authClient(client);
-            client.curUser.init();
 
+            var invite = null;
             if (client.session.invite) {
                 console.log('invitedto: ' + client.session.invite.waveId);
-                client.curUser.handleInvite(client.session.invite);
+                invite = client.session.invite;
                 client.session.invite = null;
             }
+
+            client.curUser.init(invite);
         });
     },
 
@@ -105,14 +107,14 @@ var SurfServer = {
         user = this.users.find(function (u) {
             return u.get('googleId') === userData.id
                 || u.get('facebookId') === userData.id
-                || u.get('email') === userData.email;
+                || u.get('email') === userData.emails[0].value;
         });
         picture = 'google' === authMode ? userData.picture : userData.picture.data.url;
 
         if (user) {
             console.log('auth: userfound ' + user.id);
             user.set(authMode + 'Id', userData.id);//refresh id, usually simply save if new
-            user.set('email', userData.email);//?
+            user.set('email', userData.emails[0].value);//?
             if (picture) {
                 user.set(authMode + 'Avatar', picture);//refresh default picture for auth provider
             }
@@ -123,7 +125,7 @@ var SurfServer = {
         user = new User();
         user.set('name', userData.name);
         user.set(authMode + 'Id', userData.id);
-        user.set('email', userData.email);
+        user.set('email', userData.emails[0].value);
         if (picture) {
             user.set('avatar', picture);
             user.set(authMode + 'Avatar', picture);
