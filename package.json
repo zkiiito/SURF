@@ -19,7 +19,7 @@
     "mongoose": "4.1.x",
     "redis": "0.12.x",
     "async": "1.4.x",
-    "cookie": "0.1.x",
+    "cookie": "0.2.x",
     "express": "4.13.x",
     "body-parser": "1.13.x",
     "express-session": "1.11.x",
