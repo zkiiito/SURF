@@ -24,7 +24,7 @@
     "body-parser": "1.13.x",
     "express-session": "1.11.x",
     "errorhandler": "1.4.x",
-    "passport": "^0.2.0",
+    "passport": "0.3.x",
     "passport-google-oauth": "0.2.x",
     "passport-facebook": "2.0.x",
     "passport-local": "^1.0.0",
