@@ -109,7 +109,7 @@ var SurfServer = {
                 || u.get('facebookId') === userData.id
                 || u.get('email') === userData.emails[0].value;
         });
-        picture = 'google' === authMode ? userData.picture : userData.picture.data.url;
+        picture = 'google' === authMode ? userData.image.url : userData.picture.data.url;
 
         if (user) {
             console.log('auth: userfound ' + user.id);
@@ -123,7 +123,7 @@ var SurfServer = {
         }
 
         user = new User();
-        user.set('name', userData.name);
+        user.set('name', userData.displayName);
         user.set(authMode + 'Id', userData.id);
         user.set('email', userData.emails[0].value);
         if (picture) {
