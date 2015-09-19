@@ -17,11 +17,11 @@
     "underscore": "1.8.x",
     "backbone": "1.2.x",
     "mongoose": "4.1.x",
-    "redis": "0.12.x",
+    "redis": "1.0.x",
     "async": "1.4.x",
     "cookie": "0.2.x",
     "express": "4.13.x",
-    "body-parser": "1.13.x",
+    "body-parser": "1.14.x",
     "express-session": "1.11.x",
     "errorhandler": "1.4.x",
     "passport": "0.3.x",
@@ -31,8 +31,8 @@
     "cookie-signature": "^1.0.5"
   },
   "engines": {
-    "node": "0.12.x",
-    "npm": "2.10.x"
+    "node": "4.1.x",
+    "npm": "2.14.x"
   },
   "scripts": {
     "start": "node Surf.js",
