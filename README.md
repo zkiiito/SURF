@@ -51,16 +51,9 @@ Surf was designed to run on [Heroku], and there are some additional things you s
 * Create a google tracking code at the [analytics site](https://developers.google.com/analytics/devguides/collection/analyticsjs/).
 * Optional: create a [facebook app](https://developers.facebook.com/) for your Heroku domain.
 
-```
-heroku config:set GOOGLE_APPID=(yourGoogleAppId) GOOGLE_APPSECRET=(yourGooleAppSecret) ANALYTICS_ID=(analitycsWebPropertyId) HOSTNAME=(https://yourapp.heroku.com) ADMINPASS=(yourSecretAdminPassword) FACEBOOK_APPID=(yourFbAppId) FACEBOOK_APPSECRET=(yourFbAppSecret)
-```
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/zkiiito/surf)
 
-Required Heroku addons:
-* mongodb (we recommend MongoLab)
-* redis (we recommend Redis Cloud)
-
-Nice-to-have Heroku addons:
-* PaperTrail - for logs & alerting
+Nice-to-have Heroku addons, not installed by default:
 * Hosted Graphite - for monitoring query times
 * Nodetime - performance analysis
 

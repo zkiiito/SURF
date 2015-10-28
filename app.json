@@ -1,0 +1,42 @@
+{
+  "name": "SURF",
+  "description": "SURF is a threaded instant messaging application, like Google Wave used to be.",
+  "logo": "https://raw.githubusercontent.com/zkiiito/SURF/master/client/images/surf-ico.png",
+  "keywords": ["surf", "wave", "chat", "threaded"],
+  "addons": ["rediscloud", "mongolab", "papertrail"],
+  "website": "http://surfchat.io",
+  "repository": "https://github.com/zkiiito/surf",
+  "env": {
+    "HOSTNAME": {
+      "description": "Host name (required for authentication redirects)",
+      "value": "https://yourappname.herokuapp.com"
+    },
+    "GOOGLE_APPID": {
+      "description": "Google web application Client ID (https://developers.google.com/identity/protocols/OpenIDConnect)",
+      "value": "[ID].apps.googleusercontent.com"
+    },
+    "GOOGLE_APPSECRET": {
+      "description": "Google web application Client secret (https://developers.google.com/identity/protocols/OpenIDConnect)",
+      "value": ""
+    },
+    "ADMINPASS": {
+      "description": "Admin password",
+      "value": "adminPass"
+    },
+    "ANALYTICS_ID": {
+      "description": "Google Universal Analytics code",
+      "value": "UA-XXXXXX-X",
+      "required": false
+    },
+    "FACEBOOK_APPID": {
+      "description": "Facebook APP ID - if you want Facebook login",
+      "value": "",
+      "required": false
+    },
+    "FACEBOOK_APPSECRET": {
+      "description": "Facebook APP Secret - if you want Facebook login",
+      "value": "",
+      "required": false
+    }
+  }
+}
