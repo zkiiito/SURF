@@ -2,15 +2,15 @@
 var SurfAppView = Backbone.View.extend({
     initialize: function () {
         _.bindAll(this, 'addMessage', 'showCreateWave', 'showUpdateWave', 'showEditUser', 'hideOverlays', 'addWave');
-        this.model.waves.bind('add', this.addWave, this);
-        this.model.waves.bind('reset', this.resetWaves, this);
-        this.model.waves.bind('reset', this.handleEmpty);
-        this.model.waves.bind('remove', this.handleEmpty);
-        this.model.messages.bind('reset', this.resetMessages, this);
-        this.model.messages.bind('add', this.setTitle, this);
-        this.model.messages.bind('change:unread', this.setTitle, this);
-        this.model.waves.bind('readAll', this.setTitle, this);
-        this.model.bind('initCurrentUser', this.initCurrentUser, this);
+        this.listenTo(this.model.waves, 'add', this.addWave);
+        this.listenTo(this.model.waves, 'reset', this.resetWaves);
+        this.listenTo(this.model.waves, 'reset', this.handleEmpty);
+        this.listenTo(this.model.waves, 'remove', this.handleEmpty);
+        this.listenTo(this.model.messages, 'reset', this.resetMessages);
+        this.listenTo(this.model.messages, 'add', this.setTitle);
+        this.listenTo(this.model.messages, 'change:unread', this.setTitle);
+        this.listenTo(this.model.waves, 'readAll', this.setTitle);
+        this.listenTo(this.model, 'initCurrentUser', this.initCurrentUser);
         this.render();
     },
     events: {
@@ -123,7 +123,7 @@ var SurfAppView = Backbone.View.extend({
         var template = new UserView({model: this.model.currentUser});
         this.$el.find('#currentuser').html('').append(template.render().el).append(' <p class="currentuser_name">' + this.model.currentUser.escape('name') + '</p>');
 
-        this.model.currentUser.bind('change:name', this.changeCurrentUserName, this);
+        this.listenTo(this.model.currentUser, 'change:name', this.changeCurrentUserName);
 
         this.editUserView = new EditUserView({model: this.model.currentUser});
         this.$el.append(this.editUserView.render().el);

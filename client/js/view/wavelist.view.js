@@ -2,17 +2,17 @@
 var WaveListView = Backbone.View.extend({
     initialize: function () {
         _.bindAll(this, 'setCurrent', 'countMessages', 'updateMessages', 'changeUsers', 'updateTitle', 'scrollToNextUnread', 'removeWave');
-        this.model.bind('change:current', this.setCurrent);
-        this.model.bind('change:title', this.updateTitle);
-        this.model.bind('remove', this.removeWave);
+        this.listenTo(this.model, 'change:current', this.setCurrent);
+        this.listenTo(this.model, 'change:title', this.updateTitle);
+        this.listenTo(this.model, 'remove', this.removeWave);
 
-        this.model.messages.bind('change:unread', this.countMessages);
-        this.model.bind('readAll', this.countMessages);
-        this.model.messages.bind('add', this.countMessages);
-        this.model.messages.bind('add', this.updateMessages);
+        this.listenTo(this.model.messages, 'change:unread', this.countMessages);
+        this.listenTo(this.model, 'readAll', this.countMessages);
+        this.listenTo(this.model.messages, 'add', this.countMessages);
+        this.listenTo(this.model.messages, 'add', this.updateMessages);
 
-        this.model.users.bind('add', this.changeUsers);
-        this.model.users.bind('remove', this.changeUsers);
+        this.listenTo(this.model.users, 'add', this.changeUsers);
+        this.listenTo(this.model.users, 'remove', this.changeUsers);
     },
 
     events: {

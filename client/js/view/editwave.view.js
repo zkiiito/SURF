@@ -3,8 +3,8 @@ var EditWaveView = Backbone.View.extend({
     initialize: function () {
         _.bindAll(this, 'show', 'hide', 'setWave', 'genUserArray', 'inviteCodeReady');
         this.userArray = [];
-        this.model.users.bind('add', this.genUserArray, this);
-        this.model.users.bind('change', this.genUserArray, this);
+        this.listenTo(this.model.users, 'add', this.genUserArray);
+        this.listenTo(this.model.users, 'change', this.genUserArray);
     },
     events: {
         'click a.close' : 'hide',
@@ -101,7 +101,7 @@ var EditWaveView = Backbone.View.extend({
     setWave: function (waveId) {
         this.wave = this.model.waves.get(waveId);
         if (this.wave) {
-            this.wave.bind('inviteCodeReady', this.inviteCodeReady, this);
+            this.listenTo(this.wave, 'inviteCodeReady', this.inviteCodeReady);
         }
     },
 

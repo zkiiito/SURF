@@ -9,7 +9,7 @@ var MessageReplyFormView = WaveReplyFormView.extend({
 
         this.timeout = 75;
         _.bindAll(this, 'handleCancel', 'hide');
-        this.model.getWave().bind('hideReplyForm', this.hide);
+        this.listenTo(this.model.getWave(), 'hideReplyForm', this.hide);
     },
 
     render: function () {

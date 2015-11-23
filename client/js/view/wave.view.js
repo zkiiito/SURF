@@ -7,17 +7,17 @@ var WaveView = Backbone.View.extend({
 
         this.userViews = [];
 
-        this.model.bind('change:current', this.setCurrent);
-        this.model.bind('change:title', this.updateTitle);
-        this.model.bind('noMoreUnread', this.scrollToBottom);
-        this.model.bind('remove', this.removeWave);
-        this.model.bind('readAll', this.readAll);
-        this.model.bind('scrollToNextUnread', this.scrollToNextUnread);
+        this.listenTo(this.model, 'change:current', this.setCurrent);
+        this.listenTo(this.model, 'change:title', this.updateTitle);
+        this.listenTo(this.model, 'noMoreUnread', this.scrollToBottom);
+        this.listenTo(this.model, 'remove', this.removeWave);
+        this.listenTo(this.model, 'readAll', this.readAll);
+        this.listenTo(this.model, 'scrollToNextUnread', this.scrollToNextUnread);
 
-        this.model.messages.bind('add', this.addMessage);
-        this.model.users.bind('add', this.addUser);
-        this.model.users.bind('remove', this.removeUser);
-        this.model.users.bind('change', this.countOfflineUsers);
+        this.listenTo(this.model.messages, 'add', this.addMessage);
+        this.listenTo(this.model.users, 'add', this.addUser);
+        this.listenTo(this.model.users, 'remove', this.removeUser);
+        this.listenTo(this.model.users, 'change', this.countOfflineUsers);
     },
     events: {
         'click a.editwave' : 'showUpdateWave',

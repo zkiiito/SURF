@@ -2,7 +2,7 @@
 var EditUserView = Backbone.View.extend({
     initialize: function () {
         _.bindAll(this, 'show', 'hide', 'testNotification');
-        this.model.bind('change', this.updateFields, this);
+        this.listenTo(this.model, 'change', this.updateFields);
     },
     events: {
         'click a.close' : 'hide',

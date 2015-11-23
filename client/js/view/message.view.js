@@ -2,12 +2,12 @@
 var MessageView = Backbone.View.extend({
     initialize: function () {
         _.bindAll(this, 'addMessage', 'readMessage', 'replyMessage', 'onReadMessage', 'scrollTo', 'changeUserName');
-        this.model.bind('messagesCreated', function () {
-            this.model.messages.bind('add', this.addMessage);
-        }, this);
-        this.model.bind('change:unread', this.onReadMessage);
-        this.model.bind('change:scrolled', this.scrollTo);
-        this.model.user.bind('change:name', this.changeUserName);
+        this.listenTo(this.model, 'messagesCreated', function () {
+            this.listenTo(this.model.messages, 'add', this.addMessage);
+        });
+        this.listenTo(this.model, 'change:unread', this.onReadMessage);
+        this.listenTo(this.model, 'change:scrolled', this.scrollTo);
+        this.listenTo(this.model.user, 'change:name', this.changeUserName);
 
         var date = new Date(this.model.get('created_at'));
         this.model.set('dateFormatted', dateFormat(date, 'mmm d HH:MM'));

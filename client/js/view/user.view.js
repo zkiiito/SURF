@@ -1,7 +1,7 @@
 var UserView = Backbone.View.extend({
     initialize: function () {
         _.bindAll(this, 'render', 'update', 'chatInPrivate');
-        this.model.bind('change', this.update);
+        this.listenTo(this.model, 'change', this.update);
     },
 
     events: {
