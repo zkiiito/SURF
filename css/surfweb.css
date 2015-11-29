@@ -1,0 +1,165 @@
+body {
+  background: #fff;
+  color: #666;
+  font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100%;
+}
+
+#header {
+  margin-bottom: 3em;
+  padding: 2em;
+  background: -moz-linear-gradient(top, #bb92aa 0%, #72668a 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#bb92aa), color-stop(100%,#72668a)); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top, #bb92aa 0%,#72668a 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top, #bb92aa 0%,#72668a 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(top, #bb92aa 0%,#72668a 100%); /* IE10+ */
+  background: linear-gradient(to bottom, #bb92aa 0%,#72668a 100%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#bb92aa', endColorstr='#72668a',GradientType=0 ); /* IE6-9 */
+  overflow: hidden;
+  text-align: center;
+  box-shadow: 0 0 4px rgba(0,0,0,0.3);
+  position: relative;
+  -webkit-backface-visibility: hidden;
+}
+
+#headerimg {
+    background: url('../images/surf-header.jpg') no-repeat center center;
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    -webkit-backface-visibility: hidden;
+    height: 100%;
+}
+
+@media (min-width: 767px) {
+  #header {
+    padding: 6em 0;
+  }
+}
+
+#header h1 {
+  display: none;
+}
+
+#header img {
+  width: 80%;
+  margin-top: 2em;
+  margin-bottom: 2em;
+}
+
+@media (min-width: 767px) {
+  #header img {
+    width: 60%;
+    margin-top: 1em;
+    margin-bottom: 1em;
+  }
+}
+
+#header h2 {
+  font-family: 'Source Sans Pro';
+  font-size: 2em;
+  font-weight: bold;
+  margin-top: 1.5em;
+  margin-bottom: 1.2em;
+  line-height: 1.5;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+#header form {
+  margin-bottom: 2em;
+}
+
+#header input,
+#header button {
+  box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+.screenshot {
+  margin: 2em 0;
+}
+
+h1 {
+  font-size: 1.8em;
+  font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
+  font-weight: 700;
+  color: #87729d;
+  margin-bottom: 0.6em;
+  margin-top: 0.6em;
+  text-transform: uppercase;
+}
+
+p {
+  font-size: 1.3em;
+  line-height: 1.5;
+  margin-bottom: 2em;
+}
+
+a {
+    color: #87729d;
+}
+
+a:hover,
+a:focus,
+a:active {
+    color: #a996be;
+}
+
+.main-content img {
+    width: 100%;
+    margin-bottom: 4em;
+    border: 1px solid #ddd;
+}
+
+@media only screen and (min-width: 992px) and (max-width: 1200px) {
+    .main-content img {
+        margin-top: 2.5em;
+    }
+}
+
+@media only screen and (max-width: 992px) {
+    .main-content img {
+        margin-bottom: 0.6em;
+    }
+}
+
+.signup {
+  float: left;
+  text-align: center;
+  border-top: 1px solid #eaeaea;
+  margin-bottom: 3em;
+}
+
+@media only screen and (max-width: 992px) {
+    .signup {
+        border: none;
+    }
+}
+
+.signup h1 {
+  color: #9a6d3c;
+}
+
+#footer {
+    width: 100%;
+    background-color: #222;
+    color: #888;
+    box-shadow: 0 0 10px #000 inset;
+}
+
+#footer .container {
+    padding: 5em 0;
+    height: 14em;
+    background: url('../images/surf-logo-monochrome.svg') no-repeat right center;
+    background-size: 13em;
+}
+
+@media only screen and (max-width: 500px) {
+    #footer .container {
+        background: none;
+    }
+}

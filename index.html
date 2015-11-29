@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A free, lightweight online chat client to help you keep track of your conversations.">
+    <meta property="og:title" content="SURF">
+    <meta property="og:description" content="A free, lightweight online chat application to help you keep track of your conversations.">
+    <meta property="og:image" content="http://surfchat.io/images/share.png">
+
+    <title>SURF</title>
+    <link href="css/style-min.css" rel="stylesheet">
+    <!--link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.css" rel="stylesheet">
+    <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,400italic,700italic' rel='stylesheet'  type='text/css'>
+    <link href="css/surfweb.css" rel="stylesheet">
+    <link href="css/surfboot.css" rel="stylesheet"-->
+    <link rel="shortcut icon" href="images/surf-ico.png">
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+<div id="header">
+    <div id="headerimg"></div>
+    <div class="container">
+        <div class="col-lg-6 col-lg-offset-3 col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
+            <h1>SURF</h1>
+            <a href=""><img src="images/surf-logo.svg" alt="SURF logo"></a>
+            <h2>A free, lightweight online chat application to help you keep track of your conversations.</h2>
+            <a class="btn btn-black btn-lg" href="http://beta.surfchat.io/" target="_blank">Try the beta!</a>
+        </div>
+    </div>
+</div>
+<div class="container main-content">
+    <div class="col-xs-12 col-md-6">
+        <h1>Remember Google Wave?</h1>
+
+        <p>We loved it for its threaded, multi-level messages, and hated it for the bloated UI, useless gadgets,
+            slowness and occasional crashing. We kept the good features and thrown out the useless ones.</p>
+
+        <h1>Stick to the point</h1>
+
+        <p>Conversations are not linear. People change the subject all the time. SURF lets conversations branch off, so
+            you can easily keep track of everything.</p>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        <img src="images/scrshot4.png" alt="screenshot 1">
+    </div>
+    <div class="hidden-xs clearfix"></div>
+    <div class="col-xs-12 col-md-6 col-md-push-6">
+        <h1>Cross-platform</h1>
+
+        <p>SURF is designed to look and feel awesome in all current browsers.</p>
+
+        <h1>Free</h1>
+
+        <p>SURF is open-source, so you can run your own chat server and use it with your friends or at the office. Feel free to download or fork it from GitHub!</p>
+    </div>
+    <div class="col-xs-12 col-md-6 col-md-pull-6">
+        <img src="images/scrshot5.png" alt="sceenshot 2">
+    </div>
+    <div class="hidden-xs clearfix"></div>
+</div>
+<div id="footer">
+    <div class="container">
+        <div class="col-xs-12">
+            <p>© 2015 the SURF team</p>
+        </div>
+    </div>
+</div>
+<a href="https://github.com/zkiiito/SURF"><img style="position: fixed; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>
+
+<script>
+    (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r;
+        i[r] = i[r] || function () {
+            (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date();
+        a = s.createElement(o),
+                m = s.getElementsByTagName(o)[0];
+        a.async = 1;
+        a.src = g;
+        m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+    ga('create', 'UA-729968-5', 'surfchat.io');
+    ga('send', 'pageview');
+</script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+<script>
+    window.onscroll = function () {
+        var header = document.querySelector("#headerimg");
+        header.style.transform = 'translateY(' + document.getElementsByTagName('html')[0].scrollTop/2 + 'px)';
+    }
+</script>
+</body>
+</html>
