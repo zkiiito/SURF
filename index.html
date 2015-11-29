@@ -87,12 +87,11 @@
     })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
     ga('create', 'UA-729968-5', 'surfchat.io');
     ga('send', 'pageview');
-</script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
-<script>
+
     window.onscroll = function () {
         var header = document.querySelector("#headerimg");
-        header.style.transform = 'translateY(' + document.getElementsByTagName('html')[0].scrollTop/2 + 'px)';
+        var scrollTop = document.getElementsByTagName('html')[0].scrollTop > 0 ? document.getElementsByTagName('html')[0].scrollTop : document.getElementsByTagName('body')[0].scrollTop;
+        header.style.transform = 'translateY(' + scrollTop/2 + 'px)';
     }
 </script>
 </body>
