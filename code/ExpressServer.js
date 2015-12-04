@@ -134,8 +134,9 @@ app.get('/', function (req, res) {
     }
 });
 
-app.post('/logError', function (req) {
+app.post('/logError', function (req, res) {
     console.log('JSERROR : ' + req.body.errorMessage);
+    res.send('1');
 });
 
 app.get('/auth/google', passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email'] }));
