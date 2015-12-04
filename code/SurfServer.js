@@ -64,7 +64,7 @@ var SurfServer = {
                 client.curUser = that.getUserByAuth(client.session);
             } catch (e) {
                 console.log('User auth error: ' + e.message);
-                client.close();
+                client.disconnect();
                 return;
             }
 
@@ -147,7 +147,7 @@ var SurfServer = {
             console.log("Socket client error");
             console.log(err.stack);
             client.curUser.disconnect();
-            client.close();
+            client.disconnect();
         });
 
         client.on('disconnect', function () {
