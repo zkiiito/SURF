@@ -4,6 +4,8 @@ var Communicator = {
     reconnect: true,
     pingTimeout: null,
     createTitle: null,
+    readQueue: [],
+    queueReads: false,
     initialize: function () {
         if (window.io === undefined) {
             return;
@@ -36,6 +38,7 @@ var Communicator = {
         });
 
         this.socket.on('ready', function () {
+            that.queueReads = app.model.messages.where({unread: true}).length > 1;
             app.showLastWave();
         });
 
@@ -78,7 +81,17 @@ var Communicator = {
      * @param {Message} message
      */
     readMessage: function (message) {
-        this.socket.emit('readMessage', {id: message.id, waveId: message.get('waveId')});
+        if (this.queueReads) {
+            this.readQueue.push(message);
+            this.queueReads = false; //queue of max 1
+        } else {
+            this.readQueue.forEach(function (msg) {
+                this.socket.emit('readMessage', {id: msg.id, waveId: msg.get('waveId')});
+            }, this);
+            this.readQueue = [];
+
+            this.socket.emit('readMessage', {id: message.id, waveId: message.get('waveId')});
+        }
     },
 
     /**
