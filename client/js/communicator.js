@@ -35,6 +35,10 @@ var Communicator = {
             that.reconnect = false;
         });
 
+        this.socket.on('ready', function () {
+            app.showLastWave();
+        });
+
         this.socket.on('pong', function () {
             that.schedulePing();
         });
@@ -50,13 +54,7 @@ var Communicator = {
             app.model.users.reset(data.users);
             app.model.initCurrentUser(app.model.users.get(data.me._id));
             app.model.waves.reset(data.waves);
-            app.model.messages.reset(data.messages);
 
-            var lastMsg = app.model.messages.last();
-
-            if (lastMsg) {
-                app.navigate('wave/' + lastMsg.get('waveId'), {trigger: true});
-            }
             this.schedulePing();
         }
     },

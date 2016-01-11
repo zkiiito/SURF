@@ -186,25 +186,37 @@ var DAL = {
     /**
      * messages queried for the user on load
      * @param {User} user
-     * @param {Function} callback
+     * @param {Function} callbackWithMessages
+     * @param {Function} callbackReady
      */
-    getLastMessagesForUser: function (user, callback) {
-        var startTime = new Date().getTime();
+    getLastMessagesForUser: function (user, callbackWithMessages, callbackReady) {
+        var startTime = new Date().getTime(),
+            msgCount = 0;
+
         WaveModel.find().where('_id').in(user.waves.pluck('_id')).exec(function (err, waves) {
             if (err) {
-                return callback(err);
+                return callbackReady(err);
             }
             //console.log(waves.length + " waves found");
             var endTime = new Date().getTime();
             console.log('QUERY LastMessagesForUser: wave query in ' + (endTime - startTime));
 
-            async.map(waves, function (wave, callback_async_map) {
-                DAL.getLastMessagesForUserInWave(user, wave, callback_async_map);
-            }, function (err, results) {
+            async.each(waves, function (wave, callback_async_each) {
+                DAL.getLastMessagesForUserInWave(user, wave, function (err, results) {
+                    if (err) {
+                        return callback_async_each(err);
+                    }
+
+                    msgCount += results.length;
+                    callbackWithMessages(null, results, wave._id);
+                    callback_async_each();
+                });
+            }, function (err) {
                 if (err) {
-                    return callback(err);
+                    console.log('QUERY LastMessagesForUser ERROR: ' + err);
+                    return callbackReady(err);
                 }
-                results = _.flatten(results);
+
                 var allTime = new Date().getTime() - startTime,
                     socket;
 
@@ -217,8 +229,8 @@ var DAL = {
                 }
 
                 console.log('QUERY LastMessagesForUser: msg query in ' + allTime);
-                console.log('QUERY LastMessagesForUser: msgs: ' + results.length);
-                callback(null, results);
+                console.log('QUERY LastMessagesForUser: msgs: ' + msgCount);
+                callbackReady();
             });
         });
     },

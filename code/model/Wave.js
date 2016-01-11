@@ -148,7 +148,7 @@ var Wave = Backbone.Model.extend(
                             if (!err) {
                                 DAL.getMessagesForUserInWave(wave, minRootId, maxRootId, ids, function (err, msgs) {
                                     if (!err) {
-                                        user.send('message', {messages: msgs});
+                                        user.send('message', {messages: msgs, waveId: this._id});
                                     }
                                 });
                             }
@@ -160,7 +160,7 @@ var Wave = Backbone.Model.extend(
                     if (!err) {
                         DAL.getMessagesForUserInWave(wave, newMinRootId, maxRootId, [], function (err, msgs) {
                             if (!err) {
-                                user.send('message', {messages: msgs});
+                                user.send('message', {messages: msgs, waveId: this._id});
                             }
                         });
                     }

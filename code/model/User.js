@@ -26,34 +26,36 @@ User = Backbone.Model.extend(
         },
         idAttribute: '_id',
         init: function (invite) {
-            var self = this;
-            this.set({status: 'online'});
-            DAL.getLastMessagesForUser(this, function (err, msgs) {
-                if (!err) {
-                    self.sendInit(msgs);
-                    if (invite) {
-                        self.handleInvite(invite);
-                    }
-                }
-            });
-        },
+            var self = this,
+                friends;
 
-        /**
-         * @param {Array} messages
-         */
-        sendInit: function (messages) {
-            var friends = this.getFriends().map(function (f) {
+            this.set({status: 'online'});
+
+            friends = this.getFriends().map(function (f) {
                 return f.toFilteredJSON();
             });
 
             this.socket.emit('init', {
                 me: this.toSelfJSON(),
                 users: friends,
-                waves: this.waves,
-                messages: new MessageCollection().reset(messages)
+                waves: this.waves
             });
 
             this.notifyFriends();
+
+            DAL.getLastMessagesForUser(this, function (err, msgs, waveId) {
+                if (!err) {
+                    self.send('message', {messages: msgs, waveId: waveId});
+                }
+            }, function (err) {
+                if (!err) {
+                    self.send('ready');
+
+                    if (invite) {
+                        self.handleInvite(invite);
+                    }
+                }
+            });
         },
 
         disconnect: function () {
@@ -85,7 +87,7 @@ User = Backbone.Model.extend(
 
         /**
          * @param {string} msgtype
-         * @param {string} msg
+         * @param {string|Object} msg
          */
         send: function (msgtype, msg) {
             if (this.socket) {
