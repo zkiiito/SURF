@@ -2,7 +2,6 @@
 var Communicator = {
     socket: null,
     reconnect: true,
-    pingTimeout: null,
     createTitle: null,
     readQueue: [],
     queueReads: false,
@@ -23,7 +22,6 @@ var Communicator = {
         });
 
         this.socket.on('disconnect', function () {
-            clearTimeout(that.pingTimeout);
             app.view.showDisconnected(that.reconnect);
         });
 
@@ -42,10 +40,6 @@ var Communicator = {
             app.showLastWave();
             app.model.setReady();
         });
-
-        this.socket.on('pong', function () {
-            that.schedulePing();
-        });
     },
 
     /**
@@ -58,8 +52,6 @@ var Communicator = {
             app.model.users.reset(data.users);
             app.model.initCurrentUser(app.model.users.get(data.me._id));
             app.model.waves.reset(data.waves);
-
-            this.schedulePing();
         }
     },
 
@@ -134,8 +126,6 @@ var Communicator = {
      * @param {Object} data
      */
     onMessage: function (data) {
-        this.schedulePing();
-
         if (data.messages) {
             _.each(data.messages, function (msg) {
                 this.onMessage(msg);
@@ -235,14 +225,6 @@ var Communicator = {
         if (app.model.waves.get(data.waveId)) {
             app.model.waves.get(data.waveId).trigger('inviteCodeReady', data.code);
         }
-    },
-
-    schedulePing: function () {
-        var that = this;
-        clearTimeout(this.pingTimeout);
-        this.pingTimeout = setTimeout(function () {
-            that.socket.emit('ping');
-        }, 30000);
     },
 
     /**
