@@ -40,6 +40,7 @@ var Communicator = {
         this.socket.on('ready', function () {
             that.queueReads = app.model.messages.where({unread: true}).length > 1;
             app.showLastWave();
+            app.model.setReady();
         });
 
         this.socket.on('pong', function () {

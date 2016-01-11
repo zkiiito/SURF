@@ -11,6 +11,7 @@ var SurfAppView = Backbone.View.extend({
         this.listenTo(this.model.messages, 'change:unread', this.setTitle);
         this.listenTo(this.model.waves, 'readAll', this.setTitle);
         this.listenTo(this.model, 'initCurrentUser', this.initCurrentUser);
+        this.listenTo(this.model, 'ready', this.setTitle);
         this.render();
     },
     events: {
@@ -137,14 +138,16 @@ var SurfAppView = Backbone.View.extend({
     },
 
     setTitle: function () {
-        var title = 'SURF',
-            unreadCount = this.model.messages.where({unread: true}).length;
+        if (this.model.ready) {
+            var title = 'SURF',
+                unreadCount = this.model.messages.where({unread: true}).length;
 
-        if (unreadCount > 0) {
-            title = '[' + unreadCount + '] ' + title;
+            if (unreadCount > 0) {
+                title = '[' + unreadCount + '] ' + title;
+            }
+            $('title').text(title);
+            this.setIcon(unreadCount);
         }
-        $('title').text(title);
-        this.setIcon(unreadCount);
     },
 
     setIcon: function (count) {

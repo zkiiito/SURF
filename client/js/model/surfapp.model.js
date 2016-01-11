@@ -7,6 +7,7 @@ var SurfAppModel = Backbone.Model.extend(
             this.users = new UserCollection();
             this.messages = new MessageCollection();
             this.currentUser = null;
+            this.ready = false;
         },
 
         /**
@@ -16,6 +17,11 @@ var SurfAppModel = Backbone.Model.extend(
             this.currentUser = user;
             this.currentUser.loadLocalAttributes();
             this.trigger('initCurrentUser');
+        },
+
+        setReady: function () {
+            this.ready = true;
+            this.trigger('ready');
         }
     }
 );
