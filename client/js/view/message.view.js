@@ -1,7 +1,6 @@
-/*global UserView, MessageReplyFormView, Notification, __, dateFormat */
+/*global UserView, MessageReplyFormView, Notification, __, dateFormat, messageTemplate */
 var MessageView = Backbone.View.extend({
     initialize: function () {
-        _.bindAll(this, 'addMessage', 'readMessage', 'replyMessage', 'onReadMessage', 'scrollTo', 'changeUserName');
         this.listenTo(this.model, 'messagesCreated', function () {
             this.listenTo(this.model.messages, 'add', this.addMessage);
         });
@@ -20,10 +19,9 @@ var MessageView = Backbone.View.extend({
     },
     render: function () {
         var context = _.extend(this.model.toJSON(), {id: this.model.id, user: this.model.user.toJSON()}),
-            template = _.template($('#message_view').text()),
             userView = new UserView({model: this.model.user});
 
-        this.setElement(template(context));
+        this.setElement(messageTemplate(context));
         if (!this.model.get('unread')) {
             this.$el.children('table').removeClass('unread');
         }
@@ -33,6 +31,10 @@ var MessageView = Backbone.View.extend({
 
         if (this.model.isCurrentUserMentioned()) {
             this.mention();
+        }
+
+        if (this.model.messages) {
+            this.model.messages.each(this.addMessage, this);
         }
 
         return this;

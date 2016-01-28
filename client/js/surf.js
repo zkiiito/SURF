@@ -59,6 +59,9 @@ $(function () {
     /*jslint regexp: false */
     var surfApp = new SurfAppRouter();
     window.app = surfApp;
+    window.messageTemplate = _.template($('#message_view').text());
+    window.waveTemplate =  _.template($('#wave_view').text());
+
     Backbone.history.start();
     Communicator.initialize();
 });

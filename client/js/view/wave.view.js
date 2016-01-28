@@ -1,4 +1,4 @@
-/*global WaveReplyFormView, UserView, MessageView, __, confirm */
+/*global WaveReplyFormView, UserView, MessageView, __, confirm, waveTemplate */
 var WaveView = Backbone.View.extend({
     initialize: function () {
         _.bindAll(this, 'setCurrent', 'addMessage', 'addUser', 'removeUser', 'updateTitle',
@@ -29,15 +29,20 @@ var WaveView = Backbone.View.extend({
 
     render: function () {
         var context = _.extend(this.model.toJSON(), {id: this.model.id}),
-            template = _.template($('#wave_view').text()),
             formView = new WaveReplyFormView({model: this.model});
 
-        this.setElement(template(context));
+        this.setElement(waveTemplate(context));
         this.$el.hide();
 
         formView.render().$el.appendTo(this.$el.find('.waves-container'));
 
         this.model.users.each(this.addUser);
+
+        this.fragmentMode = true;
+        this.fragment = $(document.createDocumentFragment());
+        this.model.messages.each(this.addMessage, this);
+        this.fragmentMode = false;
+        this.$el.find('.messages').append(this.fragment);
 
         return this;
     },
@@ -53,16 +58,19 @@ var WaveView = Backbone.View.extend({
     addMessage: function (message) {
         if (null === message.get('parentId')) {
             var view = new MessageView({model: message}),
-                targetPos = this.model.messages.where({parentId: null}).indexOf(message),
-                viewElement = view.render().el;
+                viewElement = view.render().el,
+                targetPos;
 
-            if (0 === targetPos) {
-                this.$el.find('div.getprevmessages').after(viewElement);
+            if (this.fragmentMode) {
+                this.fragment.append(viewElement);
             } else {
-                this.$el.find('.messages > .message').eq(targetPos - 1).after(viewElement);
+                targetPos = this.model.messages.where({parentId: null}).indexOf(message);
+                if (0 === targetPos) {
+                    this.$el.find('div.getprevmessages').after(viewElement);
+                } else {
+                    this.$el.find('.messages > .message').eq(targetPos - 1).after(viewElement);
+                }
             }
-
-            //$('.messages', this.$el).append(view.render().el);
         }
     },
 

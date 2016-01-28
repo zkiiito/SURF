@@ -10,8 +10,11 @@ var SurfAppView = Backbone.View.extend({
         this.listenTo(this.model.messages, 'add', this.setTitle);
         this.listenTo(this.model.messages, 'change:unread', this.setTitle);
         this.listenTo(this.model.waves, 'readAll', this.setTitle);
+        this.listenTo(this.model.waves, 'change:current', this.renderWave);
         this.listenTo(this.model, 'initCurrentUser', this.initCurrentUser);
         this.listenTo(this.model, 'ready', this.setTitle);
+
+        this.renderedWaves = [];
         this.render();
     },
     events: {
@@ -63,16 +66,23 @@ var SurfAppView = Backbone.View.extend({
     },
 
     addWave: function (wave) {
-        var listView = new WaveListView({model: wave}),
-            view = new WaveView({model: wave});
+        var listView = new WaveListView({model: wave});
 
         this.handleEmpty();
         $('#wave-list').append(listView.render().el);
-        $('#wave-container').append(view.render().el);
     },
 
     resetWaves: function () {
         this.model.waves.map(this.addWave, this);
+    },
+
+    renderWave: function (wave) {
+        if (!_.contains(this.renderedWaves, wave)) {
+            var view = new WaveView({model: wave});
+            $('#wave-container').append(view.render().el);
+            view.setCurrent();
+            this.renderedWaves.push(wave);
+        }
     },
 
     addMessage: function (message) {
