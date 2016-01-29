@@ -1,9 +1,13 @@
 /*global UserView, MessageReplyFormView, Notification, __, dateFormat, messageTemplate */
 var MessageView = Backbone.View.extend({
     initialize: function () {
-        this.listenTo(this.model, 'messagesCreated', function () {
+        if (this.model.messages) {
             this.listenTo(this.model.messages, 'add', this.addMessage);
-        });
+        } else {
+            this.listenTo(this.model, 'messagesCreated', function () {
+                this.listenTo(this.model.messages, 'add', this.addMessage);
+            });
+        }
         this.listenTo(this.model, 'change:unread', this.onReadMessage);
         this.listenTo(this.model, 'change:scrolled', this.scrollTo);
         this.listenTo(this.model.user, 'change:name', this.changeUserName);
@@ -46,12 +50,12 @@ var MessageView = Backbone.View.extend({
         });
 
         this.$el.children('.replies').append(view.render().el);
-        if (this.model.messages.length === 1) {
+        //if (this.model.messages.length === 1) {
             if (this.$el.children('div.replyform').size() === 0) {
                 //if reply form is not present
                 this.$el.children('div.threadend').show();
             }
-        }
+        //}
     },
 
     readMessage: function (e) {
