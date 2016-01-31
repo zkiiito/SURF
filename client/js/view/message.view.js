@@ -6,6 +6,7 @@ var MessageView = Backbone.View.extend({
         } else {
             this.listenTo(this.model, 'messagesCreated', function () {
                 this.listenTo(this.model.messages, 'add', this.addMessage);
+                this.stopListening(this.model, 'messagesCreated');
             });
         }
         this.listenTo(this.model, 'change:unread', this.onReadMessage);
@@ -15,6 +16,7 @@ var MessageView = Backbone.View.extend({
         var date = new Date(this.model.get('created_at'));
         this.model.set('dateFormatted', dateFormat(date, 'mmm d HH:MM'));
     },
+    inRender: false,
     events: {
         'click': 'readMessage',
         'dblclick': 'replyMessage',
@@ -38,7 +40,9 @@ var MessageView = Backbone.View.extend({
         }
 
         if (this.model.messages) {
+            this.inRender = true;
             this.model.messages.each(this.addMessage, this);
+            this.inRender = false;
         }
 
         return this;
@@ -50,12 +54,12 @@ var MessageView = Backbone.View.extend({
         });
 
         this.$el.children('.replies').append(view.render().el);
-        //if (this.model.messages.length === 1) {
+        if (this.inRender || this.model.messages.length === 1) {
             if (this.$el.children('div.replyform').size() === 0) {
                 //if reply form is not present
                 this.$el.children('div.threadend').show();
             }
-        //}
+        }
     },
 
     readMessage: function (e) {
