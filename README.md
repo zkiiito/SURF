@@ -4,7 +4,7 @@
 
 SURF is a threaded instant messaging application, like Google Wave used to be.
 
-Try it at <http://beta.surfchat.io> - website at <http://surfchat.io>.
+Try it at <http://surfchat.herokuapp.com> - website at <http://zkiiito.github.io/SURF>.
 
 ## Features / usage
 * create new conversation
