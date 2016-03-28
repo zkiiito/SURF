@@ -63,7 +63,7 @@ You want to develop? Cool!
 
 ##### Concat and/or minify client-side js every time it changes:
 * setup your IDE to run "grunt concat" every time files change in the client/js or admin/js folder, excluding surf.min.js and admin.min.js
-* copy hooks/pre-commit to your .git/hooks directory
+* the pre-commit package will take care of uglifying when committing
 
 ##### Test
 Install [casperjs], start the server and
@@ -79,7 +79,6 @@ should do the rest!
 
 **Zoltan Feher** code
 - <http://github.com/zkiiito>
-- <http://twitter.com/zooli>
 
 ## License
 
