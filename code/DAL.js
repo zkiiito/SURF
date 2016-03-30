@@ -493,7 +493,7 @@ var DAL = {
         if (message.get('userId') !== user.id.toString() && message.id) {
             //console.log('addUnreadMessage: userid: ' + typeof user.id + ' msguserid: ' + typeof message.get('userId') + ' msgid: ' + message.id);
             var key = 'unread-' + user.id + '-' + message.get('waveId');
-            redis.sadd(key, message.id);
+            redis.sadd(key, message.id.toString());
         }
     },
 
@@ -539,6 +539,19 @@ var DAL = {
      */
     removeWaveInviteByCode: function (code, callback) {
         WaveInviteModel.remove({code: code}).exec(callback);
+    },
+
+    /**
+     * @param {Function} callback
+     */
+    shutdown: function (callback) {
+        mongoose.connection.close(function () {
+            console.log('mongoose down');
+            redis.quit(function () {
+                console.log('redis down');
+                callback();
+            });
+        });
     }
 };
 

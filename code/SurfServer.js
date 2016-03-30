@@ -64,13 +64,13 @@ var SurfServer = {
                 client.curUser = that.getUserByAuth(client.session);
             } catch (e) {
                 console.log('User auth error: ' + e.message);
-                client.disconnect();
+                client.disconnect(true);
                 return;
             }
 
             if (client.curUser.socket) {
                 client.curUser.send('dontReconnect', 1);
-                client.curUser.socket.disconnect();
+                client.curUser.socket.disconnect(true);
             }
 
             console.log('login: ' + client.curUser.id);
@@ -147,7 +147,7 @@ var SurfServer = {
             console.log("Socket client error");
             console.log(err.stack);
             client.curUser.disconnect();
-            client.disconnect();
+            client.disconnect(true);
         });
 
         client.on('disconnect', function () {
@@ -239,10 +239,13 @@ var SurfServer = {
                 }
             }
         });
+    },
 
-        client.on('ping', function () {
-            client.curUser.send('pong');
-        });
+    /**
+     * @param {Function} callback
+     */
+    shutdown: function (callback) {
+        DAL.shutdown(callback);
     }
 };
 
