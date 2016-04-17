@@ -11,7 +11,7 @@ var Communicator = {
         }
         var that = this;
 
-        this.socket = new io.connect(document.location.href, {reconnect: false});
+        this.socket = new io.connect(document.location.href, {reconnection: false});
 
         this.socket.on('init', function (data) {
             that.onInit(data);
