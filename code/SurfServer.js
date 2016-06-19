@@ -1,6 +1,6 @@
 var IO = require('socket.io'),
     signature = require('cookie-signature'),
-    DAL = require('./DAL'),
+    DAL = require('./DALDefault'),
     SessionStore = require('./SessionStore'),
     ExpressServer = require('./ExpressServer'),
     Message = require('./model/Message').Model,
@@ -60,32 +60,32 @@ var SurfServer = {
         });
 
         this.socket.sockets.on('connection', function (client) {
-            try {
-                client.curUser = that.getUserByAuth(client.session);
-            } catch (e) {
-                console.log('User auth error: ' + e.message);
-                client.disconnect(true);
-                return;
-            }
+            that.getUserByAuth(client.session, function (err, user) {
+                if (err) {
+                    console.log('User auth error: ' + err);
+                    client.disconnect(true);
+                    return;
+                }
+                client.curUser = user;
+                if (client.curUser.socket) {
+                    client.curUser.send('dontReconnect', 1);
+                    client.curUser.socket.disconnect(true);
+                }
 
-            if (client.curUser.socket) {
-                client.curUser.send('dontReconnect', 1);
-                client.curUser.socket.disconnect(true);
-            }
+                console.log('login: ' + client.curUser.id);
+                client.curUser.socket = client;
 
-            console.log('login: ' + client.curUser.id);
-            client.curUser.socket = client;
+                that.authClient(client);
 
-            that.authClient(client);
+                var invite = null;
+                if (client.session.invite) {
+                    console.log('invitedto: ' + client.session.invite.waveId);
+                    invite = client.session.invite;
+                    client.session.invite = null;
+                }
 
-            var invite = null;
-            if (client.session.invite) {
-                console.log('invitedto: ' + client.session.invite.waveId);
-                invite = client.session.invite;
-                client.session.invite = null;
-            }
-
-            client.curUser.init(invite);
+                client.curUser.init(invite);
+            });
         });
     },
 
@@ -93,15 +93,16 @@ var SurfServer = {
      * @param {Object} session
      * @returns {User}
      */
-    getUserByAuth: function (session) {
+    getUserByAuth: function (session, callback) {
         var sessionUser = session.passport.user,
             authMode = sessionUser.provider,
             userData = sessionUser._json,
+            that = this,
             user,
             picture;
 
         if (undefined === userData) {
-            throw new Error('sessionUser._json undefined');
+            callback('sessionUser._json undefined');
         }
 
         user = this.users.find(function (u) {
@@ -118,8 +119,9 @@ var SurfServer = {
             if (picture) {
                 user.set(authMode + 'Avatar', picture);//refresh default picture for auth provider
             }
-            user.save();
-            return user;
+            return user.save(function (err, user) {
+                return callback(err, user);
+            });
         }
 
         user = new User();
@@ -130,11 +132,15 @@ var SurfServer = {
             user.set('avatar', picture);
             user.set(authMode + 'Avatar', picture);
         }
-        user.save();
-        this.users.add(user);
 
-        console.log('auth: newuser ' + user.id + ' (' + user.get('name') +  ')');
-        return user;
+        return user.save(function (err, user) {
+            if (err) {
+                return callback(err);
+            }
+            that.users.add(user);
+            console.log('auth: newuser ' + user.id + ' (' + user.get('name') +  ')');
+            return callback(null, user);
+        });
     },
 
     /**
@@ -177,9 +183,14 @@ var SurfServer = {
             var wave = new Wave(data);
             if (wave.isValid()) {
                 wave.addUser(client.curUser, false);
-                wave.save();
-                that.waves.add(wave);
-                wave.notifyUsers();
+                wave.save(function (err, wave) {
+                    if (err) {
+                        console.log(err);
+                        return;
+                    }
+                    that.waves.add(wave);
+                    wave.notifyUsers();
+                });
             }
         });
 
@@ -228,15 +239,15 @@ var SurfServer = {
 
         client.on('createInviteCode', function (data) {
             console.log('createInviteCode: ' + client.curUser.id);
-            var wave = that.waves.get(data.waveId),
-                code;
+            var wave = that.waves.get(data.waveId);
 
             if (wave && wave.isMember(client.curUser)) {
-                code = wave.createInviteCode(client.curUser);
-                if (code) {
-                    data.code = code;
-                    client.curUser.send('inviteCodeReady', data);
-                }
+                wave.createInviteCode(client.curUser, function (err, code) {
+                    if (!err && code) {
+                        data.code = code;
+                        client.curUser.send('inviteCodeReady', data);
+                    }
+                });
             }
         });
     },

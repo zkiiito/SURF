@@ -2,8 +2,8 @@ var _ = require('underscore'),
     mongoose = require('mongoose'),
     redis = require('./RedisClient'),
     async = require('async'),
-    net = require('net'),
     Config = require('./Config'),
+    GraphiteClient = require('./GraphiteClient'),
     UserModel = require('./MongooseModels').UserModel,
     WaveModel = require('./MongooseModels').WaveModel,
     MessageModel = require('./MongooseModels').MessageModel,
@@ -75,9 +75,9 @@ var DAL = {
 
     /**
      * @param {User} user
-     * @returns {User}
+     * @param {Function} callback
      */
-    saveUser: function (user) {
+    saveUser: function (user, callback) {
         var data = {
             name: user.get('name'),
             avatar: user.get('avatar'),
@@ -95,14 +95,14 @@ var DAL = {
         } else {
             UserModel.update({_id: user.id}, data).exec();
         }
-        return user;
+        return callback(null, user);
     },
 
     /**
      * @param {Wave} wave
-     * @returns {Wave}
+     * @param {Function} callback
      */
-    saveWave: function (wave) {
+    saveWave: function (wave, callback) {
         var data = {
             title: wave.get('title'),
             userIds: _.uniq(wave.get('userIds'))
@@ -115,14 +115,14 @@ var DAL = {
         } else {
             WaveModel.update({_id: wave.id}, data).exec();
         }
-        return wave;
+        return callback(null, wave);
     },
 
     /**
      * @param {Message} message
-     * @returns {Message}
+     * @param {Function} callback
      */
-    saveMessage: function (message) {
+    saveMessage: function (message, callback) {
         var m = new MessageModel({
             userId: message.get('userId'),
             waveId: message.get('waveId'),
@@ -143,7 +143,7 @@ var DAL = {
         }
 
         message.set({_id: m._id});
-        return message;
+        callback(null, message);
     },
 
     /**
@@ -193,45 +193,28 @@ var DAL = {
         var startTime = new Date().getTime(),
             msgCount = 0;
 
-        WaveModel.find().where('_id').in(user.waves.pluck('_id')).exec(function (err, waves) {
+        async.each(user.waves.toArray(), function (wave, callback_async_each) {
+            DAL.getLastMessagesForUserInWave(user, wave, function (err, results) {
+                if (err) {
+                    return callback_async_each(err);
+                }
+
+                msgCount += results.length;
+                callbackWithMessages(null, results, wave._id);
+                callback_async_each();
+            });
+        }, function (err) {
             if (err) {
+                console.log('QUERY LastMessagesForUser ERROR: ' + err);
                 return callbackReady(err);
             }
-            //console.log(waves.length + " waves found");
-            var endTime = new Date().getTime();
-            console.log('QUERY LastMessagesForUser: wave query in ' + (endTime - startTime));
 
-            async.each(waves, function (wave, callback_async_each) {
-                DAL.getLastMessagesForUserInWave(user, wave, function (err, results) {
-                    if (err) {
-                        return callback_async_each(err);
-                    }
+            var allTime = new Date().getTime() - startTime;
+            GraphiteClient.track('.lastmessagesforuser.time', allTime);
 
-                    msgCount += results.length;
-                    callbackWithMessages(null, results, wave._id);
-                    callback_async_each();
-                });
-            }, function (err) {
-                if (err) {
-                    console.log('QUERY LastMessagesForUser ERROR: ' + err);
-                    return callbackReady(err);
-                }
-
-                var allTime = new Date().getTime() - startTime,
-                    socket;
-
-                //heroku
-                if (Config.graphiteKey) {
-                    socket = net.createConnection(2003, "carbon.hostedgraphite.com", function () {
-                        socket.write(Config.graphiteKey + '.lastmessagesforuser.time ' + allTime + '\n');
-                        socket.end();
-                    });
-                }
-
-                console.log('QUERY LastMessagesForUser: msg query in ' + allTime);
-                console.log('QUERY LastMessagesForUser: msgs: ' + msgCount);
-                callbackReady();
-            });
+            console.log('QUERY LastMessagesForUser: msg query in ' + allTime);
+            console.log('QUERY LastMessagesForUser: msgs: ' + msgCount);
+            callbackReady();
         });
     },
 
@@ -239,7 +222,6 @@ var DAL = {
      * Unread messages for an user in a wave
      * @param {User} user
      * @param {Wave} wave
-     * @param {Array} memo
      * @param {Function} callback
      */
     getLastMessagesForUserInWave: function (user, wave, callback) {
@@ -509,8 +491,9 @@ var DAL = {
     /**
      * @param {User} user
      * @param {Wave} wave
+     * @param {Function} callback
      */
-    createInviteCodeForWave: function (user, wave) {
+    createInviteCodeForWave: function (user, wave, callback) {
         var m,
             code = (Math.random() + 1).toString(36).replace(/\W/g, ''),
             data = {
@@ -522,7 +505,7 @@ var DAL = {
 
         m = new WaveInviteModel(data);
         m.save();
-        return code;
+        return callback(null, code);
     },
 
     /**

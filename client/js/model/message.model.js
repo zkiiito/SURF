@@ -97,7 +97,7 @@ Message = Backbone.Model.extend(
          */
         getSortableId: function () {
             if (!this.sortableId) {
-                if (this.id.toString().length > 8) {
+                if (this.id.toString().length === 24) {
                     var timestamp = Number('0x' + this.id.substr(0, 8)),
                         //machine = Number('0x' + this.id.substr(8, 6)),
                         //pid = Number('0x' + this.id.substr(14, 4)),
@@ -106,7 +106,7 @@ Message = Backbone.Model.extend(
                     //#45 - was not working, refactored
                     this.sortableId = timestamp + increment % 1000 / 1000;
                 } else {
-                    this.sortableId = this.id.toString();
+                    this.sortableId = this.id;
                 }
             }
             return this.sortableId;

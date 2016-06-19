@@ -1,6 +1,6 @@
 var _ = require('underscore'),
     Backbone =  require('backbone'),
-    DAL = require('../DAL');
+    DAL = require('../DALDefault');
 
 var Wave = Backbone.Model.extend(
     /** @lends Wave.prototype */
@@ -27,12 +27,17 @@ var Wave = Backbone.Model.extend(
          */
         addMessage: function (message) {
             //save, save unread
-            message.save();
-
-            this.users.each(function (user) {
-                user.send('message', message);
-                DAL.addUnreadMessage(user, message);
-            }, message);
+            var that = this;
+            message.save(function (err, message) {
+                if (err) {
+                    console.log(err);
+                    return;
+                }
+                that.users.each(function (user) {
+                    user.send('message', message);
+                    DAL.addUnreadMessage(user, message);
+                }, message);
+            });
         },
 
         /**
@@ -175,8 +180,10 @@ var Wave = Backbone.Model.extend(
             DAL.readAllMessagesForUserInWave(user, this);
         },
 
-        save: function () {
-            return DAL.saveWave(this);
+        save: function (callback) {
+            return DAL.saveWave(this, callback || function (err) {
+                console.log(err);
+            });
         },
 
         /**
@@ -192,17 +199,23 @@ var Wave = Backbone.Model.extend(
 
                 user.quitWave(this);
 
-                this.save();
-                this.notifyUsers();
+                this.save(function (err, wave) {
+                    if (err) {
+                        console.log(err);
+                        return;
+                    }
+                    wave.notifyUsers();
+                });
             }
             //keeping empty waves with messages
         },
 
         /**
          * @param {User} user
+         * @param {Function} callback
          */
-        createInviteCode: function (user) {
-            return DAL.createInviteCodeForWave(user, this);
+        createInviteCode: function (user, callback) {
+            return DAL.createInviteCodeForWave(user, this, callback);
         },
 
         /**
