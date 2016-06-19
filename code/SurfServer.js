@@ -1,6 +1,6 @@
 var IO = require('socket.io'),
     signature = require('cookie-signature'),
-    DAL = require('./DALDefault'),
+    DAL = require('./DAL'),
     SessionStore = require('./SessionStore'),
     ExpressServer = require('./ExpressServer'),
     Message = require('./model/Message').Model,

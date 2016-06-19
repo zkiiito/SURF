@@ -2,7 +2,7 @@ var crypto = require('crypto'),
     _ = require('underscore'),
     Backbone =  require('backbone'),
     MessageCollection = require('./Message').Collection,
-    DAL = require('../DALDefault'),
+    DAL = require('../DAL'),
     User,
     UserCollection;
 

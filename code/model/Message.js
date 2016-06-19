@@ -1,6 +1,6 @@
 var _ = require('underscore'),
     Backbone =  require('backbone'),
-    DAL = require('../DALDefault');
+    DAL = require('../DAL');
 
 var Message = Backbone.Model.extend(
     /** @lends Message.prototype */
