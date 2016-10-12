@@ -55,7 +55,7 @@ var MessageView = Backbone.View.extend({
 
         this.$el.children('.replies').append(view.render().el);
         if (this.inRender || this.model.messages.length === 1) {
-            if (this.$el.children('div.replyform').size() === 0) {
+            if (this.$el.children('div.replyform').length === 0) {
                 //if reply form is not present
                 this.$el.children('div.threadend').show();
             }

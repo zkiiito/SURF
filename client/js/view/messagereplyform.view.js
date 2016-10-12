@@ -55,7 +55,7 @@ var MessageReplyFormView = WaveReplyFormView.extend({
     hide: function () {
         var that = this,
             threadEnd;
-        if (this.$el.siblings('.replies').children().size() > 0) {
+        if (this.$el.siblings('.replies').children().length > 0) {
             threadEnd = this.$el.siblings('.threadend');
             this.$el.animate({height: threadEnd.height()}, this.timeout,
                 function () {
