@@ -8,10 +8,7 @@
     "type": "git",
     "url": "git@github.com:zkiiito/SURF.git"
   },
-  "license": {
-    "type": "GNU General Public License v3.0",
-    "url": "http://opensource.org/licenses/GPL-3.0"
-  },
+  "license": "GPL-3.0",
   "dependencies": {
     "socket.io": "1.5.x",
     "underscore": "1.8.x",
