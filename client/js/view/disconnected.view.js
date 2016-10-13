@@ -43,7 +43,7 @@ var DisconnectedView = Backbone.View.extend({
                     that.counter = that.counterStart;
                     that.interval = setInterval(function () { that.count(); }, 1000);
                 })
-                .success(function () {
+                .done(function () {
                     document.location.href = '/';
                 });
         }
