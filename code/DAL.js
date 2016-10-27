@@ -15,6 +15,7 @@ var DAL = {
      * @param {SurfServer} server
      */
     init: function (server) {
+        mongoose.Promise = global.Promise;
         mongoose.connect(Config.mongoUrl);
         //mongoose.set('debug', true);
 
