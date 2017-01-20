@@ -1,7 +1,6 @@
 var express = require('express'),
     fs = require('fs'),
     session = require('express-session'),
-    errorHandler = require('errorhandler'),
     http = require('http'),
     DAL = require('./DAL'),
     SessionStore = require('./SessionStore'),
@@ -86,11 +85,6 @@ app.disable('x-powered-by');
 var clientDir = __dirname.replace('code', 'client');
 var adminDir = __dirname.replace('code', 'admin');
 
-app.use(errorHandler({
-    dumpExceptions: true,
-    showStack: true
-}));
-
 app.use(bodyParser.urlencoded({
     extended: true
 }));
@@ -146,6 +140,12 @@ app.get('/auth/facebook', passport.authenticate('facebook', { scope: 'email' }))
 app.get('/auth/facebook/callback',  passport.authenticate('facebook', { successRedirect: '/' }));
 
 if (Config.testMode) {
+    var errorHandler = require('errorhandler');
+    app.use(errorHandler({
+        dumpExceptions: true,
+        showStack: true
+    }));
+
     /*jslint unparam: true*/
     app.get('/loginTest', function (req, res) {
         res.sendFile(clientDir + '/test/login.html');
