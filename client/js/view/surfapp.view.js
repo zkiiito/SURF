@@ -12,9 +12,10 @@ var SurfAppView = Backbone.View.extend({
         this.listenTo(this.model.waves, 'readAll', this.setTitle);
         this.listenTo(this.model.waves, 'change:current', this.renderWave);
         this.listenTo(this.model, 'initCurrentUser', this.initCurrentUser);
-        this.listenTo(this.model, 'ready', this.setTitle);
+        this.listenTo(this.model, 'ready', this.handleReady);
 
         this.renderedWaves = [];
+        this.waveListViews = [];
         this.render();
     },
     events: {
@@ -69,7 +70,9 @@ var SurfAppView = Backbone.View.extend({
         var listView = new WaveListView({model: wave});
 
         this.handleEmpty();
-        $('#wave-list').append(listView.render().el);
+        var target = wave.get('archived') ? $('#wave-list-archived') : $('#wave-list-active');
+        target.append(listView.render().el);
+        this.waveListViews.push(listView);
     },
 
     resetWaves: function () {
@@ -200,6 +203,28 @@ var SurfAppView = Backbone.View.extend({
             $('.empty').show();
         } else {
             $('.empty').hide();
+        }
+    },
+
+    handleReady: function () {
+        this.handleArchiveChange();
+        this.setTitle();
+        this.listenTo(this.model.waves, 'change:archived', this.handleArchiveChange);
+    },
+
+    handleArchiveChange: function (wave) {
+        //re-render all views
+        this.waveListViews.forEach(function (waveListView) {
+            waveListView.remove();
+        });
+
+        this.waveListViews = [];
+        this.model.waves.forEach(this.addWave, this);
+
+        if (this.model.waves.filter({archived: true}).length === 0 || this.model.waves.filter({archived: false}).length === 0) {
+            $('#wave-list hr').hide();
+        } else {
+            $('#wave-list hr').show();
         }
     }
 });

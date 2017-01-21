@@ -5,7 +5,8 @@ var Wave = Backbone.Model.extend(
         defaults: {
             title: '',
             userIds: [],
-            current: false
+            current: false,
+            archived: true
         },
         idAttribute: '_id',
         /** @constructs */
@@ -47,6 +48,11 @@ var Wave = Backbone.Model.extend(
             } else {
                 this.messages.add(message);
             }
+
+            if (Date.now() - message.get('created_at_date').getTime() < 7 * (1000 * 60 * 60 * 24)) {
+                this.set('archived', false);
+            }
+
             return true;
         },
 
@@ -202,6 +208,14 @@ var Wave = Backbone.Model.extend(
 var WaveCollection = Backbone.Collection.extend(
     /** @lends WaveCollection.prototype */
     {
-        model: Wave
+        model: Wave,
+
+        /**
+         * @param {Wave} wave
+         * @returns {number}
+         */
+        comparator: function (wave) {
+            return wave.id;
+        }
     }
 );

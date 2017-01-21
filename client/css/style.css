@@ -150,6 +150,10 @@ a:hover {
   z-index: 3;
 }
 
+#wave-list hr {
+  display: none;
+}
+
 .empty {
     display: -webkit-flex;
     -webkit-flex-direction: row;

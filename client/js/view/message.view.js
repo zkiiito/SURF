@@ -13,7 +13,7 @@ var MessageView = Backbone.View.extend({
         this.listenTo(this.model, 'change:scrolled', this.scrollTo);
         this.listenTo(this.model.user, 'change:name', this.changeUserName);
 
-        var date = new Date(this.model.get('created_at'));
+        var date = this.model.get('created_at_date');
         this.model.set('dateFormatted', dateFormat(date, 'mmm d HH:MM'));
     },
     inRender: false,

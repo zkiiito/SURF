@@ -10,7 +10,8 @@ Message = Backbone.Model.extend(
             parentId: null,
             message: '',
             unread: true,
-            created_at: null
+            created_at: null,
+            created_at_date: null
         },
         idAttribute: '_id',
         /** @constructs */
@@ -18,6 +19,7 @@ Message = Backbone.Model.extend(
             this.messages = null;
             this.user = app.model.users.getUser(this.get('userId'));
             this.formatMessage();
+            this.set('created_at_date', new Date(this.get('created_at')));
             if (!this.isNew()) {
                 this.set('unread', this.get('unread') && app.model.currentUser.id !== this.get('userId'));
             }
