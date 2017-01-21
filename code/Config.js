@@ -19,7 +19,8 @@ var config = {
         password: '',
         database: 'surf'
         //, debug: ['ComQueryPacket']
-    }
+    },
+    dal: process.env.DAL || 'DALMongoRedis'
 };
 
 module.exports = config;
