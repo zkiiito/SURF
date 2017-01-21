@@ -75,13 +75,13 @@ module.exports = function (Model) {
          });
          }*/
         parsePage: function (req) {
-            return Math.max(parseInt(req.param('page'), 10), 1) || 1;
+            return Math.max(parseInt(req.query.page, 10), 1) || 1;
         },
         parseLimit: function (req) {
-            return Math.max(parseInt(req.param('per_page'), 10), 1) || 20;
+            return Math.max(parseInt(req.query.per_page, 10), 1) || 20;
         },
         parseSort: function (req) {
-            var field = req.param('sort_by'),
+            var field = req.query.sort_by,
                 sortOrder = that.parseSortOrder(req),
                 sortObj = {};
 
@@ -92,7 +92,7 @@ module.exports = function (Model) {
             return null;
         },
         parseSortOrder: function (req) {
-            var order = req.param('order');
+            var order = req.query.order;
             return 'asc' === order ? 1 : -1;
         }
     };

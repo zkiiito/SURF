@@ -52,7 +52,7 @@ var Message = Backbone.Model.extend(
 );
 
 var Messages = Backbone.PageableCollection.extend({
-    url: "/api/message/",
+    url: "/admin/api/message/",
 
     // Initial pagination states
     state: {

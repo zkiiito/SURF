@@ -41,7 +41,7 @@ var AdminRouter = Backbone.Router.extend({
         $('h1').text('Messages');
         app.messages.reset();
         this.setCurrentGrid(app.messageGrid);
-        app.messages.url = "/api/message/" + waveId;
+        app.messages.url = "/admin/api/message/" + waveId;
         app.messages.fetch({reset: true});
     },
 

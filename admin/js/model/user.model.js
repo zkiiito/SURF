@@ -25,7 +25,7 @@ var User = Backbone.Model.extend(
                 return this[key];
             }
 
-            $.getJSON('/api/unread/' + this.id + '/' + waveId, function (data) {
+            $.getJSON('/admin/api/unread/' + this.id + '/' + waveId, function (data) {
                 that[key] = data;
                 that.trigger('changeUnread');
             });
@@ -39,7 +39,7 @@ var User = Backbone.Model.extend(
                 key = 'unread-' + waveId;
 
             if (this[key] > 0) {
-                $.ajax('/api/unread/' + this.id + '/' + waveId, {
+                $.ajax('/admin/api/unread/' + this.id + '/' + waveId, {
                     type: 'DELETE',
                     success: function () {
                         that[key] = 0;
@@ -52,7 +52,7 @@ var User = Backbone.Model.extend(
 );
 
 var Users = Backbone.PageableCollection.extend({
-    url: "/api/user",
+    url: "/admin/api/user",
 
     state: {
         pageSize: 10

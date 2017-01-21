@@ -102,7 +102,7 @@ var SurfServer = {
             picture;
 
         if (undefined === userData) {
-            callback('sessionUser._json undefined');
+            return callback('sessionUser._json undefined');
         }
 
         user = this.users.find(function (u) {

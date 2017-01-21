@@ -27,7 +27,7 @@ var Wave = Backbone.Model.extend(
 );
 
 var Waves = Backbone.PageableCollection.extend({
-    url: "/api/wave",
+    url: "/admin/api/wave",
 
     state: {
         pageSize: 10

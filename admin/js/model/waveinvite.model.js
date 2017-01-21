@@ -22,7 +22,7 @@ var WaveInvite = Backbone.Model.extend(
 );
 
 var WaveInvites = Backbone.PageableCollection.extend({
-    url: "/api/waveinvite",
+    url: "/admin/api/waveinvite",
 
     state: {
         pageSize: 10
