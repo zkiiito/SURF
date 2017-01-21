@@ -20,8 +20,10 @@ var Message = Backbone.Model.extend(
                 this.set('created_at', Date.now());
             }
         },
-        save: function () {
-            return DAL.saveMessage(this);
+        save: function (callback) {
+            return DAL.saveMessage(this, callback || function (err) {
+                console.log(err);
+            });
         },
         validate: function (attrs) {
             if (0 === attrs.message.trim().length) {

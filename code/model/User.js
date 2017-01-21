@@ -105,8 +105,10 @@ User = Backbone.Model.extend(
             }, this);
         },
 
-        save: function () {
-            return DAL.saveUser(this);
+        save: function (callback) {
+            return DAL.saveUser(this, callback || function (err) {
+                console.log(err);
+            });
         },
 
         /**
@@ -120,10 +122,15 @@ User = Backbone.Model.extend(
                 name = name.substr(0, 30);
 
                 this.set({name: name.trim(), avatar: avatar.trim()});
-                this.save();
-                this.notifyFriends();
-                this.send('updateUser', {
-                    user: this.toSelfJSON()
+                this.save(function (err, user) {
+                    if (err) {
+                        console.log(err);
+                        return;
+                    }
+                    user.notifyFriends();
+                    user.send('updateUser', {
+                        user: user.toSelfJSON()
+                    });
                 });
             } else {
                 console.log(this.validate(data));
@@ -147,8 +154,13 @@ User = Backbone.Model.extend(
                     var wave = require('../SurfServer').waves.get(invite.waveId);
                     if (wave && !wave.isMember(that)) {
                         wave.addUser(that, true);
-                        wave.save();
-                        wave.sendPreviousMessagesToUser(that, null, null);
+                        wave.save(function (err, wave) {
+                            if (err) {
+                                console.log(err);
+                                return;
+                            }
+                            wave.sendPreviousMessagesToUser(that, null, null);
+                        });
                     }
                 }
             });
