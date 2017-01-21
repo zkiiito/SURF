@@ -1,5 +1,6 @@
 var express = require('express');
-var passport = require('passport');
+var Passport = require('passport');
+var passport = new Passport.Passport();
 var LocalStrategy = require('passport-local').Strategy;
 var app = express.Router();
 
