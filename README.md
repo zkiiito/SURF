@@ -2,6 +2,8 @@
 
 # SURF
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/zkiiito/SURF.svg)](https://greenkeeper.io/)
+
 SURF is a threaded instant messaging application, like Google Wave used to be.
 
 Try it at <http://surfchat.herokuapp.com> - website at <http://zkiiito.github.io/SURF>.
