@@ -16,7 +16,7 @@
     "cookie": "0.3.x",
     "cookie-signature": "^1.0.5",
     "express": "4.14.x",
-    "express-session": "1.14.x",
+    "express-session": "~1.15.0",
     "mongoose": "4.7.x",
     "mysql": "^2.11.1",
     "passport": "0.3.x",
