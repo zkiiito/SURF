@@ -11,7 +11,7 @@ var WaveInvite = Backbone.Model.extend(
         idAttribute: '_id',
         initialize: function () {
             Backbone.Model.prototype.initialize.apply(this, arguments);
-            this.on("change", function (model, options) {
+            this.on('change', function (model, options) {
                 if (options && options.save === false) {
                     return;
                 }
@@ -22,7 +22,7 @@ var WaveInvite = Backbone.Model.extend(
 );
 
 var WaveInvites = Backbone.PageableCollection.extend({
-    url: "/admin/api/waveinvite",
+    url: '/admin/api/waveinvite',
 
     state: {
         pageSize: 10
@@ -35,7 +35,7 @@ app.waveInvites = new WaveInvites();
 
 app.waveInviteGrid = new Backgrid.Grid({
     columns: [{
-        name: "user",
+        name: 'user',
         cell: Backgrid.Cell.extend({
             render: function () {
                 this.$el.empty();
@@ -49,14 +49,14 @@ app.waveInviteGrid = new Backgrid.Grid({
         editable: false,
         sortable: false
     }, {
-        name: "waveId",
-        cell: "string"
+        name: 'waveId',
+        cell: 'string'
     }, {
-        name: "code",
-        cell: "string"
+        name: 'code',
+        cell: 'string'
     }, {
-        name: "created_at",
-        cell: "datetime",
+        name: 'created_at',
+        cell: 'datetime',
         editable: false
     }],
     collection: app.waveInvites

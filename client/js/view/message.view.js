@@ -133,11 +133,11 @@ var MessageView = Backbone.View.extend({
             that = this,
             notificationText;
 
-        if (Notification.permission === "granted") {
+        if (Notification.permission === 'granted') {
             notificationsEnabled = true;
         } else if (Notification.permission !== 'denied') {
             Notification.requestPermission(function (permission) {
-                if (permission === "granted") {
+                if (permission === 'granted') {
                     notificationsEnabled = true;
                 }
             });

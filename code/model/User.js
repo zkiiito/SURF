@@ -1,7 +1,6 @@
 var crypto = require('crypto'),
     _ = require('underscore'),
     Backbone =  require('backbone'),
-    MessageCollection = require('./Message').Collection,
     DAL = require('../DAL'),
     User,
     UserCollection;
@@ -115,8 +114,8 @@ User = Backbone.Model.extend(
          * @param {Object} data
          */
         update: function (data) {
-            var name = data.name || "",
-                avatar = data.avatar || "";
+            var name = data.name || '',
+                avatar = data.avatar || '';
 
             if (undefined === this.validate(data)) {
                 name = name.substr(0, 30);

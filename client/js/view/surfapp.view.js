@@ -1,4 +1,5 @@
 /*global app, DisconnectedView, EditUserView, EditWaveView, UserView, WaveListView, WaveView*/
+/* exported SurfAppView */
 var SurfAppView = Backbone.View.extend({
     initialize: function () {
         _.bindAll(this, 'addMessage', 'showCreateWave', 'showUpdateWave', 'showEditUser', 'hideOverlays', 'addWave');
@@ -189,7 +190,7 @@ var SurfAppView = Backbone.View.extend({
                 link = document.createElement('link');
                 link.type = 'image/x-icon';
                 link.rel = 'shortcut icon';
-                link.href = canvas.toDataURL("image/x-icon");
+                link.href = canvas.toDataURL('image/x-icon');
                 $('link[rel="shortcut icon"]').remove();
                 $('head').append(link);
             } catch (e) {
@@ -212,7 +213,7 @@ var SurfAppView = Backbone.View.extend({
         this.listenTo(this.model.waves, 'change:archived', this.handleArchiveChange);
     },
 
-    handleArchiveChange: function (wave) {
+    handleArchiveChange: function () {
         //re-render all views
         this.waveListViews.forEach(function (waveListView) {
             waveListView.remove();

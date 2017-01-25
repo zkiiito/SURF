@@ -1,4 +1,5 @@
-/*global Communicator, __ */
+/*global Communicator, __, app, ga */
+/* exported EditWaveView */
 var EditWaveView = Backbone.View.extend({
     initialize: function () {
         _.bindAll(this, 'show', 'hide', 'setWave', 'genUserArray', 'inviteCodeReady');
@@ -39,7 +40,7 @@ var EditWaveView = Backbone.View.extend({
         }
 
         this.$el.find('#editwave-users').tokenInput([], {
-            theme: "facebook",
+            theme: 'facebook',
             preventDuplicates: true,
             hintText: __('Enter username.'),
             noResultsText: __('User not found.'),
@@ -51,7 +52,7 @@ var EditWaveView = Backbone.View.extend({
     updateUserSuggest: function () {
         this.initUserSuggest();
 
-        $('#editwave-users').data("settings").local_data = this.userArray;
+        $('#editwave-users').data('settings').local_data = this.userArray;
 
         var suggest = this.$el.find('#editwave-users');
         suggest.tokenInput('clear');

@@ -1,4 +1,4 @@
-/*global app, Backgrid, UserView */
+/*global app, Backgrid */
 var User = Backbone.Model.extend(
     /** @lends User.prototype */
     {
@@ -10,7 +10,7 @@ var User = Backbone.Model.extend(
         idAttribute: '_id',
         initialize: function () {
             Backbone.Model.prototype.initialize.apply(this, arguments);
-            this.on("change", function (model, options) {
+            this.on('change', function (model, options) {
                 if (options && options.save === false) {
                     return;
                 }
@@ -52,7 +52,7 @@ var User = Backbone.Model.extend(
 );
 
 var Users = Backbone.PageableCollection.extend({
-    url: "/admin/api/user",
+    url: '/admin/api/user',
 
     state: {
         pageSize: 10
@@ -78,11 +78,11 @@ app.users = new Users();
 
 app.userGrid = new Backgrid.Grid({
     columns: [{
-        name: "avatar",
+        name: 'avatar',
         cell: Backgrid.Cell.extend({
             render: function () {
                 this.$el.empty();
-                var rawValue = this.model.get("avatar"),
+                var rawValue = this.model.get('avatar'),
                     formattedValue = $('<img src="' + rawValue + '" width="50">');
                 this.$el.append(formattedValue);
                 this.delegateEvents();
@@ -91,14 +91,14 @@ app.userGrid = new Backgrid.Grid({
         }),
         sortable: false
     }, {
-        name: "name",
-        cell: "string"
+        name: 'name',
+        cell: 'string'
     }, {
-        name: "email",
-        cell: "email"
+        name: 'email',
+        cell: 'email'
     }, {
-        name: "_id",
-        cell: "string",
+        name: '_id',
+        cell: 'string',
         editable: false
     }],
     collection: app.users

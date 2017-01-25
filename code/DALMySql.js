@@ -101,7 +101,7 @@ var DALMySql = {
         };
 
         if (user.isNew()) {
-            connection.query("INSERT INTO user SET ?", data, function (err, res) {
+            connection.query('INSERT INTO user SET ?', data, function (err, res) {
                 if (err) {
                     console.log(err);
                     return callback(err);
@@ -110,7 +110,7 @@ var DALMySql = {
                 return callback(null, user);
             });
         } else {
-            connection.query("UPDATE user SET ? WHERE id = ?", [data, user.id], function (err) {
+            connection.query('UPDATE user SET ? WHERE id = ?', [data, user.id], function (err) {
                 if (err) {
                     return callback(err);
                 }
@@ -129,7 +129,7 @@ var DALMySql = {
         };
 
         if (wave.isNew()) {
-            connection.query("INSERT INTO wave SET ?", data, function (err, res) {
+            connection.query('INSERT INTO wave SET ?', data, function (err, res) {
                 if (err) {
                     console.log(err);
                     return callback(err);
@@ -139,7 +139,7 @@ var DALMySql = {
                 return DALMySql.saveWaveUserIds(wave, callback);
             });
         } else {
-            connection.query("UPDATE wave SET ? WHERE id = ?", [data, wave.id], function (err) {
+            connection.query('UPDATE wave SET ? WHERE id = ?', [data, wave.id], function (err) {
                 if (err) {
                     console.log(err);
                     return callback(err);
@@ -150,7 +150,7 @@ var DALMySql = {
     },
 
     saveWaveUserIds: function (wave, callback) {
-        connection.query("SELECT user_id FROM wave_user WHERE wave_id = ?", [wave.id], function (err, res) {
+        connection.query('SELECT user_id FROM wave_user WHERE wave_id = ?', [wave.id], function (err, res) {
             if (err) {
                 console.log(err);
                 return;
@@ -164,7 +164,7 @@ var DALMySql = {
             //transaction?
             async.each(userIds, function (userId, callback) {
                 if (userIdsDB.indexOf(userId) === -1) {
-                    connection.query("INSERT INTO wave_user SET ?", {
+                    connection.query('INSERT INTO wave_user SET ?', {
                         wave_id: wave.id,
                         user_id: userId
                     }, function (err) {
@@ -200,7 +200,7 @@ var DALMySql = {
                 return callback(err);
             }
 
-            DALMySql.queryTransaction("INSERT INTO message SET ?", m, false, function (err, res) {
+            DALMySql.queryTransaction('INSERT INTO message SET ?', m, false, function (err, res) {
                 if (err) {
                     return callback(err);
                 }
@@ -208,18 +208,18 @@ var DALMySql = {
                 message.set({_id: res.insertId});
 
                 if (null === message.get('parentId')) {
-                    DALMySql.queryTransaction("UPDATE message SET root_id = ? WHERE id = ?", [message.id, message.id], true, function (err) {
+                    DALMySql.queryTransaction('UPDATE message SET root_id = ? WHERE id = ?', [message.id, message.id], true, function (err) {
                         if (err) {
                             return callback(err);
                         }
                         return callback(null, message);
                     });
                 } else {
-                    DALMySql.queryTransaction("SELECT root_id FROM message WHERE id = ?", [m.parent_id], false, function (err, res) {
+                    DALMySql.queryTransaction('SELECT root_id FROM message WHERE id = ?', [m.parent_id], false, function (err, res) {
                         if (err) {
                             return callback(err);
                         }
-                        DALMySql.queryTransaction("UPDATE message SET root_id = ? where id = ?", [res[0].root_id, message.id], true, function (err) {
+                        DALMySql.queryTransaction('UPDATE message SET root_id = ? where id = ?', [res[0].root_id, message.id], true, function (err) {
                             return callback(err, message);
                         });
                     });
@@ -327,9 +327,9 @@ var DALMySql = {
     getMinUnreadRootIdForUserInWave: function (user, wave, callback) {
         var endTime, startTime = new Date().getTime();
 
-        connection.query("SELECT MIN(message.root_id) AS minRootId FROM message " +
-            "INNER JOIN unread ON unread.message_id = message.id " +
-            "WHERE message.wave_id = ? AND unread.user_id = ?",
+        connection.query('SELECT MIN(message.root_id) AS minRootId FROM message ' +
+            'INNER JOIN unread ON unread.message_id = message.id ' +
+            'WHERE message.wave_id = ? AND unread.user_id = ?',
             [wave.id, user.id], function (err, res) {
                 endTime = new Date().getTime();
                 console.log('QUERY getMinUnreadRootIdForUserInWave: ' + wave.id + ' query in ' + (endTime - startTime));
@@ -358,7 +358,7 @@ var DALMySql = {
     getUnreadIdsForUserInWave: function (user, wave, callback) {
         var startTime = new Date().getTime();
 
-        connection.query("SELECT message_id FROM unread WHERE wave_id = ? AND user_id = ?", [wave.id, user.id], function (err, results) {
+        connection.query('SELECT message_id FROM unread WHERE wave_id = ? AND user_id = ?', [wave.id, user.id], function (err, results) {
             var endTime = new Date().getTime();
             console.log('QUERY getUnreadIdsForUserInWave: ' + wave.id + ' query in ' + (endTime - startTime));
             callback(err, _.pluck(results, 'message_id'));
@@ -404,17 +404,17 @@ var DALMySql = {
     getNextMinRootIdForWave: function (wave, minRootId, callback) {
         //if not enough, or minRootId is null
         var startTime = new Date().getTime(),
-            query = "SELECT root_id FROM message WHERE wave_id = ? AND parent_id IS NULL",
+            query = 'SELECT root_id FROM message WHERE wave_id = ? AND parent_id IS NULL',
             queryParams = [wave.id];
             //query = MessageModel.find({waveId: wave.id, parentId: null}).sort('-_id').limit(11);
 
         if (minRootId) {
             //if parentId is null, rootId = _id, we have index on _id
-            query += " AND id < ?";
+            query += ' AND id < ?';
             queryParams.push(minRootId);
         }
 
-        query += " ORDER BY id DESC LIMIT 11";
+        query += ' ORDER BY id DESC LIMIT 11';
 
         connection.query(query, queryParams, function (err, results) {
             var endTime = new Date().getTime();
@@ -438,11 +438,11 @@ var DALMySql = {
             callback(null, 0);
         } else {
             var startTime = new Date().getTime(),
-                query = "SELECT count(id) AS count FROM message WHERE wave_id = ? AND root_id >= ?",
+                query = 'SELECT count(id) AS count FROM message WHERE wave_id = ? AND root_id >= ?',
                 queryParams = [wave.id, minRootId];
 
             if (maxRootId) {
-                query += " AND root_id < ?";
+                query += ' AND root_id < ?';
                 queryParams.push(maxRootId);
             }
 
@@ -466,20 +466,20 @@ var DALMySql = {
      */
     getMessagesForUserInWave: function (wave, minRootId, maxRootId, unreadIds, callback) {
         var startTime = new Date().getTime(),
-            query = "SELECT * FROM message WHERE wave_id = ?",
+            query = 'SELECT * FROM message WHERE wave_id = ?',
             queryParams = [wave.id];
 
         if (minRootId) {
-            query += " AND root_id >= ?";
+            query += ' AND root_id >= ?';
             queryParams.push(minRootId);
         }
 
         if (maxRootId) {
-            query += " AND root_id < ?";
+            query += ' AND root_id < ?';
             queryParams.push(maxRootId);
         }
 
-        query += " ORDER BY id";
+        query += ' ORDER BY id';
 
         connection.query(query, queryParams, function (err, messages) {
             var res, endTime = new Date().getTime();
@@ -516,7 +516,7 @@ var DALMySql = {
      * @param {Message} message
      */
     readMessage: function (user, message) {
-        connection.query("DELETE FROM unread WHERE user_id = ? AND message_id = ?", [user.id, message.id]);
+        connection.query('DELETE FROM unread WHERE user_id = ? AND message_id = ?', [user.id, message.id]);
     },
 
     /**
@@ -525,7 +525,7 @@ var DALMySql = {
      */
     addUnreadMessage: function (user, message) {
         if (message.get('userId') !== user.id && message.id) {
-            connection.query("INSERT INTO unread SET ?", {user_id: user.id, wave_id: message.get('waveId'), message_id: message.id}, function (err) {
+            connection.query('INSERT INTO unread SET ?', {user_id: user.id, wave_id: message.get('waveId'), message_id: message.id}, function (err) {
                 if (err) {
                     console.log(err);
                 }
@@ -538,7 +538,7 @@ var DALMySql = {
      * @param {Wave} wave
      */
     readAllMessagesForUserInWave: function (user, wave) {
-        connection.query("DELETE FROM unread WHERE user_id = ? AND wave_id = ?", [user.id, wave.id]);
+        connection.query('DELETE FROM unread WHERE user_id = ? AND wave_id = ?', [user.id, wave.id]);
     },
 
     /**
@@ -554,7 +554,7 @@ var DALMySql = {
                 code: code
             };
 
-        connection.query("INSERT INTO invite SET ?", data, function (err) {
+        connection.query('INSERT INTO invite SET ?', data, function (err) {
             return callback(err, code);
         });
     },
@@ -564,7 +564,7 @@ var DALMySql = {
      * @param {Function} callback
      */
     getWaveInvitebyCode: function (code, callback) {
-        connection.query("SELECT wave_id as waveId, code FROM invite WHERE code = ?", [code], function (err, res) {
+        connection.query('SELECT wave_id as waveId, code FROM invite WHERE code = ?', [code], function (err, res) {
             return callback(err, _.first(res));
         });
     },
@@ -574,7 +574,7 @@ var DALMySql = {
      * @param {Function} callback
      */
     removeWaveInviteByCode: function (code, callback) {
-        connection.query("DELETE FROM invite WHERE code = ?", [code], function (err) {
+        connection.query('DELETE FROM invite WHERE code = ?', [code], function (err) {
             return callback(err, {result: {ok: 1}});
         });
     },

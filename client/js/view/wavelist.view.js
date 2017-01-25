@@ -1,4 +1,5 @@
-/*global __ */
+/*global __, app */
+/* exported WaveListView */
 var WaveListView = Backbone.View.extend({
     initialize: function () {
         _.bindAll(this, 'setCurrent', 'countMessages', 'updateMessages', 'changeUsers', 'updateTitle', 'scrollToNextUnread', 'removeWave');
@@ -21,8 +22,8 @@ var WaveListView = Backbone.View.extend({
 
     render: function () {
         var context = _.extend(this.model.toJSON(), {
-            id: this.model.id
-        }),
+                id: this.model.id
+            }),
             template = _.template($('#wave_list_view').text());
 
         this.setElement(template(context));

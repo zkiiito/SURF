@@ -1,4 +1,5 @@
-/*global Communicator, Notification */
+/*global Communicator, Notification, __ */
+/* exported EditUserView */
 var EditUserView = Backbone.View.extend({
     initialize: function () {
         _.bindAll(this, 'show', 'hide', 'testNotification');
@@ -86,7 +87,7 @@ var EditUserView = Backbone.View.extend({
             this.$el.find('#edituser-notification-test').hide();
         }
 
-        if (Notification.permission === "granted") {
+        if (Notification.permission === 'granted') {
             this.$el.find('#edituser-notification-status').text(__('Enabled'));
         } else {
             this.$el.find('#edituser-notification-status').text(__('Disabled'));
@@ -96,7 +97,7 @@ var EditUserView = Backbone.View.extend({
     testNotification: function () {
         var that = this;
         Notification.requestPermission(function (permission) {
-            if (permission === "granted") {
+            if (permission === 'granted') {
                 var notification = new Notification('Test notification', {tag: 'mentionNotification', icon: '/images/surf-ico.png'});
                 notification.onshow = function () {
                     setTimeout(notification.close.bind(notification), 5000);

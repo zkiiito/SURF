@@ -14,7 +14,7 @@ var Message = Backbone.Model.extend(
         /** @constructs */
         initialize: function () {
             Backbone.Model.prototype.initialize.apply(this, arguments);
-            this.on("change", function (model, options) {
+            this.on('change', function (model, options) {
                 if (options && options.save === false) {
                     return;
                 }
@@ -52,7 +52,7 @@ var Message = Backbone.Model.extend(
 );
 
 var Messages = Backbone.PageableCollection.extend({
-    url: "/admin/api/message/",
+    url: '/admin/api/message/',
 
     // Initial pagination states
     state: {
@@ -106,7 +106,7 @@ app.messages = new Messages();
 
 app.messageGrid = new Backgrid.Grid({
     columns: [{
-        name: "user",
+        name: 'user',
         cell: Backgrid.Cell.extend({
             render: function () {
                 this.$el.empty();
@@ -120,7 +120,7 @@ app.messageGrid = new Backgrid.Grid({
         editable: false,
         sortable: false
     }, {
-        name: "message",
+        name: 'message',
         cell: Backgrid.Cell.extend({
             render: function () {
                 this.$el.empty();
@@ -136,8 +136,8 @@ app.messageGrid = new Backgrid.Grid({
         editable: true,
         sortable: false
     }, {
-        name: "created_at",
-        cell: "datetime",
+        name: 'created_at',
+        cell: 'datetime',
         editable: false,
         sortable: false
     }],

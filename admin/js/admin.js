@@ -8,10 +8,10 @@ var AdminRouter = Backbone.Router.extend({
     },
 
     routes: {
-        "waves": "initWaveAdmin",
-        "users": "initUserAdmin",
-        "waveinvites": "initWaveInviteAdmin",
-        "messages/:waveId": "initMessageAdmin"
+        'waves': 'initWaveAdmin',
+        'users': 'initUserAdmin',
+        'waveinvites': 'initWaveInviteAdmin',
+        'messages/:waveId': 'initMessageAdmin'
     },
 
     setCurrentGrid: function (grid) {
@@ -26,9 +26,9 @@ var AdminRouter = Backbone.Router.extend({
             collection: grid.collection
         });
 
-        $("#grid").append(grid.render().$el);
+        $('#grid').append(grid.render().$el);
         $('#grid').find('table').addClass('table');
-        $("#paginator").append(this.currentPaginator.render().$el);
+        $('#paginator').append(this.currentPaginator.render().$el);
     },
 
     initUserAdmin: function () {
@@ -41,7 +41,7 @@ var AdminRouter = Backbone.Router.extend({
         $('h1').text('Messages');
         app.messages.reset();
         this.setCurrentGrid(app.messageGrid);
-        app.messages.url = "/admin/api/message/" + waveId;
+        app.messages.url = '/admin/api/message/' + waveId;
         app.messages.fetch({reset: true});
     },
 

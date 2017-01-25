@@ -1,4 +1,5 @@
-/*global WaveCollection, UserCollection, MessageCollection, User */
+/*global WaveCollection, UserCollection, MessageCollection */
+/* exported SurfAppModel */
 var SurfAppModel = Backbone.Model.extend(
     /** @lends SurfAppModel.prototype */
     {

@@ -1,3 +1,5 @@
+/*global app */
+/* exported UserView */
 var UserView = Backbone.View.extend({
     initialize: function () {
         _.bindAll(this, 'render', 'update', 'chatInPrivate');

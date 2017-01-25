@@ -1,7 +1,7 @@
 module.exports = function (grunt) {
     'use strict';
 
-    grunt.loadNpmTasks('grunt-jslint');
+    grunt.loadNpmTasks('grunt-eslint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-text-replace');
@@ -53,72 +53,8 @@ module.exports = function (grunt) {
     ];
 
     grunt.initConfig({
-        jslint: {
-            server: {
-                src: [
-                    'code/**/*.js'
-                ],
-                directives: {
-                    node: true,
-                    maxerr: 1000,
-                    nomen: true,
-                    sloppy: true,
-                    plusplus: true,
-                    predef: [
-                        'Backbone', '_'
-                    ]
-                },
-                options: {
-                    errorsOnly: true, // only display errors
-                    failOnError: false // defaults to true
-                }
-            },
-            client: {
-                src: [
-                    'client/js/**/*.js'
-                ],
-                exclude: [
-                    'client/js/**/jquery*',
-                    'client/js/surf.min.js'
-                ],
-                directives: {
-                    browser: true,
-                    maxerr: 1000,
-                    nomen: true,
-                    sloppy: true,
-                    plusplus: true,
-                    predef: [
-                        'app', '$', 'Backbone', '_', '_gaq', 'ga', '__'
-                    ]
-                },
-                options: {
-                    errorsOnly: true, // only display errors
-                    failOnError: false // defaults to true
-                }
-            },
-            admin: {
-                src: [
-                    'admin/js/**/*.js'
-                ],
-                exclude: [
-                    'admin/js/lib/**/*.js',
-                    'admin/js/admin.min.js'
-                ],
-                directives: {
-                    browser: true,
-                    maxerr: 1000,
-                    nomen: true,
-                    sloppy: true,
-                    plusplus: true,
-                    predef: [
-                        '$', 'Backbone', '_', 'Backgrid'
-                    ]
-                },
-                options: {
-                    errorsOnly: true, // only display errors
-                    failOnError: false // defaults to true
-                }
-            }
+        eslint: {
+            target: ['admin/js/!(lib)**/*.js', 'client/js/!(jquery)**/*.js', 'code/**/*.js']
         },
         uglify: {
             client: {
@@ -157,5 +93,5 @@ module.exports = function (grunt) {
         }
     });
 
-    grunt.registerTask('default', 'jslint');
+    grunt.registerTask('default', 'eslint');
 };

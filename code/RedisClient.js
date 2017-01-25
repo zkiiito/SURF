@@ -5,7 +5,7 @@ var redis = require('redis'),
     redisClient = redis.createClient(redisURL.port, redisURL.hostname, {no_ready_check: true});
 
 if (redisURL.auth) {
-    redisClient.auth(redisURL.auth.split(":")[1]);
+    redisClient.auth(redisURL.auth.split(':')[1]);
 }
 
 redisClient.on('error', function (err) {

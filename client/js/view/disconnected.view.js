@@ -1,3 +1,5 @@
+/*global ga */
+/* exported DisconnectedView */
 var DisconnectedView = Backbone.View.extend({
     initialize: function () {
         _.bindAll(this, 'show');

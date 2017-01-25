@@ -150,7 +150,7 @@ var SurfServer = {
         var that = this;
 
         client.on('error', function (err) {
-            console.log("Socket client error");
+            console.log('Socket client error');
             console.log(err.stack);
             client.curUser.disconnect();
             client.disconnect(true);

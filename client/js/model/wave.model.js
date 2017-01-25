@@ -1,4 +1,5 @@
 /*global MessageCollection, UserCollection, Communicator, app */
+/* exported Wave, WaveCollection */
 var Wave = Backbone.Model.extend(
     /** @lends Wave.prototype */
     {

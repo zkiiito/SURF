@@ -12,7 +12,7 @@ passport.use(new GoogleStrategy(
     {
         clientID: Config.googleId,
         clientSecret: Config.googleSecret,
-        callbackURL: Config.hostName + "/auth/google/callback"
+        callbackURL: Config.hostName + '/auth/google/callback'
     },
     function (accessToken, refreshToken, profile, done) {
         process.nextTick(function () {
@@ -29,7 +29,7 @@ passport.use(new FacebookStrategy(
     {
         clientID: Config.facebookId,
         clientSecret: Config.facebookSecret,
-        callbackURL: Config.hostName + "/auth/facebook/callback",
+        callbackURL: Config.hostName + '/auth/facebook/callback',
         profileFields: ['id', 'name', 'email', 'picture']
     },
     function (accessToken, refreshToken, profile, done) {

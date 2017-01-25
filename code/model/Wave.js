@@ -224,7 +224,7 @@ var Wave = Backbone.Model.extend(
          */
         update: function (data, withRemove) {
             withRemove = withRemove || false;
-            this.set('title', data.title || "");
+            this.set('title', data.title || '');
             var notified = false,
                 userIds = this.get('userIds'),
                 newIds,

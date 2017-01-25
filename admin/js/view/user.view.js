@@ -1,4 +1,4 @@
-/*global confirm */
+/* exported UserView */
 var UserView = Backbone.View.extend({
     initialize: function () {
         _.bindAll(this, 'render', 'removeUser', 'setWave', 'readAll');
@@ -14,7 +14,7 @@ var UserView = Backbone.View.extend({
     render: function () {
         this.$el.empty();
         this.$el.addClass('userview');
-        this.$el.append($('<img src="' + this.model.get("avatar") + '" width="20">'));
+        this.$el.append($('<img src="' + this.model.get('avatar') + '" width="20">'));
         this.$el.append($('<span>').text(this.model.get('name')));
 
         if (this.wave) {

@@ -11,7 +11,7 @@ var SurfAppRouter = Backbone.Router.extend({
     },
 
     routes: {
-        'wave/:number': "showWave"
+        'wave/:number': 'showWave'
     },
 
     showWave: function (id) {
@@ -45,7 +45,7 @@ var SurfAppRouter = Backbone.Router.extend({
 window.onerror = function (message, file, line) {
     var data = {
         prefix: 'JSERROR',
-        errorMessage: message + " in " + file + " on line " + line + ". URL: " + window.location.href + " BROWSER: " + navigator.userAgent
+        errorMessage: message + ' in ' + file + ' on line ' + line + '. URL: ' + window.location.href + ' BROWSER: ' + navigator.userAgent
     };
     $.post('/logError', data);
 };

@@ -1,5 +1,4 @@
-var _ = require('underscore'),
-    Backbone =  require('backbone'),
+var Backbone =  require('backbone'),
     DAL = require('../DAL');
 
 var Message = Backbone.Model.extend(

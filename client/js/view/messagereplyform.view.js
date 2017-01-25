@@ -1,4 +1,5 @@
 /*global WaveReplyFormView */
+/* exported MessageReplyFormView */
 var MessageReplyFormView = WaveReplyFormView.extend({
     events: _.extend({
         'click a.cancel': 'handleCancel'

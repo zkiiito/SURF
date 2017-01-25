@@ -63,7 +63,7 @@ Message = Backbone.Model.extend(
 
             msg = msg.replace(/</g, '&lt;');
             msg = msg.replace(/>/g, '&gt;');
-            msg = msg.replace(/\n/g, " \n");
+            msg = msg.replace(/\n/g, ' \n');
             msg = strip_tags(msg);
             parts = msg.split(' ');
             for (i = 0, c = parts.length; i < c; i++) {

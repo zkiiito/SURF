@@ -80,14 +80,15 @@ var DAL = {
      */
     saveUser: function (user, callback) {
         var data = {
-            name: user.get('name'),
-            avatar: user.get('avatar'),
-            googleId: user.get('googleId'),
-            googleAvatar: user.get('googleAvatar'),
-            facebookId: user.get('facebookId'),
-            facebookAvatar: user.get('facebookAvatar'),
-            email: user.get('email')
-        }, m;
+                name: user.get('name'),
+                avatar: user.get('avatar'),
+                googleId: user.get('googleId'),
+                googleAvatar: user.get('googleAvatar'),
+                facebookId: user.get('facebookId'),
+                facebookAvatar: user.get('facebookAvatar'),
+                email: user.get('email')
+            },
+            m;
 
         if (user.isNew()) {
             m = new UserModel(data);
@@ -105,9 +106,9 @@ var DAL = {
      */
     saveWave: function (wave, callback) {
         var data = {
-            title: wave.get('title'),
-            userIds: _.uniq(wave.get('userIds'))
-        }, m;
+                title: wave.get('title'),
+                userIds: _.uniq(wave.get('userIds'))
+            }, m;
 
         if (wave.isNew()) {
             m = new WaveModel(data);

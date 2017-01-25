@@ -1,4 +1,5 @@
 /*global Communicator, app, randomName */
+/* exported User, UserCollection */
 /** @class */
 var User = Backbone.Model.extend(
     /** @lends User.prototype */

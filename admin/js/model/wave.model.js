@@ -11,7 +11,7 @@ var Wave = Backbone.Model.extend(
         idAttribute: '_id',
         initialize: function () {
             Backbone.Model.prototype.initialize.apply(this, arguments);
-            this.on("change", function (model, options) {
+            this.on('change', function (model, options) {
                 if (options && options.save === false) {
                     return;
                 }
@@ -27,7 +27,7 @@ var Wave = Backbone.Model.extend(
 );
 
 var Waves = Backbone.PageableCollection.extend({
-    url: "/admin/api/wave",
+    url: '/admin/api/wave',
 
     state: {
         pageSize: 10
@@ -40,12 +40,12 @@ app.waves = new Waves();
 
 app.waveGrid = new Backgrid.Grid({
     columns: [{
-        name: "title",
+        name: 'title',
         cell: Backgrid.Cell.extend({
             render: function () {
                 this.$el.empty();
-                var id = this.model.get("_id"),
-                    title = this.model.get("title"),
+                var id = this.model.get('_id'),
+                    title = this.model.get('title'),
                     formattedValue = $('<a href="/admin#messages/' + id + '">' + this.formatter.fromRaw(title) + '</a>');
                 this.$el.append(formattedValue);
                 this.delegateEvents();
@@ -55,11 +55,11 @@ app.waveGrid = new Backgrid.Grid({
         sortable: true,
         editable: true
     }, {
-        name: "users",
+        name: 'users',
         cell: Backgrid.Cell.extend({
             render: function () {
                 this.$el.empty();
-                var ids = this.model.get("userIds");
+                var ids = this.model.get('userIds');
 
                 ids.forEach(function (id) {
                     var user = app.users.getUser(id),
@@ -75,15 +75,15 @@ app.waveGrid = new Backgrid.Grid({
         editable: false,
         sortable: false
     }, {
-        name: "msgCount",
-        label: "Message count",
-        cell: "integer",
+        name: 'msgCount',
+        label: 'Message count',
+        cell: 'integer',
         sortable: false,
         editable: false
     }, {
-        name: "lastMsgCreatedAt",
-        label: "Last message",
-        cell: "datetime",
+        name: 'lastMsgCreatedAt',
+        label: 'Last message',
+        cell: 'datetime',
         sortable: false,
         editable: false
     }],

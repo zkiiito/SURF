@@ -1,4 +1,5 @@
-/*global WaveReplyFormView, UserView, MessageView, __, confirm, waveTemplate */
+/*global WaveReplyFormView, UserView, MessageView, __, waveTemplate, ga, app */
+/* exported WaveView */
 var WaveView = Backbone.View.extend({
     initialize: function () {
         _.bindAll(this, 'setCurrent', 'addMessage', 'addUser', 'removeUser', 'updateTitle',
@@ -152,8 +153,8 @@ var WaveView = Backbone.View.extend({
 
         e.preventDefault();
 
-        var question =  __("Do you want to leave conversation {{ title }}" +
-            "?\n\nIf you want to come back later, participants can invite you")
+        var question =  __('Do you want to leave conversation {{ title }}' +
+            '?\n\nIf you want to come back later, participants can invite you')
             .replace('{{ title }}', this.model.get('title'));
 
         if (confirm(question)) {

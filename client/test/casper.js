@@ -1,8 +1,8 @@
 /*global casper */
 casper.options.viewportSize = {width: 1000, height: 600};
 
-casper.on("remote.message", function (message) {
-    this.echo("remote console.log: " + message);
+casper.on('remote.message', function (message) {
+    this.echo('remote console.log: ' + message);
 });
 
 casper.on('page.error', function (message) {
@@ -22,17 +22,17 @@ var testUserId = Date.now();
 
 casper.test.begin('Login, create wave', 0, function suite(test) {
     casper
-        .start("http://localhost:8000/loginTest", function () {
+        .start('http://localhost:8000/loginTest', function () {
             this.fillSelectors('form', {
-                "input[name='username']": testUserId
+                'input[name="username"]': testUserId
             }, true);
         })
-        .waitForUrl("http://localhost:8000/", function () {
+        .waitForUrl('http://localhost:8000/', function () {
             this.click('a.addwave');
 
             test.assertVisible('#editwave', 'new popup visible');
 
-            waveTitle = "Teszt Wave 1";
+            waveTitle = 'Teszt Wave 1';
 
             this.fillSelectors('#editwave form', {
                 'input#editwave-title': waveTitle
@@ -49,7 +49,7 @@ casper.test.begin('Login, create wave', 0, function suite(test) {
             var i;
             //write messages
             for (i = 0; i < 15; i++) {
-                this.fillSelectors('form.add-message', {"textarea": 'lol fsa ' + i}, true);
+                this.fillSelectors('form.add-message', {'textarea': 'lol fsa ' + i}, true);
             }
         })
         .wait(300, function () {
@@ -66,7 +66,7 @@ casper.test.begin('Login, create wave', 0, function suite(test) {
             //reply
             var i;
             for (i = 0; i < 5; i++) {
-                this.fillSelectors('form.add-message.threadend', {"textarea": 'lol fsa reply ' + i}, true);
+                this.fillSelectors('form.add-message.threadend', {'textarea': 'lol fsa reply ' + i}, true);
             }
         })
         .wait(300, function () {
@@ -75,7 +75,7 @@ casper.test.begin('Login, create wave', 0, function suite(test) {
             this.click('a.button.editwave');
             test.assertVisible('#editwave', 'edit popup visible');
 
-            waveTitle = "Teszt Wave 2";
+            waveTitle = 'Teszt Wave 2';
 
             this.fillSelectors('#editwave form', {
                 'input#editwave-title': waveTitle
@@ -102,7 +102,7 @@ casper.test.begin('Login, create wave', 0, function suite(test) {
          test.assertElementCount('#wave-list .waveitem', 0, 'quit waves');
          })
          */
-        .thenOpen("http://localhost:8000/logoutTest")
+        .thenOpen('http://localhost:8000/logoutTest')
         .run(function () {
             test.done();
         });
@@ -111,12 +111,12 @@ casper.test.begin('Login, create wave', 0, function suite(test) {
 casper.test.begin('Login with invite, read old messages, reply', 0, function suite(test) {
     casper
         .start(inviteCodeUrl)
-        .thenOpen("http://localhost:8000/loginTest", function () {
+        .thenOpen('http://localhost:8000/loginTest', function () {
             this.fillSelectors('form', {
-                "input[name='username']": testUserId + 1
+                'input[name="username"]': testUserId + 1
             }, true);
         })
-        .waitForUrl("http://localhost:8000/")
+        .waitForUrl('http://localhost:8000/')
         .waitForSelector('#wave-list .waveitem', function () {
             test.assertElementCount('#wave-list .waveitem', 1, 'got 1 wave');
             test.assertElementCount('.message', 16, 'got 16 messages');
@@ -127,11 +127,11 @@ casper.test.begin('Login with invite, read old messages, reply', 0, function sui
 
             var i;
             for (i = 0; i < 5; i++) {
-                this.fillSelectors('form.add-message', {"textarea": 'rotfl mao ' + i}, true);
+                this.fillSelectors('form.add-message', {'textarea': 'rotfl mao ' + i}, true);
             }
         })
         .wait(100)//TODO: new wave with prev user
-        .thenOpen("http://localhost:8000/logoutTest")
+        .thenOpen('http://localhost:8000/logoutTest')
         .run(function () {
             test.done();
         });
@@ -139,12 +139,12 @@ casper.test.begin('Login with invite, read old messages, reply', 0, function sui
 
 casper.test.begin('Login with original user, see unread', 0, function suite(test) {
     casper
-        .start("http://localhost:8000/loginTest", function () {
+        .start('http://localhost:8000/loginTest', function () {
             this.fillSelectors('form', {
-                "input[name='username']": testUserId
+                'input[name="username"]': testUserId
             }, true);
         })
-        .waitForUrl("http://localhost:8000/")
+        .waitForUrl('http://localhost:8000/')
         .waitForSelector('#wave-list .waveitem', function () {
             //this.capture('loginagain.png');//meg kell varni
             test.assertElementCount('#wave-list .waveitem', 1, 'got 1 wave');
