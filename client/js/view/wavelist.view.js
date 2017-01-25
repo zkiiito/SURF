@@ -28,6 +28,8 @@ var WaveListView = Backbone.View.extend({
 
         this.setElement(template(context));
         this.changeUsers();
+        this.countMessages();
+        this.setCurrent();
         return this;
     },
 
@@ -42,6 +44,7 @@ var WaveListView = Backbone.View.extend({
         var msgs = this.model.getUnreadCount();
         if (msgs > 0) {
             this.$el.find('.piros').text('| ' + msgs + ' ' + __('new messages'));
+            this.$el.addClass('updated');
         } else {
             this.$el.find('.piros').text('');
             this.$el.removeClass('updated');
