@@ -1,13 +1,13 @@
-var net = require('net'),
-    Config = require('./Config'),
-    socket;
+const net = require('net'),
+    Config = require('./Config');
 
-var GraphiteClient = {
+const GraphiteClient = {
     track: function (key, value) {
         if (Config.graphiteKey) {
-            socket = net.createConnection(2003, 'carbon.hostedgraphite.com', function () {
-                socket.write(Config.graphiteKey + key + ' ' + value + '\n');
-                socket.end();
+            const socket = net.createConnection(2003, 'carbon.hostedgraphite.com', () => {
+                socket.write(Config.graphiteKey + key + ' ' + value + '\n', 'UTF8', () => {
+                    socket.end();
+                });
             });
         }
     }
