@@ -1,4 +1,4 @@
-/*global Communicator, app */
+/*global Communicator, app, swal */
 /* exported WaveReplyFormView */
 var WaveReplyFormView = Backbone.View.extend({
     initialize: function () {
@@ -19,16 +19,27 @@ var WaveReplyFormView = Backbone.View.extend({
     submitForm: function (e) {
         e.preventDefault();
         var textarea = this.$el.find('textarea');
+        var that = this;
 
         //prompt for message on mobile
         if ($('body').hasClass('mobile') && 0 === textarea.val().length) {
-            textarea.val(prompt(textarea.prop('placeholder')));
+            swal({
+                title: '',
+                type: 'input',
+                animation: 'slide-from-top',
+                inputPlaceholder: textarea.prop('placeholder')
+            },
+            function (inputValue) {
+                if (inputValue.length > 0) {
+                    Communicator.sendMessage(inputValue, that.getWaveId(), that.getParentId());
+                }
+            });
+        } else {
+            if (textarea.val().length > 0) {
+                Communicator.sendMessage(textarea.val(), this.getWaveId(), this.getParentId());
+            }
+            textarea.val('');
         }
-
-        if (textarea.val().length > 0) {
-            Communicator.sendMessage(textarea.val(), this.getWaveId(), this.getParentId());
-        }
-        textarea.val('');
         return false;
     },
 

@@ -17,6 +17,7 @@ module.exports = function (grunt) {
         "node_modules/phpjs/functions/strings/strip_tags.js",
         "node_modules/phpjs/functions/strings/nl2br.js",
         "node_modules/phpjs/functions/strings/wordwrap.js",
+        "node_modules/sweetalert/dist/sweetalert-dev.js",
         "client/js/randomname.js",
         "client/js/model/user.model.js",
         "client/js/model/wave.model.js",
@@ -52,6 +53,12 @@ module.exports = function (grunt) {
         "admin/js/view/user.view.js"
     ];
 
+    var cssFiles = [
+        "client/css/style.css",
+        "client/css/token-input.css",
+        "node_modules/sweetalert/dist/sweetalert.css"
+    ];
+
     grunt.initConfig({
         eslint: {
             target: ['admin/js/!(lib)**/*.js', 'client/js/!(jquery)**/*.js', 'code/**/*.js']
@@ -76,6 +83,10 @@ module.exports = function (grunt) {
             admin: {
                 src: jsFilesAdmin,
                 dest: 'admin/js/admin.min.js'
+            },
+            css: {
+                src: cssFiles,
+                dest: 'client/css/surf.min.css'
             }
         },
         replace: {
