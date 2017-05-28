@@ -13,7 +13,8 @@ module.exports = {
             const result = {
                 msgId: data.msgId,
                 data: {
-                    url: data.url
+                    url: data.url,
+                    image: null
                 }
             };
 
@@ -25,7 +26,14 @@ module.exports = {
                 if (meta.openGraph && meta.openGraph.title) {
                     result.data.title = meta.openGraph.title;
                     result.data.description = meta.openGraph.description || null;
-                    result.data.image = meta.openGraph.image ? meta.openGraph.image.url : null;
+
+                    if (meta.openGraph.image) {
+                        if (Array.isArray(meta.openGraph.image)) {
+                            result.data.image = meta.openGraph.image[0].url;
+                        } else {
+                            result.data.image = meta.openGraph.image.url;
+                        }
+                    }
 
                     return resolve(result);
                 }
@@ -33,7 +41,6 @@ module.exports = {
                 if (meta.general && meta.general.title) {
                     result.data.title = meta.general.title;
                     result.data.description = meta.general.description || null;
-                    result.data.image = null;
 
                     return resolve(result);
                 }
