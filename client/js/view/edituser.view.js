@@ -25,6 +25,7 @@ var EditUserView = Backbone.View.extend({
         this.$el.find('#edituser-avatar').val(this.model.get('avatar'));
         this.$el.find('input#edituser-show-pictures').attr('checked', this.model.get('showPictures'));
         this.$el.find('input#edituser-show-videos').attr('checked', this.model.get('showVideos'));
+        this.$el.find('input#edituser-show-linkpreviews').attr('checked', this.model.get('showLinkPreviews'));
 
         this.$el.find('div.avatar').remove();
 
@@ -73,6 +74,7 @@ var EditUserView = Backbone.View.extend({
 
         this.model.set('showPictures', this.$el.find('input#edituser-show-pictures').is(':checked'), {silent: true});
         this.model.set('showVideos', this.$el.find('input#edituser-show-videos').is(':checked'), {silent: true});
+        this.model.set('showLinkPreviews', this.$el.find('input#edituser-show-linkpreviews').is(':checked'), {silent: true});
         this.model.saveLocalAttributes();
 
         //callback updates current user

@@ -13,7 +13,7 @@ var User = Backbone.Model.extend(
             showVideos: false
         },
         idAttribute: '_id',
-        localAttributes: ['showPictures', 'showVideos'],
+        localAttributes: ['showPictures', 'showVideos', 'showLinkPreviews'],
 
         /**
          * @param {Object} data

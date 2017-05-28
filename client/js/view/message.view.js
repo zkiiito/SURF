@@ -1,4 +1,4 @@
-/*global UserView, MessageReplyFormView, Notification, __, dateFormat, messageTemplate */
+/*global UserView, MessageReplyFormView, Notification, __, dateFormat, messageTemplate, linkPreviewTemplate */
 var MessageView = Backbone.View.extend({
     initialize: function () {
         if (this.model.messages) {
@@ -12,6 +12,7 @@ var MessageView = Backbone.View.extend({
         this.listenTo(this.model, 'change:unread', this.onReadMessage);
         this.listenTo(this.model, 'change:scrolled', this.scrollTo);
         this.listenTo(this.model.user, 'change:name', this.changeUserName);
+        this.listenTo(this.model, 'linkpreview', this.addLinkPreview);
 
         var date = this.model.get('created_at_date');
         this.model.set('dateFormatted', dateFormat(date, 'mmm d HH:MM'));
@@ -25,7 +26,8 @@ var MessageView = Backbone.View.extend({
     },
     render: function () {
         var context = _.extend(this.model.toJSON(), {id: this.model.id, user: this.model.user.toJSON()}),
-            userView = new UserView({model: this.model.user});
+            userView = new UserView({model: this.model.user}),
+            that = this;
 
         this.setElement(messageTemplate(context));
         if (!this.model.get('unread')) {
@@ -44,6 +46,10 @@ var MessageView = Backbone.View.extend({
             this.model.messages.each(this.addMessage, this);
             this.inRender = false;
         }
+
+        this.model.linkPreviews.forEach(function (linkPreviewData) {
+            that.addLinkPreview(linkPreviewData);
+        });
 
         return this;
     },
@@ -166,5 +172,10 @@ var MessageView = Backbone.View.extend({
                 //notification constructor not supported on chrome mobile
             }
         }
+    },
+
+    addLinkPreview: function (data) {
+        var linkPreview = linkPreviewTemplate(data);
+        this.$el.children('table').append(linkPreview);
     }
 });

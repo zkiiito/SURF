@@ -17,6 +17,7 @@ Message = Backbone.Model.extend(
         /** @constructs */
         initialize: function () {
             this.messages = null;
+            this.linkPreviews = [];
             this.user = app.model.users.getUser(this.get('userId'));
             this.formatMessage();
             this.set('created_at_date', new Date(this.get('created_at')));
@@ -80,6 +81,10 @@ Message = Backbone.Model.extend(
                         replacement = '<br><iframe width="420" height="315" src="https://youtube.com/embed/' + url[2] + '" frameborder="0" allowfullscreen></iframe>';
                     } else {
                         replacement = '<a href="' + url + '" target="_blank">' + urlText + '</a>';
+
+                        if (app.model.currentUser.get('showLinkPreviews')) {
+                            Communicator.getLinkPreview(url, this);
+                        }
                     }
 
                     parts[i] = parts[i].replace(matched[0], replacement);
@@ -187,6 +192,11 @@ Message = Backbone.Model.extend(
                 return this.get('message').indexOf(searchString) >= 0;
             }
             return false;
+        },
+
+        addLinkPreview: function (data) {
+            this.linkPreviews.push(data);
+            this.trigger('linkpreview', data);
         }
     }
 );

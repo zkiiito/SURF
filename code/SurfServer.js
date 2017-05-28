@@ -1,6 +1,7 @@
 var IO = require('socket.io'),
     signature = require('cookie-signature'),
     DAL = require('./DAL'),
+    LinkPreview = require('./LinkPreview'),
     SessionStore = require('./SessionStore'),
     ExpressServer = require('./ExpressServer'),
     Message = require('./model/Message').Model,
@@ -249,6 +250,18 @@ var SurfServer = {
                     }
                 });
             }
+        });
+
+        client.on('getLinkPreview', function (data) {
+            console.log('getLinkPreview: ' + data.url);
+
+            LinkPreview.parse(data)
+                .then((result) => {
+                    client.curUser.send('linkPreviewReady', result);
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
         });
     },
 

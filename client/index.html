@@ -73,7 +73,7 @@
                     <a class="button reply" href="">&rarr;</a>
                     <p class="time">{{ dateFormatted }}</p>
                     <p class="message-text">
-                        <span class="author">{{ user.name }}:</span> {| messageFormatted |}
+                        <span class="author">{{ user.name }}:</span> <span class="message-formatted">{| messageFormatted |}</span>
                     </p>
                 </td>
             </tr>
@@ -85,6 +85,19 @@
         <p><a class="button threadend" href=""><span class="R">Add message</span> &darr;</a></p>
   </div>
 </div>
+</script>
+
+<script id="message_linkpreview_view" type="text/html">
+<tr>
+    <td class="message-header"></td>
+    <td class="message-linkpreview message-body">
+        <a href="{{ url }}" target="_blank">
+            <b>{{ title }}</b><br>
+            <img src="{{ image }}" style="max-width: 300px;max-height: 200px;"><br>
+            <span>{{ description }}</span>
+        </a>
+    </td>
+</tr>
 </script>
 
 <script id="editwave_view" type="text/html">
@@ -155,7 +168,8 @@
           <label class="R">Local settings</label>
           <div class="right">
               <label><input type="checkbox" id="edituser-show-pictures">Show pictures</label><br style="clear: both">
-              <label><input type="checkbox" id="edituser-show-videos">Show videos</label>
+              <label><input type="checkbox" id="edituser-show-videos">Show videos</label><br style="clear: both">
+              <label><input type="checkbox" id="edituser-show-linkpreviews">Show link previews</label>
           </div>
       </div>
       <div class="right">

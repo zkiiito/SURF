@@ -30,6 +30,7 @@ var Communicator = {
             that.onUpdateWave(data);
         });
         this.socket.on('inviteCodeReady', this.onInviteCodeReady);
+        this.socket.on('linkPreviewReady', this.onLinkPreviewReady);
 
         this.socket.on('dontReconnect', function () {
             that.reconnect = false;
@@ -238,5 +239,18 @@ var Communicator = {
         };
 
         this.socket.emit('updateUser', data);
+    },
+
+    getLinkPreview: function (url, message) {
+        this.socket.emit('getLinkPreview', {
+            msgId: message.id,
+            url: url
+        });
+    },
+
+    onLinkPreviewReady: function (data) {
+        if (app.model.messages.get(data.msgId)) {
+            app.model.messages.get(data.msgId).addLinkPreview(data.data);
+        }
     }
 };
