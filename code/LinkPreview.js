@@ -1,49 +1,79 @@
 const metadata = require('html-metadata');
+const redis = require('./RedisClient');
 
 module.exports = {
-    parse: function (data) {
+    parse: function (url) {
+        return this.fetchDataFromCache(url)
+            .catch(() => {
+                return this.fetchData(url);
+            });
+    },
+
+    fetchDataFromCache: function (url) {
         return new Promise((resolve, reject) => {
+            const key = 'linkpreview-' + url.replace(/[^a-z0-9]/g, '');
+            redis.get(key, (err, result) => {
+                if (err) {
+                    console.log('LinkPreview redis error: ' + err);
+                    return reject(err);
+                }
+
+                if (result === null) {
+                    return reject();
+                } else {
+                    return resolve(JSON.parse(result));
+                }
+            });
+        });
+    },
+
+    saveDataToCache: function (url, data) {
+        const key = 'linkpreview-' + url.replace(/[^a-z0-9]/g, '');
+        redis.set(key, JSON.stringify(data));
+    },
+
+    fetchData: function (url) {
+        return new Promise((resolve, reject) => {
+            console.log('LinkPreview fetch: ' + url);
+
             const options = {
-                url: data.url,
+                url: url,
                 headers: {
                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36'
                 }
             };
 
-            const result = {
-                msgId: data.msgId,
-                data: {
-                    url: data.url,
+            metadata(options).then((meta) => {
+                const result = {
+                    url: url,
                     image: null
-                }
-            };
-
-            metadata(options, function (err, meta) {
-                if (err) {
-                    return reject('LinkPreview error: ' + err);
-                }
+                };
 
                 if (meta.openGraph && meta.openGraph.title) {
-                    result.data.title = meta.openGraph.title;
-                    result.data.description = meta.openGraph.description || null;
+                    result.title = meta.openGraph.title;
+                    result.description = meta.openGraph.description || null;
 
                     if (meta.openGraph.image) {
                         if (Array.isArray(meta.openGraph.image)) {
-                            result.data.image = meta.openGraph.image[0].url;
+                            result.image = meta.openGraph.image[0].url;
                         } else {
-                            result.data.image = meta.openGraph.image.url;
+                            result.image = meta.openGraph.image.url;
                         }
                     }
-
-                    return resolve(result);
                 }
 
                 if (meta.general && meta.general.title) {
-                    result.data.title = meta.general.title;
-                    result.data.description = meta.general.description || null;
+                    result.title = meta.general.title;
+                    result.description = meta.general.description || null;
+                }
 
+                if (result.title) {
+                    this.saveDataToCache(url, result);
                     return resolve(result);
                 }
+            })
+            .catch((err) => {
+                return reject('LinkPreview error: ' + url + ' ' + err);
             });
         });
     }

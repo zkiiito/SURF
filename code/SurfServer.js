@@ -255,8 +255,13 @@ var SurfServer = {
         client.on('getLinkPreview', function (data) {
             console.log('getLinkPreview: ' + data.url);
 
-            LinkPreview.parse(data)
-                .then((result) => {
+            LinkPreview.parse(data.url)
+                .then((resultData) => {
+                    const result = {
+                        msgId: data.msgId,
+                        data: resultData
+                    };
+
                     client.curUser.send('linkPreviewReady', result);
                 })
                 .catch((err) => {
