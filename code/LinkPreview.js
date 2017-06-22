@@ -9,10 +9,13 @@ module.exports = {
             });
     },
 
+    getKeyByUrl: function (url) {
+        return 'linkpreview-' + url.replace(/[^a-z0-9]/g, '');
+    },
+
     fetchDataFromCache: function (url) {
         return new Promise((resolve, reject) => {
-            const key = 'linkpreview-' + url.replace(/[^a-z0-9]/g, '');
-            redis.get(key, (err, result) => {
+            redis.get(this.getKeyByUrl(url), (err, result) => {
                 if (err) {
                     console.log('LinkPreview redis error: ' + err);
                     return reject(err);
@@ -27,9 +30,8 @@ module.exports = {
         });
     },
 
-    saveDataToCache: function (url, data) {
-        const key = 'linkpreview-' + url.replace(/[^a-z0-9]/g, '');
-        redis.set(key, JSON.stringify(data));
+    saveDataToCache: function (url, data, duration) {
+        redis.setex(this.getKeyByUrl(url), duration, JSON.stringify(data));
     },
 
     fetchData: function (url) {
@@ -43,12 +45,12 @@ module.exports = {
                 }
             };
 
-            metadata(options).then((meta) => {
-                const result = {
-                    url: url,
-                    image: null
-                };
+            const result = {
+                url: url,
+                image: null
+            };
 
+            metadata(options).then((meta) => {
                 if (meta.openGraph && meta.openGraph.title) {
                     result.title = meta.openGraph.title;
                     result.description = meta.openGraph.description || null;
@@ -60,20 +62,23 @@ module.exports = {
                             result.image = meta.openGraph.image.url;
                         }
                     }
-                }
-
-                if (meta.general && meta.general.title) {
+                } else if (meta.general && meta.general.title) {
                     result.title = meta.general.title;
                     result.description = meta.general.description || null;
                 }
 
                 if (result.title) {
-                    this.saveDataToCache(url, result);
+                    this.saveDataToCache(url, result, 3600 * 24 * 7);
                     return resolve(result);
                 }
             })
             .catch((err) => {
-                return reject('LinkPreview error: ' + url + ' ' + err);
+                console.log('LinkPreview error: ' + url + ' ' + err);
+
+                result.title = err.toString();
+                result.description = null;
+                this.saveDataToCache(url, result, 3600 * 24 * 7);
+                return resolve(result);
             });
         });
     }
