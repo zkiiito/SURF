@@ -17,7 +17,7 @@ module.exports = function (grunt) {
         "node_modules/phpjs/functions/strings/strip_tags.js",
         "node_modules/phpjs/functions/strings/nl2br.js",
         "node_modules/phpjs/functions/strings/wordwrap.js",
-        "node_modules/sweetalert/dist/sweetalert-dev.js",
+        "node_modules/sweetalert/dist/sweetalert.min.js",
         "client/js/randomname.js",
         "client/js/model/user.model.js",
         "client/js/model/wave.model.js",
@@ -55,8 +55,7 @@ module.exports = function (grunt) {
 
     var cssFiles = [
         "client/css/style.css",
-        "client/css/token-input.css",
-        "node_modules/sweetalert/dist/sweetalert.css"
+        "client/css/token-input.css"
     ];
 
     grunt.initConfig({

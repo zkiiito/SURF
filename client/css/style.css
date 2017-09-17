@@ -855,3 +855,8 @@ textarea {
         display: none;
     }
 }
+
+/* sweetalert */
+.swal-footer {
+  text-align: center;
+}

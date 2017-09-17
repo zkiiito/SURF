@@ -25,11 +25,13 @@ var WaveReplyFormView = Backbone.View.extend({
         if ($('body').hasClass('mobile') && 0 === textarea.val().length) {
             swal({
                 title: '',
-                type: 'input',
-                animation: 'slide-from-top',
-                inputPlaceholder: textarea.prop('placeholder')
-            },
-            function (inputValue) {
+                content: {
+                    element: 'input',
+                    attributes: {
+                        placeholder: textarea.prop('placeholder')
+                    }
+                }
+            }).then(function (inputValue) {
                 if (inputValue.length > 0) {
                     Communicator.sendMessage(inputValue, that.getWaveId(), that.getParentId());
                 }
