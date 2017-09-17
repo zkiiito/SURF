@@ -330,23 +330,23 @@ var DALMySql = {
         connection.query('SELECT MIN(message.root_id) AS minRootId FROM message ' +
             'INNER JOIN unread ON unread.message_id = message.id ' +
             'WHERE message.wave_id = ? AND unread.user_id = ?',
-            [wave.id, user.id], function (err, res) {
-                endTime = new Date().getTime();
-                console.log('QUERY getMinUnreadRootIdForUserInWave: ' + wave.id + ' query in ' + (endTime - startTime));
-                console.log('QUERY getMinUnreadRootIdForUserInWave: ' + wave.id + ' count: ' + res.length);
+        [wave.id, user.id], function (err, res) {
+            endTime = new Date().getTime();
+            console.log('QUERY getMinUnreadRootIdForUserInWave: ' + wave.id + ' query in ' + (endTime - startTime));
+            console.log('QUERY getMinUnreadRootIdForUserInWave: ' + wave.id + ' count: ' + res.length);
 
-                if (err || _.first(res).minRootId === null) {
-                    callback(true, null);
-                } else {
-                    DALMySql.getUnreadIdsForUserInWave(user, wave, function (err, ids) {
-                        var result = {
-                            minRootId: _.first(res).minRootId,
-                            unreadIds: ids
-                        };
-                        return callback(err, result);
-                    });
-                }
-            });
+            if (err || _.first(res).minRootId === null) {
+                callback(true, null);
+            } else {
+                DALMySql.getUnreadIdsForUserInWave(user, wave, function (err, ids) {
+                    var result = {
+                        minRootId: _.first(res).minRootId,
+                        unreadIds: ids
+                    };
+                    return callback(err, result);
+                });
+            }
+        });
     },
 
     /**

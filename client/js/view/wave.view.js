@@ -3,8 +3,8 @@
 var WaveView = Backbone.View.extend({
     initialize: function () {
         _.bindAll(this, 'setCurrent', 'addMessage', 'addUser', 'removeUser', 'updateTitle',
-                        'showUpdateWave', 'scrollToNextUnread', 'scrollToBottom', 'readAllMessages',
-                        'quitWave', 'removeWave', 'countOfflineUsers', 'readAll');
+            'showUpdateWave', 'scrollToNextUnread', 'scrollToBottom', 'readAllMessages',
+            'quitWave', 'removeWave', 'countOfflineUsers', 'readAll');
 
         this.userViews = [];
 

@@ -35,7 +35,7 @@ module.exports = {
     },
 
     fetchData: function (url) {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             console.log('LinkPreview fetch: ' + url);
 
             const options = {
@@ -72,14 +72,14 @@ module.exports = {
                     return resolve(result);
                 }
             })
-            .catch((err) => {
-                console.log('LinkPreview error: ' + url + ' ' + err);
+                .catch((err) => {
+                    console.log('LinkPreview error: ' + url + ' ' + err);
 
-                result.title = err.toString();
-                result.description = null;
-                this.saveDataToCache(url, result, 3600 * 24 * 7);
-                return resolve(result);
-            });
+                    result.title = err.toString();
+                    result.description = null;
+                    this.saveDataToCache(url, result, 3600 * 24 * 7);
+                    return resolve(result);
+                });
         });
     }
 };

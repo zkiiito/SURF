@@ -58,7 +58,7 @@ Message = Backbone.Model.extend(
                 msg = this.get('message'),
                 urlRegex = /((https?:\/\/|www\.)\S+)/g,
                 urlPictureRegex = /\.(jpg|png|gif)(\?.*)?$/ig,
-                urlVideoRegex = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]+).*/gim,
+                urlVideoRegex = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]+).*/gim,
                 urlVideoRegexYoutube = /.*youtu.*/im,
                 replacement = '';
 
