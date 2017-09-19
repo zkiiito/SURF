@@ -45,7 +45,7 @@
   "devDependencies": {
     "R.js": "0.1.x",
     "casperjs": "^1.1.4",
-    "dateformat": "2.0.x",
+    "dateformat": "~2.1.0",
     "errorhandler": "1.5.x",
     "grunt": "1.0.*",
     "grunt-contrib-concat": "^1.0.0",
