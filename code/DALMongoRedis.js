@@ -16,61 +16,63 @@ var DAL = {
      */
     init: function (server) {
         mongoose.Promise = global.Promise;
-        mongoose.connect(Config.mongoUrl);
         //mongoose.set('debug', true);
-
-        UserModel.find().exec(function (err, users) {
-            if (err) {
-                throw err;
-            }
-
-            var usersTmp = [];
-            _.each(users, function (user) {
-                usersTmp.push({name: user.name,
-                    avatar: user.avatar,
-                    _id: user._id,
-                    email: user.email,
-                    googleId: user.googleId,
-                    googleAvatar: user.googleAvatar,
-                    facebookId: user.facebookId,
-                    facebookAvatar: user.facebookAvatar
-                });
-            });
-            server.users.reset(usersTmp);
-            usersTmp = null;
-
-            WaveModel.find().sort('_id').exec(function (err, waves) {
+        mongoose.connect(Config.mongoUrl, {
+            useMongoClient: true
+        }).then(() => {
+            UserModel.find().exec(function (err, users) {
                 if (err) {
                     throw err;
                 }
 
-                var wavesTmp = [];
-                _.each(waves, function (wave) {
-                    wavesTmp.push({title: wave.title, userIds: wave.userIds, _id: wave._id});
-                });
-                server.waves.reset(wavesTmp);
-                server.startServer();
-            });
-        });
-
-        //temporary fix: delete all unread, if user has more than 1000
-        UserModel.find().exec(function (err, users) {
-            if (!err) {
+                var usersTmp = [];
                 _.each(users, function (user) {
-                    redis.keys('unread-' + user._id + '-*', function (err, unreadKeys) {
-                        if (!err) {
-                            _.each(unreadKeys, function (key) {
-                                redis.scard(key, function (err, msgcount) {
-                                    if (!err && msgcount > 1000) {
-                                        console.log('deleteTooMuchUnread: ' + key + ' : ' + msgcount);
-                                        redis.del(key);
-                                    }
-                                });
-                            });
-                        }
+                    usersTmp.push({name: user.name,
+                        avatar: user.avatar,
+                        _id: user._id,
+                        email: user.email,
+                        googleId: user.googleId,
+                        googleAvatar: user.googleAvatar,
+                        facebookId: user.facebookId,
+                        facebookAvatar: user.facebookAvatar
                     });
                 });
-            }
+                server.users.reset(usersTmp);
+                usersTmp = null;
+
+                WaveModel.find().sort('_id').exec(function (err, waves) {
+                    if (err) {
+                        throw err;
+                    }
+
+                    var wavesTmp = [];
+                    _.each(waves, function (wave) {
+                        wavesTmp.push({title: wave.title, userIds: wave.userIds, _id: wave._id});
+                    });
+                    server.waves.reset(wavesTmp);
+                    server.startServer();
+                });
+            });
+
+            //temporary fix: delete all unread, if user has more than 1000
+            UserModel.find().exec(function (err, users) {
+                if (!err) {
+                    _.each(users, function (user) {
+                        redis.keys('unread-' + user._id + '-*', function (err, unreadKeys) {
+                            if (!err) {
+                                _.each(unreadKeys, function (key) {
+                                    redis.scard(key, function (err, msgcount) {
+                                        if (!err && msgcount > 1000) {
+                                            console.log('deleteTooMuchUnread: ' + key + ' : ' + msgcount);
+                                            redis.del(key);
+                                        }
+                                    });
+                                });
+                            }
+                        });
+                    });
+                }
+            });
         });
     },
 
