@@ -1,4 +1,8 @@
 const metadata = require('html-metadata');
+const preq = require('preq');
+const contentType = require('content-type');
+const cheerio = require('cheerio');
+const iconv = require('iconv-lite');
 const redis = require('./RedisClient');
 
 module.exports = {
@@ -40,6 +44,7 @@ module.exports = {
 
             const options = {
                 url: url,
+                encoding: null,
                 headers: {
                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36'
                 }
@@ -50,28 +55,43 @@ module.exports = {
                 image: null
             };
 
-            metadata(options).then((meta) => {
-                if (meta.openGraph && meta.openGraph.title) {
-                    result.title = meta.openGraph.title;
-                    result.description = meta.openGraph.description || null;
+            let contenttype;
 
-                    if (meta.openGraph.image) {
-                        if (Array.isArray(meta.openGraph.image)) {
-                            result.image = meta.openGraph.image[0].url;
-                        } else {
-                            result.image = meta.openGraph.image.url;
-                        }
+            preq.head(options)
+                .then((header) => {
+                    contenttype = contentType.parse(header);
+                    if (contenttype.type !== 'text/html') {
+                        throw Error('not a html document');
                     }
-                } else if (meta.general && meta.general.title) {
-                    result.title = meta.general.title;
-                    result.description = meta.general.description || null;
-                }
 
-                if (result.title) {
-                    this.saveDataToCache(url, result, 3600 * 24 * 7);
-                    return resolve(result);
-                }
-            })
+                    return preq.get(options);
+                })
+                .then((response) => {
+                    const str = iconv.decode(response.body, contenttype.parameters.charset || 'utf-8');
+                    return metadata.parseAll(cheerio.load(str));
+                })
+                .then((meta) => {
+                    if (meta.openGraph && meta.openGraph.title) {
+                        result.title = meta.openGraph.title;
+                        result.description = meta.openGraph.description || null;
+
+                        if (meta.openGraph.image) {
+                            if (Array.isArray(meta.openGraph.image)) {
+                                result.image = meta.openGraph.image[0].url;
+                            } else {
+                                result.image = meta.openGraph.image.url;
+                            }
+                        }
+                    } else if (meta.general && meta.general.title) {
+                        result.title = meta.general.title;
+                        result.description = meta.general.description || null;
+                    }
+
+                    if (result.title) {
+                        this.saveDataToCache(url, result, 3600 * 24 * 7);
+                        return resolve(result);
+                    }
+                })
                 .catch((err) => {
                     console.log('LinkPreview error: ' + url + ' ' + err);
 
