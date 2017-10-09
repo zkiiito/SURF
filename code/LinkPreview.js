@@ -59,7 +59,8 @@ module.exports = {
 
             preq.head(options)
                 .then((header) => {
-                    contenttype = contentType.parse(header);
+                    contenttype = contentType.parse(header.headers['content-type'].replace(/;+$/, ''));
+
                     if (contenttype.type !== 'text/html') {
                         throw Error('not a html document');
                     }
