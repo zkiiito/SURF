@@ -12,7 +12,7 @@ casper.on('page.error', function (message) {
 
 casper.test.on('fail', function () {
     casper.capture('fail.png');
-    casper.exit();
+    casper.exit(1);
 });
 
 var lastMsgId;
