@@ -25,7 +25,7 @@ module.exports = {
                     return reject(err);
                 }
 
-                if (result === null) {
+                if (1 || result === null) {
                     return reject();
                 } else {
                     return resolve(JSON.parse(result));
@@ -62,6 +62,11 @@ module.exports = {
                     contenttype = contentType.parse(header.headers['content-type'].replace(/;+$/, ''));
 
                     if (contenttype.type !== 'text/html') {
+                        if (contenttype.type.match(/^image\//)) {
+                            result.title = 'wow, it\'s an image';
+                            result.image = url;
+                            throw {resultReady: true};
+                        }
                         throw Error('not a html document');
                     }
 
@@ -94,6 +99,10 @@ module.exports = {
                     }
                 })
                 .catch((err) => {
+                    if (err.resultReady) {
+                        return resolve(result);
+                    }
+
                     console.log('LinkPreview error: ' + url + ' ' + err);
 
                     result.title = err.toString();

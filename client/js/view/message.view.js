@@ -175,7 +175,11 @@ var MessageView = Backbone.View.extend({
     },
 
     addLinkPreview: function (data) {
-        var linkPreview = linkPreviewTemplate(data);
+        var linkPreview = $(linkPreviewTemplate(_.extend({title: null, image: null, description: null}, data)));
+        if (!data.image) {
+            linkPreview.find('img').remove();
+        }
+
         this.$el.children('table').append(linkPreview);
     }
 });

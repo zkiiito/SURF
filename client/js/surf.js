@@ -51,12 +51,10 @@ window.onerror = function (message, file, line) {
 };
 
 $(function () {
-    /*jslint regexp: true*/
     _.templateSettings = {
-        interpolate: /\{|\|(.+?)\|\}/g,
-        escape: /\{\{(.+?)\}\}/g
+        interpolate: /{|\|([\s\S]+?)\|}/g,
+        escape: /{{([\s\S]+?)}}/g
     };
-    /*jslint regexp: false */
     var surfApp = new SurfAppRouter();
     window.app = surfApp;
     window.messageTemplate = _.template($('#message_view').text());
