@@ -83,15 +83,9 @@ a:hover {
   border: 0;
 }
 
-.addwave {
-  margin-top: 2.1em;
-  margin-left: 0.2em;
-}
-
-@media (max-width: 999px) {
-    .addwave {
-        margin-top: 0.1em;
-    }
+a.addwave {
+  font-size: 10px;
+  float: right;
 }
 
 #usermenu {
@@ -132,8 +126,11 @@ a:hover {
   z-index: 3;
 }
 
-#wave-list hr {
-  display: none;
+.wave-list-head {
+    border-bottom: 1px solid #ccc;
+    font-family: AllerLightRegular, Helvetica, Arial, sans-serif;
+    color: #999;
+    padding: 2px;
 }
 
 #wave-container {
@@ -145,12 +142,6 @@ a:hover {
     display: flex;
     padding: 4em;
     align-items: center;
-}
-
-@media (max-width: 999px) {
-    #wave-list {
-        top: 2em;
-    }
 }
 
 .waveitem {
@@ -212,7 +203,6 @@ a:hover {
 
 @media (max-width: 999px) {
     .wavetop {
-        top: 2em;
         padding: 0 0.75em
     }
 }
@@ -765,6 +755,14 @@ textarea {
 
     #currentuser .currentuser_name {
         display: none;
+    }
+
+    #wave-list {
+        position: absolute;
+        height: 100%;
+        width: 55%;
+        left: -55%;
+        transition: .3s;
     }
 }
 

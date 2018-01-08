@@ -57,6 +57,28 @@ var SurfAppView = Backbone.View.extend({
         $(window).resize(function () {
             if ($(window).width() < 1000) {
                 $('body').addClass('mobile');
+                $('body.mobile').on('swiperight', function () {
+                    $('body.mobile #wave-list').css('left', 0);
+                });
+
+                $('body.mobile').on('swipeleft', function () {
+                    $('body.mobile #wave-list').css('left', '-55%');
+                });
+
+                $('body.mobile #header-logo').on('click', function () {
+                    var curPos = parseInt($('#wave-list').css('left'));
+
+                    if (curPos === 0) {
+                        $('body.mobile #wave-list').css('left', '-55%');
+                    } else {
+                        $('body.mobile #wave-list').css('left', 0);
+                    }
+
+                    return false;
+                });
+
+
+
             } else {
                 $('body').removeClass('mobile');
                 //maybe hide open reply forms
@@ -223,9 +245,9 @@ var SurfAppView = Backbone.View.extend({
         this.model.waves.forEach(this.addWave, this);
 
         if (this.model.waves.filter({archived: true}).length === 0 || this.model.waves.filter({archived: false}).length === 0) {
-            $('#wave-list hr').hide();
+            $('#wave-list-archived').hide();
         } else {
-            $('#wave-list hr').show();
+            $('#wave-list-archived').show();
         }
     }
 });

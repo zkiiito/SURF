@@ -32,7 +32,7 @@ var WaveReplyFormView = Backbone.View.extend({
                     }
                 }
             }).then(function (inputValue) {
-                if (inputValue.length > 0) {
+                if (inputValue && inputValue.length > 0) {
                     Communicator.sendMessage(inputValue, that.getWaveId(), that.getParentId());
                 }
             });
