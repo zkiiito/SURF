@@ -25,7 +25,7 @@ module.exports = {
                     return reject(err);
                 }
 
-                if (1 || result === null) {
+                if (result === null) {
                     return reject();
                 } else {
                     return resolve(JSON.parse(result));
@@ -56,8 +56,15 @@ module.exports = {
             };
 
             let contenttype;
+            let headerOnly = true;
 
             preq.head(options)
+                .catch((err) => {
+                    //head not supported
+                    console.log('LinkPreview head error: ' + err);
+                    headerOnly = false;
+                    return preq.get(options);
+                })
                 .then((header) => {
                     contenttype = contentType.parse(header.headers['content-type'].replace(/;+$/, ''));
 
@@ -70,6 +77,9 @@ module.exports = {
                         throw Error('not a html document');
                     }
 
+                    if (!headerOnly) {
+                        return header;
+                    }
                     return preq.get(options);
                 })
                 .then((response) => {
