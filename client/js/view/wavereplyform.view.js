@@ -22,7 +22,7 @@ var WaveReplyFormView = Backbone.View.extend({
         var that = this;
 
         //prompt for message on mobile
-        if ($('body').hasClass('mobile') && 0 === textarea.val().length) {
+        if (0 && $('body').hasClass('mobile') && 0 === textarea.val().length) {
             swal({
                 title: '',
                 content: {

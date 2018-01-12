@@ -189,6 +189,7 @@ a.addwave {
 .wave {
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
 
 .wavetop {
@@ -523,6 +524,12 @@ textarea {
   overflow: auto;
 }
 
+@media (max-width: 999px) {
+    textarea {
+      height: 2em;
+    }
+}
+
 .overlay {
   position: absolute;
   top: 10em;
@@ -762,7 +769,7 @@ textarea {
         height: 100%;
         width: 55%;
         left: -55%;
-        transition: .3s;
+        transition: .2s;
     }
 }
 
