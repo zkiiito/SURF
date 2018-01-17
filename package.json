@@ -21,7 +21,7 @@
     "express-session": "^1.15.6",
     "html-metadata": "^1.6.3",
     "iconv-lite": "^0.4.19",
-    "mongoose": "^4.13.0",
+    "mongoose": "^5.0.0",
     "mysql": "^2.15.0",
     "passport": "~0.4.0",
     "passport-facebook": "2.1.1",
