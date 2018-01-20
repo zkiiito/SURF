@@ -149,7 +149,7 @@ User = Backbone.Model.extend(
         handleInvite: function (invite) {
             var that = this;
             DAL.removeWaveInviteByCode(invite.code, function (err, result) {
-                if (!err && result.result.ok > 0) {
+                if (!err && result.ok > 0) {
                     var wave = require('../SurfServer').waves.get(invite.waveId);
                     if (wave && !wave.isMember(that)) {
                         wave.addUser(that, true);
