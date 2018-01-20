@@ -17,9 +17,7 @@ var DAL = {
     init: function (server) {
         mongoose.Promise = global.Promise;
         //mongoose.set('debug', true);
-        mongoose.connect(Config.mongoUrl, {
-            useMongoClient: true
-        }).then(() => {
+        mongoose.connect(Config.mongoUrl).then(() => {
             UserModel.find().exec(function (err, users) {
                 if (err) {
                     throw err;
