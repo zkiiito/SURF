@@ -61,7 +61,7 @@ module.exports = {
             preq.head(options)
                 .catch((err) => {
                     //head not supported
-                    console.log('LinkPreview head error: ' + err);
+                    console.log('LinkPreview head error: ' + url + ' ' + err);
                     headerOnly = false;
                     return preq.get(options);
                 })
