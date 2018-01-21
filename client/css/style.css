@@ -204,7 +204,7 @@ a.addwave {
 
 @media (max-width: 999px) {
     .wavetop {
-        padding: 0 0.75em
+        font-size: 0.5em;
     }
 }
 
@@ -751,7 +751,7 @@ textarea {
     }
 
     .message-body {
-        padding: 0.2em 1em 0.2em 0;
+        padding: 0.2em 0;
     }
 
     .message-img {
