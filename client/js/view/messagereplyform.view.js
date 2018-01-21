@@ -43,7 +43,7 @@ var MessageReplyFormView = WaveReplyFormView.extend({
         if (threadEnd.is(':visible')) {
             threadEnd.hide();
             this.$el.height(threadEnd.height()).appendTo(parent)
-                .animate({height: '145px'}, this.timeout, function () {
+                .animate({height: '100%'}, this.timeout, function () {
                     $(this).find('textarea').focus();
                 });
         } else {

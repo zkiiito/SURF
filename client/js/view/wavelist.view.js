@@ -75,6 +75,8 @@ var WaveListView = Backbone.View.extend({
                 nextUnread.setScrolled();
             }
         }
+
+        $('body.mobile #wave-list').css('left', '-55%');
     },
 
     removeWave: function (wave) {

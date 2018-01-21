@@ -1,13 +1,15 @@
-body {
-  height: 100%;
-  max-height: 100%;
-  overflow: hidden;
+html, body {
   padding: 0;
   margin: 0;
-  border: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
   color: #555;
   font-family: Segoe UI, sans-serif;
-  /*font-family: Segoe UI, Proxima Nova, Helvetica Neue, Helvetica, Arial, MS Gothic, sans-serif;*/
+  display: flex;
+  flex-direction: column;
 }
 
 @font-face {
@@ -34,7 +36,6 @@ h2 {
   font-weight: normal;
   color: #555;
   font-size: 2em;
-  font-weight: normal;
   margin-bottom: 0.3em;
   margin-top: 0.3em;
 }
@@ -44,7 +45,6 @@ h3 {
   font-weight: normal;
   color: #555;
   font-size: 1.3em;
-  font-weight: normal;
   margin-bottom: 0.2em;
   margin-top: 0.2em;
 }
@@ -60,29 +60,10 @@ a:hover {
 }
 
 #header {
-  position: absolute;
-  margin: 0;
-  top: 0;
-  left: 0;
-  right: 0;
-  display: block;
-  width: 100%;
   height: 5em;
   overflow: hidden;
   color: #fff;
-  background-color: #333333;
-  background: -webkit-gradient(
-    linear,
-    left bottom,
-    left top,
-    color-stop(0, #282828),
-    color-stop(1, #383838)
-  );
-  background: -moz-linear-gradient(
-    center bottom,
-    #282828 0%,
-    #383838 100%
-  );
+  background: #333333 linear-gradient(to top, #282828, #383838);
   z-index: 4;
 }
 
@@ -102,15 +83,9 @@ a:hover {
   border: 0;
 }
 
-.addwave {
-  margin-top: 2.1em;
-  margin-left: 0.2em;
-}
-
-@media (max-width: 999px) {
-    .addwave {
-        margin-top: 0.1em;
-    }
+a.addwave {
+  font-size: 10px;
+  float: right;
 }
 
 #usermenu {
@@ -140,43 +115,33 @@ a:hover {
   overflow: hidden;
 }
 
+#container {
+  display: flex;
+  flex: 1 100%;
+}
+
 #wave-list {
-  position: absolute;
-  left: 0;
-  top: 5em;
-  bottom: 2em;
-  width: 20%;
+  flex: 1 20%;
   overflow: auto;
   z-index: 3;
 }
 
-#wave-list hr {
-  display: none;
+.wave-list-head {
+    border-bottom: 1px solid #ccc;
+    font-family: AllerLightRegular, Helvetica, Arial, sans-serif;
+    color: #999;
+    padding: 2px;
+}
+
+#wave-container {
+  flex: 1 80%;
+  display: flex;
 }
 
 .empty {
-    display: -webkit-flex;
-    -webkit-flex-direction: row;
     display: flex;
-    flex-direction: row;
-    position: fixed;
-    left: 20%;
-    width: 80%;
-    bottom: 0;
-    right: 0;
-    top: 5em;
     padding: 4em;
-    -webkit-box-align: center;
-    -moz-box-align: center;
-    -ms-flex-align: center;
-    -webkit-align-items: center;
     align-items: center;
-}
-
-@media (max-width: 999px) {
-    #wave-list {
-        top: 2em;
-    }
 }
 
 .waveitem {
@@ -212,17 +177,8 @@ a:hover {
   font-size: 0.8em;
 }
 
-#wavelist-bottom {
-  position: absolute;
-  height: 2em;
-  left: 0;
-  width: 20%;
-  bottom: 0;
-}
-
 #wavelist-bottom p {
   color: #aaa;
-  width: 80%;
   margin: 0 auto;
   border-top: 1px solid #ccc;
   padding: 0.8em 0;
@@ -230,25 +186,24 @@ a:hover {
   font-size: 0.6em;
 }
 
+.wave {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
 .wavetop {
-  position: fixed;
-  left: 20%;
-  top: 5em;
   z-index: 2;
-  height: 2em;
+  min-height: 2em;
   overflow: hidden;
-  width: 80%;
   padding: 1em 0.75em;
   background: #eee;
   border-bottom: 1px solid #e4e4e4;
-  -moz-box-shadow: -0.5em -0.5em 2em 0 #aaa;
-  -webkit-box-shadow: -0.5em -0.5em 2em 0 #aaa;
   box-shadow: -0.5em -0.5em 2em 0 #aaa;
 }
 
 @media (max-width: 999px) {
     .wavetop {
-        top: 2em;
         padding: 0 0.75em
     }
 }
@@ -283,7 +238,6 @@ a:hover {
 .wavetop .buttons {
   margin-top: 0.2em;
   float: right;
-  margin-right: 1.6em;
 }
 
 .online {
@@ -302,12 +256,8 @@ a:hover {
 }
 
 .waves-container {
-  overflow: auto;
-  position: absolute;
-  width: 80%;
-  top: 11.2em;
-  bottom: 0;
-  left: 20%;
+  overflow-y: scroll;
+  flex: 1 100%;
   background:#eee;
   font-size: 0.8em;
 }
@@ -421,24 +371,12 @@ a:hover {
   display: inline-block;
   padding: 0.2em 0.5em 0.4em 0.5em;
   font-size: 0.8em;
-  background: #87729d;
   color: white;
   border: 1px solid #725c88;
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
   border-radius: 4px;
-  background-image: linear-gradient(bottom, rgb(141,121,162) 100%, rgb(114,92,136) 0%);
-  background-image: -o-linear-gradient(bottom, rgb(141,121,162) 100%, rgb(114,92,136) 0%);
-  background-image: -moz-linear-gradient(bottom, rgb(141,121,162) 100%, rgb(114,92,136) 0%);
-  background-image: -webkit-linear-gradient(bottom, rgb(141,121,162) 100%, rgb(114,92,136) 0%);
-  background-image: -ms-linear-gradient(bottom, rgb(141,121,162) 100%, rgb(114,92,136) 0%);
-  background-image: -webkit-gradient(
-    linear,
-    left bottom,
-    left top,
-    color-stop(1, rgb(141,121,162)),
-    color-stop(0, rgb(114,92,136))
-  );
+  background: #87729d linear-gradient(to bottom, rgb(141, 121, 162), rgb(114, 92, 136));
 }
 
 .button:hover {
@@ -534,10 +472,6 @@ form div {
   font-size: 0.8em;
   margin-top: -0.25em;
   margin-bottom: 0;
-  -webkit-border-bottom-right-radius: 4px;
-  -webkit-border-bottom-left-radius: 4px;
-  -moz-border-radius-bottomright: 4px;
-  -moz-border-radius-bottomleft: 4px;
   border-bottom-right-radius: 4px;
   border-bottom-left-radius: 4px;
 }
@@ -590,6 +524,12 @@ textarea {
   overflow: auto;
 }
 
+@media (max-width: 999px) {
+    textarea {
+      height: 2em;
+    }
+}
+
 .overlay {
   position: absolute;
   top: 10em;
@@ -598,12 +538,8 @@ textarea {
   margin-left: -20em;
   background: white;
   border: 1px solid black;
-  -moz-border-radius: 7px;
-  -webkit-border-radius: 7px;
   border-radius: 7px;
   z-index: 11;
-  -moz-box-shadow: 0 0 2em 0 #333;
-  -webkit-box-shadow: 0 0 2em 0 #333;
   box-shadow: 0 0 2em 0 #333;
 }
 
@@ -624,12 +560,8 @@ textarea {
   margin-left: -20em;
   background: white;
   border: 1px solid black;
-  -moz-border-radius: 7px;
-  -webkit-border-radius: 7px;
   border-radius: 7px;
   z-index: 11;
-  -moz-box-shadow: 0 0 2em 0 #333;
-  -webkit-box-shadow: 0 0 2em 0 #333;
   box-shadow: 0 0 2em 0 #333;
 }
 
@@ -664,7 +596,6 @@ textarea {
   z-index: 10;
   height: 100%;
   width: 100%;
-  display: none;
   position: absolute;
   top: 0;
   left: 0;
@@ -677,8 +608,6 @@ textarea {
 
 #login {
   display: none;
-  -moz-box-shadow: 0 0 2em 0 #000;
-  -webkit-box-shadow: 0 0 2em 0 #000;
   box-shadow: 0 0 2em 0 #000;
 }
 
@@ -732,23 +661,7 @@ textarea {
   top: 0;
   height: 2.7em;
   overflow: hidden;
-  background-color: #333333;
-  background: -webkit-gradient(
-    linear,
-    left bottom,
-    left top,
-    color-stop(0, #282828),
-    color-stop(1, #383838)
-  );
-  background: -moz-linear-gradient(
-    center bottom,
-    #282828 0%,
-    #383838 100%
-  );
-  -webkit-border-top-left-radius: 3px;
-  -webkit-border-top-right-radius: 3px;
-  -moz-border-radius-topleft: 3px;
-  -moz-border-radius-topright: 3px;
+  background: #333333 linear-gradient(to top, #282828, #383838);
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
 }
@@ -849,6 +762,14 @@ textarea {
 
     #currentuser .currentuser_name {
         display: none;
+    }
+
+    #wave-list {
+        position: absolute;
+        height: 100%;
+        width: 55%;
+        left: -55%;
+        transition: .2s;
     }
 }
 
