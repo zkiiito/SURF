@@ -350,6 +350,11 @@ a.addwave {
   word-break: break-all;
 }
 
+.message-img {
+  max-width: 420px;
+  max-height: 200px;
+}
+
 .author {
   color: #999;
   font-size: 1em;
@@ -526,7 +531,8 @@ textarea {
 
 @media (max-width: 999px) {
     textarea {
-      height: 2em;
+      height: 1em;
+      padding-top: 0;
     }
 }
 
@@ -746,6 +752,10 @@ textarea {
 
     .message-body {
         padding: 0.2em 1em 0.2em 0;
+    }
+
+    .message-img {
+      max-width: 100px;
     }
 
     .wavetop .heads {

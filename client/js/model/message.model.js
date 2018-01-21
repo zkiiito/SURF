@@ -75,7 +75,7 @@ Message = Backbone.Model.extend(
                     url = 'http' === url.substr(0, 4) ? url : 'http://' + url;
 
                     if (app.model.currentUser.get('showPictures') && url.match(urlPictureRegex)) {
-                        replacement = '<br><a href="' + url + '" target="_blank"><img width="420" src="' + url + '"></a>';
+                        replacement = '<br><a href="' + url + '" target="_blank"><img class="message-img" src="' + url + '"></a>';
                     } else if (app.model.currentUser.get('showVideos') && url.match(urlVideoRegex) && url.match(urlVideoRegexYoutube)) {
                         url = urlVideoRegex.exec(url);
                         replacement = '<br><iframe width="420" height="315" src="https://youtube.com/embed/' + url[2] + '" frameborder="0" allowfullscreen></iframe>';
