@@ -233,6 +233,7 @@ var SurfAppView = Backbone.View.extend({
         this.handleArchiveChange();
         this.setTitle();
         this.listenTo(this.model.waves, 'change:archived', this.handleArchiveChange);
+        this.listenTo(this.model.waves, 'add', this.handleArchiveChange);
     },
 
     handleArchiveChange: function () {

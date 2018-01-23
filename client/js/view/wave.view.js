@@ -128,6 +128,8 @@ var WaveView = Backbone.View.extend({
         if (nextUnread) {
             nextUnread.setScrolled();
         }
+
+        return false;
     },
 
     scrollToBottom: function () {
