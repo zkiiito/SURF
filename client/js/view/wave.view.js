@@ -23,6 +23,7 @@ var WaveView = Backbone.View.extend({
     events: {
         'click a.editwave' : 'showUpdateWave',
         'click a.gounread' : 'scrollToNextUnread',
+        'click div.wavetop' : 'scrollToNextUnread',
         'click a.getprevmessages' : 'getPreviousMessages',
         'click a.readall' : 'readAllMessages',
         'click a.quit' : 'quitWave'

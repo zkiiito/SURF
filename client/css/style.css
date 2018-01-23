@@ -65,6 +65,7 @@ a:hover {
   color: #fff;
   background: #333333 linear-gradient(to top, #282828, #383838);
   z-index: 4;
+  min-height: 0;
 }
 
 @media (max-width: 999px) {
@@ -97,6 +98,7 @@ a.addwave {
 @media (max-width: 999px) {
     #usermenu {
         margin-top: 0.1em;
+        margin-right: 0.1em;
     }
 }
 
@@ -118,6 +120,7 @@ a.addwave {
 #container {
   display: flex;
   flex: 1 100%;
+  min-height: 0;
 }
 
 #wave-list {
@@ -126,11 +129,8 @@ a.addwave {
   z-index: 3;
 }
 
-.wave-list-head {
-    border-bottom: 1px solid #ccc;
-    font-family: AllerLightRegular, Helvetica, Arial, sans-serif;
-    color: #999;
-    padding: 2px;
+#wave-list-active, #wave-list-archived {
+  border-bottom: 1px solid #ccc;
 }
 
 #wave-container {
@@ -180,7 +180,6 @@ a.addwave {
 #wavelist-bottom p {
   color: #aaa;
   margin: 0 auto;
-  border-top: 1px solid #ccc;
   padding: 0.8em 0;
   text-align: center;
   font-size: 0.6em;

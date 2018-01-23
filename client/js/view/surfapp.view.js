@@ -244,7 +244,13 @@ var SurfAppView = Backbone.View.extend({
         this.waveListViews = [];
         this.model.waves.forEach(this.addWave, this);
 
-        if (this.model.waves.filter({archived: true}).length === 0 || this.model.waves.filter({archived: false}).length === 0) {
+        if (this.model.waves.filter({archived: false}).length === 0) {
+            $('#wave-list-active').hide();
+        } else {
+            $('#wave-list-active').show();
+        }
+
+        if (this.model.waves.filter({archived: true}).length === 0) {
             $('#wave-list-archived').hide();
         } else {
             $('#wave-list-archived').show();

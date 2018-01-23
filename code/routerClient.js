@@ -61,6 +61,10 @@ app.get('/', function (req, res) {
             if (!err) {
                 clientIndexHtml = data.replace('ANALYTICS_ID', Config.analyticsId);
                 res.send(clientIndexHtml);
+
+                if (Config.testMode) {
+                    clientIndexHtml = null;
+                }
             }
         });
     } else {
