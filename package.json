@@ -60,5 +60,8 @@
     "phpjs": "^1.3.2",
     "pre-commit": "^1.1.2",
     "sweetalert": "^2.1.0"
+  },
+  "nodemonConfig": {
+    "ignore": ["admin/*", "client/*"]
   }
 }
