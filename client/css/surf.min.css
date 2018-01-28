@@ -87,6 +87,7 @@ a:hover {
 a.addwave {
   font-size: 10px;
   float: right;
+  margin: 2px;
 }
 
 #usermenu {
