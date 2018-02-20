@@ -124,7 +124,7 @@ var MessageView = Backbone.View.extend({
     },
 
     mention: function () {
-        if (!(window.Notification)) {
+        if (typeof Notification === 'undefined') {
             return;
         }
 
