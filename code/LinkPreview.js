@@ -4,13 +4,25 @@ const contentType = require('content-type');
 const cheerio = require('cheerio');
 const iconv = require('iconv-lite');
 const redis = require('./RedisClient');
+const currentQueries = {};
 
 module.exports = {
     parse: function (url) {
-        return this.fetchDataFromCache(url)
+        if (currentQueries[url]) {
+            return currentQueries[url];
+        }
+
+        let promise = this.fetchDataFromCache(url)
             .catch(() => {
                 return this.fetchData(url);
+            })
+            .then((data) => {
+                currentQueries[url] = null;
+                return data;
             });
+
+        currentQueries[url] = promise;
+        return promise;
     },
 
     getKeyByUrl: function (url) {
