@@ -17,7 +17,7 @@ var DAL = {
     init: function (server) {
         mongoose.Promise = global.Promise;
         //mongoose.set('debug', true);
-        mongoose.connect(Config.mongoUrl).then(() => {
+        mongoose.connect(Config.mongoUrl, { useNewUrlParser: true }).then(() => {
             UserModel.find().exec(function (err, users) {
                 if (err) {
                     throw err;
@@ -382,7 +382,7 @@ var DAL = {
                 query.where('rootId').lt(maxRootId);
             }
 
-            query.count(function (err, count) {
+            query.countDocuments(function (err, count) {
                 if (err) {
                     return callback(err, 0);
                 }
