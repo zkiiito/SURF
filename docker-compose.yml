@@ -21,7 +21,7 @@ services:
   mongodb:
     image: mongo:3.6
     volumes:
-      - mongodb:/surfdata/db/
+      - mongodb:/data/db/
     networks:
       - backend
 
@@ -30,7 +30,7 @@ services:
     networks:
       - backend
     volumes:
-      - redis:/surfdata/
+      - redis:/data/
 
 networks:
   backend:
