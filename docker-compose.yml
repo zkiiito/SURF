@@ -1,0 +1,40 @@
+version: "3"
+services:
+  surf:
+    build: .
+    depends_on:
+      - mongodb
+      - redis
+    environment:
+      - REDISCLOUD_URL=redis://redis:6379
+      - MONGOLAB_URI=mongodb://mongodb:27017/wave0
+      - HOSTNAME=http://localhost:8000
+      - TESTMODE=1
+    volumes:
+      - .:/opt/surf
+    ports:
+      - "8000:8000"
+    command: ./node_modules/.bin/nodemon -L Surf.js
+    networks:
+      - backend
+
+  mongodb:
+    image: mongo:3.6
+    volumes:
+      - mongodb:/data/db/
+    networks:
+      - backend
+
+  redis:
+    image: redis:4.0-alpine
+    networks:
+      - backend
+    volumes:
+      - redis:/data/
+
+networks:
+  backend:
+
+volumes:
+  mongodb:
+  redis:
