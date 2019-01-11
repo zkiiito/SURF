@@ -3,7 +3,7 @@ var express = require('express'),
     DAL = require('./DAL'),
     Config = require('./Config'),
     passport = require('passport'),
-    GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
+    GoogleStrategy = require('passport-google-oauth20').Strategy,
     FacebookStrategy = require('passport-facebook').Strategy,
     LocalStrategy = require('passport-local').Strategy;
 
@@ -12,7 +12,8 @@ passport.use(new GoogleStrategy(
     {
         clientID: Config.googleId,
         clientSecret: Config.googleSecret,
-        callbackURL: Config.hostName + '/auth/google/callback'
+        callbackURL: Config.hostName + '/auth/google/callback',
+        userProfileURL: 'https://www.googleapis.com/oauth2/v3/userinfo'
     },
     function (accessToken, refreshToken, profile, done) {
         process.nextTick(function () {
