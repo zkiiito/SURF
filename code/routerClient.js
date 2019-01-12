@@ -96,14 +96,13 @@ if (Config.testMode) {
             var id = parseInt(username, 10),
                 user = {
                     provider: 'google',
-                    _json: {
-                        id: id,
-                        emails: [{value: 'test' + username + '@wavesurf.com'}],
-                        displayName: 'Surf Tester ' + id.toString(),
-                        image: {
-                            url: 'http://lorempixel.com/100/100/people/'
-                        }
-                    }
+                    id: id,
+                    emails: [{value: 'test' + username + '@wavesurf.com'}],
+                    displayName: 'Surf Tester ' + id.toString(),
+                    photos: [{
+                        value: 'http://lorempixel.com/100/100/people/'
+                    }],
+                    _json: {}
                 };
 
             return done(null, user);
