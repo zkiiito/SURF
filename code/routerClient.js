@@ -3,7 +3,7 @@ var express = require('express'),
     DAL = require('./DAL'),
     Config = require('./Config'),
     passport = require('passport'),
-    GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
+    GoogleStrategy = require('passport-google-oauth20').Strategy,
     FacebookStrategy = require('passport-facebook').Strategy,
     LocalStrategy = require('passport-local').Strategy;
 
@@ -12,7 +12,8 @@ passport.use(new GoogleStrategy(
     {
         clientID: Config.googleId,
         clientSecret: Config.googleSecret,
-        callbackURL: Config.hostName + '/auth/google/callback'
+        callbackURL: Config.hostName + '/auth/google/callback',
+        userProfileURL: 'https://www.googleapis.com/oauth2/v3/userinfo'
     },
     function (accessToken, refreshToken, profile, done) {
         process.nextTick(function () {
@@ -95,14 +96,13 @@ if (Config.testMode) {
             var id = parseInt(username, 10),
                 user = {
                     provider: 'google',
-                    _json: {
-                        id: id,
-                        emails: [{value: 'test' + username + '@wavesurf.com'}],
-                        displayName: 'Surf Tester ' + id.toString(),
-                        image: {
-                            url: 'http://lorempixel.com/100/100/people/'
-                        }
-                    }
+                    id: id,
+                    emails: [{value: 'test' + username + '@wavesurf.com'}],
+                    displayName: 'Surf Tester ' + id.toString(),
+                    photos: [{
+                        value: 'http://lorempixel.com/100/100/people/'
+                    }],
+                    _json: {}
                 };
 
             return done(null, user);

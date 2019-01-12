@@ -95,14 +95,13 @@ var SurfServer = {
      * @returns {User}
      */
     getUserByAuth: function (session, callback) {
-        var sessionUser = session.passport.user,
-            authMode = sessionUser.provider,
-            userData = sessionUser._json,
+        var userData = session.passport.user,
+            authMode = userData.provider,
             that = this,
             user,
             picture;
 
-        if (undefined === userData) {
+        if (undefined === userData._json) {
             return callback('sessionUser._json undefined');
         }
 
@@ -111,7 +110,7 @@ var SurfServer = {
                 || u.get('facebookId') === userData.id
                 || u.get('email') === userData.emails[0].value;
         });
-        picture = 'google' === authMode ? userData.image.url : userData.picture.data.url;
+        picture = userData.photos && userData.photos.length ? userData.photos[0].value : null;
 
         if (user) {
             console.log('auth: userfound ' + user.id);
@@ -126,7 +125,7 @@ var SurfServer = {
         }
 
         user = new User();
-        user.set('name', userData.displayName);
+        user.set('name', userData.displayName ? userData.displayName : (userData.name ? userData.name.givenName + ' ' + userData.name.familyName : 'Anonymus'));
         user.set(authMode + 'Id', userData.id);
         user.set('email', userData.emails[0].value);
         if (picture) {
