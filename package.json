@@ -54,7 +54,7 @@
     "grunt": "^1.0.4",
     "grunt-contrib-concat": "^1.0.0",
     "grunt-contrib-uglify-es": "^3.3.0",
-    "grunt-eslint": "^21.0.0",
+    "grunt-eslint": "^22.0.0",
     "grunt-text-replace": "^0.4.0",
     "nodemon": "^1.19.0",
     "phantomjs-prebuilt": "^2.1.16",
