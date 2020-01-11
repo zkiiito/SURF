@@ -33,7 +33,7 @@
     "underscore": "^1.9.2"
   },
   "engines": {
-    "node": "10.x",
+    "node": "10.x"
   },
   "scripts": {
     "start": "node Surf.js",
