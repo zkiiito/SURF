@@ -33,7 +33,7 @@
     "underscore": "^1.9.2"
   },
   "engines": {
-    "node": "10.18.0"
+    "node": "10.x"
   },
   "scripts": {
     "start": "node Surf.js",
@@ -55,7 +55,7 @@
     "grunt-contrib-uglify-es": "^3.3.0",
     "grunt-eslint": "^22.0.0",
     "grunt-text-replace": "^0.4.0",
-    "nodemon": "^2.0.2",
+    "nodemon": "^1.19.4",
     "phantomjs-prebuilt": "^2.1.16",
     "pre-commit": "^1.1.2",
     "sweetalert": "^2.1.2"
