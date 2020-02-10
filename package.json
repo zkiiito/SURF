@@ -28,7 +28,7 @@
     "passport-google-oauth20": "^2.0.0",
     "passport-local": "^1.0.0",
     "preq": "^0.5.14",
-    "redis": "2.8.0",
+    "redis": "3.0.2",
     "socket.io": "^2.3.0",
     "underscore": "^1.9.2"
   },
