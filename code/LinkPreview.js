@@ -1,5 +1,5 @@
 const metadata = require('html-metadata');
-const preq = require('preq');
+const got = require('got');
 const contentType = require('content-type');
 const cheerio = require('cheerio');
 const iconv = require('iconv-lite');
@@ -55,8 +55,7 @@ module.exports = {
             console.log('LinkPreview fetch: ' + url);
 
             const options = {
-                url: url,
-                encoding: null,
+                responseType: 'buffer',
                 headers: {
                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36'
                 }
@@ -70,12 +69,12 @@ module.exports = {
             let contenttype;
             let headerOnly = true;
 
-            preq.head(options)
+            got.head(url, options)
                 .catch((err) => {
                     //head not supported
                     console.log('LinkPreview head error: ' + url + ' ' + err);
                     headerOnly = false;
-                    return preq.get(options);
+                    return got.get(url, options);
                 })
                 .then((header) => {
                     contenttype = contentType.parse(header.headers['content-type'].replace(/;+$/, ''));
@@ -92,7 +91,7 @@ module.exports = {
                     if (!headerOnly) {
                         return header;
                     }
-                    return preq.get(options);
+                    return got.get(url, options);
                 })
                 .then((response) => {
                     const str = iconv.decode(response.body, contenttype.parameters.charset || 'utf-8');
