@@ -16,9 +16,12 @@ module.exports = {
             .catch(() => {
                 return this.fetchData(url);
             })
-            .then((data) => {
+            .then((result) => {
                 currentQueries[url] = null;
-                return data;
+                if (result.title) {
+                    this.saveDataToCache(url, result, 3600 * 24 * 30);
+                }
+                return result;
             });
 
         currentQueries[url] = promise;
@@ -56,6 +59,7 @@ module.exports = {
 
             const options = {
                 responseType: 'buffer',
+                rejectUnauthorized: false,
                 headers: {
                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36'
                 }
@@ -115,7 +119,6 @@ module.exports = {
                     }
 
                     if (result.title) {
-                        this.saveDataToCache(url, result, 3600 * 24 * 7);
                         return resolve(result);
                     }
                 })
@@ -128,7 +131,6 @@ module.exports = {
 
                     result.title = err.toString();
                     result.description = null;
-                    this.saveDataToCache(url, result, 3600 * 24 * 7);
                     return resolve(result);
                 });
         });
