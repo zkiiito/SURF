@@ -59,7 +59,9 @@ module.exports = {
 
             const options = {
                 responseType: 'buffer',
-                rejectUnauthorized: false,
+                https: {
+                    rejectUnauthorized: false,
+                },
                 headers: {
                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36'
                 }
@@ -81,7 +83,7 @@ module.exports = {
                     return got.get(url, options);
                 })
                 .then((header) => {
-                    contenttype = contentType.parse(header.headers['content-type'].replace(/;+$/, ''));
+                    contenttype = header.headers['content-type'] ? contentType.parse(header.headers['content-type'].replace(/;+$/, '')) : {type: 'undefined'};
 
                     if (contenttype.type !== 'text/html') {
                         if (contenttype.type.match(/^image\//)) {
