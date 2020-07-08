@@ -51,7 +51,7 @@
     "casperjs": "^1.1.4",
     "dateformat": "^3.0.3",
     "errorhandler": "^1.5.1",
-    "grunt": "^1.1.0",
+    "grunt": "^1.2.1",
     "grunt-contrib-concat": "^1.0.0",
     "grunt-contrib-uglify-es": "^3.3.0",
     "grunt-eslint": "^23.0.0",
