@@ -17,7 +17,7 @@ var DAL = {
     init: function (server) {
         mongoose.Promise = global.Promise;
         //mongoose.set('debug', true);
-        mongoose.connect(Config.mongoUrl, { useNewUrlParser: true }).then(() => {
+        mongoose.connect(Config.mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true }).then(() => {
             UserModel.find().exec(function (err, users) {
                 if (err) {
                     throw err;
@@ -95,7 +95,7 @@ var DAL = {
             m.save();
             user.set({_id: m._id});
         } else {
-            UserModel.update({_id: user.id}, data).exec();
+            UserModel.updateOne({_id: user.id}, data).exec();
         }
         return callback(null, user);
     },
@@ -115,7 +115,7 @@ var DAL = {
             m.save();
             wave.set({_id: m._id});
         } else {
-            WaveModel.update({_id: wave.id}, data).exec();
+            WaveModel.updateOne({_id: wave.id}, data).exec();
         }
         return callback(null, wave);
     },
@@ -172,7 +172,7 @@ var DAL = {
                 }
 
                 async.forEach(messages, function (msg) {
-                    MessageModel.update({_id: msg._id}, {rootId: rootId}).exec();
+                    MessageModel.updateOne({_id: msg._id}, {rootId: rootId}).exec();
                 });
 
                 if (callback) {

@@ -2,7 +2,6 @@
 # SURF
 
 [ ![Codeship Status for zkiiito/SURF](https://codeship.com/projects/bf1d3c00-5988-0132-2ac1-123ab8314f17/status)](https://codeship.com/projects/50287)
-[![Greenkeeper badge](https://badges.greenkeeper.io/zkiiito/SURF.svg)](https://greenkeeper.io/)
 
 SURF is a threaded instant messaging application, like Google Wave used to be.
 
