@@ -1,9 +1,9 @@
-var express = require('express'),
+const express = require('express'),
     http = require('http'),
     passport = require('passport'),
     SessionStore = require('./SessionStore'),
     bodyParser = require('body-parser');
-var session = require('express-session');
+const session = require('express-session');
 
 passport.serializeUser(function (user, done) {
     done(null, user);
@@ -13,7 +13,7 @@ passport.deserializeUser(function (obj, done) {
     done(null, obj);
 });
 
-var app = express();
+const app = express();
 app.disable('x-powered-by');
 
 app.use(bodyParser.urlencoded({
@@ -39,6 +39,6 @@ app.use(passport.session());
 app.use('/', require('./routerClient'));
 app.use('/admin', require('./routerAdmin'));
 
-var ExpressServer = http.createServer(app);
+const ExpressServer = http.createServer(app);
 
 module.exports = ExpressServer;

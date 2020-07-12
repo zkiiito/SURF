@@ -1,4 +1,4 @@
-var config = {
+const config = {
     //google account for localhost:8000 / redirect uri: http://localhost:8000/auth/google/callback
     googleId: process.env.GOOGLE_APPID || '290177368237.apps.googleusercontent.com',
     googleSecret: process.env.GOOGLE_APPSECRET || 'x58fnA7rUYCqhsLeAXTakjdN',

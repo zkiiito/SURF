@@ -1,7 +1,7 @@
-var Backbone =  require('backbone'),
+const Backbone =  require('backbone'),
     DAL = require('../DAL');
 
-var Message = Backbone.Model.extend(
+const Message = Backbone.Model.extend(
     /** @lends Message.prototype */
     {
         defaults: {
@@ -19,10 +19,8 @@ var Message = Backbone.Model.extend(
                 this.set('created_at', Date.now());
             }
         },
-        save: function (callback) {
-            return DAL.saveMessage(this, callback || function (err) {
-                console.log(err);
-            });
+        save: function () {
+            return DAL.saveMessage(this);
         },
         validate: function (attrs) {
             if (0 === attrs.message.trim().length) {
@@ -33,7 +31,7 @@ var Message = Backbone.Model.extend(
 );
 
 /** @class */
-var MessageCollection = Backbone.Collection.extend(
+const MessageCollection = Backbone.Collection.extend(
     /** @lends MessageCollection.prototype */
     {
         model: Message

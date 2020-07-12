@@ -1,4 +1,4 @@
-var IO = require('socket.io'),
+const IO = require('socket.io'),
     signature = require('cookie-signature'),
     DAL = require('./DAL'),
     LinkPreview = require('./LinkPreview'),
@@ -12,7 +12,7 @@ var IO = require('socket.io'),
     Config = require('./Config');
 
 /** @namespace */
-var SurfServer = {
+const SurfServer = {
     socket: null,
 
     init: function () {
@@ -22,15 +22,13 @@ var SurfServer = {
     },
 
     startServer: function () {
-        var that = this;
-
         ExpressServer.listen(Config.port);
         console.log('SURF is running, listening on port ' + Config.port);
 
         this.socket = new IO(ExpressServer, {'pingInterval': 4000, 'pingTimeout': 10000});
 
         this.socket.use(function (socket, next) {
-            var data = socket.request;
+            const data = socket.request;
 
             if (!data.headers.cookie) {
                 return next(new Error('Session cookie required.'));
@@ -60,14 +58,9 @@ var SurfServer = {
             });
         });
 
-        this.socket.sockets.on('connection', function (client) {
-            that.getUserByAuth(client.session, function (err, user) {
-                if (err) {
-                    console.log('User auth error: ' + err);
-                    client.disconnect(true);
-                    return;
-                }
-                client.curUser = user;
+        this.socket.sockets.on('connection', async (client) => {
+            try {
+                client.curUser = await this.getUserByAuth(client.session);
                 if (client.curUser.socket) {
                     client.curUser.send('dontReconnect', 1);
                     client.curUser.socket.disconnect(true);
@@ -76,9 +69,9 @@ var SurfServer = {
                 console.log('login: ' + client.curUser.id);
                 client.curUser.socket = client;
 
-                that.authClient(client);
+                this.authClient(client);
 
-                var invite = null;
+                let invite = null;
                 if (client.session.invite) {
                     console.log('invitedto: ' + client.session.invite.waveId);
                     invite = client.session.invite;
@@ -86,7 +79,10 @@ var SurfServer = {
                 }
 
                 client.curUser.init(invite);
-            });
+            } catch (err) {
+                console.log('User auth error', err);
+                client.disconnect(true);
+            }
         });
     },
 
@@ -94,23 +90,20 @@ var SurfServer = {
      * @param {Object} session
      * @returns {User}
      */
-    getUserByAuth: function (session, callback) {
-        var userData = session.passport.user,
-            authMode = userData.provider,
-            that = this,
-            user,
-            picture;
+    getUserByAuth: async function (session) {
+        const userData = session.passport.user;
+        const authMode = userData.provider;
 
         if (undefined === userData._json) {
-            return callback('sessionUser._json undefined');
+            throw new Error('sessionUser._json undefined');
         }
 
-        user = this.users.find(function (u) {
+        let user = this.users.find(function (u) {
             return u.get('googleId') === userData.id
                 || u.get('facebookId') === userData.id
                 || u.get('email') === userData.emails[0].value;
         });
-        picture = userData.photos && userData.photos.length ? userData.photos[0].value : null;
+        const picture = userData.photos && userData.photos.length ? userData.photos[0].value : null;
 
         if (user) {
             console.log('auth: userfound ' + user.id);
@@ -119,9 +112,8 @@ var SurfServer = {
             if (picture) {
                 user.set(authMode + 'Avatar', picture);//refresh default picture for auth provider
             }
-            return user.save(function (err, user) {
-                return callback(err, user);
-            });
+            await user.save();
+            return user;
         }
 
         user = new User();
@@ -133,21 +125,17 @@ var SurfServer = {
             user.set(authMode + 'Avatar', picture);
         }
 
-        return user.save(function (err, user) {
-            if (err) {
-                return callback(err);
-            }
-            that.users.add(user);
-            console.log('auth: newuser ' + user.id + ' (' + user.get('name') +  ')');
-            return callback(null, user);
-        });
+        await user.save();
+        this.users.add(user);
+        console.log('auth: newuser ' + user.id + ' (' + user.get('name') +  ')');
+        return user;
     },
 
     /**
      * @param client
      */
     authClient: function (client) {
-        var that = this;
+        const that = this;
 
         client.on('error', function (err) {
             console.log('Socket client error');
@@ -164,8 +152,8 @@ var SurfServer = {
         client.on('message', function (data) {
             console.log('message: ' + client.curUser.id);
 
-            var msg = new Message(data),
-                wave = that.waves.get(msg.get('waveId'));
+            const msg = new Message(data);
+            const wave = that.waves.get(msg.get('waveId'));
 
             if (msg.isValid() && wave && wave.isMember(client.curUser)) {
                 wave.addMessage(msg);
@@ -177,26 +165,25 @@ var SurfServer = {
             DAL.readMessage(client.curUser, data);
         });
 
-        client.on('createWave', function (data) {
-            console.log('createWave: ' + client.curUser.id);
+        client.on('createWave', async function (data) {
+            try {
+                console.log('createWave: ' + client.curUser.id);
 
-            var wave = new Wave(data);
-            if (wave.isValid()) {
-                wave.addUser(client.curUser, false);
-                wave.save(function (err, wave) {
-                    if (err) {
-                        console.log(err);
-                        return;
-                    }
+                const wave = new Wave(data);
+                if (wave.isValid()) {
+                    wave.addUser(client.curUser, false);
+                    await wave.save();
                     that.waves.add(wave);
                     wave.notifyUsers();
-                });
+                }
+            } catch (err) {
+                console.log('ERROR', err);
             }
         });
 
         client.on('updateWave', function (data) {
             console.log('updateWave: ' + client.curUser.id);
-            var wave = that.waves.get(data.id);
+            const wave = that.waves.get(data.id);
             if (wave && wave.isMember(client.curUser)) {
                 wave.update(data, false);
             }
@@ -209,7 +196,7 @@ var SurfServer = {
 
         client.on('getMessages', function (data) {
             console.log('getMessages: ' + client.curUser.id);
-            var wave = that.waves.get(data.waveId);
+            const wave = that.waves.get(data.waveId);
             if (wave && wave.isMember(client.curUser)) {
                 wave.sendPreviousMessagesToUser(client.curUser, data.minParentId, data.maxRootId);
             }
@@ -217,21 +204,21 @@ var SurfServer = {
 
         client.on('readAllMessages', function (data) {
             console.log('readAllMessages: ' + client.curUser.id);
-            var wave = that.waves.get(data.waveId);
+            const wave = that.waves.get(data.waveId);
             if (wave && wave.isMember(client.curUser)) {
                 wave.readAllMessagesOfUser(client.curUser);
             }
         });
 
         client.on('getUser', function (data) {
-            var user = that.users.get(data.userId);
+            const user = that.users.get(data.userId);
             if (user) {
                 client.curUser.send('updateUser', {user: user.toFilteredJSON()});
             }
         });
 
         client.on('quitWave', function (data) {
-            var wave = that.waves.get(data.waveId);
+            const wave = that.waves.get(data.waveId);
             if (wave) {
                 wave.quitUser(client.curUser);
             }
@@ -239,7 +226,7 @@ var SurfServer = {
 
         client.on('createInviteCode', function (data) {
             console.log('createInviteCode: ' + client.curUser.id);
-            var wave = that.waves.get(data.waveId);
+            const wave = that.waves.get(data.waveId);
 
             if (wave && wave.isMember(client.curUser)) {
                 wave.createInviteCode(client.curUser, function (err, code) {
@@ -269,11 +256,8 @@ var SurfServer = {
         });
     },
 
-    /**
-     * @param {Function} callback
-     */
-    shutdown: function (callback) {
-        DAL.shutdown(callback);
+    shutdown: async function () {
+        await DAL.shutdown();
     }
 };
 
