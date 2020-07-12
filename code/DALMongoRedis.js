@@ -44,7 +44,7 @@ const DAL = {
         users.forEach(user => {
             redis.keys('unread-' + user._id + '-*', function (err, unreadKeys) {
                 if (!err) {
-                    _.each(unreadKeys, function (key) {
+                    unreadKeys.forEach((key) => {
                         redis.scard(key, function (err, msgcount) {
                             if (!err && msgcount > 1000) {
                                 console.log('deleteTooMuchUnread: ' + key + ' : ' + msgcount);
@@ -365,22 +365,11 @@ const DAL = {
                 created_at: mmsg.created_at
             };
 
-            try {
-                msg.unread = _.indexOf(unreadIds, mmsg.id) >= 0;
-            } catch (error) {
-                /*
-                 * quickfix:
-                 * sometimes redis returning an array with 1 item, it becomes a string. mostly on heroku.
-                 */
-                console.log('DEBUG getMessagesForUserInWave: ' + wave.id + ' error: ' + error.message);
-                console.log('DEBUG getMessagesForUserInWave: ' + wave.id + ' messages.length: ' + messages.length +
-                    ', unreadIds: ' + unreadIds.length + ' ' + (typeof unreadIds) + ' msg.id: ' + mmsg.id);
 
-                msg.unread = true;
-
-                if ('string' === typeof unreadIds) {
-                    msg.unread = unreadIds === mmsg.id.toString();
-                }
+            if ('string' === typeof unreadIds) {
+                msg.unread = unreadIds === mmsg.id.toString();
+            } else {
+                msg.unread = unreadIds.includes(mmsg.id);
             }
             return msg;
         });

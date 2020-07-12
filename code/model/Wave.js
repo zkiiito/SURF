@@ -44,19 +44,19 @@ const Wave = Backbone.Model.extend(
          */
         addUsers: function (userIds, notify) {
             const newUsers = [];
-            _.each(userIds, function (item) {
+            userIds.forEach((item) => {
 
                 const user = require('../SurfServer').users.get(item);
                 if (user) {
                     newUsers.push(user);
                     this.addUser(user, false);//do not notify anyone here, only in next step
                 }
-            }, this);
+            });
 
             if (notify && newUsers.length > 0) {
-                _.each(newUsers, function (user) {
+                newUsers.forEach((user) => {
                     this.notifyUsersOfNewUser(user);
-                }, this);
+                });
                 this.notifyUsers();
                 return true;
             }
@@ -180,7 +180,7 @@ const Wave = Backbone.Model.extend(
                     this.users.remove(user);
 
                     const userIds = this.get('userIds').slice(0);
-                    userIds.splice(_.indexOf(userIds, user.id.toString()), 1);
+                    userIds.splice(userIds.indexOf(user.id.toString()), 1);
                     this.set('userIds', userIds);
 
                     user.quitWave(this);
@@ -217,17 +217,17 @@ const Wave = Backbone.Model.extend(
                     notified = this.addUsers(newIds, true);
 
                     //send old messages from the wave to the new user
-                    _.each(newIds, function (userId) {
+                    newIds.forEach((userId) => {
                         const user = require('../SurfServer').users.get(userId);
                         this.sendOldMessagesToUser(user);
-                    }, this);
+                    });
 
                     if (withRemove) {
                         const removedIds = _.difference(userIds, data.userIds);
-                        _.each(removedIds, function (userId) {
+                        removedIds.forEach((userId) => {
                             const user = require('../SurfServer').users.get(userId);
                             this.quitUser(user);
-                        }, this);
+                        });
                     }
                 }
 

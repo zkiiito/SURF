@@ -1,45 +1,38 @@
 module.exports = function (Model) {
-    var that = {
-        index: function (req, res) {
-            that.queryAll(req, res, function (count, data) {
-                res.json([
-                    {total_entries: count},
-                    data
-                ]);
-            });
+    const that = {
+        index: async function (req, res) {
+            const { count, data } = await that.queryAll(req, res);
+            res.json([
+                {total_entries: count},
+                data
+            ]);
         },
-        queryAll: function (req, res, callback) {
-            var page = that.parsePage(req),
-                limit = that.parseLimit(req),
-                sort = that.parseSort(req),
-                query;
+        queryAll: async function (req, res) {
+            try {
+                const page = that.parsePage(req);
+                const limit = that.parseLimit(req);
+                const sort = that.parseSort(req);
 
-            query = Model.find({}).skip((page - 1) * limit).limit(limit);
+                let query = Model.find({}).skip((page - 1) * limit).limit(limit);
 
-            if (sort) {
-                query.sort(sort);
+                if (sort) {
+                    query.sort(sort);
+                }
+
+                const data = await query.exec();
+                const count = await Model.countDocuments();
+                return { count, data };
+            } catch (err) {
+                res.status(500).json({error: err});
             }
-
-            query.exec(function (err, data) {
-                if (!err) {
-                    Model.count(function (err, count) {
-                        if (err) {
-                            res.status(500).json({error: err});
-                        } else {
-                            callback(count, data);
-                        }
-                    });
-                }
-            });
         },
-        getById: function (req, res) {
-            Model.findOne({_id: req.params.id}, function (err, entry) {
-                if (err) {
-                    res.json({error: err});
-                } else {
-                    res.json(entry);
-                }
-            });
+        getById: async function (req, res) {
+            try {
+                const entry = await Model.findOne({_id: req.params.id});
+                res.json(entry);
+            } catch (err) {
+                res.json({error: err});
+            }
         },
         /*
         add: function (req, res) {
@@ -53,15 +46,14 @@ module.exports = function (Model) {
             });
         },
         */
-        update: function (req, res) {
-            delete req.body._id;
-            Model.update({_id: req.params.id}, req.body, function (err, updated) {
-                if (err) {
-                    res.status(500).json({error: err});
-                } else {
-                    res.json(updated);
-                }
-            });
+        update: async function (req, res) {
+            try {
+                delete req.body._id;
+                const updated = await Model.update({_id: req.params.id}, req.body);
+                res.json(updated);
+            } catch (err) {
+                res.status(500).json({error: err});
+            }
         }, /*
          delete: function (req, res) {
          Model.findOne({_id: req.params.id}, function (err, contact) {
@@ -81,9 +73,9 @@ module.exports = function (Model) {
             return Math.max(parseInt(req.query.per_page, 10), 1) || 20;
         },
         parseSort: function (req) {
-            var field = req.query.sort_by,
-                sortOrder = that.parseSortOrder(req),
-                sortObj = {};
+            const field = req.query.sort_by;
+            const sortOrder = that.parseSortOrder(req);
+            const sortObj = {};
 
             if (field) {
                 sortObj[field.toString()] = sortOrder;
@@ -92,7 +84,7 @@ module.exports = function (Model) {
             return null;
         },
         parseSortOrder: function (req) {
-            var order = req.query.order;
+            const order = req.query.order;
             return 'asc' === order ? 1 : -1;
         }
     };

@@ -66,12 +66,12 @@ const User = Backbone.Model.extend(
         getFriends: function () {
             return this.waves.reduce(function (friends, wave) {
                 const uids = wave.get('userIds');
-                _.each(uids, function (item) {
-                    if (item !== this.id.toString()) {
-                        const user = require('../SurfServer').users.get(item);
+                uids.forEach(uid => {
+                    if (uid !== this.id.toString()) {
+                        const user = require('../SurfServer').users.get(uid);
                         friends.add(user);
                     }
-                }, this);
+                });
 
                 return friends;
             }, new UserCollection(), this);
@@ -114,9 +114,9 @@ const User = Backbone.Model.extend(
 
                     this.set({name: name.trim(), avatar: avatar.trim()});
                     await this.save();
-                    user.notifyFriends();
-                    user.send('updateUser', {
-                        user: user.toSelfJSON()
+                    this.notifyFriends();
+                    this.send('updateUser', {
+                        user: this.toSelfJSON()
                     });
                 } else {
                     console.log(this.validate(data));
@@ -171,9 +171,7 @@ const User = Backbone.Model.extend(
             const json = this.toJSON();
             const emailMD5 = crypto.createHash('md5').update(json.email).digest('hex');
 
-            _.extend(json, {emailMD5: emailMD5});
-
-            return json;
+            return { ...json, ...{ emailMD5 }};
         },
 
         validate: function (attrs) {
