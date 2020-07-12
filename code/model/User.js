@@ -144,7 +144,7 @@ const User = Backbone.Model.extend(
                     if (wave && !wave.isMember(this)) {
                         wave.addUser(this, true);
                         await wave.save();
-                        wave.sendPreviousMessagesToUser(that, null, null);
+                        wave.sendPreviousMessagesToUser(this, null, null);
                     }
                 }
             } catch (err) {

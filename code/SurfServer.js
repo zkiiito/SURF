@@ -224,17 +224,17 @@ const SurfServer = {
             }
         });
 
-        client.on('createInviteCode', function (data) {
+        client.on('createInviteCode', async function (data) {
             console.log('createInviteCode: ' + client.curUser.id);
             const wave = that.waves.get(data.waveId);
 
             if (wave && wave.isMember(client.curUser)) {
-                wave.createInviteCode(client.curUser, function (err, code) {
-                    if (!err && code) {
-                        data.code = code;
-                        client.curUser.send('inviteCodeReady', data);
-                    }
-                });
+                try {
+                    data.code = await wave.createInviteCode(client.curUser);
+                    client.curUser.send('inviteCodeReady', data);
+                } catch (err) {
+                    console.log('ERROR', err);
+                }
             }
         });
 

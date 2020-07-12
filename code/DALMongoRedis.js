@@ -337,7 +337,6 @@ const DAL = {
      * @param {Array} unreadIds
      */
     getMessagesForUserInWave: async function (wave, minRootId, maxRootId, unreadIds) {
-        console.log('getMsgForUserInWave', wave.id, minRootId, maxRootId, unreadIds);
         const startTime = new Date().getTime();
         const query = MessageModel.find({waveId: wave.id})
                 .sort('_id');
@@ -434,7 +433,7 @@ const DAL = {
      * @param {string} code
      */
     removeWaveInviteByCode: function (code) {
-        return WaveInviteModel.remove({code: code}).exec();
+        return WaveInviteModel.deleteOne({code: code}).exec();
     },
 
     shutdown: function () {
