@@ -15,7 +15,7 @@ const DAL = {
      */
     init: async function (server) {
         mongoose.Promise = global.Promise;
-        //mongoose.set('debug', true);
+        mongoose.set('debug', Config.mongoDebug);
         await mongoose.connect(Config.mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true });
 
         const users = await UserModel.find().exec();
@@ -119,6 +119,7 @@ const DAL = {
             await DAL.calcRootId(m.parentId, [m]);
         }
 
+        // todo RETURN
         message.set({_id: m._id});
     },
 
@@ -141,9 +142,7 @@ const DAL = {
                 messages.push(message);
             }
 
-            await Promise.all(messages.map(msg => {
-                return MessageModel.updateOne({_id: msg._id}, {rootId: rootId}).exec();
-            }));
+            await MessageModel.updateMany({_id: { $in: messages.map(msg => msg._id)}}, {rootId: rootId}).exec();
 
             return rootId;
         } else {
