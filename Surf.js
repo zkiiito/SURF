@@ -1,9 +1,8 @@
 var SurfServer = require('./code/SurfServer');
 
-var shutdown = function () {
-    SurfServer.shutdown(function () {
-        process.exit();
-    });
+var shutdown = async function () {
+    await SurfServer.shutdown();
+    process.exit();
 };
 
 process.on('SIGINT', shutdown);

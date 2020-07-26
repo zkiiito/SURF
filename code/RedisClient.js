@@ -1,4 +1,4 @@
-var redis = require('redis'),
+const redis = require('redis'),
     Config = require('./Config'),
     url = require('url'),
     redisURL = url.parse(Config.redisUrl),

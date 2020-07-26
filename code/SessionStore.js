@@ -1,3 +1,3 @@
-var session = require('express-session');
+const session = require('express-session');
 
 module.exports = new session.MemoryStore();

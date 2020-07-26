@@ -1,8 +1,8 @@
-var _ = require('underscore'),
+const _ = require('underscore'),
     Backbone =  require('backbone'),
     DAL = require('../DAL');
 
-var Wave = Backbone.Model.extend(
+const Wave = Backbone.Model.extend(
     /** @lends Wave.prototype */
     {
         defaults: {
@@ -13,11 +13,10 @@ var Wave = Backbone.Model.extend(
 
         /** @constructs */
         initialize: function () {
-            var UserCollection = require('./User').Collection,
-                uids;
+            const UserCollection = require('./User').Collection;
             this.users = new UserCollection();
             if (this.get('userIds')) {
-                uids = this.get('userIds');
+                const uids = this.get('userIds');
                 this.addUsers(uids, false);
             }
         },
@@ -25,19 +24,17 @@ var Wave = Backbone.Model.extend(
         /**
          * @param {Message} message
          */
-        addMessage: function (message) {
-            //save, save unread
-            var that = this;
-            message.save(function (err, message) {
-                if (err) {
-                    console.log(err);
-                    return;
-                }
-                that.users.each(function (user) {
+        addMessage: async function (message) {
+            try {
+                //save, save unread
+                await message.save();
+                this.users.each(function (user) {
                     user.send('message', message);
                     DAL.addUnreadMessage(user, message);
                 }, message);
-            });
+            } catch (err) {
+                console.log('ERROR', err);
+            }
         },
 
         /**
@@ -46,20 +43,20 @@ var Wave = Backbone.Model.extend(
          * @returns {boolean}
          */
         addUsers: function (userIds, notify) {
-            var newUsers = [];
-            _.each(userIds, function (item) {
+            const newUsers = [];
+            userIds.forEach((item) => {
 
-                var user = require('../SurfServer').users.get(item);
+                const user = require('../SurfServer').users.get(item);
                 if (user) {
                     newUsers.push(user);
                     this.addUser(user, false);//do not notify anyone here, only in next step
                 }
-            }, this);
+            });
 
             if (notify && newUsers.length > 0) {
-                _.each(newUsers, function (user) {
+                newUsers.forEach((user) => {
                     this.notifyUsersOfNewUser(user);
-                }, this);
+                });
                 this.notifyUsers();
                 return true;
             }
@@ -76,7 +73,7 @@ var Wave = Backbone.Model.extend(
             user.waves.add(this);
 
             //initkor pluszkoltseg, maskor nem szamit
-            var userIds = this.get('userIds');
+            const userIds = this.get('userIds').slice(0);
             userIds.push(user.id.toString());
             this.set('userIds', _.uniq(userIds));
 
@@ -129,12 +126,13 @@ var Wave = Backbone.Model.extend(
         /**
          * @param {User} user
          */
-        sendOldMessagesToUser: function (user) {
-            DAL.getLastMessagesForUserInWave(user, this, function (err, msgs) {
-                if (!err) {
-                    user.send('message', {messages: msgs});
-                }
-            });
+        sendOldMessagesToUser: async function (user) {
+            try {
+                const msgs = await DAL.getLastMessagesForUserInWave(user, this);
+                user.send('message', {messages: msgs});
+            } catch (err) {
+                console.log('ERROR', err);
+            }
         },
 
         /**
@@ -143,33 +141,22 @@ var Wave = Backbone.Model.extend(
          * @param {number} minParentId
          * @param {number} maxRootId
          */
-        sendPreviousMessagesToUser: function (user, minParentId, maxRootId) {
-            var wave = this;
-            //if user got an unread message, and does not have it's parents
-            if (minParentId && maxRootId) {
-                DAL.calcRootId(minParentId, [], function (err, minRootId) {
-                    if (!err) {
-                        DAL.getUnreadIdsForUserInWave(user, wave, function (err, ids) {
-                            if (!err) {
-                                DAL.getMessagesForUserInWave(wave, minRootId, maxRootId, ids, function (err, msgs) {
-                                    if (!err) {
-                                        user.send('message', {messages: msgs, waveId: this._id});
-                                    }
-                                });
-                            }
-                        });
-                    }
-                });
-            } else {
-                DAL.getMinRootIdForWave(wave, maxRootId, maxRootId, function (err, newMinRootId) {
-                    if (!err) {
-                        DAL.getMessagesForUserInWave(wave, newMinRootId, maxRootId, [], function (err, msgs) {
-                            if (!err) {
-                                user.send('message', {messages: msgs, waveId: this._id});
-                            }
-                        });
-                    }
-                });
+        sendPreviousMessagesToUser: async function (user, minParentId, maxRootId) {
+            try {
+                const wave = this;
+                //if user got an unread message, and does not have it's parents
+                if (minParentId && maxRootId) {
+                    const minRootId = await DAL.calcRootId(minParentId, []);
+                    const ids = await DAL.getUnreadIdsForUserInWave(user, wave);
+                    const msgs = await DAL.getMessagesForUserInWave(wave, minRootId, maxRootId, ids);
+                    user.send('message', {messages: msgs, waveId: this._id});
+                } else {
+                    const newMinRootId = await DAL.getMinRootIdForWave(wave, maxRootId, maxRootId);
+                    const msgs = await DAL.getMessagesForUserInWave(wave, newMinRootId, maxRootId, []);
+                    user.send('message', {messages: msgs, waveId: this._id});
+                }
+            } catch (err) {
+                console.log('ERROR', err);
             }
         },
 
@@ -180,73 +167,67 @@ var Wave = Backbone.Model.extend(
             DAL.readAllMessagesForUserInWave(user, this);
         },
 
-        save: function (callback) {
-            return DAL.saveWave(this, callback || function (err) {
-                console.log(err);
-            });
+        save: function () {
+            return DAL.saveWave(this);
         },
 
         /**
          * @param {User} user
          */
-        quitUser: function (user) {
-            if (this.users.indexOf(user) >= 0) {
-                this.users.remove(user);
+        quitUser: async function (user) {
+            try {
+                if (this.users.indexOf(user) >= 0) {
+                    this.users.remove(user);
 
-                var userIds = this.get('userIds');
-                userIds.splice(_.indexOf(userIds, user.id.toString()), 1);
-                this.set('userIds', userIds);
+                    const userIds = this.get('userIds').slice(0);
+                    userIds.splice(userIds.indexOf(user.id.toString()), 1);
+                    this.set('userIds', userIds);
 
-                user.quitWave(this);
+                    user.quitWave(this);
 
-                this.save(function (err, wave) {
-                    if (err) {
-                        console.log(err);
-                        return;
-                    }
+                    await this.save();
                     wave.notifyUsers();
-                });
+                }
+            } catch (err) {
+                console.log('ERROR', err);
             }
             //keeping empty waves with messages
         },
 
         /**
          * @param {User} user
-         * @param {Function} callback
          */
-        createInviteCode: function (user, callback) {
-            return DAL.createInviteCodeForWave(user, this, callback);
+        createInviteCode: function (user) {
+            return DAL.createInviteCodeForWave(user, this);
         },
 
         /**
          * @param {Object} data
-         * @param {bool} withRemove
+         * @param {boolean} withRemove
          */
         update: function (data, withRemove) {
             withRemove = withRemove || false;
             this.set('title', data.title || '');
-            var notified = false,
-                userIds = this.get('userIds'),
-                newIds,
-                removedIds;
+            let notified = false;
+            const userIds = this.get('userIds');
 
             if (this.isValid()) {
                 if (!_.isEqual(data.userIds, userIds)) {
-                    newIds = _.difference(data.userIds, userIds);
+                    const newIds = _.difference(data.userIds, userIds);
                     notified = this.addUsers(newIds, true);
 
                     //send old messages from the wave to the new user
-                    _.each(newIds, function (userId) {
-                        var user = require('../SurfServer').users.get(userId);
+                    newIds.forEach((userId) => {
+                        const user = require('../SurfServer').users.get(userId);
                         this.sendOldMessagesToUser(user);
-                    }, this);
+                    });
 
                     if (withRemove) {
-                        removedIds = _.difference(userIds, data.userIds);
-                        _.each(removedIds, function (userId) {
-                            var user = require('../SurfServer').users.get(userId);
+                        const removedIds = _.difference(userIds, data.userIds);
+                        removedIds.forEach((userId) => {
+                            const user = require('../SurfServer').users.get(userId);
                             this.quitUser(user);
-                        }, this);
+                        });
                     }
                 }
 
@@ -254,7 +235,7 @@ var Wave = Backbone.Model.extend(
                     this.notifyUsers();
                 }
 
-                this.save();
+                return this.save();
             }
         },
 
@@ -274,7 +255,7 @@ var Wave = Backbone.Model.extend(
 );
 
 /** @class */
-var WaveCollection = Backbone.Collection.extend(
+const WaveCollection = Backbone.Collection.extend(
     /** @lends WaveCollection.prototype */
     {
         model: Wave

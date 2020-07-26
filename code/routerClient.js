@@ -1,4 +1,4 @@
-var express = require('express'),
+const express = require('express'),
     fs = require('fs'),
     DAL = require('./DAL'),
     Config = require('./Config'),
@@ -42,15 +42,15 @@ passport.use(new FacebookStrategy(
 
 /*jslint unparam: false*/
 
-var app = express.Router();
-var clientDir = __dirname.replace('code', 'client');
+const app = express.Router();
+const clientDir = __dirname.replace('code', 'client');
 
 app.use('/css', express.static(clientDir + '/css'));
 app.use('/js', express.static(clientDir + '/js'));
 app.use('/images', express.static(clientDir + '/images'));
 app.use('/fonts', express.static(clientDir + '/fonts'));
 
-var clientIndexHtml = '';
+let clientIndexHtml = '';
 
 app.get('/', function (req, res) {
     if (!req.isAuthenticated()) {
@@ -85,7 +85,7 @@ app.get('/auth/facebook', passport.authenticate('facebook', { scope: 'email' }))
 app.get('/auth/facebook/callback',  passport.authenticate('facebook', { successRedirect: '/' }));
 
 if (Config.testMode) {
-    var errorHandler = require('errorhandler');
+    const errorHandler = require('errorhandler');
     app.use(errorHandler({
         dumpExceptions: true,
         showStack: true
@@ -93,8 +93,8 @@ if (Config.testMode) {
 
     passport.use(new LocalStrategy(
         function (username, password, done) {
-            var id = parseInt(username, 10),
-                user = {
+            const id = parseInt(username, 10);
+            const user = {
                     provider: 'google',
                     id: id,
                     emails: [{value: 'test' + username + '@wavesurf.com'}],
@@ -128,13 +128,12 @@ app.get('/logout', function (req, res) {
     res.redirect('/');
 });
 
-app.get('/invite/:inviteCode', function (req, res) {
-    DAL.getWaveInvitebyCode(req.params.inviteCode, function (err, invite) {
-        if (!err && invite) {
-            req.session.invite = invite;
-        }
-        res.redirect('/');
-    });
+app.get('/invite/:inviteCode', async function (req, res) {
+    const invite = await DAL.getWaveInvitebyCode(req.params.inviteCode);
+    if (invite) {
+        req.session.invite = invite;
+    }
+    res.redirect('/');
 });
 
 module.exports = app;

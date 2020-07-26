@@ -1,34 +1,27 @@
-var base = require('./Base'),
+const base = require('./Base'),
     Model = require('../MongooseModels').MessageModel,
     _ = require('underscore');
 
-var MessageController = _.extend(base(Model), {
-    index: function (req, res) {
-        var page = MessageController.parsePage(req),
-            limit = MessageController.parseLimit(req);
+const MessageController = _.extend(base(Model), {
+    index: async function (req, res) {
+        const page = MessageController.parsePage(req);
+        const limit = MessageController.parseLimit(req);
 
-        Model.find({waveId: req.params.waveId}).skip((page - 1) * limit).limit(limit).exec(function (err, data) {
-            if (!err) {
-                Model.find({waveId: req.params.waveId}).count(function (err, count) {
-                    if (err) {
-                        res.status(500).json({error: err});
-                    } else {
-                        var rootIds = _.pluck(data, 'rootId');
+        try {
+            const data = await Model.find({waveId: req.params.waveId}).skip((page - 1) * limit).limit(limit).exec();
+            const count = await Model.find({waveId: req.params.waveId}).count();
 
-                        Model.find().where('rootId').in(rootIds).exec(function (err, data) {
-                            if (err) {
-                                res.status(500).json({error: err});
-                            }
+            const rootIds = _.pluck(data, 'rootId');
 
-                            res.json([
-                                {total_entries: count},
-                                data
-                            ]);
-                        });
-                    }
-                });
-            }
-        });
+            const data2 = await Model.find().where('rootId').in(rootIds).exec();
+
+            res.json([
+                {total_entries: count},
+                data2
+            ]);
+        } catch (err) {
+            res.status(500).json({error: err});
+        }
     }
 });
 

@@ -1,7 +1,7 @@
-var mongoose = require('mongoose'),
+const mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
-var UserSchema = new Schema({
+const UserSchema = new Schema({
     name: {type: String, trim: true},
     avatar: {type: String, trim: true},
     googleId: {type: String, trim: true},
@@ -11,7 +11,7 @@ var UserSchema = new Schema({
     email: {type: String, trim: true}
 });
 
-var MessageSchema = new Schema({
+const MessageSchema = new Schema({
     userId: Schema.ObjectId,
     waveId: Schema.ObjectId,
     parentId: Schema.ObjectId,
@@ -20,12 +20,12 @@ var MessageSchema = new Schema({
     created_at: {type: Date}
 });
 
-var WaveSchema = new Schema({
+const WaveSchema = new Schema({
     title: {type: String, trim: true},
     userIds: {type: [String]}
 });
 
-var WaveInviteSchema = new Schema({
+const WaveInviteSchema = new Schema({
     userId: Schema.ObjectId,
     waveId: Schema.ObjectId,
     code: {type: String, trim: true},

@@ -1,11 +1,9 @@
-var crypto = require('crypto'),
+const crypto = require('crypto'),
     _ = require('underscore'),
     Backbone =  require('backbone'),
-    DAL = require('../DAL'),
-    User,
-    UserCollection;
+    DAL = require('../DAL');
 
-User = Backbone.Model.extend(
+const User = Backbone.Model.extend(
     /** @lends User.prototype */
     {
         defaults: {
@@ -20,17 +18,14 @@ User = Backbone.Model.extend(
         },
         /** @constructs */
         initialize: function () {
-            var WaveCollection = require('./Wave').Collection;
+            const WaveCollection = require('./Wave').Collection;
             this.waves = new WaveCollection();
         },
         idAttribute: '_id',
-        init: function (invite) {
-            var self = this,
-                friends;
-
+        init: async function (invite) {
             this.set({status: 'online'});
 
-            friends = this.getFriends().map(function (f) {
+            const friends = this.getFriends().map(function (f) {
                 return f.toFilteredJSON();
             });
 
@@ -42,19 +37,19 @@ User = Backbone.Model.extend(
 
             this.notifyFriends();
 
-            DAL.getLastMessagesForUser(this, function (err, msgs, waveId) {
-                if (!err) {
-                    self.send('message', {messages: msgs, waveId: waveId});
-                }
-            }, function (err) {
-                if (!err) {
-                    self.send('ready');
-
-                    if (invite) {
-                        self.handleInvite(invite);
+            try {
+                await DAL.getLastMessagesForUser(this, (err, msgs, waveId) => {
+                    if (!err) {
+                        this.send('message', {messages: msgs, waveId: waveId});
                     }
+                });
+                this.send('ready');
+                if (invite) {
+                    this.handleInvite(invite);
                 }
-            });
+            } catch (err) {
+                console.log('ERROR', err);
+            }
         },
 
         disconnect: function () {
@@ -69,19 +64,17 @@ User = Backbone.Model.extend(
          * @returns {UserCollection}
          */
         getFriends: function () {
-            var friends = this.waves.reduce(function (friends, wave) {
-                var uids = wave.get('userIds');
-                _.each(uids, function (item) {
-                    if (item !== this.id.toString()) {
-                        var user = require('../SurfServer').users.get(item);
+            return this.waves.reduce(function (friends, wave) {
+                const uids = wave.get('userIds');
+                uids.forEach(uid => {
+                    if (uid !== this.id.toString()) {
+                        const user = require('../SurfServer').users.get(uid);
                         friends.add(user);
                     }
-                }, this);
+                });
 
                 return friends;
             }, new UserCollection(), this);
-
-            return friends;
         },
 
         /**
@@ -95,7 +88,7 @@ User = Backbone.Model.extend(
         },
 
         notifyFriends: function () {
-            var friends = this.getFriends();
+            const friends = this.getFriends();
 
             friends.each(function (friend) {
                 friend.send('updateUser', {
@@ -104,35 +97,32 @@ User = Backbone.Model.extend(
             }, this);
         },
 
-        save: function (callback) {
-            return DAL.saveUser(this, callback || function (err) {
-                console.log(err);
-            });
+        save: function () {
+            return DAL.saveUser(this);
         },
 
         /**
          * @param {Object} data
          */
-        update: function (data) {
-            var name = data.name || '',
-                avatar = data.avatar || '';
+        update: async function (data) {
+            try {
+                let name = data.name || '';
+                const avatar = data.avatar || '';
 
-            if (undefined === this.validate(data)) {
-                name = name.substr(0, 30);
+                if (undefined === this.validate(data)) {
+                    name = name.substr(0, 30);
 
-                this.set({name: name.trim(), avatar: avatar.trim()});
-                this.save(function (err, user) {
-                    if (err) {
-                        console.log(err);
-                        return;
-                    }
-                    user.notifyFriends();
-                    user.send('updateUser', {
-                        user: user.toSelfJSON()
+                    this.set({name: name.trim(), avatar: avatar.trim()});
+                    await this.save();
+                    this.notifyFriends();
+                    this.send('updateUser', {
+                        user: this.toSelfJSON()
                     });
-                });
-            } else {
-                console.log(this.validate(data));
+                } else {
+                    console.log(this.validate(data));
+                }
+            } catch (err) {
+                console.log('ERROR', err);
             }
         },
 
@@ -146,23 +136,20 @@ User = Backbone.Model.extend(
         /**
          * @param {Object} invite
          */
-        handleInvite: function (invite) {
-            var that = this;
-            DAL.removeWaveInviteByCode(invite.code, function (err, result) {
-                if (!err && result.ok > 0) {
-                    var wave = require('../SurfServer').waves.get(invite.waveId);
-                    if (wave && !wave.isMember(that)) {
-                        wave.addUser(that, true);
-                        wave.save(function (err, wave) {
-                            if (err) {
-                                console.log(err);
-                                return;
-                            }
-                            wave.sendPreviousMessagesToUser(that, null, null);
-                        });
+        handleInvite: async function (invite) {
+            try {
+                const result = await DAL.removeWaveInviteByCode(invite.code);
+                if (result.ok > 0) {
+                    const wave = require('../SurfServer').waves.get(invite.waveId);
+                    if (wave && !wave.isMember(this)) {
+                        wave.addUser(this, true);
+                        await wave.save();
+                        wave.sendPreviousMessagesToUser(this, null, null);
                     }
                 }
-            });
+            } catch (err) {
+                console.log('ERROR', err);
+            }
         },
 
         /**
@@ -170,8 +157,8 @@ User = Backbone.Model.extend(
          * @returns {Object} Public JSON
          */
         toFilteredJSON: function () {
-            var json = this.toJSON(),
-                emailParts = json.email.split('@');
+            const json = this.toJSON();
+            const emailParts = json.email.split('@');
 
             json.email = emailParts[0].substr(0, 2) + '..@' + emailParts[1];
             return _.pick(json, 'id', '_id', 'name', 'avatar', 'status', 'email');
@@ -181,12 +168,10 @@ User = Backbone.Model.extend(
          * @returns {Object} Self JSON
          */
         toSelfJSON: function () {
-            var json = this.toJSON(),
-                emailMD5 = crypto.createHash('md5').update(json.email).digest('hex');
+            const json = this.toJSON();
+            const emailMD5 = crypto.createHash('md5').update(json.email).digest('hex');
 
-            _.extend(json, {emailMD5: emailMD5});
-
-            return json;
+            return { ...json, ...{ emailMD5 }};
         },
 
         validate: function (attrs) {
@@ -202,7 +187,7 @@ User = Backbone.Model.extend(
 );
 
 /** @class */
-UserCollection = Backbone.Collection.extend(
+const UserCollection = Backbone.Collection.extend(
     /** @lends UserCollection.prototype */
     {
         model: User

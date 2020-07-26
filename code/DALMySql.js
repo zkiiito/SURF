@@ -1,12 +1,13 @@
-var _ = require('underscore'),
+const _ = require('underscore'),
     async = require('async'),
     mysql = require('mysql'),
     Config = require('./Config'),
-    GraphiteClient = require('./GraphiteClient'),
-    connection;
+    GraphiteClient = require('./GraphiteClient');
+
+let connection;
 
 /** @namespace */
-var DALMySql = {
+const DALMySql = {
     /**
      * @param {SurfServer} server
      */
@@ -26,7 +27,7 @@ var DALMySql = {
                 throw err;
             }
 
-            var usersTmp = _.map(users, function (user) {
+            const usersTmp = users.map((user) => {
                 return {
                     name: user.name,
                     avatar: user.avatar,
@@ -39,7 +40,6 @@ var DALMySql = {
                 };
             });
             server.users.reset(usersTmp);
-            usersTmp = null;
 
             connection.query('SELECT id, title FROM wave ORDER BY id', function (err, waves) {
                 if (err) {
@@ -51,8 +51,8 @@ var DALMySql = {
                         throw err;
                     }
 
-                    var wavesTmp = _.map(waves, function (wave) {
-                        var userIds = _.pluck(_.where(waveUser, {wave_id: wave.id}), 'user_id');
+                    const wavesTmp = waves.map((wave) => {
+                        const userIds = _.pluck(_.where(waveUser, {wave_id: wave.id}), 'user_id');
                         return {title: wave.title, userIds: userIds, _id: wave.id};
                     });
 
@@ -87,168 +87,182 @@ var DALMySql = {
 
     /**
      * @param {User} user
-     * @param {Function} callback
      */
-    saveUser: function (user, callback) {
-        var data = {
-            name: user.get('name'),
-            avatar: user.get('avatar'),
-            google_id: user.get('googleId') || null,
-            google_avatar: user.get('googleAvatar') || null,
-            facebook_id: user.get('facebookId') || null,
-            facebook_avatar: user.get('facebookAvatar') || null,
-            email: user.get('email')
-        };
+    saveUser: function (user) {
+        return new Promise((resolve, reject) => {
+            const data = {
+                name: user.get('name'),
+                avatar: user.get('avatar'),
+                google_id: user.get('googleId') || null,
+                google_avatar: user.get('googleAvatar') || null,
+                facebook_id: user.get('facebookId') || null,
+                facebook_avatar: user.get('facebookAvatar') || null,
+                email: user.get('email')
+            };
 
-        if (user.isNew()) {
-            connection.query('INSERT INTO user SET ?', data, function (err, res) {
-                if (err) {
-                    console.log(err);
-                    return callback(err);
-                }
-                user.set({_id: res.insertId});
-                return callback(null, user);
-            });
-        } else {
-            connection.query('UPDATE user SET ? WHERE id = ?', [data, user.id], function (err) {
-                if (err) {
-                    return callback(err);
-                }
-                return callback(null, user);
-            });
-        }
+            if (user.isNew()) {
+                connection.query('INSERT INTO user SET ?', data, function (err, res) {
+                    if (err) {
+                        console.log(err);
+                        return reject(err);
+                    }
+                    user.set({_id: res.insertId});
+                    return resolve(user);
+                });
+            } else {
+                connection.query('UPDATE user SET ? WHERE id = ?', [data, user.id], function (err) {
+                    if (err) {
+                        return reject(err);
+                    }
+                    return resolve(user);
+                });
+            }
+        });
     },
 
     /**
      * @param {Wave} wave
-     * @param {Function} callback
      */
-    saveWave: function (wave, callback) {
-        var data = {
-            title: wave.get('title') || null
-        };
+    saveWave: function (wave) {
+        return new Promise((resolve, reject) => {
+            const data = {
+                title: wave.get('title') || null
+            };
 
-        if (wave.isNew()) {
-            connection.query('INSERT INTO wave SET ?', data, function (err, res) {
-                if (err) {
-                    console.log(err);
-                    return callback(err);
-                }
-                console.log(res.insertId);
-                wave.set({_id: res.insertId});
-                return DALMySql.saveWaveUserIds(wave, callback);
-            });
-        } else {
-            connection.query('UPDATE wave SET ? WHERE id = ?', [data, wave.id], function (err) {
-                if (err) {
-                    console.log(err);
-                    return callback(err);
-                }
-                return DALMySql.saveWaveUserIds(wave, callback);
-            });
-        }
+            if (wave.isNew()) {
+                connection.query('INSERT INTO wave SET ?', data, function (err, res) {
+                    if (err) {
+                        console.log(err);
+                        return reject(err);
+                    }
+                    console.log(res.insertId);
+                    wave.set({_id: res.insertId});
+                    return resolve(DALMySql.saveWaveUserIds(wave));
+                });
+            } else {
+                connection.query('UPDATE wave SET ? WHERE id = ?', [data, wave.id], function (err) {
+                    if (err) {
+                        console.log(err);
+                        return reject(err);
+                    }
+                    return resolve(DALMySql.saveWaveUserIds(wave));
+                });
+            }
+        });
     },
 
-    saveWaveUserIds: function (wave, callback) {
-        connection.query('SELECT user_id FROM wave_user WHERE wave_id = ?', [wave.id], function (err, res) {
-            if (err) {
-                console.log(err);
-                return;
-            }
-
-            var userIdsDB = _.pluck(res, 'user_id'),
-                userIds = _.uniq(_.map(wave.get('userIds'), function (id) {
-                    return parseInt(id, 10);
-                }));
-
-            //transaction?
-            async.each(userIds, function (userId, callback) {
-                if (userIdsDB.indexOf(userId) === -1) {
-                    connection.query('INSERT INTO wave_user SET ?', {
-                        wave_id: wave.id,
-                        user_id: userId
-                    }, function (err) {
-                        if (err) {
-                            console.log(err);
-                        }
-                        console.log('insert:', wave.id, userId);
-                        callback(err);
-                    });
-                } else {
-                    callback(null);
+    saveWaveUserIds: function (wave) {
+        return new Promise((resolve, reject) => {
+            connection.query('SELECT user_id FROM wave_user WHERE wave_id = ?', [wave.id], function (err, res) {
+                if (err) {
+                    console.log(err);
+                    return reject(err);
                 }
-            }, function (err) {
-                return callback(err, wave);
+
+                const userIdsDB = _.pluck(res, 'user_id');
+                const userIds = _.uniq(_.map(wave.get('userIds'), function (id) {
+                        return parseInt(id, 10);
+                    }));
+
+                //transaction?
+                async.each(userIds, function (userId, callback) {
+                    if (userIdsDB.indexOf(userId) === -1) {
+                        connection.query('INSERT INTO wave_user SET ?', {
+                            wave_id: wave.id,
+                            user_id: userId
+                        }, function (err) {
+                            if (err) {
+                                console.log(err);
+                                return reject(err);
+                            }
+                            console.log('insert:', wave.id, userId);
+                            callback(err);
+                        });
+                    } else {
+                        callback(null);
+                    }
+                }, function (err) {
+                    if (err) {
+                        return reject(err);
+                    }
+                    return resolve(wave);
+                });
             });
-        });
+        })
     },
 
     /**
      * @param {Message} message
-     * @param {Function} callback
      */
-    saveMessage: function (message, callback) {
-        var m = {
-            user_id: message.get('userId'),
-            wave_id: message.get('waveId'),
-            parent_id: message.get('parentId'),
-            message: message.get('message')
-        };
+    saveMessage: function (message) {
+        return new Promise((resolve, reject) => {
+            const m = {
+                user_id: message.get('userId'),
+                wave_id: message.get('waveId'),
+                parent_id: message.get('parentId'),
+                message: message.get('message')
+            };
 
-        connection.beginTransaction(function (err) {
-            if (err) {
-                return callback(err);
-            }
-
-            DALMySql.queryTransaction('INSERT INTO message SET ?', m, false, function (err, res) {
+            connection.beginTransaction(function (err) {
                 if (err) {
-                    return callback(err);
+                    return reject(err);
                 }
 
-                message.set({_id: res.insertId});
+                DALMySql.queryTransaction('INSERT INTO message SET ?', m, false, function (err, res) {
+                    if (err) {
+                        return reject(err);
+                    }
 
-                if (null === message.get('parentId')) {
-                    DALMySql.queryTransaction('UPDATE message SET root_id = ? WHERE id = ?', [message.id, message.id], true, function (err) {
-                        if (err) {
-                            return callback(err);
-                        }
-                        return callback(null, message);
-                    });
-                } else {
-                    DALMySql.queryTransaction('SELECT root_id FROM message WHERE id = ?', [m.parent_id], false, function (err, res) {
-                        if (err) {
-                            return callback(err);
-                        }
-                        DALMySql.queryTransaction('UPDATE message SET root_id = ? where id = ?', [res[0].root_id, message.id], true, function (err) {
-                            return callback(err, message);
+                    message.set({_id: res.insertId});
+
+                    if (null === message.get('parentId')) {
+                        DALMySql.queryTransaction('UPDATE message SET root_id = ? WHERE id = ?', [message.id, message.id], true, function (err) {
+                            if (err) {
+                                return reject(err);
+                            }
+                            return resolve(message);
                         });
-                    });
-                }
+                    } else {
+                        DALMySql.queryTransaction('SELECT root_id FROM message WHERE id = ?', [m.parent_id], false, function (err, res) {
+                            if (err) {
+                                return reject(err);
+                            }
+                            DALMySql.queryTransaction('UPDATE message SET root_id = ? where id = ?', [res[0].root_id, message.id], true, function (err) {
+                                if (err) {
+                                    return reject(err);
+                                }
+                                return resolve(message);
+                            });
+                        });
+                    }
+                });
             });
         });
     },
 
-    queryTransaction: function (query, queryParams, commit, callback) {
-        connection.query(query, queryParams, function (err, result) {
-            if (err) {
-                return connection.rollback(function () {
-                    return callback(err);
-                });
-            }
+    queryTransaction: function (query, queryParams, commit) {
+        return new Promise((resolve, reject) => {
+            connection.query(query, queryParams, function (err, result) {
+                if (err) {
+                    return connection.rollback(function () {
+                        return reject(err);
+                    });
+                }
 
-            if (commit) {
-                connection.commit(function (err) {
-                    if (err) {
-                        return connection.rollback(function () {
-                            return callback(err);
-                        });
-                    }
+                if (commit) {
+                    connection.commit(function (err) {
+                        if (err) {
+                            return connection.rollback(function () {
+                                return reject(err);
+                            });
+                        }
 
-                    return callback(null, result);
-                });
-            } else {
-                return callback(null, result);
-            }
+                        return resolve(result);
+                    });
+                } else {
+                    return resolve(result);
+                }
+            });
         });
     },
 
@@ -256,64 +270,63 @@ var DALMySql = {
      * messages queried for the user on load
      * @param {User} user
      * @param {Function} callbackWithMessages
-     * @param {Function} callbackReady
      */
-    getLastMessagesForUser: function (user, callbackWithMessages, callbackReady) {
-        var startTime = new Date().getTime(),
-            msgCount = 0;
+    getLastMessagesForUser: async function (user, callbackWithMessages) {
+        const startTime = new Date().getTime();
+        let msgCount = 0;
 
-        async.each(user.waves.toArray(), function (wave, callback_async_each) {
-            DALMySql.getLastMessagesForUserInWave(user, wave, function (err, results) {
-                if (err) {
-                    return callback_async_each(err);
-                }
+        for (let wave of user.waves.toArray()) {
+            const results = await DALMySql.getLastMessagesForUserInWave(user, wave);
+            msgCount += results.length;
+            callbackWithMessages(null, results, wave._id);
+        }
 
-                msgCount += results.length;
-                callbackWithMessages(null, results, wave._id);
-                callback_async_each();
-            });
-        }, function (err) {
-            if (err) {
-                console.log('QUERY LastMessagesForUser ERROR: ' + err);
-                return callbackReady(err);
-            }
+        const allTime = new Date().getTime() - startTime;
+        GraphiteClient.track('.lastmessagesforuser.time', allTime);
 
-            var allTime = new Date().getTime() - startTime;
-            GraphiteClient.track('.lastmessagesforuser.time', allTime);
-
-            console.log('QUERY LastMessagesForUser: msg query in ' + allTime);
-            console.log('QUERY LastMessagesForUser: msgs: ' + msgCount);
-            callbackReady();
-        });
+        console.log('QUERY LastMessagesForUser: msg query in ' + allTime);
+        console.log('QUERY LastMessagesForUser: msgs: ' + msgCount);
     },
 
     /**
      * Unread messages for an user in a wave
      * @param {User} user
      * @param {Wave} wave
-     * @param {Function} callback
      */
-    getLastMessagesForUserInWave: function (user, wave, callback) {
+    getLastMessagesForUserInWave: async function (user, wave) {
         console.log('QUERY getLastMessagesForUserInWave: ' + wave.id);
-        DALMySql.getMinUnreadRootIdForUserInWave(user, wave, function (err, result) {
-            //console.log(result);
-            var minRootId = null,
-                unreadIds = [];
-            if (!err) {//we have unread messages!
-                minRootId = result.minRootId;
-                unreadIds = result.unreadIds;
-            }
+        const { minRootId, unreadIds } = await DAL.getMinUnreadRootIdForUserInWave(user, wave);
 
-            DALMySql.getMinRootIdForWave(wave, minRootId, null, function (err, newMinRootId) {
-                if (err) {
-                    return callback(err);
+        const newMinRootId = await DAL.getMinRootIdForWave(wave, minRootId, null);
+        return DAL.getMessagesForUserInWave(wave, newMinRootId, null, unreadIds);
+    },
+
+    /**
+     *
+     * @param {User} user
+     * @param {Wave} wave
+     */
+    getMinUnreadRootIdForUserInWave: function (user, wave) {
+        return new Promise((resolve, reject) => {
+            const startTime = new Date().getTime();
+
+            connection.query('SELECT MIN(message.root_id) AS minRootId FROM message ' +
+                'INNER JOIN unread ON unread.message_id = message.id ' +
+                'WHERE message.wave_id = ? AND unread.user_id = ?',
+            [wave.id, user.id], async function (err, res) {
+                const endTime = new Date().getTime();
+                console.log('QUERY getMinUnreadRootIdForUserInWave: ' + wave.id + ' query in ' + (endTime - startTime));
+                console.log('QUERY getMinUnreadRootIdForUserInWave: ' + wave.id + ' count: ' + res.length);
+
+                if (err || _.first(res).minRootId === null) {
+                    reject(err);
+                } else {
+                    const ids = await DALMySql.getUnreadIdsForUserInWave(user, wave);
+                    return resolve({
+                        minRootId: _.first(res).minRootId,
+                        unreadIds: ids
+                    });
                 }
-                DALMySql.getMessagesForUserInWave(wave, newMinRootId, null, unreadIds, function (err, results) {
-                    if (err) {
-                        return callback(err);
-                    }
-                    callback(null, results);
-                });
             });
         });
     },
@@ -322,46 +335,19 @@ var DALMySql = {
      *
      * @param {User} user
      * @param {Wave} wave
-     * @param {Function} callback
      */
-    getMinUnreadRootIdForUserInWave: function (user, wave, callback) {
-        var endTime, startTime = new Date().getTime();
+    getUnreadIdsForUserInWave: function (user, wave) {
+        return new Promise((resolve, reject) => {
+            const startTime = new Date().getTime();
 
-        connection.query('SELECT MIN(message.root_id) AS minRootId FROM message ' +
-            'INNER JOIN unread ON unread.message_id = message.id ' +
-            'WHERE message.wave_id = ? AND unread.user_id = ?',
-        [wave.id, user.id], function (err, res) {
-            endTime = new Date().getTime();
-            console.log('QUERY getMinUnreadRootIdForUserInWave: ' + wave.id + ' query in ' + (endTime - startTime));
-            console.log('QUERY getMinUnreadRootIdForUserInWave: ' + wave.id + ' count: ' + res.length);
-
-            if (err || _.first(res).minRootId === null) {
-                callback(true, null);
-            } else {
-                DALMySql.getUnreadIdsForUserInWave(user, wave, function (err, ids) {
-                    var result = {
-                        minRootId: _.first(res).minRootId,
-                        unreadIds: ids
-                    };
-                    return callback(err, result);
-                });
-            }
-        });
-    },
-
-    /**
-     *
-     * @param {User} user
-     * @param {Wave} wave
-     * @param {Function} callback
-     */
-    getUnreadIdsForUserInWave: function (user, wave, callback) {
-        var startTime = new Date().getTime();
-
-        connection.query('SELECT message_id FROM unread WHERE wave_id = ? AND user_id = ?', [wave.id, user.id], function (err, results) {
-            var endTime = new Date().getTime();
-            console.log('QUERY getUnreadIdsForUserInWave: ' + wave.id + ' query in ' + (endTime - startTime));
-            callback(err, _.pluck(results, 'message_id'));
+            connection.query('SELECT message_id FROM unread WHERE wave_id = ? AND user_id = ?', [wave.id, user.id], function (err, results) {
+                const endTime = new Date().getTime();
+                console.log('QUERY getUnreadIdsForUserInWave: ' + wave.id + ' query in ' + (endTime - startTime));
+                if (err) {
+                    return reject(err);
+                }
+                resolve(_.pluck(results, 'message_id'));
+            });
         });
     },
 
@@ -370,60 +356,62 @@ var DALMySql = {
      * @param {Wave} wave
      * @param {number} minRootId
      * @param {number} maxRootId
-     * @param {Function} callback
      */
-    getMinRootIdForWave: function (wave, minRootId, maxRootId, callback) {
+    getMinRootIdForWave: async function (wave, minRootId, maxRootId) {
         console.log('QUERY getMinRootIdForWave: ' + wave.id);
         if (null === minRootId && null !== maxRootId) {
             minRootId = maxRootId;
         }
 
-        DALMySql.countMessagesInRange(wave, minRootId, maxRootId, function (err, count) {
-            if (err) {
-                return callback(err);
+        const count = await DALMySql.countMessagesInRange(wave, minRootId, maxRootId);
+        if (count > 10) {
+            return minRootId;
+        } else {
+            try {
+                const newMinRootId = await DALMySql.getNextMinRootIdForWave(wave, minRootId);
+                if (!newMinRootId || minRootId === newMinRootId) {
+                    return minRootId;
+                } else {
+                    return DALMySql.getMinRootIdForWave(wave, newMinRootId, maxRootId);
+                }
+            } catch (err) {
+                return minRootId;
             }
-            if (count > 10) {
-                callback(null, minRootId);
-            } else {
-                DALMySql.getNextMinRootIdForWave(wave, minRootId, function (err, newMinRootId) {
-                    if (err || minRootId === newMinRootId) {
-                        callback(null, minRootId);
-                    } else {
-                        DALMySql.getMinRootIdForWave(wave, newMinRootId, maxRootId, callback);
-                    }
-                });
-            }
-        });
+        }
     },
 
     /**
      * @param {Wave} wave
      * @param {number} minRootId
-     * @param {Function} callback
      */
-    getNextMinRootIdForWave: function (wave, minRootId, callback) {
-        //if not enough, or minRootId is null
-        var startTime = new Date().getTime(),
-            query = 'SELECT root_id FROM message WHERE wave_id = ? AND parent_id IS NULL',
-            queryParams = [wave.id];
-            //query = MessageModel.find({waveId: wave.id, parentId: null}).sort('-_id').limit(11);
+    getNextMinRootIdForWave: function (wave, minRootId) {
+        return new Promise((resolve, reject) => {
+            //if not enough, or minRootId is null
+            const startTime = new Date().getTime();
+            const queryParams = [wave.id];
+            let query = 'SELECT root_id FROM message WHERE wave_id = ? AND parent_id IS NULL';
 
-        if (minRootId) {
-            //if parentId is null, rootId = _id, we have index on _id
-            query += ' AND id < ?';
-            queryParams.push(minRootId);
-        }
-
-        query += ' ORDER BY id DESC LIMIT 11';
-
-        connection.query(query, queryParams, function (err, results) {
-            var endTime = new Date().getTime();
-            console.log('QUERY getNextMinRootIdForWave: ' + wave.id + ' query in ' + (endTime - startTime));
-            if (err || 0 === results.length) {
-                callback(true);
-            } else {
-                callback(null, _.last(results).root_id);
+            if (minRootId) {
+                //if parentId is null, rootId = _id, we have index on _id
+                query += ' AND id < ?';
+                queryParams.push(minRootId);
             }
+
+            query += ' ORDER BY id DESC LIMIT 11';
+
+            connection.query(query, queryParams, function (err, results) {
+                const endTime = new Date().getTime();
+                console.log('QUERY getNextMinRootIdForWave: ' + wave.id + ' query in ' + (endTime - startTime));
+                if (err) {
+                    return reject(err);
+                }
+
+                if (0 === results.length) {
+                    return resolve(null);
+                } else {
+                    resolve(_.last(results).root_id);
+                }
+            });
         });
     },
 
@@ -431,15 +419,15 @@ var DALMySql = {
      * @param {Wave} wave
      * @param {number} minRootId
      * @param {number} maxRootId
-     * @param {Function} callback
      */
-    countMessagesInRange: function (wave, minRootId, maxRootId, callback) {
-        if (!minRootId) {
-            callback(null, 0);
-        } else {
-            var startTime = new Date().getTime(),
-                query = 'SELECT count(id) AS count FROM message WHERE wave_id = ? AND root_id >= ?',
-                queryParams = [wave.id, minRootId];
+    countMessagesInRange: function (wave, minRootId, maxRootId) {
+        return new Promise((resolve, reject) => {
+            if (!minRootId) {
+                return resolve(0);
+            }
+            const startTime = new Date().getTime();
+            const queryParams = [wave.id, minRootId];
+            let query = 'SELECT count(id) AS count FROM message WHERE wave_id = ? AND root_id >= ?';
 
             if (maxRootId) {
                 query += ' AND root_id < ?';
@@ -448,13 +436,13 @@ var DALMySql = {
 
             connection.query(query, queryParams, function (err, res) {
                 if (err) {
-                    return callback(err, 0);
+                    return reject(err);
                 }
-                var endTime = new Date().getTime();
+                const endTime = new Date().getTime();
                 console.log('QUERY countMessagesInRange: query in ' + (endTime - startTime));
-                callback(null, res[0].count);
+                resolve(res[0].count);
             });
-        }
+        });
     },
 
     /**
@@ -462,52 +450,47 @@ var DALMySql = {
      * @param {number} minRootId
      * @param {number} maxRootId
      * @param {Array} unreadIds
-     * @param {Function} callback
      */
-    getMessagesForUserInWave: function (wave, minRootId, maxRootId, unreadIds, callback) {
-        var startTime = new Date().getTime(),
-            query = 'SELECT * FROM message WHERE wave_id = ?',
-            queryParams = [wave.id];
+    getMessagesForUserInWave: function (wave, minRootId, maxRootId, unreadIds) {
+        return new Promise((resolve, reject) => {
+            const startTime = new Date().getTime();
+            const queryParams = [wave.id];
+            let query = 'SELECT * FROM message WHERE wave_id = ?';
 
-        if (minRootId) {
-            query += ' AND root_id >= ?';
-            queryParams.push(minRootId);
-        }
-
-        if (maxRootId) {
-            query += ' AND root_id < ?';
-            queryParams.push(maxRootId);
-        }
-
-        query += ' ORDER BY id';
-
-        connection.query(query, queryParams, function (err, messages) {
-            var res, endTime = new Date().getTime();
-            console.log('QUERY getMessagesForUserInWave: ' + wave.id + ' query in ' + (endTime - startTime));
-
-            if (err) {
-                return callback(err);
+            if (minRootId) {
+                query += ' AND root_id >= ?';
+                queryParams.push(minRootId);
             }
 
-            if (messages.length === 0) {
-                return callback(false, []);
+            if (maxRootId) {
+                query += ' AND root_id < ?';
+                queryParams.push(maxRootId);
             }
 
-            res = _.map(messages, function (mmsg) {
-                var msg = {
-                    _id: mmsg.id,
-                    userId: mmsg.user_id,
-                    waveId: mmsg.wave_id,
-                    parentId: mmsg.parent_id,
-                    message: mmsg.message,
-                    unread: _.indexOf(unreadIds, mmsg.id) >= 0,
-                    created_at: mmsg.created_at
-                };
+            query += ' ORDER BY id';
 
-                return msg;
+            connection.query(query, queryParams, function (err, messages) {
+                const endTime = new Date().getTime();
+                console.log('QUERY getMessagesForUserInWave: ' + wave.id + ' query in ' + (endTime - startTime));
+
+                if (err) {
+                    return reject(err);
+                }
+
+                const res = messages.map((mmsg) => {
+                    return {
+                        _id: mmsg.id,
+                        userId: mmsg.user_id,
+                        waveId: mmsg.wave_id,
+                        parentId: mmsg.parent_id,
+                        message: mmsg.message,
+                        unread: unreadIds.includes(mmsg.id),
+                        created_at: mmsg.created_at
+                    };
+                });
+
+                resolve(res);
             });
-
-            callback(null, res);
         });
     },
 
@@ -544,48 +527,62 @@ var DALMySql = {
     /**
      * @param {User} user
      * @param {Wave} wave
-     * @param {Function} callback
      */
-    createInviteCodeForWave: function (user, wave, callback) {
-        var code = (Math.random() + 1).toString(36).replace(/\W/g, ''),
-            data = {
-                user_id: user.id,
-                wave_id: wave.id,
-                code: code
-            };
+    createInviteCodeForWave: function (user, wave) {
+        return new Promise((resolve, reject) => {
+            const code = (Math.random() + 1).toString(36).replace(/\W/g, '');
+            const data = {
+                    user_id: user.id,
+                    wave_id: wave.id,
+                    code: code
+                };
 
-        connection.query('INSERT INTO invite SET ?', data, function (err) {
-            return callback(err, code);
-        });
+            connection.query('INSERT INTO invite SET ?', data, function (err) {
+                if (err) {
+                    return reject(err);
+                }
+                return resolve(code);
+            });
+        })
     },
 
     /**
      * @param {string} code
-     * @param {Function} callback
      */
-    getWaveInvitebyCode: function (code, callback) {
-        connection.query('SELECT wave_id as waveId, code FROM invite WHERE code = ?', [code], function (err, res) {
-            return callback(err, _.first(res));
-        });
+    getWaveInvitebyCode: function (code) {
+        return new Promise((resolve, reject) => {
+            connection.query('SELECT wave_id as waveId, code FROM invite WHERE code = ?', [code], function (err, res) {
+                if (err) {
+                    return reject(err);
+                }
+                return resolve(_.first(res));
+            });
+        })
     },
 
     /**
      * @param {string} code
-     * @param {Function} callback
      */
-    removeWaveInviteByCode: function (code, callback) {
-        connection.query('DELETE FROM invite WHERE code = ?', [code], function (err) {
-            return callback(err, {result: {ok: 1}});
+    removeWaveInviteByCode: function (code) {
+        return new Promise((resolve, reject) => {
+            connection.query('DELETE FROM invite WHERE code = ?', [code], function (err) {
+                if (err) {
+                    return reject(err);
+                }
+                return resolve({result: {ok: 1}});
+            });
         });
     },
 
-    /**
-     * @param {Function} callback
-     */
-    shutdown: function (callback) {
-        connection.end(function (err) {
-            console.log('mysql down' + (err || ''));
-            callback();
+    shutdown: function () {
+        return new Promise((resolve, reject) => {
+            connection.end(function (err) {
+                console.log('mysql down' + (err || ''));
+                if (err) {
+                    return reject(err);
+                }
+                resolve();
+            });
         });
     }
 };
