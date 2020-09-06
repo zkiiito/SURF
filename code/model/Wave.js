@@ -186,7 +186,7 @@ const Wave = Backbone.Model.extend(
                     user.quitWave(this);
 
                     await this.save();
-                    wave.notifyUsers();
+                    this.notifyUsers();
                 }
             } catch (err) {
                 console.log('ERROR', err);
