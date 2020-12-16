@@ -7,11 +7,12 @@ var Communicator = {
     queueReads: false,
     initialize: function () {
         if (window.io === undefined) {
+            console.error('no io');
             return;
         }
         var that = this;
 
-        this.socket = new io.connect(document.location.href, {reconnection: false});
+        this.socket = io({reconnection: false});
 
         this.socket.on('init', function (data) {
             that.onInit(data);

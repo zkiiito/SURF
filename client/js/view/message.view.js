@@ -15,7 +15,7 @@ var MessageView = Backbone.View.extend({
         this.listenTo(this.model, 'linkpreview', this.addLinkPreview);
 
         var date = this.model.get('created_at_date');
-        this.model.set('dateFormatted', dateFormat(date, 'mmm d HH:MM'));
+        this.model.set('dateFormatted', 'dateFormat(date, \'mmm d HH:MM\')');
     },
     inRender: false,
     events: {
