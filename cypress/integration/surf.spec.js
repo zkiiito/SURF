@@ -22,12 +22,14 @@ describe('full test', () => {
 
         cy.get('#wave-list a.waveitem.open').should('have.length', 1)
 
+        const newMsgs = 15
+
         //write messages
-        for (let i = 0; i < 15; i++) {
+        for (let i = 0; i < newMsgs; i++) {
             cy.get('form.add-message textarea').type(`lol fsa ${i}{enter}`)
         }
 
-        cy.get('.message').should('have.length', 15)
+        cy.get('.message').should('have.length', newMsgs)
 
         const lastMsg = cy.get('.message:last-of-type')
 
@@ -35,11 +37,12 @@ describe('full test', () => {
 
         cy.get('form.add-message.threadend').should('be.visible')
 
-        for (let i = 0; i < 5; i++) {
+        const replies = 5
+        for (let i = 0; i < replies; i++) {
             cy.get('form.add-message.threadend textarea').type(`lol fsa reply ${i}{enter}`);
         }
 
-        lastMsg.get(`.replies .message`).should('have.length', 5)
+        lastMsg.get(`.replies .message`).should('have.length', replies)
 
         const newTitle = 'Teszt Wave 2'
         cy.get('a.button.editwave').click()
@@ -55,19 +58,16 @@ describe('full test', () => {
         cy.get('#editwave').click()
         cy.get('#editwave-invite').click()
 
-        cy.get('#editwave-invitecode').its('value').should('contain', 'http://localhost:8000/invite/')
-
-        inviteUrl = Cypress.$('#editwave-invitecode').val();
-
-        // cy.visit('http://localhost:8000/logoutTest')
+        cy.get('#editwave-invitecode').invoke('val').then((val) => {
+            inviteUrl = val
+        })
     })
 
     it('player2', () => {
-        // cy.clearCookies()
-        cy.visit(inviteUrl)
-
         cy.visit('http://localhost:8000/loginTest')
         cy.get('input[name="username"]').type(`${testUserId + 1}{enter}`)
+
+        cy.visit(inviteUrl)
 
         cy.get('#wave-list a.waveitem').should('have.length', 1)
         cy.get('.message').should('have.length', 16)
@@ -81,20 +81,14 @@ describe('full test', () => {
         }
     })
 
-
+    it('player1 again', () => {
+        cy.visit('http://localhost:8000/loginTest')
+        cy.get('input[name="username"]').type(`${testUserId}{enter}`)
+        
+        cy.get('#wave-list a.waveitem').should('have.length', 1)
+        cy.get('.message').should('have.length', 21)
+        cy.get('.message > table.unread').should('have.length', 4) // got 5 unread messages, focused on 1
+        cy.get('a.gounread').click()
+        cy.get('.message > table.unread').should('have.length', 3) // 3 unread messages left after click on unread
+    })
 })
-/*
-casper.test.begin('Login with invite, read old messages, reply', 0, function suite(test) {
-    casper
-            var i;
-            for (i = 0; i < 5; i++) {
-                this.fillSelectors('form.add-message', {'textarea': 'rotfl mao ' + i}, true);
-            }
-        })
-        .wait(100)//TODO: new wave with prev user
-        .thenOpen('http://localhost:8000/logoutTest')
-        .run(function () {
-            test.done();
-        });
-});
-*/
