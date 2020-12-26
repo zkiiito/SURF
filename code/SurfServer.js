@@ -25,7 +25,7 @@ const SurfServer = {
         ExpressServer.listen(Config.port);
         console.log('SURF is running, listening on port ' + Config.port);
 
-        this.socket = new IO(ExpressServer, {'pingInterval': 4000, 'pingTimeout': 10000});
+        this.socket = IO(ExpressServer, {'pingInterval': 4000, 'pingTimeout': 10000});
 
         this.socket.use(function (socket, next) {
             const data = socket.request;
@@ -58,7 +58,7 @@ const SurfServer = {
             });
         });
 
-        this.socket.sockets.on('connection', async (client) => {
+        this.socket.on('connection', async (client) => {
             try {
                 client.curUser = await this.getUserByAuth(client.session);
                 if (client.curUser.socket) {

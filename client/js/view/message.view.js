@@ -15,7 +15,7 @@ var MessageView = Backbone.View.extend({
         this.listenTo(this.model, 'linkpreview', this.addLinkPreview);
 
         var date = this.model.get('created_at_date');
-        this.model.set('dateFormatted', dateFormat(date, 'mmm d HH:MM'));
+        this.model.set('dateFormatted', this.formatDate(date));
     },
     inRender: false,
     events: {
@@ -175,5 +175,26 @@ var MessageView = Backbone.View.extend({
         }
 
         this.$el.children('table').append(linkPreview);
+    },
+
+    formatDate(d) {
+        const monthNames = [
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dec",
+          ];
+
+        const date = new Date(d);
+
+        return `${monthNames[date.getMonth()]} ${date.getDate()} ${date.getHours()}:${date.getMinutes()}`
     }
 });

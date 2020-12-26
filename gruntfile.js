@@ -7,13 +7,13 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-text-replace');
 
     var jsFiles = [
-        'node_modules/socket.io-client/dist/socket.io.js',
+        'node_modules/socket.io/client-dist/socket.io.js',
         'node_modules/underscore/underscore.js',
         'node_modules/backbone/backbone.js',
         'node_modules/R.js/R.js',
         'client/js/i18n.js',
         'client/js/jquery/jquery.tokeninput.js',
-        'node_modules/dateformat/lib/dateformat.js',
+        // 'node_modules/dateformat/lib/dateformat.js',
         'client/js/phpjs.js',
         'node_modules/sweetalert/dist/sweetalert.min.js',
         'client/js/randomname.js',
