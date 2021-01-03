@@ -195,6 +195,6 @@ var MessageView = Backbone.View.extend({
 
         const date = new Date(d);
 
-        return `${monthNames[date.getMonth()]} ${date.getDate()} ${date.getHours()}:${date.getMinutes()}`
+        return `${monthNames[date.getMonth()]} ${date.getDate()} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`
     }
 });
