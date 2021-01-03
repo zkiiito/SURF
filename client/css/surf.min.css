@@ -783,11 +783,6 @@ textarea {
     }
 }
 
-/* sweetalert */
-.swal-footer {
-  text-align: center;
-}
-
 /* Example tokeninput style #2: Facebook style */
 ul.token-input-list-facebook {
   overflow: hidden;

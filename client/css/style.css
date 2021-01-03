@@ -782,8 +782,3 @@ textarea {
         transition: .2s;
     }
 }
-
-/* sweetalert */
-.swal-footer {
-  text-align: center;
-}

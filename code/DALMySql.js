@@ -61,28 +61,6 @@ const DALMySql = {
                 });
             });
         });
-
-        //temporary fix: delete all unread, if user has more than 1000
-        /*
-        UserModel.find().exec(function (err, users) {
-            if (!err) {
-                _.each(users, function (user) {
-                    redis.keys('unread-' + user._id + '-*', function (err, unreadKeys) {
-                        if (!err) {
-                            _.each(unreadKeys, function (key) {
-                                redis.scard(key, function (err, msgcount) {
-                                    if (!err && msgcount > 1000) {
-                                        console.log('deleteTooMuchUnread: ' + key + ' : ' + msgcount);
-                                        redis.del(key);
-                                    }
-                                });
-                            });
-                        }
-                    });
-                });
-            }
-        });
-        */
     },
 
     /**
@@ -161,8 +139,8 @@ const DALMySql = {
 
                 const userIdsDB = _.pluck(res, 'user_id');
                 const userIds = _.uniq(_.map(wave.get('userIds'), function (id) {
-                        return parseInt(id, 10);
-                    }));
+                    return parseInt(id, 10);
+                }));
 
                 //transaction?
                 async.each(userIds, function (userId, callback) {
@@ -188,7 +166,7 @@ const DALMySql = {
                     return resolve(wave);
                 });
             });
-        })
+        });
     },
 
     /**
@@ -295,10 +273,10 @@ const DALMySql = {
      */
     getLastMessagesForUserInWave: async function (user, wave) {
         console.log('QUERY getLastMessagesForUserInWave: ' + wave.id);
-        const { minRootId, unreadIds } = await DAL.getMinUnreadRootIdForUserInWave(user, wave);
+        const { minRootId, unreadIds } = await DALMySql.getMinUnreadRootIdForUserInWave(user, wave);
 
-        const newMinRootId = await DAL.getMinRootIdForWave(wave, minRootId, null);
-        return DAL.getMessagesForUserInWave(wave, newMinRootId, null, unreadIds);
+        const newMinRootId = await DALMySql.getMinRootIdForWave(wave, minRootId, null);
+        return DALMySql.getMessagesForUserInWave(wave, newMinRootId, null, unreadIds);
     },
 
     /**
@@ -532,10 +510,10 @@ const DALMySql = {
         return new Promise((resolve, reject) => {
             const code = (Math.random() + 1).toString(36).replace(/\W/g, '');
             const data = {
-                    user_id: user.id,
-                    wave_id: wave.id,
-                    code: code
-                };
+                user_id: user.id,
+                wave_id: wave.id,
+                code: code
+            };
 
             connection.query('INSERT INTO invite SET ?', data, function (err) {
                 if (err) {
@@ -543,7 +521,7 @@ const DALMySql = {
                 }
                 return resolve(code);
             });
-        })
+        });
     },
 
     /**
@@ -557,7 +535,7 @@ const DALMySql = {
                 }
                 return resolve(_.first(res));
             });
-        })
+        });
     },
 
     /**

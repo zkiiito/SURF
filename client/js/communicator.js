@@ -1,4 +1,5 @@
 /*global io, app, Message, Wave, User */
+// eslint-disable-next-line no-unused-vars
 var Communicator = {
     socket: null,
     reconnect: true,

@@ -1,7 +1,6 @@
 module.exports = function (grunt) {
     'use strict';
 
-    grunt.loadNpmTasks('grunt-eslint');
     grunt.loadNpmTasks('grunt-contrib-uglify-es');
     grunt.loadNpmTasks('grunt-contrib-concat');
 
@@ -13,7 +12,6 @@ module.exports = function (grunt) {
         'client/js/i18n.js',
         'client/js/jquery/jquery.tokeninput.js',
         'client/js/phpjs.js',
-        'node_modules/sweetalert/dist/sweetalert.min.js',
         'client/js/randomname.js',
         'client/js/model/user.model.js',
         'client/js/model/wave.model.js',
@@ -55,9 +53,6 @@ module.exports = function (grunt) {
     ];
 
     grunt.initConfig({
-        eslint: {
-            target: ['admin/js/!(lib)**/*.js', 'client/js/!(jquery)**/*.js', 'code/**/*.js']
-        },
         uglify: {
             client: {
                 files: {

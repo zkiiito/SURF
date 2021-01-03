@@ -1,4 +1,5 @@
 /** necessary functions from the deprecated phpjs package */
+/* eslint-disable no-unused-vars */
 
 function wordwrap(str, intWidth, strBreak, cut) {
     //  discuss at: http://locutus.io/php/wordwrap/
