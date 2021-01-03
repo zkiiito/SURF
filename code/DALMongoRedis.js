@@ -36,7 +36,7 @@ const DAL = {
 
         const waves = await WaveModel.find().sort('_id').exec();
         server.waves.reset(waves.map(wave => {
-            return {title: wave.title, userIds: wave.userIds, _id: wave._id}
+            return {title: wave.title, userIds: wave.userIds, _id: wave._id};
         }));
         server.startServer();
 
@@ -54,7 +54,7 @@ const DAL = {
                     });
                 }
             });
-        })
+        });
     },
 
     /**
@@ -63,14 +63,14 @@ const DAL = {
      */
     saveUser: function (user) {
         const data = {
-                name: user.get('name'),
-                avatar: user.get('avatar'),
-                googleId: user.get('googleId'),
-                googleAvatar: user.get('googleAvatar'),
-                facebookId: user.get('facebookId'),
-                facebookAvatar: user.get('facebookAvatar'),
-                email: user.get('email')
-            };
+            name: user.get('name'),
+            avatar: user.get('avatar'),
+            googleId: user.get('googleId'),
+            googleAvatar: user.get('googleAvatar'),
+            facebookId: user.get('facebookId'),
+            facebookAvatar: user.get('facebookAvatar'),
+            email: user.get('email')
+        };
 
         if (user.isNew()) {
             const m = new UserModel(data);
@@ -86,9 +86,9 @@ const DAL = {
      */
     saveWave: function (wave) {
         const data = {
-                title: wave.get('title'),
-                userIds: _.uniq(wave.get('userIds'))
-            };
+            title: wave.get('title'),
+            userIds: _.uniq(wave.get('userIds'))
+        };
 
         if (wave.isNew()) {
             const m = new WaveModel(data);
@@ -115,7 +115,7 @@ const DAL = {
             m.rootId = m._id;
             await m.save();
         } else {
-            await m.save()
+            await m.save();
             await DAL.calcRootId(m.parentId, [m]);
         }
 
@@ -338,7 +338,7 @@ const DAL = {
     getMessagesForUserInWave: async function (wave, minRootId, maxRootId, unreadIds) {
         const startTime = new Date().getTime();
         const query = MessageModel.find({waveId: wave.id})
-                .sort('_id');
+            .sort('_id');
 
         if (minRootId) {
             query.where('rootId').gte(minRootId);

@@ -1,4 +1,4 @@
-/*global Communicator, Notification, __ */
+/*global Communicator, __ */
 /* exported EditUserView */
 var EditUserView = Backbone.View.extend({
     initialize: function () {

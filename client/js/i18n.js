@@ -28,28 +28,28 @@ var i18n = {
             'Edit conversation': 'Beszélgetés szerkesztése',
             'Save': 'Mentés',
             'Searching...': 'Keresés...',
-            "User not found.": "Nincs ilyen felhasználónk.",
+            'User not found.': 'Nincs ilyen felhasználónk.',
             'Enter username.': 'Írj be egy felhasználónevet.',
-            "Do you want to leave conversation {{ title }}?\n\nIf you want to come back later, participants can invite you": "Biztosan kilépsz a következő beszélgetésből: {{ title }}?\n\nHa később vissza szeretnél lépni, a beszélgetés résztvevői újra meghívhatnak.",
+            'Do you want to leave conversation {{ title }}?\n\nIf you want to come back later, participants can invite you': 'Biztosan kilépsz a következő beszélgetésből: {{ title }}?\n\nHa később vissza szeretnél lépni, a beszélgetés résztvevői újra meghívhatnak.',
 
-            "Get invite code": "Meghívó igénylés",
-            "Invite URL": "Meghívó URL",
+            'Get invite code': 'Meghívó igénylés',
+            'Invite URL': 'Meghívó URL',
 
-            "Edit profile": "Profil",
-            "Name": "Név",
-            "Avatar": "Avatár",
-            "Notifications": "Értesítések",
-            "Not supported": "Nem támogatott",
-            "Enabled": "Bekapcsolva",
-            "Disabled": "Kikapcsolva",
-            "Test": "Teszt",
+            'Edit profile': 'Profil',
+            'Name': 'Név',
+            'Avatar': 'Avatár',
+            'Notifications': 'Értesítések',
+            'Not supported': 'Nem támogatott',
+            'Enabled': 'Bekapcsolva',
+            'Disabled': 'Kikapcsolva',
+            'Test': 'Teszt',
 
-            "Disconnected": "Megszakadt a kapcsolat",
-            "You're disconnected": "Megszakadt a kapcsolat",
-            "Retrying in:": "Újracsatlakozás:",
-            "Reconnect": "Újracsatlakozás most",
+            'Disconnected': 'Megszakadt a kapcsolat',
+            'You\'re disconnected': 'Megszakadt a kapcsolat',
+            'Retrying in:': 'Újracsatlakozás:',
+            'Reconnect': 'Újracsatlakozás most',
 
-            "{{ participantName }} mentioned you in {{ waveName }}!": "{{ participantName }} emlegetette a neved itt: {{ waveName }}!"
+            '{{ participantName }} mentioned you in {{ waveName }}!': '{{ participantName }} emlegetette a neved itt: {{ waveName }}!'
         });
 
         R.setLocale(navigator.language || navigator.browserLanguage);
@@ -76,7 +76,7 @@ var i18n = {
 
         for (i = 0, l = scripts.length; i < l; i++) {
             script = scripts[i];
-            if (script && script.innerHTML && script.id && (script.type === "text/html" || script.type === "text/x-icanhaz")) {
+            if (script && script.innerHTML && script.id && (script.type === 'text/html' || script.type === 'text/x-icanhaz')) {
                 ctx = $(script.innerHTML);
                 i18n.applyR(ctx);
                 script.innerHTML = $('<div>').append(ctx).html();
@@ -90,4 +90,5 @@ var i18n = {
 };
 /*jslint newcap: false*/
 i18n.init();
+// eslint-disable-next-line no-unused-vars
 var __ = i18n.__;

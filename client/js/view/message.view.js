@@ -1,4 +1,4 @@
-/*global UserView, MessageReplyFormView, Notification, __, dateFormat, messageTemplate, linkPreviewTemplate */
+/*global UserView, MessageReplyFormView, __, messageTemplate, linkPreviewTemplate */
 var MessageView = Backbone.View.extend({
     initialize: function () {
         if (this.model.messages) {
@@ -179,22 +179,22 @@ var MessageView = Backbone.View.extend({
 
     formatDate(d) {
         const monthNames = [
-            "Jan",
-            "Feb",
-            "Mar",
-            "Apr",
-            "May",
-            "Jun",
-            "Jul",
-            "Aug",
-            "Sep",
-            "Oct",
-            "Nov",
-            "Dec",
-          ];
+            'Jan',
+            'Feb',
+            'Mar',
+            'Apr',
+            'May',
+            'Jun',
+            'Jul',
+            'Aug',
+            'Sep',
+            'Oct',
+            'Nov',
+            'Dec',
+        ];
 
         const date = new Date(d);
 
-        return `${monthNames[date.getMonth()]} ${date.getDate()} ${date.getHours()}:${date.getMinutes()}`
+        return `${monthNames[date.getMonth()]} ${date.getDate()} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
     }
 });

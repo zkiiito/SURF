@@ -95,15 +95,15 @@ if (Config.testMode) {
         function (username, password, done) {
             const id = parseInt(username, 10);
             const user = {
-                    provider: 'google',
-                    id: id,
-                    emails: [{value: 'test' + username + '@wavesurf.com'}],
-                    displayName: 'Surf Tester ' + id.toString(),
-                    photos: [{
-                        value: 'http://lorempixel.com/100/100/people/'
-                    }],
-                    _json: {}
-                };
+                provider: 'google',
+                id: id,
+                emails: [{value: 'test' + username + '@wavesurf.com'}],
+                displayName: 'Surf Tester ' + id.toString(),
+                photos: [{
+                    value: 'http://lorempixel.com/100/100/people/'
+                }],
+                _json: {}
+            };
 
             return done(null, user);
         }
