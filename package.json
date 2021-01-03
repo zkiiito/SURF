@@ -38,9 +38,9 @@
   },
   "scripts": {
     "start": "node Surf.js",
-    "test": "casperjs test client/test/casper.js",
-    "grunt-tasks": "grunt uglify concat:css replace",
-    "git-add": "git add client/js/surf.min.js client/css/surf.min.css admin/js/admin.min.js client/test.html"
+    "test": "cypress run",
+    "grunt-tasks": "grunt uglify concat:css",
+    "git-add": "git add client/js/surf.min.js client/css/surf.min.css admin/js/admin.min.js"
   },
   "pre-commit": [
     "grunt-tasks",
@@ -54,7 +54,6 @@
     "grunt-contrib-concat": "^1.0.0",
     "grunt-contrib-uglify-es": "^3.3.0",
     "grunt-eslint": "^23.0.0",
-    "grunt-text-replace": "^0.4.0",
     "nodemon": "^2.0.6",
     "pre-commit": "^1.1.2",
     "sweetalert": "^2.1.2"

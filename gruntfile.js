@@ -4,7 +4,6 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-eslint');
     grunt.loadNpmTasks('grunt-contrib-uglify-es');
     grunt.loadNpmTasks('grunt-contrib-concat');
-    grunt.loadNpmTasks('grunt-text-replace');
 
     var jsFiles = [
         'node_modules/socket.io/client-dist/socket.io.js',
@@ -13,7 +12,6 @@ module.exports = function (grunt) {
         'node_modules/R.js/R.js',
         'client/js/i18n.js',
         'client/js/jquery/jquery.tokeninput.js',
-        // 'node_modules/dateformat/lib/dateformat.js',
         'client/js/phpjs.js',
         'node_modules/sweetalert/dist/sweetalert.min.js',
         'client/js/randomname.js',
@@ -86,19 +84,6 @@ module.exports = function (grunt) {
                 dest: 'client/css/surf.min.css'
             }
         },
-        replace: {
-            test: {
-                src: 'client/index.html',
-                dest: 'client/test.html',
-                replacements: [{
-                    from: '<script src="js/surf.min.js"></script>',
-                    to: '<script src="js/surf.min.js"></script><script src="test/test.js"></script>'
-                }, {
-                    from: '//code.jquery',
-                    to: 'http://code.jquery'
-                }]
-            }
-        }
     });
 
     grunt.registerTask('default', 'eslint');
