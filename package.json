@@ -47,7 +47,7 @@
   ],
   "devDependencies": {
     "R.js": "0.1.x",
-    "cypress": "^6.2.0",
+    "cypress": "^6.2.1",
     "errorhandler": "^1.5.1",
     "eslint": "^7.17.0",
     "nodemon": "^2.0.6",
