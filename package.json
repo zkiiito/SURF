@@ -50,7 +50,7 @@
     "cypress": "^7.0.1",
     "errorhandler": "^1.5.1",
     "eslint": "^7.21.0",
-    "nodemon": "^2.0.6",
+    "nodemon": "^2.0.7",
     "pre-commit": "^1.1.2",
     "terser": "^5.5.1"
   },
