@@ -27,7 +27,7 @@
     "passport-facebook": "^3.0.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-local": "^1.0.0",
-    "redis": "3.1.0",
+    "redis": "3.1.2",
     "request": "^2.88.2",
     "socket.io": "^3.0.4",
     "underscore": "^1.12.0"
