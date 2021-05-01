@@ -21,7 +21,7 @@
     "got": "^11.8.2",
     "html-metadata": "^1.7.1",
     "iconv-lite": "^0.6.2",
-    "mongoose": "^5.12.3",
+    "mongoose": "^5.12.7",
     "mysql2": "^2.2.5",
     "passport": "^0.4.1",
     "passport-facebook": "^3.0.0",
@@ -29,8 +29,8 @@
     "passport-local": "^1.0.0",
     "redis": "3.1.0",
     "request": "^2.88.2",
-    "socket.io": "^3.0.4",
-    "underscore": "^1.12.0"
+    "socket.io": "^3.1.2",
+    "underscore": "^1.13.1"
   },
   "engines": {
     "node": "12.x"
@@ -47,12 +47,12 @@
   ],
   "devDependencies": {
     "R.js": "0.1.x",
-    "cypress": "^7.0.1",
+    "cypress": "^7.2.0",
     "errorhandler": "^1.5.1",
-    "eslint": "^7.21.0",
+    "eslint": "^7.25.0",
     "nodemon": "^2.0.7",
     "pre-commit": "^1.1.2",
-    "terser": "^5.6.1"
+    "terser": "^5.7.0"
   },
   "nodemonConfig": {
     "ignore": [
