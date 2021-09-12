@@ -16,7 +16,7 @@ const DAL = {
     init: async function (server) {
         mongoose.Promise = global.Promise;
         mongoose.set('debug', Config.mongoDebug);
-        await mongoose.connect(Config.mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true });
+        await mongoose.connect(Config.mongoUrl);
 
         const users = await UserModel.find().exec();
 
@@ -431,8 +431,9 @@ const DAL = {
     /**
      * @param {string} code
      */
-    removeWaveInviteByCode: function (code) {
-        return WaveInviteModel.deleteOne({code: code}).exec();
+    removeWaveInviteByCode: async function (code) {
+        const result = await WaveInviteModel.deleteOne({code: code}).exec();
+        return { ok: result.deletedCount };
     },
 
     shutdown: function () {
