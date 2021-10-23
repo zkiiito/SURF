@@ -26,7 +26,11 @@ jobs:
         uses: supercharge/redis-github-action@1.2.0
         with:
           redis-version: 4
-      - run: nohup bash -c "npm start 2>&1 &" && sleep 4
+      - run: nohup bash -c "npm start 2>&1 &"
         env:
           TESTMODE: 1
+      - name: wait to start
+        uses: ifaxity/wait-on-action
+        with:
+          resource: http://localhost:8000/loginTest
       - run: npx cypress run
