@@ -11,7 +11,7 @@
   "license": "GPL-3.0",
   "dependencies": {
     "backbone": "~1.4.0",
-    "body-parser": "^1.19.0",
+    "body-parser": "^1.19.1",
     "cheerio": "^1.0.0-rc.10",
     "content-type": "^1.0.4",
     "cookie": "~0.4.1",
