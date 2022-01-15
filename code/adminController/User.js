@@ -13,14 +13,14 @@ module.exports = _.extend(base(Model), {
         }
     },
 
-    getUnreadCountByWave: function (req, res) {
+    getUnreadCountByWave: async function (req, res) {
         const key = 'unread-' + req.params.userId + '-' + req.params.waveId;
-        redisClient.scard(key, function (err, result) {
-            if (err) {
-                return res.json('[error]');
-            }
+        try {
+            const result = await redisClient.sCard(key);
             return res.json(result);
-        });
+        } catch (err) {
+            return res.json('[error]');
+        }
     },
 
     deleteUnreadCountByWave: function (req, res) {
