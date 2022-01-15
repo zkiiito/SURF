@@ -14,9 +14,8 @@ const DAL = {
      * @param {SurfServer} server
      */
     init: async function (server) {
-        mongoose.Promise = global.Promise;
         mongoose.set('debug', Config.mongoDebug);
-        await mongoose.connect(Config.mongoUrl);
+        await Promise.all([mongoose.connect(Config.mongoUrl), redis.connect()]);
 
         const users = await UserModel.find().exec();
 
@@ -39,22 +38,18 @@ const DAL = {
             return {title: wave.title, userIds: wave.userIds, _id: wave._id};
         }));
         server.startServer();
-
+        
         //temporary fix: delete all unread, if user has more than 1000
-        users.forEach(user => {
-            redis.keys('unread-' + user._id + '-*', function (err, unreadKeys) {
-                if (!err) {
-                    unreadKeys.forEach((key) => {
-                        redis.scard(key, function (err, msgcount) {
-                            if (!err && msgcount > 1000) {
-                                console.log('deleteTooMuchUnread: ' + key + ' : ' + msgcount);
-                                redis.del(key);
-                            }
-                        });
-                    });
+        await Promise.all(users.map(async user => {
+            const unreadKeys = await redis.keys('unread-' + user._id + '-*');
+            await Promise.all(unreadKeys.map(async (key) => {
+                const msgcount = await redis.sCard(key);
+                if (msgcount > 1000) {
+                    console.log('deleteTooMuchUnread: ' + key + ' : ' + msgcount);
+                    await redis.del(key);
                 }
-            });
-        });
+            }));
+        }));
     },
 
     /**
@@ -234,16 +229,13 @@ const DAL = {
      * @param {User} user
      * @param {Wave} wave
      */
-    getUnreadIdsForUserInWave: function (user, wave) {
-        return new Promise((resolve) => {
-            const startTime = new Date().getTime();
-            const key = 'unread-' + user.id + '-' + wave.id;
-            redis.smembers(key, function (err, results) {
-                const endTime = new Date().getTime();
-                console.log('QUERY getUnreadIdsForUserInWave: ' + wave.id + ' query in ' + (endTime - startTime));
-                resolve(results);
-            });
-        });
+    getUnreadIdsForUserInWave: async function (user, wave) {
+        const startTime = new Date().getTime();
+        const key = 'unread-' + user.id + '-' + wave.id;
+        const results = await redis.sMembers(key);
+        const endTime = new Date().getTime();
+        console.log('QUERY getUnreadIdsForUserInWave: ' + wave.id + ' query in ' + (endTime - startTime));
+        return results;
     },
 
     /**
@@ -377,20 +369,20 @@ const DAL = {
      * @param {User} user
      * @param {Message} message
      */
-    readMessage: function (user, message) {
+    readMessage: async function (user, message) {
         const key = 'unread-' + user.id + '-' + message.waveId;
-        redis.srem(key, message.id);
+        await redis.sRem(key, message.id);
     },
 
     /**
      * @param {User} user
      * @param {Message} message
      */
-    addUnreadMessage: function (user, message) {
+    addUnreadMessage: async function (user, message) {
         if (message.get('userId') !== user.id.toString() && message.id) {
             //console.log('addUnreadMessage: userid: ' + typeof user.id + ' msguserid: ' + typeof message.get('userId') + ' msgid: ' + message.id);
             const key = 'unread-' + user.id + '-' + message.get('waveId');
-            redis.sadd(key, message.id.toString());
+            await redis.sAdd(key, message.id.toString());
         }
     },
 
@@ -398,9 +390,9 @@ const DAL = {
      * @param {User} user
      * @param {Wave} wave
      */
-    readAllMessagesForUserInWave: function (user, wave) {
+    readAllMessagesForUserInWave: async function (user, wave) {
         const key = 'unread-' + user.id + '-' + wave.id;
-        redis.del(key);
+        await redis.del(key);
     },
 
     /**
