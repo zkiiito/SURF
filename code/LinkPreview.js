@@ -32,25 +32,16 @@ module.exports = {
         return 'linkpreview-' + url.replace(/[^a-z0-9]/g, '');
     },
 
-    fetchDataFromCache: function (url) {
-        return new Promise((resolve, reject) => {
-            redis.get(this.getKeyByUrl(url), (err, result) => {
-                if (err) {
-                    console.log('LinkPreview redis error: ' + err);
-                    return reject(err);
-                }
-
-                if (result === null) {
-                    return reject();
-                } else {
-                    return resolve(JSON.parse(result));
-                }
-            });
-        });
+    fetchDataFromCache: async function (url) {
+        const result = await redis.get(this.getKeyByUrl(url));
+        if (result === null) {
+            throw new Error('not found');
+        }
+        return JSON.parse(result);
     },
 
     saveDataToCache: function (url, data, duration) {
-        redis.setex(this.getKeyByUrl(url), duration, JSON.stringify(data));
+        redis.setEx(this.getKeyByUrl(url), duration, JSON.stringify(data));
     },
 
     fetchData: function (url) {
