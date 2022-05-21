@@ -18,7 +18,7 @@ describe('full test', () => {
         cy.visit('http://localhost:8000/loginTest')
         cy.get('input[name="username"]').type(`${testUserId}{enter}`)
 
-        cy.wait(100)
+        cy.get('span#currentuser p.currentuser_name').should('have.text', `Surf Tester ${testUserId}`)
 
         cy.get('#wave-list a.addwave').click()
 
