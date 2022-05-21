@@ -12,25 +12,25 @@
   "dependencies": {
     "backbone": "~1.4.1",
     "body-parser": "^1.20.0",
-    "cheerio": "^1.0.0-rc.10",
+    "cheerio": "^1.0.0-rc.11",
     "content-type": "^1.0.4",
     "cookie": "~0.5.0",
     "cookie-signature": "^1.2.0",
-    "express": "^4.17.3",
-    "express-session": "^1.17.2",
+    "express": "^4.18.1",
+    "express-session": "^1.17.3",
     "got": "^11.8.3",
     "html-metadata": "^1.7.1",
     "iconv-lite": "^0.6.3",
-    "mongoose": "^6.2.10",
+    "mongoose": "^6.3.4",
     "mysql2": "^2.3.3",
-    "passport": "^0.5.2",
+    "passport": "^0.5.3",
     "passport-facebook": "^3.0.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-local": "^1.0.0",
-    "redis": "^4.0.6",
+    "redis": "^4.1.0",
     "request": "^2.88.2",
-    "socket.io": "^4.4.1",
-    "underscore": "^1.13.2"
+    "socket.io": "^4.5.1",
+    "underscore": "^1.13.3"
   },
   "engines": {
     "node": "14.x"
@@ -49,10 +49,10 @@
     "R.js": "0.1.x",
     "cypress": "^9.5.4",
     "errorhandler": "^1.5.1",
-    "eslint": "^8.13.0",
-    "nodemon": "^2.0.15",
+    "eslint": "^8.16.0",
+    "nodemon": "^2.0.16",
     "pre-commit": "^1.1.2",
-    "terser": "^5.12.1"
+    "terser": "^5.13.1"
   },
   "nodemonConfig": {
     "ignore": [
