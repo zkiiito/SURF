@@ -52,7 +52,7 @@
     "eslint": "^8.16.0",
     "nodemon": "^2.0.16",
     "pre-commit": "^1.1.2",
-    "terser": "^5.13.1"
+    "terser": "^5.14.0"
   },
   "nodemonConfig": {
     "ignore": [
