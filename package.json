@@ -21,7 +21,7 @@
     "got": "^11.8.5",
     "html-metadata": "^1.7.1",
     "iconv-lite": "^0.6.3",
-    "mongoose": "^6.4.0",
+    "mongoose": "^6.4.7",
     "mysql2": "^2.3.3",
     "passport": "^0.6.0",
     "passport-facebook": "^3.0.0",
