@@ -49,7 +49,7 @@
     "R.js": "0.1.x",
     "cypress": "^9.6.1",
     "errorhandler": "^1.5.1",
-    "eslint": "^8.21.0",
+    "eslint": "^8.23.0",
     "nodemon": "^2.0.18",
     "pre-commit": "^1.1.2",
     "terser": "^5.14.2"
