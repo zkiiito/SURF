@@ -5,3 +5,4 @@
 out/
 coverage/
 report/
+.DS_Store
