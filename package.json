@@ -30,7 +30,7 @@
     "redis": "^4.3.1",
     "request": "^2.88.2",
     "socket.io": "^4.5.2",
-    "underscore": "^1.13.4"
+    "underscore": "^1.13.6"
   },
   "engines": {
     "node": "16.x"
