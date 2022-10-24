@@ -48,7 +48,7 @@
   "devDependencies": {
     "cypress": "^9.7.0",
     "errorhandler": "^1.5.1",
-    "eslint": "^8.23.0",
+    "eslint": "^8.26.0",
     "nodemon": "^2.0.19",
     "pre-commit": "^1.2.2",
     "R.js": "^0.1.5",
