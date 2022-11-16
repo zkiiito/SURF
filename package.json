@@ -16,21 +16,21 @@
     "content-type": "^1.0.4",
     "cookie": "~0.5.0",
     "cookie-signature": "^1.2.0",
-    "express": "^4.18.1",
+    "express": "^4.18.2",
     "express-session": "^1.17.3",
     "got": "^11.8.5",
     "html-metadata": "^1.7.1",
     "iconv-lite": "^0.6.3",
-    "mongoose": "^6.6.0",
+    "mongoose": "^6.7.2",
     "mysql2": "^2.3.3",
     "passport": "^0.6.0",
     "passport-facebook": "^3.0.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-local": "^1.0.0",
-    "redis": "^4.3.1",
+    "redis": "^4.5.0",
     "request": "^2.88.2",
-    "socket.io": "^4.5.2",
-    "underscore": "^1.13.4"
+    "socket.io": "^4.5.3",
+    "underscore": "^1.13.6"
   },
   "engines": {
     "node": "16.x"
@@ -48,11 +48,11 @@
   "devDependencies": {
     "cypress": "^9.7.0",
     "errorhandler": "^1.5.1",
-    "eslint": "^8.23.0",
-    "nodemon": "^2.0.19",
+    "eslint": "^8.27.0",
+    "nodemon": "^2.0.20",
     "pre-commit": "^1.2.2",
     "R.js": "^0.1.5",
-    "terser": "^5.15.0"
+    "terser": "^5.15.1"
   },
   "nodemonConfig": {
     "ignore": [
