@@ -29,7 +29,7 @@
     "passport-local": "^1.0.0",
     "redis": "^4.5.0",
     "request": "^2.88.2",
-    "socket.io": "^4.5.3",
+    "socket.io": "^4.5.4",
     "underscore": "^1.13.6"
   },
   "engines": {
