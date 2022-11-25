@@ -52,7 +52,7 @@
     "nodemon": "^2.0.20",
     "pre-commit": "^1.2.2",
     "R.js": "^0.1.5",
-    "terser": "^5.15.1"
+    "terser": "^5.16.0"
   },
   "nodemonConfig": {
     "ignore": [
