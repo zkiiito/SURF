@@ -1,0 +1,10 @@
+.Wave-Container {
+    flex: 1 80%;
+    display: flex;
+}
+
+.empty {
+    display: flex;
+    padding: 4em;
+    align-items: center;
+}

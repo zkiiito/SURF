@@ -1,0 +1,24 @@
+.Header {
+    height: 5em;
+    overflow: hidden;
+    color: #fff;
+    background: #333333 linear-gradient(to top, #282828, #383838);
+    z-index: 4;
+    min-height: 0;
+}
+
+@media (max-width: 999px) {
+    .Header {
+        height: 2em;
+    }
+}
+
+h1 {
+    display: none;
+}
+
+.Header-Logo {
+    float: left;
+    height: 100%;
+    border: 0;
+}

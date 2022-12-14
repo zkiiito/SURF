@@ -1,0 +1,24 @@
+.WaveList-addwave {
+    font-size: 10px;
+    float: right;
+    margin: 2px;
+}
+
+.WaveList {
+    flex: 1 20%;
+    overflow: auto;
+    z-index: 3;
+}
+
+.WaveList-active,
+.WaveList-archived {
+    border-bottom: 1px solid #ccc;
+}
+
+.WaveList-bottom p {
+    color: #aaa;
+    margin: 0 auto;
+    padding: 0.8em 0;
+    text-align: center;
+    font-size: 0.6em;
+}
