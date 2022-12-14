@@ -35,7 +35,7 @@
     "underscore": "^1.13.6"
   },
   "engines": {
-    "node": "16.x"
+    "node": "18.x"
   },
   "scripts": {
     "start": "node Surf.js",
