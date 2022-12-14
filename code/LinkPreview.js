@@ -1,8 +1,11 @@
-const metadata = require('html-metadata');
 const got = require('got');
 const contentType = require('content-type');
-const cheerio = require('cheerio');
 const iconv = require('iconv-lite');
+const metascraper = require('metascraper')([
+    require('metascraper-description')(),
+    require('metascraper-image')(),
+    require('metascraper-title')(),
+]);
 const redis = require('./RedisClient');
 const currentQueries = {};
 
@@ -92,24 +95,12 @@ module.exports = {
                 })
                 .then((response) => {
                     const str = iconv.decode(response.body, contenttype.parameters.charset || 'utf-8');
-                    return metadata.parseAll(cheerio.load(str));
+                    return metascraper({ url, html: str });
                 })
                 .then((meta) => {
-                    if (meta.openGraph && meta.openGraph.title) {
-                        result.title = meta.openGraph.title;
-                        result.description = meta.openGraph.description || null;
-
-                        if (meta.openGraph.image) {
-                            if (Array.isArray(meta.openGraph.image)) {
-                                result.image = meta.openGraph.image[0].url;
-                            } else {
-                                result.image = meta.openGraph.image.url;
-                            }
-                        }
-                    } else if (meta.general && meta.general.title) {
-                        result.title = meta.general.title;
-                        result.description = meta.general.description || null;
-                    }
+                    result.title = meta.title;
+                    result.image = meta.image;
+                    result.description = meta.description;
 
                     if (result.title) {
                         return resolve(result);
