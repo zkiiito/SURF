@@ -25,7 +25,12 @@ const SurfServer = {
         ExpressServer.listen(Config.port);
         console.log('SURF is running, listening on port ' + Config.port);
 
-        this.socket = IO(ExpressServer, {'pingInterval': 4000, 'pingTimeout': 10000});
+        this.socket = IO(ExpressServer, {
+            'pingInterval': 4000, 'pingTimeout': 10000, cors: {
+                origin: 'http://localhost:3001',
+                credentials: true
+            }
+        });
 
         this.socket.use(function (socket, next) {
             const data = socket.request;

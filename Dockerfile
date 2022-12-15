@@ -1,4 +1,4 @@
-FROM node:18-alpine
+FROM node:18
 
 # Create app directory
 WORKDIR /opt/surf
@@ -6,7 +6,7 @@ WORKDIR /opt/surf
 # Install app dependencies
 COPY package*.json ./
 
-RUN npm install --only=production
+RUN npm ci --omit=dev
 
 # Bundle app source
 COPY . .
