@@ -19,7 +19,7 @@ services:
       - backend
 
   mongodb:
-    image: mongo:5.0
+    image: mongo:6.0
     volumes:
       - mongodb:/mdata/db/
     networks:
