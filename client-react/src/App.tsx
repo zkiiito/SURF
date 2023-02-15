@@ -4,23 +4,21 @@ import WaveContainer from './WaveContainer'
 import WaveList from './WaveList'
 
 import socketIO from 'socket.io-client'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
+import { observer } from 'mobx-react-lite'
+import WaveStore from './WaveStore'
 const socket = socketIO('http://localhost:8000', {
   withCredentials: true,
 })
 
-function App() {
-  const [status, setStatus] = useState('offline')
-  const [waves, setWawes] = useState([])
-  const [users, setUsers] = useState([])
-  const [currentUser, setCurrentUser] = useState()
-
+const App = observer(({ store }: { store: WaveStore }) => {
   useEffect(() => {
     socket.on('init', (data) => {
       console.log(data)
-      setWawes(data.waves)
+      store.waves = data.waves
+      store.users = [...data.users, data.me]
       // setUsers([...data.users, data.me])
-      setCurrentUser(data.me)
+      store.currentUser = data.me
     })
 
     return () => {
@@ -30,7 +28,7 @@ function App() {
 
   return (
     <div className="App">
-      <Header />
+      <Header currentUser={store.currentUser} />
       <div id="container">
         <WaveList />
         <WaveContainer />
@@ -39,6 +37,6 @@ function App() {
       <div id="darken"></div>
     </div>
   )
-}
+})
 
 export default App
