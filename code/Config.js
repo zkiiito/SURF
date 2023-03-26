@@ -13,7 +13,6 @@ const config = {
     port: process.env.PORT || 8000,
     graphiteKey: process.env.HOSTEDGRAPHITE_APIKEY || null,
     adminPass: process.env.ADMINPASS || 'adminPass',
-    analyticsId: process.env.ANALYTICS_ID || null,
     mysql: {
         host: 'localhost',
         user: 'root',

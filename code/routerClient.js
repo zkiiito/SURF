@@ -60,7 +60,7 @@ app.get('/', function (req, res) {
     if (!clientIndexHtml) {
         fs.readFile(clientDir + '/index.html', {encoding: 'utf-8'}, function (err, data) {
             if (!err) {
-                clientIndexHtml = data.replace('ANALYTICS_ID', Config.analyticsId);
+                clientIndexHtml = data;
                 res.send(clientIndexHtml);
 
                 if (Config.testMode) {
