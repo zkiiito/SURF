@@ -1,6 +1,9 @@
+import { observer } from 'mobx-react-lite'
 import './WaveList.css'
+import { WaveType } from './WaveStore'
+import WaveListView from './WaveListView'
 
-function WaveList() {
+const WaveList = observer(({ waves }: { waves?: WaveType[] }) => {
   return (
     <div className="WaveList">
       <button className="button WaveList-addwave">
@@ -8,6 +11,7 @@ function WaveList() {
         <span className="R mshow">Add+</span>
       </button>
       <div className="WaveList-active"></div>
+      {waves ? waves.map((wave) => <WaveListView wave={wave} />) : ''}
       <div className="WaveList-archived"></div>
       <div className="WaveList-bottom">
         <p>
@@ -23,6 +27,6 @@ function WaveList() {
       </div>
     </div>
   )
-}
+})
 
 export default WaveList

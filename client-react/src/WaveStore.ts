@@ -1,4 +1,4 @@
-import { makeObservable, observable } from 'mobx'
+import { makeObservable, observable, runInAction } from 'mobx'
 
 export type UserType = {
   name: string
@@ -11,8 +11,13 @@ export type UserType = {
   _id: string
 }
 
+export type WaveType = {
+  id: string
+  title: string
+}
+
 class WaveStore {
-  waves = []
+  waves: WaveType[] = []
   users: UserType[] = []
   messages = []
   currentUser: UserType | undefined = undefined
@@ -25,6 +30,14 @@ class WaveStore {
       messages: observable,
       currentUser: observable,
       ready: observable,
+    })
+  }
+
+  login(waves: WaveType[], users: UserType[], me: UserType) {
+    runInAction(() => {
+      this.waves = waves
+      this.users = [...users, me]
+      this.currentUser = me
     })
   }
 }

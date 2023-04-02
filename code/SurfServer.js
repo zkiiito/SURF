@@ -27,7 +27,7 @@ const SurfServer = {
 
         this.socket = IO(ExpressServer, {
             'pingInterval': 4000, 'pingTimeout': 10000, cors: {
-                origin: 'http://localhost:3001',
+                origin: 'http://localhost:3000',
                 credentials: true
             }
         });

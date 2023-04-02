@@ -9,17 +9,18 @@ import { observer } from 'mobx-react-lite'
 import WaveStore from './WaveStore'
 const socket = socketIO('http://localhost:8000', {
   withCredentials: true,
+  autoConnect: false,
 })
 
 const App = observer(({ store }: { store: WaveStore }) => {
   useEffect(() => {
+    console.log('useEffect')
     socket.on('init', (data) => {
-      console.log(data)
-      store.waves = data.waves
-      store.users = [...data.users, data.me]
+      store.login(data.waves, data.users, data.me)
       // setUsers([...data.users, data.me])
-      store.currentUser = data.me
     })
+
+    socket.connect()
 
     return () => {
       socket.off('init')
@@ -30,7 +31,7 @@ const App = observer(({ store }: { store: WaveStore }) => {
     <div className="App">
       <Header currentUser={store.currentUser} />
       <div id="container">
-        <WaveList />
+        <WaveList waves={store.waves} />
         <WaveContainer />
       </div>
 
