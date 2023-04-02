@@ -4,15 +4,35 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import WaveStore from './WaveStore'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import WaveContainer, { loader } from './WaveContainer'
+import WaveContainerEmpty from './WaveContainerEmpty'
 
 const store = new WaveStore()
 
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-);
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <App store={store} />,
+
+    children: [
+      {
+        path: '/',
+        element: <WaveContainerEmpty />,
+      },
+      {
+        path: 'wave/:waveId',
+        element: <WaveContainer />,
+        loader: loader,
+      },
+    ],
+  },
+])
+
+const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
   <React.StrictMode>
-    <App store={store} />
+    <RouterProvider router={router} />
   </React.StrictMode>
 )
 

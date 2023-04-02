@@ -1,9 +1,9 @@
 import { observer } from 'mobx-react-lite'
 import './WaveList.css'
-import { WaveType } from './WaveStore'
+import { Wave } from './WaveStore'
 import WaveListView from './WaveListView'
 
-const WaveList = observer(({ waves }: { waves?: WaveType[] }) => {
+const WaveList = observer(({ waves }: { waves?: Wave[] }) => {
   return (
     <div className="WaveList">
       <button className="button WaveList-addwave">

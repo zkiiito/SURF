@@ -1,6 +1,6 @@
 import { makeObservable, observable, runInAction } from 'mobx'
 
-export type UserType = {
+export interface UserDTO {
   name: string
   avatar: string
   status: string
@@ -11,16 +11,21 @@ export type UserType = {
   _id: string
 }
 
-export type WaveType = {
-  id: string
+export interface User extends UserDTO {}
+
+export interface WaveDTO {
+  _id: string
   title: string
+  userIds: []
 }
 
+export interface Wave extends WaveDTO {}
+
 class WaveStore {
-  waves: WaveType[] = []
-  users: UserType[] = []
+  waves: Wave[] = []
+  users: User[] = []
   messages = []
-  currentUser: UserType | undefined = undefined
+  currentUser: User | undefined = undefined
   ready = false
 
   constructor() {
@@ -33,7 +38,7 @@ class WaveStore {
     })
   }
 
-  login(waves: WaveType[], users: UserType[], me: UserType) {
+  login(waves: WaveDTO[], users: UserDTO[], me: UserDTO) {
     runInAction(() => {
       this.waves = waves
       this.users = [...users, me]

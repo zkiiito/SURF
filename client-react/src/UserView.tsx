@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite'
-import { UserType } from './WaveStore'
+import { User } from './WaveStore'
 
-const User = observer(({ user }: { user?: UserType }) => {
+const UserView = observer(({ user }: { user?: User }) => {
   if (user) {
     return (
       <img
@@ -15,4 +15,4 @@ const User = observer(({ user }: { user?: UserType }) => {
   return <br />
 })
 
-export default User
+export default UserView

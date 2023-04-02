@@ -1,15 +1,16 @@
 import { observer } from 'mobx-react-lite'
-import { WaveType } from './WaveStore'
+import { Wave } from './WaveStore'
+import { Link } from 'react-router-dom'
 
-const WaveListView = observer(({ wave }: { wave: WaveType }) => {
+const WaveListView = observer(({ wave }: { wave: Wave }) => {
   return (
-    <a className="waveitem" href="#wave/{{ wave.id }}">
+    <Link to={`wave/${wave._id} `} className="waveitem">
       <h2>{wave.title}</h2>
       <p className="meta mhide">
         <span className="usercount R">usercount participants</span>{' '}
         <span className="piros">unreadPosts</span>
       </p>
-    </a>
+    </Link>
   )
 })
 

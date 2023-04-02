@@ -1,14 +1,16 @@
+import { useLoaderData } from 'react-router-dom'
 import './WaveContainer.css'
 
+// @ts-ignore
+export async function loader({ params }) {
+  return params.waveId
+}
+
 function WaveContainer() {
+  const waveId = useLoaderData() as string
   return (
     <div className="Wave-Container">
-      <div className="empty" data-style="display: none">
-        <div className="feedback">
-          <h2 className="R">You have no conversations.</h2>
-          <button className="button addwave R">Add conversation +</button>
-        </div>
-      </div>
+      <span>{waveId}</span>
     </div>
   )
 }
