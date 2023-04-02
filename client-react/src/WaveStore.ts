@@ -1,4 +1,5 @@
 import { makeObservable, observable, runInAction } from 'mobx'
+import socketIO from 'socket.io-client'
 
 export interface UserDTO {
   name: string
@@ -21,6 +22,11 @@ export interface WaveDTO {
 
 export interface Wave extends WaveDTO {}
 
+const socket = socketIO('http://localhost:8000', {
+  withCredentials: true,
+  autoConnect: false,
+})
+
 class WaveStore {
   waves: Wave[] = []
   users: User[] = []
@@ -36,6 +42,14 @@ class WaveStore {
       currentUser: observable,
       ready: observable,
     })
+
+    socket.on('init', (data) => {
+      console.log('init', data)
+      this.login(data.waves, data.users, data.me)
+      // setUsers([...data.users, data.me])
+    })
+
+    socket.connect()
   }
 
   login(waves: WaveDTO[], users: UserDTO[], me: UserDTO) {
