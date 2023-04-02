@@ -14,6 +14,12 @@ export interface UserDTO {
 
 export interface User extends UserDTO {}
 
+export interface CurrentUser extends UserDTO {
+  showPictures: boolean
+  showVideos: boolean
+  showLinkPreviews: boolean
+}
+
 export interface WaveDTO {
   _id: string
   title: string
@@ -31,7 +37,8 @@ class WaveStore {
   waves: Wave[] = []
   users: User[] = []
   messages = []
-  currentUser: User | undefined = undefined
+  currentUser?: User = undefined
+  currentWave?: Wave = undefined
   ready = false
 
   constructor() {
@@ -57,6 +64,8 @@ class WaveStore {
       this.waves = waves
       this.users = [...users, me]
       this.currentUser = me
+
+      // TODO: loadLocalAttributes, define separate interface for user with those fields
     })
   }
 }

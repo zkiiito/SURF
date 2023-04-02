@@ -3,7 +3,7 @@ import './WaveList.css'
 import { Wave } from './WaveStore'
 import WaveListView from './WaveListView'
 
-const WaveList = observer(({ waves }: { waves?: Wave[] }) => {
+const WaveList = observer(({ waves = [] }: { waves: Wave[] }) => {
   return (
     <div className="WaveList">
       <button className="button WaveList-addwave">
@@ -11,7 +11,9 @@ const WaveList = observer(({ waves }: { waves?: Wave[] }) => {
         <span className="R mshow">Add+</span>
       </button>
       <div className="WaveList-active"></div>
-      {waves ? waves.map((wave) => <WaveListView wave={wave} />) : ''}
+      {waves.map((wave) => (
+        <WaveListView wave={wave} key={wave._id} />
+      ))}
       <div className="WaveList-archived"></div>
       <div className="WaveList-bottom">
         <p>

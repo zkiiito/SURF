@@ -1,13 +1,8 @@
-import { useLoaderData } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import './WaveContainer.css'
 
-// @ts-ignore
-export async function loader({ params }) {
-  return params.waveId
-}
-
 function WaveContainer() {
-  const waveId = useLoaderData() as string
+  const { waveId } = useParams()
   return (
     <div className="Wave-Container">
       <span>{waveId}</span>
