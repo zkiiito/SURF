@@ -26,7 +26,27 @@ export interface WaveDTO {
   userIds: []
 }
 
-export interface Wave extends WaveDTO {}
+export interface Wave extends WaveDTO {
+  messages: Message[]
+  users: User[]
+  currentMessage?: Message
+}
+
+export interface MessageDTO {
+  _id: string
+  userId: string
+  waveId: string
+  parentId: string
+  message: string
+  unread: boolean
+  created_at: string
+}
+
+export interface Message extends MessageDTO {
+  messages?: Message[]
+  user?: User
+  created_at_date: Date
+}
 
 const socket = socketIO('http://localhost:8000', {
   withCredentials: true,
@@ -36,7 +56,7 @@ const socket = socketIO('http://localhost:8000', {
 class WaveStore {
   waves: Wave[] = []
   users: User[] = []
-  messages = []
+  messages: Message[] = []
   currentUser?: User = undefined
   currentWave?: Wave = undefined
   ready = false
@@ -52,20 +72,50 @@ class WaveStore {
 
     socket.on('init', (data) => {
       console.log('init', data)
-      this.login(data.waves, data.users, data.me)
-      // setUsers([...data.users, data.me])
+      this.onInit(data.waves, data.users, data.me)
+    })
+
+    socket.on('message', (data) => {
+      console.log('message', data)
+      this.onMessage(data)
     })
 
     socket.connect()
   }
 
-  login(waves: WaveDTO[], users: UserDTO[], me: UserDTO) {
+  onInit(waves: WaveDTO[], users: UserDTO[], me: UserDTO) {
     runInAction(() => {
-      this.waves = waves
       this.users = [...users, me]
       this.currentUser = me
 
+      this.waves = waves.map((waveDTO) => {
+        return {
+          ...waveDTO,
+          messages: [],
+          users: waveDTO.userIds
+            .map((userId) => this.users.find((u) => u._id === userId)!)
+            .filter(Boolean),
+        }
+      })
+
       // TODO: loadLocalAttributes, define separate interface for user with those fields
+    })
+  }
+
+  onMessage(data: { messages: MessageDTO[] }) {
+    runInAction(() => {
+      data.messages.forEach((messageDTO) => {
+        const message: Message = {
+          ...messageDTO,
+          messages: [],
+          user: this.users.find((u) => u._id === messageDTO.userId),
+          created_at_date: new Date(),
+        }
+        const wave = this.waves.find((wave) => wave._id === message.waveId)
+        if (wave) {
+          wave.messages.push(message)
+        }
+      })
     })
   }
 }

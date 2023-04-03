@@ -7,8 +7,10 @@ const WaveListView = observer(({ wave }: { wave: Wave }) => {
     <Link to={`wave/${wave._id} `} className="waveitem">
       <h2>{wave.title}</h2>
       <p className="meta mhide">
-        <span className="usercount R">usercount participants</span>{' '}
-        <span className="piros">unreadPosts</span>
+        <span className="usercount R">{wave.userIds.length} participants</span>{' '}
+        <span className="piros">
+          {wave.messages.filter((m) => m.unread).length}
+        </span>
       </p>
     </Link>
   )
