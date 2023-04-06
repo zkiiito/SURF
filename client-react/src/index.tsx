@@ -1,12 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import App from './App'
 import WaveStore from './WaveStore'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import WaveContainer from './WaveContainer'
 import WaveContainerEmpty from './WaveContainerEmpty'
+import WaveContainerProxy from './WaveContainerProxy'
 
 const store = new WaveStore()
 
@@ -22,7 +21,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'wave/:waveId',
-        element: <WaveContainer />,
+        element: <WaveContainerProxy waves={store.waves} />,
       },
     ],
   },

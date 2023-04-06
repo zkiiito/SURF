@@ -1,13 +1,16 @@
-import { useParams } from 'react-router-dom'
 import './WaveContainer.css'
+import { observer } from 'mobx-react-lite'
+import MessageView from './MessageView'
+import { Wave } from './WaveStore'
 
-function WaveContainer() {
-  const { waveId } = useParams()
+const WaveContainer = observer(({ wave: { rootMessages } }: { wave: Wave }) => {
   return (
     <div className="Wave-Container">
-      <span>{waveId}</span>
+      {rootMessages.map((message) => (
+        <MessageView message={message} key={message._id} />
+      ))}
     </div>
   )
-}
+})
 
 export default WaveContainer

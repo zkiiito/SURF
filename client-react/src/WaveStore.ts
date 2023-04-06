@@ -1,4 +1,10 @@
-import { makeObservable, observable, runInAction } from 'mobx'
+import {
+  computed,
+  makeAutoObservable,
+  makeObservable,
+  observable,
+  runInAction,
+} from 'mobx'
 import socketIO from 'socket.io-client'
 
 export interface UserDTO {
@@ -26,10 +32,37 @@ export interface WaveDTO {
   userIds: []
 }
 
-export interface Wave extends WaveDTO {
+export class Wave implements WaveDTO {
+  _id: string
+  title: string
+  userIds: []
   messages: Message[]
   users: User[]
   currentMessage?: Message
+
+  constructor(dto: WaveDTO, users: User[]) {
+    this._id = dto._id
+    this.title = dto.title
+    this.userIds = dto.userIds
+    this.messages = []
+    this.users = this.userIds
+      .map((userId) => users.find((u) => u._id === userId)!)
+      .filter(Boolean)
+
+    makeAutoObservable(this)
+    /*
+    makeObservable(this, {
+      title: observable,
+      userIds: observable,
+      messages: observable,
+      rootMessages: computed,
+    })
+    */
+  }
+
+  get rootMessages() {
+    return this.messages.filter((m) => !m.parentId)
+  }
 }
 
 export interface MessageDTO {
@@ -43,7 +76,7 @@ export interface MessageDTO {
 }
 
 export interface Message extends MessageDTO {
-  messages?: Message[]
+  messages: Message[]
   user?: User
   created_at_date: Date
 }
@@ -88,36 +121,53 @@ class WaveStore {
       this.users = [...users, me]
       this.currentUser = me
 
-      this.waves = waves.map((waveDTO) => {
-        return {
-          ...waveDTO,
-          messages: [],
-          users: waveDTO.userIds
-            .map((userId) => this.users.find((u) => u._id === userId)!)
-            .filter(Boolean),
-        }
+      waves.forEach((waveDTO) => {
+        const wave = new Wave(waveDTO, this.users)
+        this.waves.push(wave)
       })
 
       // TODO: loadLocalAttributes, define separate interface for user with those fields
     })
   }
 
-  onMessage(data: { messages: MessageDTO[] }) {
-    runInAction(() => {
-      data.messages.forEach((messageDTO) => {
+  onMessage(data: { messages?: MessageDTO[]; message?: MessageDTO }) {
+    if (data.messages) {
+      data.messages.forEach((message) => this.onMessage({ message }))
+    } else if (data.message) {
+      runInAction(() => {
         const message: Message = {
-          ...messageDTO,
+          ...data.message!,
           messages: [],
-          user: this.users.find((u) => u._id === messageDTO.userId),
+          user: this.users.find((u) => u._id === data.message!.userId),
           created_at_date: new Date(),
         }
+
+        makeObservable(message, {
+          messages: observable,
+        })
+
+        this.messages.push(message)
         const wave = this.waves.find((wave) => wave._id === message.waveId)
         if (wave) {
           wave.messages.push(message)
+          wave.messages.sort(sortMessages)
+          if (message.parentId) {
+            const parentMessage = this.messages.find(
+              (msg) => msg._id === message.parentId
+            )
+            if (parentMessage) {
+              parentMessage.messages.push(message)
+              parentMessage.messages.sort(sortMessages)
+            }
+          }
         }
       })
-    })
+    }
   }
+}
+
+function sortMessages(msg1: Message, msg2: Message) {
+  return msg1.created_at < msg2.created_at ? -1 : 1
 }
 
 export default WaveStore
