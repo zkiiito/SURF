@@ -1,10 +1,4 @@
-import {
-  computed,
-  makeAutoObservable,
-  makeObservable,
-  observable,
-  runInAction,
-} from 'mobx'
+import { computed, makeObservable, observable, runInAction } from 'mobx'
 import socketIO from 'socket.io-client'
 
 export interface UserDTO {
@@ -49,15 +43,14 @@ export class Wave implements WaveDTO {
       .map((userId) => users.find((u) => u._id === userId)!)
       .filter(Boolean)
 
-    makeAutoObservable(this)
-    /*
+    // makeAutoObservable(this)
+
     makeObservable(this, {
       title: observable,
       userIds: observable,
       messages: observable,
       rootMessages: computed,
     })
-    */
   }
 
   get rootMessages() {
@@ -110,7 +103,11 @@ class WaveStore {
 
     socket.on('message', (data) => {
       console.log('message', data)
-      this.onMessage(data)
+      if (data.messages) {
+        data.messages.forEach((message: MessageDTO) => this.onMessage(message))
+      } else {
+        this.onMessage(data)
+      }
     })
 
     socket.connect()
@@ -130,39 +127,35 @@ class WaveStore {
     })
   }
 
-  onMessage(data: { messages?: MessageDTO[]; message?: MessageDTO }) {
-    if (data.messages) {
-      data.messages.forEach((message) => this.onMessage({ message }))
-    } else if (data.message) {
-      runInAction(() => {
-        const message: Message = {
-          ...data.message!,
-          messages: [],
-          user: this.users.find((u) => u._id === data.message!.userId),
-          created_at_date: new Date(),
-        }
+  onMessage(data: MessageDTO) {
+    runInAction(() => {
+      const message: Message = {
+        ...data,
+        messages: [],
+        user: this.users.find((u) => u._id === data.userId),
+        created_at_date: new Date(),
+      }
 
-        makeObservable(message, {
-          messages: observable,
-        })
+      makeObservable(message, {
+        messages: observable,
+      })
 
-        this.messages.push(message)
-        const wave = this.waves.find((wave) => wave._id === message.waveId)
-        if (wave) {
-          wave.messages.push(message)
-          wave.messages.sort(sortMessages)
-          if (message.parentId) {
-            const parentMessage = this.messages.find(
-              (msg) => msg._id === message.parentId
-            )
-            if (parentMessage) {
-              parentMessage.messages.push(message)
-              parentMessage.messages.sort(sortMessages)
-            }
+      this.messages.push(message)
+      const wave = this.waves.find((wave) => wave._id === message.waveId)
+      if (wave) {
+        wave.messages.push(message)
+        wave.messages.sort(sortMessages)
+        if (message.parentId) {
+          const parentMessage = this.messages.find(
+            (msg) => msg._id === message.parentId
+          )
+          if (parentMessage) {
+            parentMessage.messages.push(message)
+            parentMessage.messages.sort(sortMessages)
           }
         }
-      })
-    }
+      }
+    })
   }
 }
 
