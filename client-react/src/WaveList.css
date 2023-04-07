@@ -5,9 +5,11 @@
 }
 
 .WaveList {
+    height: 100%;
     flex: 1 20%;
     overflow: auto;
     z-index: 3;
+    background: #ddd;
 }
 
 .WaveList-active,
@@ -21,4 +23,5 @@
     padding: 0.8em 0;
     text-align: center;
     font-size: 0.6em;
+    position: relative;
 }

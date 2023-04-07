@@ -1,0 +1,32 @@
+.waveitem {
+    display: block;
+    border-left: 7px solid #ddd;
+    padding: 0.6em 0.6em 0.6em 1em;
+    color: #999;
+}
+
+.waveitem h2 {
+    font-size: 1em;
+    margin-bottom: 0;
+    margin-top: 0;
+    color: #87729d;
+}
+
+.waveitem:hover {
+    text-decoration: none;
+    background-color: #e5e5e5;
+    border-left-color: #e5e5e5;
+}
+
+.waveitem .meta {
+    color: #999;
+    font-size: 0.8em;
+}
+
+.waveitem.updated {
+    border-left-color: #9d9732;
+}
+
+.waveitem.open {
+    border-left-color: #6d8b39;
+}

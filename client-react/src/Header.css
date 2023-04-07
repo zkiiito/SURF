@@ -22,3 +22,8 @@
     height: 100%;
     border: 0;
 }
+#usermenu {
+    margin-top: 1.7em;
+    float: right;
+    margin-right: 0.7em;
+}

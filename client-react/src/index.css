@@ -34,6 +34,7 @@ button {
   border: 1px solid #725c88;
   border-radius: 4px;
   background: #87729d linear-gradient(to bottom, rgb(141, 121, 162), rgb(114, 92, 136));
+  cursor: pointer;
 }
 
 button:hover {

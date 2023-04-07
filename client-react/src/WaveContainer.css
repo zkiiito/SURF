@@ -8,3 +8,69 @@
     padding: 4em;
     align-items: center;
 }
+.wave {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.wavetop {
+    z-index: 2;
+    min-height: 2em;
+    overflow: hidden;
+    padding: 1em 0.75em;
+    background: #eee;
+    border-bottom: 1px solid #e4e4e4;
+    box-shadow: -0.5em -0.5em 2em 0 #aaa;
+}
+
+.wavetop h2 {
+    font-size: 1.8em;
+    float: left;
+    margin-top: -0.1em;
+    color: #6d8b39;
+}
+
+.wavetop .heads {
+    float: left;
+    margin-top: 0.15em;
+    margin-left: 0.8em;
+    overflow: auto;
+}
+
+.wavetop .heads img {
+    width: 1.8em;
+    height: 1.8em;
+    margin-right: 0.2em;
+    display: block;
+    float: left;
+    overflow: hidden;
+}
+
+.wavetop .heads img.offline {
+    display: none;
+}
+
+.wavetop .buttons {
+    margin-top: 0.2em;
+    float: right;
+}
+
+.offline-list {
+    color: #aaa;
+    margin-top: 0.3em;
+    margin-left: 0.2em;
+    float: left;
+}
+
+.waves-container {
+    overflow-y: scroll;
+    flex: 1 100%;
+    background: #eee;
+    font-size: 0.8em;
+}
+
+.messages {
+    border-bottom: 1px solid #e4e4e4;
+    background: white;
+}

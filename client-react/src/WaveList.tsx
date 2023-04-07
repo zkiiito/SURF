@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite'
 import './WaveList.css'
 import { Wave } from './WaveStore'
-import WaveListView from './WaveListView'
+import WaveListItem from './WaveListItem'
 
 const WaveList = observer(({ waves = [] }: { waves: Wave[] }) => {
   return (
@@ -12,7 +12,7 @@ const WaveList = observer(({ waves = [] }: { waves: Wave[] }) => {
       </button>
       <div className="WaveList-active"></div>
       {waves.map((wave) => (
-        <WaveListView wave={wave} key={wave._id} />
+        <WaveListItem wave={wave} key={wave._id} />
       ))}
       <div className="WaveList-archived"></div>
       <div className="WaveList-bottom">

@@ -1,0 +1,14 @@
+.user img {
+    width: 1.5em;
+    height: 1.5em;
+    float: left;
+    overflow: hidden;
+}
+
+.user img.online {
+    border-right: 0.3em solid #6d8b39;
+}
+
+.user img.offline {
+    border-right: 0.3em solid #aaa;
+}
