@@ -7,9 +7,15 @@ import WaveReplyForm from './WaveReplyForm'
 
 const WaveContainer = observer(
   ({ wave, store }: { wave: Wave; store: WaveStore }) => {
-    const offlineUsers = wave.users.filter(
+    
+    const offlineUserCount = wave.users.filter(
       (user) => user.status !== 'online'
     ).length
+
+    function nextUnread(e?: any) {
+      wave.jumpToNextUnread()
+    }
+
     return (
       <div className="wave">
         <div className="wavetop">
@@ -20,15 +26,17 @@ const WaveContainer = observer(
               .map((user) => (
                 <UserView user={user} />
               ))}
-            {offlineUsers > 0 && (
+            {offlineUserCount > 0 && (
               <div className="offline-list">
-                +<span className="count">{offlineUsers}</span>
+                +<span className="count">{offlineUserCount}</span>
                 <span className="mhide"> offline</span>
               </div>
             )}
           </div>
           <div className="buttons">
-            <button className="button gounread R mhide">Next unread</button>
+            <button className="button gounread R mhide" onClick={nextUnread}>
+              Next unread
+            </button>
             <button className="button editwave R mhide">Edit</button>
             <button className="button readall R mhide">All read</button>
             <button className="button quit">
@@ -47,7 +55,7 @@ const WaveContainer = observer(
               </p>
             </div>
             {wave.rootMessages.map((message) => (
-              <MessageView message={message} store={store} key={message._id} />
+              <MessageView message={message} wave={wave} key={message._id} />
             ))}
           </div>
           <WaveReplyForm store={store} wave={wave} />

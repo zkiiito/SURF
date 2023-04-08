@@ -1,40 +1,21 @@
 import { observer } from 'mobx-react-lite'
 import UserView from './UserView'
-import WaveStore, { Message } from './WaveStore'
+import WaveStore, { Message, Wave } from './WaveStore'
 import './MessageView.css'
 import { runInAction } from 'mobx'
 
 const MessageView = observer(
-  ({ message, store }: { message: Message; store: WaveStore }) => {
-    const wave = store.waves.find((w) => w._id === message.waveId)
-
+  ({ message, wave }: { message: Message; wave: Wave }) => {
     function clickHandler(e?: any) {
-      readMessage()
-      setCurrent()
-    }
-
-    function readMessage() {
-      if (message.unread) {
-        runInAction(() => {
-          message.unread = false
-        })
-        store.readMessage(message)
-      }
-    }
-
-    function setCurrent() {
-      if (wave) {
-        runInAction(() => {
-          wave.currentMessage = message
-        })
-      }
+      e.stopPropagation()
+      wave.setCurrentMessage(message)
     }
 
     return (
       <div className="message" onClick={clickHandler}>
         <table
           className={
-            (wave?.currentMessage === message ? 'selected ' : '') +
+            (wave.currentMessage === message ? 'selected ' : '') +
             (message.unread ? 'unread' : '')
           }
         >
@@ -56,7 +37,7 @@ const MessageView = observer(
         </table>
         <div className="replies">
           {message.replies.map((reply) => (
-            <MessageView message={reply} store={store} key={reply._id} />
+            <MessageView message={reply} wave={wave} key={reply._id} />
           ))}
         </div>
         {message.messages.length > 0 && (

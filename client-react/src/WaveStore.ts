@@ -70,13 +70,16 @@ export class Wave implements WaveDTO {
   users: User[]
   currentMessage?: Message
 
-  constructor(dto: WaveDTO, users: User[]) {
+  private store: WaveStore
+
+  constructor(dto: WaveDTO, store: WaveStore) {
+    this.store = store
     this._id = dto._id
     this.title = dto.title
     this.userIds = dto.userIds
     this.messages = []
     this.users = this.userIds
-      .map((userId) => users.find((u) => u._id === userId)!)
+      .map((userId) => store.users.find((u) => u._id === userId)!)
       .filter(Boolean)
 
     makeObservable(this, {
@@ -102,12 +105,138 @@ export class Wave implements WaveDTO {
     return !!firstNewMessage
   }
 
-  update(dto: WaveDTO, users: User[]) {
+  update(dto: WaveDTO) {
     this.title = dto.title
     this.userIds = dto.userIds
     this.users = this.userIds
-      .map((userId) => users.find((u) => u._id === userId)!)
+      .map((userId) => this.store.users.find((u) => u._id === userId)!)
       .filter(Boolean)
+  }
+
+  setCurrentMessage(message: Message) {
+    runInAction(() => {
+      message.unread = false
+      this.currentMessage = message
+    })
+    this.store.readMessage(message)
+  }
+
+  jumpToNextUnread() {
+    const nextMessage = this.getNextUnreadMessage()
+    if (nextMessage) {
+      console.log('found', nextMessage)
+      this.setCurrentMessage(nextMessage)
+    }
+  }
+
+  private getNextUnreadMessage() {
+    let minTimeStamp = ''
+    let nextUnread: Message | null
+
+    if (this.currentMessage) {
+      minTimeStamp = this.currentMessage.created_at
+
+      //if we have a current message, check its children, then its parents recursive
+      nextUnread = this.getMessageNextUnread(
+        this.currentMessage,
+        minTimeStamp,
+        false,
+        []
+      )
+
+      if (nextUnread) {
+        return nextUnread
+      }
+
+      minTimeStamp = this.getMessageRoot(this.currentMessage).created_at
+    }
+
+    // if no unread found around the current, or no current, check the main thread, for all root elements below the current root
+    const msgs = this.rootMessages.filter(
+      (msg) => msg.created_at > minTimeStamp
+    )
+    for (let i = 0; i < msgs.length; i++) {
+      nextUnread = this.getMessageNextUnread(msgs[i], minTimeStamp, true, [])
+      if (nextUnread) {
+        return nextUnread
+      }
+    }
+
+    // if none found, check root elements from the top
+    if (minTimeStamp) {
+      const msgs = this.rootMessages.filter((msg) => {
+        return msg.created_at < minTimeStamp
+      })
+
+      for (let i = 0; i < msgs.length; i++) {
+        nextUnread = this.getMessageNextUnread(msgs[i], '', true, [])
+        if (nextUnread) {
+          return nextUnread
+        }
+      }
+    }
+    return null
+  }
+
+  private getMessageNextUnread(
+    message: Message,
+    minTimeStamp: string,
+    downOnly: boolean,
+    checkedTimeStamps: string[]
+  ): Message | null {
+    if (checkedTimeStamps.includes(message.created_at)) {
+      return null
+    }
+
+    //check message
+    checkedTimeStamps.push(message.created_at)
+
+    if (message.created_at > minTimeStamp && message.unread) {
+      return message
+    }
+
+    //check children
+    for (let i = 0; i < message.messages.length; i++) {
+      const nextUnread = this.getMessageNextUnread(
+        message.messages[i],
+        minTimeStamp,
+        true,
+        checkedTimeStamps
+      )
+      if (nextUnread) {
+        return nextUnread
+      }
+    }
+
+    //check parent
+    if (message.parentId && !downOnly) {
+      const parentMessage = this.messages.find(
+        (msg) => msg._id === message.parentId
+      )
+      if (parentMessage) {
+        return this.getMessageNextUnread(
+          parentMessage,
+          minTimeStamp,
+          false,
+          checkedTimeStamps
+        )
+      }
+    }
+
+    return null
+  }
+
+  private getMessageRoot(message: Message): Message {
+    if (message.parentId) {
+      const parentMessage = this.messages.find(
+        (msg) => msg._id === message.parentId
+      )
+      if (parentMessage) {
+        return this.getMessageRoot(parentMessage)
+      }
+      return message
+    }
+    return message
   }
 }
 
@@ -246,7 +375,7 @@ class WaveStore {
       ]
 
       waves.forEach((waveDTO) => {
-        const wave = new Wave(waveDTO, this.users)
+        const wave = new Wave(waveDTO, this)
         this.waves.push(wave)
       })
 
@@ -279,9 +408,9 @@ class WaveStore {
       const existingWave = this.waves.find((w) => w._id === wave._id)
 
       if (existingWave) {
-        existingWave.update(wave, this.users)
+        existingWave.update(wave)
       } else {
-        const newWave = new Wave(wave, this.users)
+        const newWave = new Wave(wave, this)
         this.waves.push(newWave)
         /* TODO
       if (1 === app.model.waves.length || this.createTitle === wave.get('title')) {
