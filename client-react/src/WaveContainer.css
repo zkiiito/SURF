@@ -14,7 +14,7 @@
     width: 100%;
 }
 
-.wavetop {
+.wave .wavetop {
     z-index: 2;
     min-height: 2em;
     overflow: hidden;
@@ -24,21 +24,22 @@
     box-shadow: -0.5em -0.5em 2em 0 #aaa;
 }
 
-.wavetop h2 {
+.wave .wavetop h2 {
     font-size: 1.8em;
     float: left;
     margin-top: -0.1em;
     color: #6d8b39;
 }
 
-.wavetop .heads {
+.wave .wavetop .heads {
     float: left;
     margin-top: 0.15em;
     margin-left: 0.8em;
     overflow: auto;
+    display: flex;
 }
 
-.wavetop .heads img {
+.wave .wavetop .heads img {
     width: 1.8em;
     height: 1.8em;
     margin-right: 0.2em;
@@ -47,30 +48,26 @@
     overflow: hidden;
 }
 
-.wavetop .heads img.offline {
-    display: none;
-}
-
-.wavetop .buttons {
+.wave .wavetop .buttons {
     margin-top: 0.2em;
     float: right;
 }
 
-.offline-list {
+.wave .offline-list {
     color: #aaa;
     margin-top: 0.3em;
     margin-left: 0.2em;
     float: left;
 }
 
-.waves-container {
+.wave .waves-container {
     overflow-y: scroll;
     flex: 1 100%;
     background: #eee;
     font-size: 0.8em;
 }
 
-.messages {
+.wave .messages {
     border-bottom: 1px solid #e4e4e4;
     background: white;
 }

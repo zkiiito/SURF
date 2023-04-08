@@ -53,3 +53,11 @@ a:hover {
   text-decoration: underline;
   color: #388c85;
 }
+table,
+td {
+  width: 100%;
+}
+
+p {
+  margin: 0 auto;
+}

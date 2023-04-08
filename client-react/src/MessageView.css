@@ -93,3 +93,6 @@
     color: #aaa;
     margin-right: 2.5em;
 }
+.button.reply {
+    float: right;
+}

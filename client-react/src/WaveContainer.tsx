@@ -12,19 +12,19 @@ const WaveContainer = observer(({ wave }: { wave: Wave }) => {
     <div className="wave">
       <div className="wavetop">
         <h2 className="wave-title">{wave.title}</h2>
-        <p className="heads">
+        <div className="heads">
           {wave.users
             .filter((user) => user.status === 'online')
             .map((user) => (
               <UserView user={user} />
             ))}
           {offlineUsers > 0 && (
-            <p className="offline-list">
+            <div className="offline-list">
               +<span className="count">{offlineUsers}</span>
               <span className="mhide"> offline</span>
-            </p>
+            </div>
           )}
-        </p>
+        </div>
         <div className="buttons">
           <button className="button gounread R mhide">Next unread</button>
           <button className="button editwave R mhide">Edit</button>
@@ -42,11 +42,11 @@ const WaveContainer = observer(({ wave }: { wave: Wave }) => {
               <a className="getprevmessages R" href="#">
                 Earlier messages
               </a>
-              {wave.rootMessages.map((message) => (
-                <MessageView message={message} key={message._id} />
-              ))}
             </p>
           </div>
+          {wave.rootMessages.map((message) => (
+            <MessageView message={message} key={message._id} />
+          ))}
         </div>
       </div>
     </div>
