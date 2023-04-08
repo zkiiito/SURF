@@ -132,6 +132,7 @@ export class Message implements MessageDTO {
   messages: Message[]
   user?: User
   created_at_date: Date
+  createdAtFormatted: string
 
   constructor(dto: MessageDTO, users: User[], currentUser?: User) {
     this._id = dto._id
@@ -144,6 +145,7 @@ export class Message implements MessageDTO {
     this.user = users.find((u) => u._id === dto.userId)
     this.unread = dto.unread && dto.userId !== currentUser?._id
     this.created_at_date = new Date(dto.created_at)
+    this.createdAtFormatted = this.formatDate(this.created_at_date)
 
     makeObservable(this, {
       replies: computed,
@@ -153,6 +155,28 @@ export class Message implements MessageDTO {
 
   get replies() {
     return this.messages.sort(sortMessages)
+  }
+
+  formatDate(date: Date) {
+    const monthNames = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ]
+
+    return `${monthNames[date.getMonth()]} ${date.getDate()} ${date
+      .getHours()
+      .toString()
+      .padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`
   }
 }
 

@@ -22,7 +22,7 @@ const MessageView = observer(
               </td>
               <td className="message-body">
                 <button className="button reply">↩</button>
-                <p className="time">{message.created_at}</p>
+                <p className="time">{message.createdAtFormatted}</p>
                 <p className="message-text">
                   <span className="author">{message.user?.name}:</span>{' '}
                   <span className="message-formatted">{message.message}</span>
