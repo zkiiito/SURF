@@ -12,7 +12,43 @@ export interface UserDTO {
   _id: string
 }
 
-export interface User extends UserDTO {}
+export class User implements UserDTO {
+  name: string
+  avatar: string
+  status: string
+  facebookId: string
+  facebookAvatar: string
+  googleId: string
+  googleAvatar: string
+  _id: string
+
+  constructor(dto: UserDTO) {
+    this._id = dto._id
+    this.name = dto.name
+    this.avatar = dto.avatar
+    this.status = dto.status
+    this.facebookId = dto.facebookId
+    this.facebookAvatar = dto.facebookAvatar
+    this.googleId = dto.googleId
+    this.googleAvatar = dto.googleAvatar
+
+    makeObservable(this, {
+      name: observable,
+      avatar: observable,
+      status: observable,
+    })
+  }
+
+  update(dto: UserDTO) {
+    this.name = dto.name
+    this.avatar = dto.avatar
+    this.status = dto.status
+    this.facebookId = dto.facebookId
+    this.facebookAvatar = dto.facebookAvatar
+    this.googleId = dto.googleId
+    this.googleAvatar = dto.googleAvatar
+  }
+}
 
 export interface CurrentUser extends UserDTO {
   showPictures: boolean
@@ -53,6 +89,14 @@ export class Wave implements WaveDTO {
 
   get rootMessages() {
     return this.messages.filter((m) => !m.parentId).sort(sortMessages)
+  }
+
+  update(dto: WaveDTO, users: User[]) {
+    this.title = dto.title
+    this.userIds = dto.userIds
+    this.users = this.userIds
+      .map((userId) => users.find((u) => u._id === userId)!)
+      .filter(Boolean)
   }
 }
 
@@ -145,13 +189,25 @@ class WaveStore {
       this.ready = true
     })
 
+    socket.on('updateUser', (data) => {
+      console.log('updateUser', data)
+      this.onUpdateUser(data)
+    })
+    socket.on('updateWave', (data) => {
+      console.log('updateWave', data)
+      this.onUpdateWave(data)
+    })
+
     socket.connect()
   }
 
   onInit(waves: WaveDTO[], users: UserDTO[], me: UserDTO) {
     runInAction(() => {
-      this.users = [...users, me]
-      this.currentUser = me
+      this.currentUser = new User(me)
+      this.users = [
+        ...users.map((userDTO) => new User(userDTO)),
+        this.currentUser,
+      ]
 
       waves.forEach((waveDTO) => {
         const wave = new Wave(waveDTO, this.users)
@@ -182,6 +238,35 @@ class WaveStore {
     })
   }
 
+  onUpdateWave({ wave }: { wave: WaveDTO }) {
+    runInAction(() => {
+      const existingWave = this.waves.find((w) => w._id === wave._id)
+
+      if (existingWave) {
+        existingWave.update(wave, this.users)
+      } else {
+        const newWave = new Wave(wave, this.users)
+        this.waves.push(newWave)
+        /* TODO
+      if (1 === app.model.waves.length || this.createTitle === wave.get('title')) {
+        app.navigate('wave/' + wave.id, {trigger: true});
+      }
+      */
+      }
+    })
+  }
+
+  onUpdateUser({ user }: { user: UserDTO }) {
+    runInAction(() => {
+      const existingUser = this.users.find((u) => u._id === user._id)
+      if (existingUser) {
+        existingUser.update(user)
+      } else {
+        this.users.push(new User(user))
+      }
+    })
+  }
+
   sendMessage(message: string, waveId: string, parentId?: string) {
     var msg = {
       userId: this.currentUser?._id,
@@ -193,6 +278,9 @@ class WaveStore {
   }
 
   readMessage(message: Message) {
+    runInAction(() => {
+      message.unread = false
+    })
     if (this.queueReads) {
       this.readQueue.push(message)
       this.queueReads = false //queue of max 1

@@ -8,7 +8,6 @@ const MessageView = observer(
     function readMessage(e?: any) {
       e.preventDefault()
       if (message.unread) {
-        message.unread = false
         store.readMessage(message)
       }
     }
