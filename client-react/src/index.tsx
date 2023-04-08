@@ -21,7 +21,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'wave/:waveId',
-        element: <WaveContainerProxy waves={store.waves} />,
+        element: <WaveContainerProxy store={store} />,
       },
     ],
   },

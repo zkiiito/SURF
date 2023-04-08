@@ -61,3 +61,6 @@ td {
 p {
   margin: 0 auto;
 }
+.mshow {
+  display: none;
+}

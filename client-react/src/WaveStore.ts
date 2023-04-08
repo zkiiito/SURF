@@ -43,8 +43,6 @@ export class Wave implements WaveDTO {
       .map((userId) => users.find((u) => u._id === userId)!)
       .filter(Boolean)
 
-    // makeAutoObservable(this)
-
     makeObservable(this, {
       title: observable,
       userIds: observable,
@@ -54,7 +52,7 @@ export class Wave implements WaveDTO {
   }
 
   get rootMessages() {
-    return this.messages.filter((m) => !m.parentId)
+    return this.messages.filter((m) => !m.parentId).sort(sortMessages)
   }
 }
 
@@ -68,10 +66,39 @@ export interface MessageDTO {
   created_at: string
 }
 
-export interface Message extends MessageDTO {
+export class Message implements MessageDTO {
+  _id: string
+  userId: string
+  waveId: string
+  parentId: string
+  message: string
+  unread: boolean
+  created_at: string
+
   messages: Message[]
   user?: User
-  created_at_date: Date
+  created_at_date?: Date
+
+  constructor(dto: MessageDTO, users: User[], currentUser?: User) {
+    this._id = dto._id
+    this.userId = dto.userId
+    this.waveId = dto.waveId
+    this.parentId = dto.parentId
+    this.message = dto.message
+    this.created_at = dto.created_at
+    this.messages = []
+    this.user = users.find((u) => u._id === dto.userId)
+    this.unread = dto.unread && dto.userId !== currentUser?._id
+
+    makeObservable(this, {
+      replies: computed,
+      unread: observable,
+    })
+  }
+
+  get replies() {
+    return this.messages.sort(sortMessages)
+  }
 }
 
 const socket = socketIO('http://localhost:8000', {
@@ -85,6 +112,8 @@ class WaveStore {
   messages: Message[] = []
   currentUser?: User = undefined
   currentWave?: Wave = undefined
+  queueReads = false
+  readQueue: Message[] = []
   ready = false
 
   constructor() {
@@ -110,6 +139,12 @@ class WaveStore {
       }
     })
 
+    socket.on('ready', () => {
+      this.queueReads = this.messages.filter((msg) => msg.unread).length > 1
+      // app.showLastWave();
+      this.ready = true
+    })
+
     socket.connect()
   }
 
@@ -129,33 +164,46 @@ class WaveStore {
 
   onMessage(data: MessageDTO) {
     runInAction(() => {
-      const message: Message = {
-        ...data,
-        messages: [],
-        user: this.users.find((u) => u._id === data.userId),
-        created_at_date: new Date(),
-      }
-
-      makeObservable(message, {
-        messages: observable,
-      })
+      const message = new Message(data, this.users, this.currentUser)
 
       this.messages.push(message)
       const wave = this.waves.find((wave) => wave._id === message.waveId)
       if (wave) {
         wave.messages.push(message)
-        wave.messages.sort(sortMessages)
         if (message.parentId) {
           const parentMessage = this.messages.find(
             (msg) => msg._id === message.parentId
           )
           if (parentMessage) {
             parentMessage.messages.push(message)
-            parentMessage.messages.sort(sortMessages)
           }
         }
       }
     })
+  }
+
+  sendMessage(message: string, waveId: string, parentId?: string) {
+    var msg = {
+      userId: this.currentUser?._id,
+      waveId: waveId,
+      message: message,
+      parentId: parentId,
+    }
+    socket.emit('message', msg)
+  }
+
+  readMessage(message: Message) {
+    if (this.queueReads) {
+      this.readQueue.push(message)
+      this.queueReads = false //queue of max 1
+    } else {
+      this.readQueue.forEach((msg: Message) => {
+        socket.emit('readMessage', { id: msg._id, waveId: msg.waveId })
+      }, this)
+      this.readQueue = []
+
+      socket.emit('readMessage', { id: message._id, waveId: message.waveId })
+    }
   }
 }
 
