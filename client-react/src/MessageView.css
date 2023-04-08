@@ -36,13 +36,11 @@
 }
 
 .message .message {
-    margin-left: -100000em;
-    padding-left: 100003.6em;
+    padding-left: 3.6em;
 }
 
 .message .notification {
-    margin-left: -100000em;
-    padding-left: 100003.6em;
+    padding-left: 3.6em;
 }
 
 .message-header {

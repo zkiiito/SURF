@@ -2,19 +2,42 @@ import { observer } from 'mobx-react-lite'
 import UserView from './UserView'
 import WaveStore, { Message } from './WaveStore'
 import './MessageView.css'
+import { runInAction } from 'mobx'
 
 const MessageView = observer(
   ({ message, store }: { message: Message; store: WaveStore }) => {
-    function readMessage(e?: any) {
-      e.preventDefault()
+    const wave = store.waves.find((w) => w._id === message.waveId)
+
+    function clickHandler(e?: any) {
+      readMessage()
+      setCurrent()
+    }
+
+    function readMessage() {
       if (message.unread) {
+        runInAction(() => {
+          message.unread = false
+        })
         store.readMessage(message)
       }
     }
 
+    function setCurrent() {
+      if (wave) {
+        runInAction(() => {
+          wave.currentMessage = message
+        })
+      }
+    }
+
     return (
-      <div className="message" onClick={readMessage}>
-        <table className={message.unread ? 'unread' : ''}>
+      <div className="message" onClick={clickHandler}>
+        <table
+          className={
+            (wave?.currentMessage === message ? 'selected ' : '') +
+            (message.unread ? 'unread' : '')
+          }
+        >
           <tbody>
             <tr>
               <td className="message-header">

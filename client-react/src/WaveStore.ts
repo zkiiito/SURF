@@ -83,6 +83,7 @@ export class Wave implements WaveDTO {
       title: observable,
       userIds: observable,
       messages: observable,
+      currentMessage: observable,
       rootMessages: computed,
       archived: computed,
     })
@@ -313,9 +314,6 @@ class WaveStore {
   }
 
   readMessage(message: Message) {
-    runInAction(() => {
-      message.unread = false
-    })
     if (this.queueReads) {
       this.readQueue.push(message)
       this.queueReads = false //queue of max 1
