@@ -84,11 +84,21 @@ export class Wave implements WaveDTO {
       userIds: observable,
       messages: observable,
       rootMessages: computed,
+      archived: computed,
     })
   }
 
   get rootMessages() {
     return this.messages.filter((m) => !m.parentId).sort(sortMessages)
+  }
+
+  get archived() {
+    const now = Date.now()
+    const firstNewMessage = this.messages.find(
+      (message) =>
+        now - message.created_at_date.getTime() < 7 * (1000 * 60 * 60 * 24)
+    )
+    return !!firstNewMessage
   }
 
   update(dto: WaveDTO, users: User[]) {
@@ -121,7 +131,7 @@ export class Message implements MessageDTO {
 
   messages: Message[]
   user?: User
-  created_at_date?: Date
+  created_at_date: Date
 
   constructor(dto: MessageDTO, users: User[], currentUser?: User) {
     this._id = dto._id
@@ -133,6 +143,7 @@ export class Message implements MessageDTO {
     this.messages = []
     this.user = users.find((u) => u._id === dto.userId)
     this.unread = dto.unread && dto.userId !== currentUser?._id
+    this.created_at_date = new Date(dto.created_at)
 
     makeObservable(this, {
       replies: computed,

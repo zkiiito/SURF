@@ -11,10 +11,18 @@ const WaveList = observer(({ waves = [] }: { waves: Wave[] }) => {
         <span className="R mshow">Add+</span>
       </button>
       <div className="WaveList-active"></div>
-      {waves.map((wave) => (
-        <WaveListItem wave={wave} key={wave._id} />
-      ))}
-      <div className="WaveList-archived"></div>
+      {waves
+        .filter((wave) => !wave.archived)
+        .map((wave) => (
+          <WaveListItem wave={wave} key={wave._id} />
+        ))}
+      <div className="WaveList-archived">
+        {waves
+          .filter((wave) => wave.archived)
+          .map((wave) => (
+            <WaveListItem wave={wave} key={wave._id} />
+          ))}
+      </div>
       <div className="WaveList-bottom">
         <p>
           SURF &copy; 2023{' '}
