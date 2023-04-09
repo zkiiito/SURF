@@ -404,9 +404,19 @@ class WaveStore {
       console.log('updateUser', data)
       this.onUpdateUser(data)
     })
+
     socket.on('updateWave', (data) => {
       console.log('updateWave', data)
       this.onUpdateWave(data)
+    })
+
+    socket.on('disconnect', () => {
+      console.log('disconnect')
+      setTimeout(() => socket.connect(), 100)
+    })
+
+    socket.on('connect', () => {
+      console.log('connect')
     })
 
     socket.connect()
@@ -427,6 +437,10 @@ class WaveStore {
   }
 
   onMessage(data: MessageDTO) {
+    if (this.messages.find((msg) => msg._id === data._id)) {
+      return false
+    }
+
     runInAction(() => {
       const message = new Message(data, this.users, this.currentUser)
 
