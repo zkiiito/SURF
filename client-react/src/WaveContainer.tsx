@@ -32,6 +32,10 @@ const WaveContainer = observer(({ wave }: { wave: Wave }) => {
     wave.readAllMessages()
   }
 
+  function getPreviousMessages(e?: any) {
+    wave.getMessages(null, wave.rootMessages[0]._id)
+  }
+
   return (
     <div className="wave">
       <div className="wavetop">
@@ -67,7 +71,7 @@ const WaveContainer = observer(({ wave }: { wave: Wave }) => {
         <div className="messages">
           <div className="notification getprevmessages">
             <p>
-              <a className="getprevmessages R" href="#">
+              <a className="getprevmessages R" onClick={getPreviousMessages}>
                 Earlier messages
               </a>
             </p>

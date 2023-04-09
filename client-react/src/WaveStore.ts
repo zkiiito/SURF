@@ -273,6 +273,16 @@ export class Wave implements WaveDTO {
     })
     socket.emit('readAllMessages', { waveId: this._id })
   }
+
+  getMessages(minParentId: string | null, maxRootId: string) {
+    const data = {
+      waveId: this._id,
+      minParentId: minParentId,
+      maxRootId: maxRootId,
+    }
+
+    socket.emit('getMessages', data)
+  }
 }
 
 export interface MessageDTO {
@@ -420,18 +430,22 @@ class WaveStore {
     runInAction(() => {
       const message = new Message(data, this.users, this.currentUser)
 
-      this.messages.push(message)
       const wave = this.waves.find((wave) => wave._id === message.waveId)
       if (wave) {
-        wave.messages.push(message)
         if (message.parentId) {
-          const parentMessage = this.messages.find(
+          const parentMessage = wave.messages.find(
             (msg) => msg._id === message.parentId
           )
           if (parentMessage) {
             parentMessage.messages.push(message)
+          } else {
+            wave.getMessages(message.parentId, wave.rootMessages[0]._id)
+            return false
           }
         }
+
+        wave.messages.push(message)
+        this.messages.push(message)
       }
     })
   }
