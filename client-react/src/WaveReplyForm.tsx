@@ -18,8 +18,8 @@ const WaveReplyForm = ({ wave }: { wave: Wave }) => {
       sendMessage()
     } else if (32 === e.keyCode && ' ' === messageText) {
       //space
-      // e.preventDefault();
-      // this.scrollToNextUnread();
+      e.preventDefault()
+      wave.jumpToNextUnread()
     } else if (!e.shiftKey && 9 === e.keyCode) {
       //tab
       // e.preventDefault();

@@ -132,8 +132,9 @@ export class Wave implements WaveDTO {
   jumpToNextUnread() {
     const nextMessage = this.getNextUnreadMessage()
     if (nextMessage) {
-      console.log('found', nextMessage)
       this.setCurrentMessage(nextMessage)
+    } else {
+      console.log('no next unread')
     }
   }
 
@@ -192,6 +193,15 @@ export class Wave implements WaveDTO {
     downOnly: boolean,
     checkedTimeStamps: string[]
   ): Message | null {
+    /*
+    console.log('getMessageNextUnread', {
+      message: message.message,
+      minTimeStamp,
+      downOnly,
+      checkedTimeStamps,
+    })
+    */
+
     if (checkedTimeStamps.includes(message.created_at)) {
       return null
     }

@@ -4,8 +4,22 @@ import MessageView from './MessageView'
 import { Wave } from './WaveStore'
 import UserView from './UserView'
 import WaveReplyForm from './WaveReplyForm'
+import { useEffect } from 'react'
 
 const WaveContainer = observer(({ wave }: { wave: Wave }) => {
+  useEffect(() => {
+    const onSpace = (ev: KeyboardEvent) => {
+      if (ev.key === ' ') {
+        ev.preventDefault()
+        wave.jumpToNextUnread()
+      }
+    }
+    window.addEventListener('keydown', onSpace, false)
+    return () => {
+      window.removeEventListener('keydown', onSpace, false)
+    }
+  }, [])
+
   const offlineUserCount = wave.users.filter(
     (user) => user.status !== 'online'
   ).length

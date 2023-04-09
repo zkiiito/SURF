@@ -1,9 +1,9 @@
 import { observer } from 'mobx-react-lite'
 import UserView from './UserView'
-import WaveStore, { Message, Wave } from './WaveStore'
+import { Message, Wave } from './WaveStore'
 import './MessageView.css'
-import { runInAction } from 'mobx'
 import MessageReplyForm from './MessageReplyForm'
+import { useEffect, useRef } from 'react'
 
 const MessageView = observer(
   ({ message, wave }: { message: Message; wave: Wave }) => {
@@ -23,6 +23,18 @@ const MessageView = observer(
       )
     }
 
+    const scrollToRef = useRef(null)
+
+    useEffect(() => {
+      if (wave.currentMessage === message) {
+        // @ts-ignore
+        scrollToRef.current?.scrollIntoView({
+          block: 'nearest',
+          behvaior: 'smooth',
+        })
+      }
+    })
+
     return (
       <div
         className="message"
@@ -30,6 +42,7 @@ const MessageView = observer(
         onDoubleClick={toggleRepliedMessage}
       >
         <table
+          ref={scrollToRef}
           className={
             (wave.currentMessage === message ? 'selected ' : '') +
             (message.unread ? 'unread' : '')
