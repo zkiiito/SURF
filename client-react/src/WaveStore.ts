@@ -266,6 +266,13 @@ export class Wave implements WaveDTO {
     }
     socket.emit('message', msg)
   }
+
+  readAllMessages() {
+    runInAction(() => {
+      this.messages.forEach((message) => (message.unread = false))
+    })
+    socket.emit('readAllMessages', { waveId: this._id })
+  }
 }
 
 export interface MessageDTO {
@@ -396,20 +403,17 @@ class WaveStore {
   }
 
   onInit(waves: WaveDTO[], users: UserDTO[], me: UserDTO) {
-    runInAction(() => {
-      this.currentUser = new User(me)
-      this.users = [
-        ...users.map((userDTO) => new User(userDTO)),
-        this.currentUser,
-      ]
-
-      waves.forEach((waveDTO) => {
-        const wave = new Wave(waveDTO, this)
-        this.waves.push(wave)
+    if (!this.currentUser) {
+      runInAction(() => {
+        this.currentUser = new User(me)
+        this.users = [this.currentUser]
       })
+    }
 
-      // TODO: loadLocalAttributes, define separate interface for user with those fields
-    })
+    users.forEach((user) => this.onUpdateUser({ user }))
+    waves.forEach((wave) => this.onUpdateWave({ wave }))
+
+    // TODO: loadLocalAttributes, define separate interface for user with those fields
   }
 
   onMessage(data: MessageDTO) {

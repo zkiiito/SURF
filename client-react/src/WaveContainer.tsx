@@ -28,6 +28,10 @@ const WaveContainer = observer(({ wave }: { wave: Wave }) => {
     wave.jumpToNextUnread()
   }
 
+  function readAllMessages(e?: any) {
+    wave.readAllMessages()
+  }
+
   return (
     <div className="wave">
       <div className="wavetop">
@@ -50,7 +54,9 @@ const WaveContainer = observer(({ wave }: { wave: Wave }) => {
             Next unread
           </button>
           <button className="button editwave R mhide">Edit</button>
-          <button className="button readall R mhide">All read</button>
+          <button className="button readall R mhide" onClick={readAllMessages}>
+            All read
+          </button>
           <button className="button quit">
             <span className="R mhide">Leave conversation</span>
             <span className="mshow">✖</span>
