@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite'
 import './WaveListItem.css'
-import { Wave } from './WaveStore'
 import { Link } from 'react-router-dom'
+import { Wave } from '../store/Wave'
 
 const WaveListItem = observer(({ wave }: { wave: Wave }) => {
   const unreadCount = wave.messages.filter((m) => m.unread).length

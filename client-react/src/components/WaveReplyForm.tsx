@@ -1,19 +1,13 @@
-import { useState } from 'react'
+import { MouseEventHandler, useState } from 'react'
 import './WaveReplyForm.css'
-import { Message, Wave } from './WaveStore'
+import { Wave } from '../store/Wave'
 
-const MessageReplyForm = ({
-  message,
-  wave,
-}: {
-  message: Message
-  wave: Wave
-}) => {
+const WaveReplyForm = ({ wave }: { wave: Wave }) => {
   const [messageText, setMessageText] = useState('')
 
   function sendMessage(e?: React.MouseEvent<HTMLButtonElement>) {
     e?.preventDefault()
-    wave.sendMessage(messageText, message._id)
+    wave.sendMessage(messageText)
     setMessageText('')
   }
 
@@ -34,26 +28,16 @@ const MessageReplyForm = ({
     e.stopPropagation()
   }
 
-  function closeReply(e?: any) {
-    wave.setRepliedMessage(undefined)
-  }
-
   return (
     <div className="notification replyform">
-      <p>
-        <button className="button threadend cancel" onClick={closeReply}>
-          <span className="R">Cancel</span> ⤴
-        </button>
-      </p>
-      <form className="add-message threadend" method="post">
+      <form className="add-message" method="post">
         <textarea
           name="message"
-          placeholder={'Reply to ' + message.user?.name + "'s message"}
+          placeholder="Add message"
           className="R"
           value={messageText}
           onChange={(e) => setMessageText(e.target.value)}
           onKeyDown={handleKeydown}
-          autoFocus
         ></textarea>
         <p className="inline-help mhide">
           <button
@@ -72,4 +56,4 @@ const MessageReplyForm = ({
   )
 }
 
-export default MessageReplyForm
+export default WaveReplyForm

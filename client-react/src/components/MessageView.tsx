@@ -1,9 +1,10 @@
 import { observer } from 'mobx-react-lite'
 import UserView from './UserView'
-import { Message, Wave } from './WaveStore'
 import './MessageView.css'
 import MessageReplyForm from './MessageReplyForm'
 import { useEffect, useRef } from 'react'
+import { Message } from '../store/Message'
+import { Wave } from '../store/Wave'
 
 const MessageView = observer(
   ({ message, wave }: { message: Message; wave: Wave }) => {

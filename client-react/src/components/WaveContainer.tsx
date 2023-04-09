@@ -1,10 +1,10 @@
 import './WaveContainer.css'
 import { observer } from 'mobx-react-lite'
 import MessageView from './MessageView'
-import { Wave } from './WaveStore'
 import UserView from './UserView'
 import WaveReplyForm from './WaveReplyForm'
 import { useEffect } from 'react'
+import { Wave } from '../store/Wave'
 
 const WaveContainer = observer(({ wave }: { wave: Wave }) => {
   useEffect(() => {

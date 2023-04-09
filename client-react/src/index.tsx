@@ -2,10 +2,10 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App'
-import WaveStore from './WaveStore'
+import WaveStore from './store/WaveStore'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import WaveContainerEmpty from './WaveContainerEmpty'
-import WaveContainerProxy from './WaveContainerProxy'
+import WaveContainerEmpty from './components/WaveContainerEmpty'
+import WaveContainerProxy from './components/WaveContainerProxy'
 
 const store = new WaveStore()
 

@@ -1,7 +1,7 @@
 import './Header.css'
 import logo from './assets/surf-logo.png'
-import UserView from './UserView'
-import { User } from './WaveStore'
+import UserView from './components/UserView'
+import { User } from './store/WaveStore'
 import { observer } from 'mobx-react-lite'
 
 const Header = observer(({ currentUser }: { currentUser?: User }) => {

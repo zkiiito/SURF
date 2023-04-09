@@ -1,9 +1,9 @@
 import './App.css'
 import Header from './Header'
-import WaveList from './WaveList'
+import WaveList from './components/WaveList'
 
 import { observer } from 'mobx-react-lite'
-import WaveStore from './WaveStore'
+import WaveStore from './store/WaveStore'
 import { Outlet } from 'react-router-dom'
 
 const App = observer(({ store }: { store: WaveStore }) => {

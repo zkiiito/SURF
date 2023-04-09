@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom'
 import './WaveContainer.css'
 import { observer } from 'mobx-react-lite'
 import WaveContainer from './WaveContainer'
-import WaveStore from './WaveStore'
+import WaveStore from '../store/WaveStore'
 
 const WaveContainerProxy = observer(({ store }: { store: WaveStore }) => {
   const { waveId } = useParams()

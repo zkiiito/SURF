@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite'
 import './WaveList.css'
-import { Wave } from './WaveStore'
 import WaveListItem from './WaveListItem'
+import { Wave } from '../store/Wave'
 
 const WaveList = observer(({ waves = [] }: { waves: Wave[] }) => {
   return (
