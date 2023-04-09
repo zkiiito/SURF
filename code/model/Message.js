@@ -16,7 +16,7 @@ const Message = Backbone.Model.extend(
         /** @constructs */
         initialize: function () {
             if (this.isNew()) {
-                this.set('created_at', Date.now());
+                this.set('created_at', new Date());
             }
         },
         save: function () {
