@@ -1,14 +1,14 @@
 import { MouseEventHandler, useState } from 'react'
 import './WaveReplyForm.css'
-import WaveStore, { Wave } from './WaveStore'
+import { Wave } from './WaveStore'
 
-const WaveReplyForm = ({ store, wave }: { store: WaveStore; wave: Wave }) => {
-  const [message, setMessage] = useState('')
+const WaveReplyForm = ({ wave }: { wave: Wave }) => {
+  const [messageText, setMessageText] = useState('')
 
   function sendMessage(e?: React.MouseEvent<HTMLButtonElement>) {
     e?.preventDefault()
-    store.sendMessage(message, wave._id)
-    setMessage('')
+    wave.sendMessage(messageText)
+    setMessageText('')
   }
 
   function handleKeydown(e: any) {
@@ -16,7 +16,7 @@ const WaveReplyForm = ({ store, wave }: { store: WaveStore; wave: Wave }) => {
       //enter
       e.preventDefault()
       sendMessage()
-    } else if (32 === e.keyCode && ' ' === message) {
+    } else if (32 === e.keyCode && ' ' === messageText) {
       //space
       // e.preventDefault();
       // this.scrollToNextUnread();
@@ -35,8 +35,8 @@ const WaveReplyForm = ({ store, wave }: { store: WaveStore; wave: Wave }) => {
           name="message"
           placeholder="Add message"
           className="R"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
+          value={messageText}
+          onChange={(e) => setMessageText(e.target.value)}
           onKeyDown={handleKeydown}
         ></textarea>
         <p className="inline-help mhide">

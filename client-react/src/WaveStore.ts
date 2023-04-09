@@ -67,8 +67,8 @@ export class Wave implements WaveDTO {
   title: string
   userIds: []
   messages: Message[]
-  users: User[]
   currentMessage?: Message
+  repliedMessage?: Message
 
   private store: WaveStore
 
@@ -78,18 +78,23 @@ export class Wave implements WaveDTO {
     this.title = dto.title
     this.userIds = dto.userIds
     this.messages = []
-    this.users = this.userIds
-      .map((userId) => store.users.find((u) => u._id === userId)!)
-      .filter(Boolean)
 
     makeObservable(this, {
       title: observable,
       userIds: observable,
       messages: observable,
       currentMessage: observable,
+      repliedMessage: observable,
       rootMessages: computed,
       archived: computed,
+      users: computed,
     })
+  }
+
+  get users(): User[] {
+    return this.userIds
+      .map((userId) => this.store.users.find((u) => u._id === userId)!)
+      .filter(Boolean)
   }
 
   get rootMessages() {
@@ -108,9 +113,6 @@ export class Wave implements WaveDTO {
   update(dto: WaveDTO) {
     this.title = dto.title
     this.userIds = dto.userIds
-    this.users = this.userIds
-      .map((userId) => this.store.users.find((u) => u._id === userId)!)
-      .filter(Boolean)
   }
 
   setCurrentMessage(message: Message) {
@@ -119,6 +121,12 @@ export class Wave implements WaveDTO {
       this.currentMessage = message
     })
     this.store.readMessage(message)
+  }
+
+  setRepliedMessage(message?: Message) {
+    runInAction(() => {
+      this.repliedMessage = message
+    })
   }
 
   jumpToNextUnread() {
@@ -238,6 +246,16 @@ export class Wave implements WaveDTO {
     }
     return message
   }
+
+  sendMessage(message: string, parentId?: string) {
+    const msg = {
+      userId: this.store.currentUser?._id,
+      waveId: this._id,
+      message: message,
+      parentId: parentId,
+    }
+    socket.emit('message', msg)
+  }
 }
 
 export interface MessageDTO {
@@ -278,13 +296,14 @@ export class Message implements MessageDTO {
     this.createdAtFormatted = this.formatDate(this.created_at_date)
 
     makeObservable(this, {
+      messages: observable,
       replies: computed,
       unread: observable,
     })
   }
 
   get replies() {
-    return this.messages.sort(sortMessages)
+    return this.messages.slice().sort(sortMessages)
   }
 
   formatDate(date: Date) {
@@ -430,16 +449,6 @@ class WaveStore {
         this.users.push(new User(user))
       }
     })
-  }
-
-  sendMessage(message: string, waveId: string, parentId?: string) {
-    var msg = {
-      userId: this.currentUser?._id,
-      waveId: waveId,
-      message: message,
-      parentId: parentId,
-    }
-    socket.emit('message', msg)
   }
 
   readMessage(message: Message) {

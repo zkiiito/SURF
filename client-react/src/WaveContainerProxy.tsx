@@ -8,7 +8,7 @@ const WaveContainerProxy = observer(({ store }: { store: WaveStore }) => {
   const { waveId } = useParams()
   const wave = store.waves.find((wave) => wave._id === waveId)
   if (wave) {
-    return <WaveContainer wave={wave} store={store} />
+    return <WaveContainer wave={wave} />
   }
   return <div />
 })
