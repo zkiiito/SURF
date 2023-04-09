@@ -5,6 +5,8 @@ import MessageReplyForm from './MessageReplyForm'
 import { useEffect, useRef } from 'react'
 import { Message } from '../store/Message'
 import { Wave } from '../store/Wave'
+import Linkify from 'linkify-react'
+import LinkPreview from './LinkPreview'
 
 const MessageView = observer(
   ({ message, wave }: { message: Message; wave: Wave }) => {
@@ -61,10 +63,20 @@ const MessageView = observer(
                 <p className="time">{message.createdAtFormatted}</p>
                 <p className="message-text">
                   <span className="author">{message.user?.name}:</span>{' '}
-                  <span className="message-formatted">{message.message}</span>
+                  <span
+                    className="message-formatted"
+                    style={{ whiteSpace: 'pre-wrap' }}
+                  >
+                    <Linkify options={{ truncate: 50, target: '_blank' }}>
+                      {message.message}
+                    </Linkify>
+                  </span>
                 </p>
               </td>
             </tr>
+            {message.linkPreviews.map((linkPreview) => (
+              <LinkPreview linkPreview={linkPreview} />
+            ))}
           </tbody>
         </table>
         <div className="replies">

@@ -1,6 +1,14 @@
-import { computed, makeObservable, observable } from 'mobx'
+import { computed, makeObservable, observable, runInAction } from 'mobx'
+import * as linkify from 'linkifyjs'
 import { User } from './User'
-import { MessageDTO } from './WaveStore'
+import WaveStore, { MessageDTO } from './WaveStore'
+
+export type LinkPreviewDTO = {
+  description?: string
+  image?: string
+  title?: string
+  url: string
+}
 
 export class Message {
   _id: string
@@ -12,11 +20,14 @@ export class Message {
   created_at: string
 
   messages: Message[]
+  linkPreviews: LinkPreviewDTO[]
   user?: User
   created_at_date: Date
   createdAtFormatted: string
 
-  constructor(dto: MessageDTO, users: User[], currentUser?: User) {
+  private store: WaveStore
+
+  constructor(dto: MessageDTO, store: WaveStore) {
     this._id = dto._id
     this.userId = dto.userId
     this.waveId = dto.waveId
@@ -24,16 +35,22 @@ export class Message {
     this.message = dto.message
     this.created_at = dto.created_at
     this.messages = []
-    this.user = users.find((u) => u._id === dto.userId)
-    this.unread = dto.unread && dto.userId !== currentUser?._id
+    this.user = store.users.find((u) => u._id === dto.userId)
+    this.unread = dto.unread && dto.userId !== store.currentUser?._id
     this.created_at_date = new Date(dto.created_at)
     this.createdAtFormatted = this.formatDate(this.created_at_date)
+    this.linkPreviews = []
+
+    this.store = store
 
     makeObservable(this, {
       messages: observable,
       replies: computed,
       unread: observable,
+      linkPreviews: observable,
     })
+
+    this.parseLinks()
   }
 
   get replies() {
@@ -60,6 +77,42 @@ export class Message {
       .getHours()
       .toString()
       .padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`
+  }
+
+  parseLinks() {
+    const links = linkify.find(this.message)
+    const urlVideoRegex =
+      /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]+).*/gim
+
+    links
+      .filter((link) => link.type === 'url')
+      .forEach((link) => {
+        if (
+          link.href.endsWith('.gif') ||
+          link.href.endsWith('.jpg') ||
+          link.href.endsWith('.png')
+        ) {
+          this.linkPreviews.push({ image: link.href, url: link.href })
+        } else if (link.href.match(urlVideoRegex)) {
+          const parts = urlVideoRegex.exec(link.href)
+          this.linkPreviews.push({ image: parts?.[2], url: 'youtube' })
+        } else {
+          this.fetchLinkPreview(link.href)
+        }
+      })
+  }
+
+  fetchLinkPreview(url: string) {
+    this.store.socket.emit('getLinkPreview', {
+      msgId: this._id,
+      url,
+    })
+  }
+
+  addLinkPreview(linkPreview: LinkPreviewDTO) {
+    runInAction(() => {
+      this.linkPreviews.push(linkPreview)
+    })
   }
 }
 

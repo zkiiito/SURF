@@ -10,6 +10,8 @@
     "@types/node": "^16.18.23",
     "@types/react": "^18.0.33",
     "@types/react-dom": "^18.0.11",
+    "linkify-react": "^4.1.1",
+    "linkifyjs": "^4.1.1",
     "mobx": "^6.9.0",
     "mobx-react-lite": "^3.4.3",
     "react": "^18.2.0",

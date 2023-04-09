@@ -2,7 +2,7 @@ import { makeObservable, observable, runInAction } from 'mobx'
 import socketIO from 'socket.io-client'
 import { Wave } from './Wave'
 import { User } from './User'
-import { Message } from './Message'
+import { LinkPreviewDTO, Message } from './Message'
 
 export interface UserDTO {
   name: string
@@ -101,6 +101,11 @@ class WaveStore {
       console.log('connect')
     })
 
+    this.socket.on('linkPreviewReady', (data) => {
+      console.log('linkPreviewReady', data)
+      this.onLinkPreviewReady(data)
+    })
+
     this.socket.connect()
   }
 
@@ -124,7 +129,7 @@ class WaveStore {
     }
 
     runInAction(() => {
-      const message = new Message(data, this.users, this.currentUser)
+      const message = new Message(data, this)
 
       const wave = this.waves.find((wave) => wave._id === message.waveId)
       if (wave) {
@@ -173,6 +178,13 @@ class WaveStore {
         this.users.push(new User(user))
       }
     })
+  }
+
+  onLinkPreviewReady(data: { msgId: string; data: LinkPreviewDTO }) {
+    const message = this.messages.find((msg) => msg._id === data.msgId)
+    if (message) {
+      message.addLinkPreview(data.data)
+    }
   }
 
   readMessage(message: Message) {
