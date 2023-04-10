@@ -27,3 +27,17 @@
     float: right;
     margin-right: 0.7em;
 }
+#usermenu p {
+    font-size: 0.8em;
+    display: inline;
+    margin-left: 0.2em;
+    margin-right: 0.2em;
+}
+
+#usermenu img {
+    width: 1.5em;
+    height: 1.5em;
+    float: left;
+    margin-right: 0.2em;
+    overflow: hidden;
+}

@@ -20,13 +20,15 @@ const App = observer(({ store }: { store: WaveStore }) => {
       <Header currentUser={store.currentUser} />
       <div id="container">
         <WaveList waves={store.waves} />
-        {!waveId && store.ready && store.messages.length > 0 && (
-          <Navigate to={'wave/' + lastMessage.waveId} />
-        )}
-        {store.waves.length === 0 && <WaveContainerEmpty />}
-        {store.waves.map((wave) => (
-          <WaveContainer wave={wave} key={'container_' + wave._id} />
-        ))}
+        <div id="wave-container">
+          {!waveId && store.ready && store.messages.length > 0 && (
+            <Navigate to={'wave/' + lastMessage.waveId} />
+          )}
+          {store.waves.length === 0 && <WaveContainerEmpty />}
+          {store.waves.map((wave) => (
+            <WaveContainer wave={wave} key={'container_' + wave._id} />
+          ))}
+        </div>
       </div>
 
       <div id="darken"></div>
