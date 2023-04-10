@@ -1,20 +1,8 @@
 let inviteUrl = '';
 const testUserId = Date.now();
 
-function mockGA(cy) {
-    const ga = cy.stub().as('ga')
-    cy.on('window:before:load', (win) => {
-        Object.defineProperty(win, 'ga', {
-        configurable: false,
-        get: () => ga,
-        set: () => {},
-        })
-    })
-}
-
 describe('full test', () => {
     it('player1', () => {
-        mockGA(cy)
         cy.visit('http://localhost:8000/loginTest')
         cy.get('input[name="username"]').type(`${testUserId}{enter}`)
 
@@ -76,7 +64,6 @@ describe('full test', () => {
     })
 
     it('player2', () => {
-        mockGA(cy)
         cy.visit('http://localhost:8000/loginTest')
         cy.get('input[name="username"]').type(`${testUserId + 1}{enter}`)
 
@@ -95,7 +82,6 @@ describe('full test', () => {
     })
 
     it('player1 again', () => {
-        mockGA(cy)
         cy.visit('http://localhost:8000/loginTest')
         cy.get('input[name="username"]').type(`${testUserId}{enter}`)
         
