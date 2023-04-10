@@ -37,7 +37,10 @@ const WaveContainer = observer(({ wave }: { wave: Wave }) => {
   }
 
   return (
-    <div className="wave">
+    <div
+      className="wave"
+      style={wave.isActive ? { display: 'flex' } : { display: 'none' }}
+    >
       <div className="wavetop">
         <h2 className="wave-title">{wave.title}</h2>
         <div className="heads">

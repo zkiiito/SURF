@@ -4,8 +4,6 @@ import './index.css';
 import App from './App'
 import WaveStore from './store/WaveStore'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import WaveContainerEmpty from './components/WaveContainerEmpty'
-import WaveContainerProxy from './components/WaveContainerProxy'
 
 const store = new WaveStore()
 
@@ -17,11 +15,9 @@ const router = createBrowserRouter([
     children: [
       {
         path: '/',
-        element: <WaveContainerEmpty />,
       },
       {
         path: 'wave/:waveId',
-        element: <WaveContainerProxy store={store} />,
       },
     ],
   },

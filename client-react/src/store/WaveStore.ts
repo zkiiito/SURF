@@ -54,6 +54,7 @@ class WaveStore {
       users: observable,
       messages: observable,
       currentUser: observable,
+      currentWave: observable,
       ready: observable,
     })
 
@@ -78,7 +79,6 @@ class WaveStore {
 
     this.socket.on('ready', () => {
       this.queueReads = this.messages.filter((msg) => msg.unread).length > 1
-      // app.showLastWave();
       this.ready = true
     })
 
@@ -202,6 +202,16 @@ class WaveStore {
         waveId: message.waveId,
       })
     }
+  }
+
+  activateWave(waveId?: string) {
+    runInAction(() => {
+      const wave = this.waves.find((w) => w._id === waveId)
+      this.currentWave = wave
+      if (wave) {
+        wave.jumpToNextUnread()
+      }
+    })
   }
 }
 

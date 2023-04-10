@@ -29,6 +29,7 @@ export class Wave {
       rootMessages: computed,
       archived: computed,
       users: computed,
+      isActive: computed,
     })
   }
 
@@ -223,5 +224,9 @@ export class Wave {
     }
 
     this.store.socket.emit('getMessages', data)
+  }
+
+  get isActive() {
+    return this.store.currentWave === this
   }
 }
