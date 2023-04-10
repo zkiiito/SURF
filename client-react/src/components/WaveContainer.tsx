@@ -44,7 +44,7 @@ const WaveContainer = observer(({ wave }: { wave: Wave }) => {
           {wave.users
             .filter((user) => user.status === 'online')
             .map((user) => (
-              <UserView user={user} />
+              <UserView user={user} key={wave._id + ' ' + user._id} />
             ))}
           {offlineUserCount > 0 && (
             <div className="offline-list">

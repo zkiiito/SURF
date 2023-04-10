@@ -75,7 +75,10 @@ const MessageView = observer(
               </td>
             </tr>
             {message.linkPreviews.map((linkPreview) => (
-              <LinkPreview linkPreview={linkPreview} />
+              <LinkPreview
+                linkPreview={linkPreview}
+                key={message._id + ' ' + linkPreview.url}
+              />
             ))}
           </tbody>
         </table>
