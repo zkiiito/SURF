@@ -15,5 +15,5 @@ jobs:
         - uses: actions/checkout@v3
         - uses: superfly/flyctl-actions/setup-flyctl@master
           with:
-            version: 0.0.540
+            version: 0.1.26
         - run: flyctl deploy --remote-only
