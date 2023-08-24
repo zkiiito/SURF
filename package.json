@@ -23,7 +23,7 @@
     "metascraper-description": "^5.33.7",
     "metascraper-image": "^5.33.7",
     "metascraper-title": "^5.33.7",
-    "mongoose": "^7.0.3",
+    "mongoose": "^7.3.3",
     "mysql2": "^2.3.3",
     "passport": "^0.6.0",
     "passport-facebook": "^3.0.0",
