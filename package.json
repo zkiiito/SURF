@@ -48,7 +48,7 @@
     "git-add"
   ],
   "devDependencies": {
-    "cypress": "^12.8.1",
+    "cypress": "^13.3.3",
     "errorhandler": "^1.5.1",
     "eslint": "^8.36.0",
     "nodemon": "^2.0.22",
