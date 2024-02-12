@@ -10,7 +10,7 @@ var WaveController = require('./adminController/Wave');
 var WaveInviteController = require('./adminController/WaveInvite');
 var MessageController = require('./adminController/Message');
 
-var adminDir = __dirname.replace('code', 'admin');
+var adminDir = __dirname.replace('code', 'admin/public');
 
 app.use('/css', express.static(adminDir + '/css'));
 app.use('/fonts', express.static(adminDir + '/fonts'));
