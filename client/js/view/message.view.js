@@ -1,4 +1,8 @@
-/*global UserView, MessageReplyFormView, __, messageTemplate, linkPreviewTemplate */
+/*global UserView, MessageReplyFormView, __ */
+
+var messageTemplate = _.template($('#message_view').text());
+var linkPreviewTemplate = _.template($('#message_linkpreview_view').text());
+
 var MessageView = Backbone.View.extend({
     initialize: function () {
         if (this.model.messages) {

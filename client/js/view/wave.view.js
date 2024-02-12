@@ -1,4 +1,6 @@
-/*global WaveReplyFormView, UserView, MessageView, __, waveTemplate, app */
+/*global WaveReplyFormView, UserView, MessageView, __, app */
+
+var waveTemplate = _.template($('#wave_view').text());
 /* exported WaveView */
 var WaveView = Backbone.View.extend({
     initialize: function () {

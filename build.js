@@ -15,6 +15,7 @@ const jsFiles = [
     'node_modules/underscore/underscore.js',
     'node_modules/backbone/backbone.js',
     'node_modules/R.js/R.js',
+    'client/js/init.js',
     'client/js/i18n.js',
     'client/js/jquery/jquery.tokeninput.js',
     'client/js/phpjs.js',

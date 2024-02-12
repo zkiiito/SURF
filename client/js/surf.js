@@ -48,15 +48,8 @@ window.onerror = function (message, file, line) {
 };
 
 $(function () {
-    _.templateSettings = {
-        interpolate: /{|\|([\s\S]+?)\|}/g,
-        escape: /{{([\s\S]+?)}}/g
-    };
     var surfApp = new SurfAppRouter();
     window.app = surfApp;
-    window.messageTemplate = _.template($('#message_view').text());
-    window.linkPreviewTemplate = _.template($('#message_linkpreview_view').text());
-    window.waveTemplate =  _.template($('#wave_view').text());
 
     Backbone.history.start();
     Communicator.initialize(surfApp);

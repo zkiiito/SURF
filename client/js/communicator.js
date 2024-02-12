@@ -40,7 +40,7 @@ var Communicator = {
             that.onInviteCodeReady(data);
         });
         this.socket.on('linkPreviewReady', function (data) {
-            that.this.onLinkPreviewReady(data);
+            that.onLinkPreviewReady(data);
         });
 
         this.socket.on('dontReconnect', function () {
