@@ -114,6 +114,7 @@ var WaveView = Backbone.View.extend({
     },
 
     showUpdateWave: function () {
+        // TODO: use event bus
         return app.view.showUpdateWave();
     },
 

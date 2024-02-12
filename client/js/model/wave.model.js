@@ -196,7 +196,7 @@ var Wave = Backbone.Model.extend(
 
         quit: function () {
             Communicator.quitUser(this.id);
-            app.currentWaveId = null;
+            app.model.currentWaveId = null;
             app.model.waves.remove(this);
             app.model.messages.remove(app.model.messages.where({waveId: this.id}), {silent: true});
 

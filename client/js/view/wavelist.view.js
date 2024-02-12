@@ -67,7 +67,7 @@ var WaveListView = Backbone.View.extend({
     },
 
     scrollToNextUnread: function (e) {
-        if (app.currentWaveId === this.model.id) {
+        if (app.model.currentWaveId === this.model.id) {
             e.preventDefault();
             var nextUnread = this.model.getNextUnreadMessage();
 

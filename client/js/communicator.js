@@ -1,17 +1,20 @@
-/*global io, app, Message, Wave, User */
+/*global io, Message, Wave, User */
 // eslint-disable-next-line no-unused-vars
 var Communicator = {
+    app: null,
     socket: null,
     reconnect: true,
     createTitle: null,
     readQueue: [],
     queueReads: false,
-    initialize: function () {
+    initialize: function (app) {
         if (window.io === undefined) {
             console.error('no io');
             return;
         }
         var that = this;
+
+        this.app = app;
 
         this.socket = io({reconnection: false});
 
@@ -24,24 +27,30 @@ var Communicator = {
         });
 
         this.socket.on('disconnect', function () {
-            app.view.showDisconnected(that.reconnect);
+            that.app.view.showDisconnected(that.reconnect);
         });
 
-        this.socket.on('updateUser', this.onUpdateUser);
+        this.socket.on('updateUser', function (data) {
+            that.onUpdateUser(data);
+        });
         this.socket.on('updateWave', function (data) {
             that.onUpdateWave(data);
         });
-        this.socket.on('inviteCodeReady', this.onInviteCodeReady);
-        this.socket.on('linkPreviewReady', this.onLinkPreviewReady);
+        this.socket.on('inviteCodeReady', function (data) {
+            that.onInviteCodeReady(data);
+        });
+        this.socket.on('linkPreviewReady', function (data) {
+            that.this.onLinkPreviewReady(data);
+        });
 
         this.socket.on('dontReconnect', function () {
             that.reconnect = false;
         });
 
         this.socket.on('ready', function () {
-            that.queueReads = app.model.messages.where({unread: true}).length > 1;
-            app.showLastWave();
-            app.model.setReady();
+            that.queueReads = that.app.model.messages.where({ unread: true }).length > 1;
+            that.app.showLastWave();
+            that.app.model.setReady();
         });
     },
 
@@ -49,12 +58,12 @@ var Communicator = {
      * @param {Object} data
      */
     onInit: function (data) {
-        if (null === app.model.currentUser) {
+        if (null === this.app.model.currentUser) {
             //console.log(data.me);
             data.users.push(data.me);
-            app.model.users.reset(data.users);
-            app.model.initCurrentUser(app.model.users.get(data.me._id));
-            app.model.waves.reset(data.waves);
+            this.app.model.users.reset(data.users);
+            this.app.model.initCurrentUser(this.app.model.users.get(data.me._id));
+            this.app.model.waves.reset(data.waves);
         }
     },
 
@@ -65,7 +74,7 @@ var Communicator = {
      */
     sendMessage: function (message, waveId, parentId) {
         var msg = {
-            userId: app.model.currentUser.id,
+            userId: this.app.model.currentUser.id,
             waveId: waveId,
             message: message,
             parentId: parentId
@@ -137,8 +146,8 @@ var Communicator = {
         }
 
         var message = new Message(data);
-        if (app.model.waves.get(data.waveId).addMessage(message)) {
-            app.model.messages.add(message);
+        if (this.app.model.waves.get(data.waveId).addMessage(message)) {
+            this.app.model.messages.add(message);
         }
     },
 
@@ -148,10 +157,10 @@ var Communicator = {
     onUpdateUser: function (data) {
         var user = data.user;
         //console.log(user);
-        if (app.model.users.get(user._id)) {
-            app.model.users.get(user._id).update(user);
+        if (this.app.model.users.get(user._id)) {
+            this.app.model.users.get(user._id).update(user);
         } else {
-            app.model.users.add(new User(user));
+            this.app.model.users.add(new User(user));
         }
     },
 
@@ -162,13 +171,13 @@ var Communicator = {
         var wavedata = data.wave,
             wave;
 
-        if (app.model.waves.get(wavedata._id)) {
-            app.model.waves.get(wavedata._id).update(wavedata);
+        if (this.app.model.waves.get(wavedata._id)) {
+            this.app.model.waves.get(wavedata._id).update(wavedata);
         } else {
             wave = new Wave(wavedata);
-            app.model.waves.add(wave);
-            if (1 === app.model.waves.length || this.createTitle === wave.get('title')) {
-                app.navigate('wave/' + wave.id, {trigger: true});
+            this.app.model.waves.add(wave);
+            if (1 === this.app.model.waves.length || this.createTitle === wave.get('title')) {
+                this.app.navigate('wave/' + wave.id, { trigger: true });
             }
         }
     },
@@ -225,8 +234,8 @@ var Communicator = {
      * @param {Object} data
      */
     onInviteCodeReady: function (data) {
-        if (app.model.waves.get(data.waveId)) {
-            app.model.waves.get(data.waveId).trigger('inviteCodeReady', data.code);
+        if (this.app.model.waves.get(data.waveId)) {
+            this.app.model.waves.get(data.waveId).trigger('inviteCodeReady', data.code);
         }
     },
 
@@ -251,8 +260,8 @@ var Communicator = {
     },
 
     onLinkPreviewReady: function (data) {
-        if (app.model.messages.get(data.msgId)) {
-            app.model.messages.get(data.msgId).addLinkPreview(data.data);
+        if (this.app.model.messages.get(data.msgId)) {
+            this.app.model.messages.get(data.msgId).addLinkPreview(data.data);
         }
     }
 };

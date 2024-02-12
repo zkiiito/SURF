@@ -1,4 +1,4 @@
-/*global app, DisconnectedView, EditUserView, EditWaveView, UserView, WaveListView, WaveView*/
+/*global DisconnectedView, EditUserView, EditWaveView, UserView, WaveListView, WaveView*/
 /* exported SurfAppView */
 var SurfAppView = Backbone.View.extend({
     initialize: function () {
@@ -47,9 +47,9 @@ var SurfAppView = Backbone.View.extend({
             }
             if (32 === e.keyCode) {
                 e.preventDefault();
-                if (app.currentWaveId) {
+                if (that.model.currentWaveId) {
                     document.activeElement.blur();
-                    app.model.waves.get(app.currentWaveId).trigger('scrollToNextUnread');
+                    that.model.waves.get(that.model.currentWaveId).trigger('scrollToNextUnread');
                 }
             }
         });
@@ -130,7 +130,7 @@ var SurfAppView = Backbone.View.extend({
     },
 
     showUpdateWave: function () {
-        this.editWaveView.setWave(app.model.waves.get(app.currentWaveId));
+        this.editWaveView.setWave(this.model.waves.get(this.model.currentWaveId));
         this.editWaveView.show();
         return false;
     },
@@ -222,7 +222,7 @@ var SurfAppView = Backbone.View.extend({
     },
 
     handleEmpty: function () {
-        if (0 === app.model.waves.length) {
+        if (0 === this.model.waves.length) {
             $('.empty').show();
         } else {
             $('.empty').hide();

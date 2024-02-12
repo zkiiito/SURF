@@ -8,6 +8,7 @@ var SurfAppModel = Backbone.Model.extend(
             this.users = new UserCollection();
             this.messages = new MessageCollection();
             this.currentUser = null;
+            this.currentWaveId = null;
             this.ready = false;
         },
 

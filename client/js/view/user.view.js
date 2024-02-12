@@ -30,6 +30,7 @@ var UserView = Backbone.View.extend({
     },
 
     chatInPrivate: function () {
+        // TODO: use event bus
         app.model.currentUser.chatInPrivateWaveWithUser(this.model);
     }
 });

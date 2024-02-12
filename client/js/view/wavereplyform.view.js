@@ -1,4 +1,4 @@
-/*global Communicator, app */
+/*global Communicator */
 /* exported WaveReplyFormView */
 var WaveReplyFormView = Backbone.View.extend({
     initialize: function () {
@@ -51,10 +51,6 @@ var WaveReplyFormView = Backbone.View.extend({
         return this.model.id;
     },
 
-    getWave: function () {
-        return app.model.waves.get(this.getWaveId());
-    },
-
     getParentId: function () {
         return null;
     },
@@ -68,7 +64,7 @@ var WaveReplyFormView = Backbone.View.extend({
 
         if (atpos > -1 && caretPos - atpos < 50) {
             search = textarea.val().substring(atpos + 1, caretPos).toLowerCase();
-            users = this.getWave().users.filter(function (user) {
+            users = this.model.users.filter(function (user) {
                 return user.get('name').toLowerCase().indexOf(search) === 0;
             });
 
