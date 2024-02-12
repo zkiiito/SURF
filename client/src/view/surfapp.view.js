@@ -1,6 +1,11 @@
-/*global DisconnectedView, EditUserView, EditWaveView, UserView, WaveListView, WaveView*/
-/* exported SurfAppView */
-var SurfAppView = Backbone.View.extend({
+import { DisconnectedView } from './disconnected.view';
+import { EditUserView } from './edituser.view';
+import { EditWaveView } from './editwave.view';
+import { UserView } from './user.view';
+import { WaveView } from './wave.view';
+import { WaveListView } from './wavelist.view';
+
+export const SurfAppView = Backbone.View.extend({
     initialize: function () {
         _.bindAll(this, 'addMessage', 'showCreateWave', 'showUpdateWave', 'showEditUser', 'hideOverlays', 'addWave');
         this.listenTo(this.model.waves, 'add', this.addWave);
@@ -20,14 +25,14 @@ var SurfAppView = Backbone.View.extend({
         this.render();
     },
     events: {
-        'click a.addwave' : 'showCreateWave',
-        'click a.edituser' : 'showEditUser',
-        'click #darken' : 'hideOverlays'
+        'click a.addwave': 'showCreateWave',
+        'click a.edituser': 'showEditUser',
+        'click #darken': 'hideOverlays'
     },
 
     render: function () {
         this.setElement($('body'));
-        this.editWaveView = new EditWaveView({model: this.model});
+        this.editWaveView = new EditWaveView({ model: this.model });
         this.$el.append(this.editWaveView.render().el);
 
         this.iconImage = new Image();
@@ -90,7 +95,7 @@ var SurfAppView = Backbone.View.extend({
     },
 
     addWave: function (wave) {
-        var listView = new WaveListView({model: wave});
+        var listView = new WaveListView({ model: wave });
 
         this.handleEmpty();
         var target = wave.get('archived') ? $('#wave-list-archived') : $('#wave-list-active');
@@ -104,7 +109,7 @@ var SurfAppView = Backbone.View.extend({
 
     renderWave: function (wave) {
         if (!_.contains(this.renderedWaves, wave)) {
-            var view = new WaveView({model: wave});
+            var view = new WaveView({ model: wave });
             $('#wave-container').append(view.render().el);
             view.setCurrent();
             this.renderedWaves.push(wave);
@@ -143,7 +148,7 @@ var SurfAppView = Backbone.View.extend({
     },
 
     showDisconnected: function (reconnect) {
-        this.disconnectedView = new DisconnectedView({model: {reconnect: reconnect}});
+        this.disconnectedView = new DisconnectedView({ model: { reconnect: reconnect } });
         this.$el.append(this.disconnectedView.render().el);
         this.disconnectedView.show();
     },
@@ -157,12 +162,12 @@ var SurfAppView = Backbone.View.extend({
     },
 
     initCurrentUser: function () {
-        var template = new UserView({model: this.model.currentUser});
+        var template = new UserView({ model: this.model.currentUser });
         this.$el.find('#currentuser').html('').append(template.render().el).append(' <p class="currentuser_name">' + this.model.currentUser.escape('name') + '</p>');
 
         this.listenTo(this.model.currentUser, 'change:name', this.changeCurrentUserName);
 
-        this.editUserView = new EditUserView({model: this.model.currentUser});
+        this.editUserView = new EditUserView({ model: this.model.currentUser });
         this.$el.append(this.editUserView.render().el);
 
         return false;
@@ -176,7 +181,7 @@ var SurfAppView = Backbone.View.extend({
     setTitle: function () {
         if (this.model.ready) {
             var title = 'SURF',
-                unreadCount = this.model.messages.where({unread: true}).length;
+                unreadCount = this.model.messages.where({ unread: true }).length;
 
             if (unreadCount > 0) {
                 title = '[' + unreadCount + '] ' + title;
@@ -245,13 +250,13 @@ var SurfAppView = Backbone.View.extend({
         this.waveListViews = [];
         this.model.waves.forEach(this.addWave, this);
 
-        if (this.model.waves.filter({archived: false}).length === 0) {
+        if (this.model.waves.filter({ archived: false }).length === 0) {
             $('#wave-list-active').hide();
         } else {
             $('#wave-list-active').show();
         }
 
-        if (this.model.waves.filter({archived: true}).length === 0) {
+        if (this.model.waves.filter({ archived: true }).length === 0) {
             $('#wave-list-archived').hide();
         } else {
             $('#wave-list-archived').show();

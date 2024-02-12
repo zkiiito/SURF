@@ -1,6 +1,9 @@
-/*global MessageCollection, UserCollection, Communicator, app */
-/* exported Wave, WaveCollection */
-var Wave = Backbone.Model.extend(
+import { Communicator } from '../communicator';
+import { MessageCollection } from './message.model';
+import { surfAppModel } from './surfapp.singleton';
+import { UserCollection } from './user.model';
+
+export const Wave = Backbone.Model.extend(
     /** @lends Wave.prototype */
     {
         defaults: {
@@ -69,7 +72,7 @@ var Wave = Backbone.Model.extend(
          */
         addUsers: function (ids) {
             _.each(ids, function (item) {
-                var user = app.model.users.get(item);
+                var user = surfAppModel.users.get(item);
                 this.addUser(user);
             }, this);
         },
@@ -196,17 +199,18 @@ var Wave = Backbone.Model.extend(
 
         quit: function () {
             Communicator.quitUser(this.id);
-            app.model.currentWaveId = null;
-            app.model.waves.remove(this);
-            app.model.messages.remove(app.model.messages.where({waveId: this.id}), {silent: true});
+            surfAppModel.currentWaveId = null;
+            surfAppModel.waves.remove(this);
+            surfAppModel.messages.remove(surfAppModel.messages.where({ waveId: this.id }), { silent: true });
 
+            // TODO
+            // eslint-disable-next-line no-undef
             app.showLastWave();
         }
     }
 );
 
-/** @class */
-var WaveCollection = Backbone.Collection.extend(
+export const WaveCollection = Backbone.Collection.extend(
     /** @lends WaveCollection.prototype */
     {
         model: Wave,

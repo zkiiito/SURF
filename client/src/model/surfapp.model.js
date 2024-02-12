@@ -1,6 +1,8 @@
-/*global WaveCollection, UserCollection, MessageCollection */
-/* exported SurfAppModel */
-var SurfAppModel = Backbone.Model.extend(
+import { MessageCollection } from './message.model';
+import { UserCollection } from './user.model';
+import { WaveCollection } from './wave.model';
+
+export const SurfAppModel = Backbone.Model.extend(
     /** @lends SurfAppModel.prototype */
     {
         initialize: function () {

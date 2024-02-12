@@ -1,6 +1,10 @@
-/*global Communicator, __, app */
-/* exported EditWaveView */
-var EditWaveView = Backbone.View.extend({
+// eslint-disable-next-line no-unused-vars
+import * as token from 'jquery-tokeninput';
+import { Communicator } from '../communicator';
+import { __ } from '../i18n';
+import { surfAppModel } from '../model/surfapp.singleton';
+
+export const EditWaveView = Backbone.View.extend({
     initialize: function () {
         _.bindAll(this, 'show', 'hide', 'setWave', 'genUserArray', 'inviteCodeReady');
         this.userArray = [];
@@ -8,9 +12,9 @@ var EditWaveView = Backbone.View.extend({
         this.listenTo(this.model.users, 'change', this.genUserArray);
     },
     events: {
-        'click a.close' : 'hide',
-        'submit form' : 'editWave',
-        'click button#editwave-invite' : 'getInviteCode'
+        'click a.close': 'hide',
+        'submit form': 'editWave',
+        'click button#editwave-invite': 'getInviteCode'
     },
 
     render: function () {
@@ -22,7 +26,7 @@ var EditWaveView = Backbone.View.extend({
 
     genUserArray: function () {
         this.userArray = this.model.users.reduce(function (userArray, user) {
-            var obj = {id: user.id, name: user.get('name') + ' (' + user.get('email') + ')'};
+            var obj = { id: user.id, name: user.get('name') + ' (' + user.get('email') + ')' };
 
             if (!this.wave || (this.wave && !this.wave.users.get(user.id))) {
                 userArray.push(obj);
@@ -52,17 +56,17 @@ var EditWaveView = Backbone.View.extend({
     updateUserSuggest: function () {
         this.initUserSuggest();
 
-        $('#editwave-users').data('settings').local_data = this.userArray;
+        // TODO $('#editwave-users').data('settings').local_data = this.userArray;
 
         var suggest = this.$el.find('#editwave-users');
         suggest.tokenInput('clear');
 
         if (this.wave) {
             this.wave.users.each(function (user) {
-                suggest.tokenInput('add', {id: user.id, name: user.get('name'), readonly: true});
+                suggest.tokenInput('add', { id: user.id, name: user.get('name'), readonly: true });
             });
         } else {
-            suggest.tokenInput('add', {id: app.model.currentUser.id, name: app.model.currentUser.get('name'), readonly: true});
+            suggest.tokenInput('add', { id: surfAppModel.currentUser.id, name: surfAppModel.currentUser.get('name'), readonly: true });
         }
 
     },

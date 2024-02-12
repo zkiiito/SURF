@@ -1,6 +1,6 @@
-/*global app */
-/* exported UserView */
-var UserView = Backbone.View.extend({
+import { surfAppModel } from '../model/surfapp.singleton';
+
+export const UserView = Backbone.View.extend({
     initialize: function () {
         _.bindAll(this, 'render', 'update', 'chatInPrivate');
         this.listenTo(this.model, 'change', this.update);
@@ -30,7 +30,6 @@ var UserView = Backbone.View.extend({
     },
 
     chatInPrivate: function () {
-        // TODO: use event bus
-        app.model.currentUser.chatInPrivateWaveWithUser(this.model);
+        surfAppModel.currentUser.chatInPrivateWaveWithUser(this.model);
     }
 });

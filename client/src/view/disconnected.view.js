@@ -1,5 +1,4 @@
-/* exported DisconnectedView */
-var DisconnectedView = Backbone.View.extend({
+export const DisconnectedView = Backbone.View.extend({
     initialize: function () {
         _.bindAll(this, 'show');
         this.counterStart = 3;
@@ -8,7 +7,7 @@ var DisconnectedView = Backbone.View.extend({
 
     render: function () {
         var template = _.template($('#disconnected_view').text());
-        this.setElement(template({counter: this.counter}));
+        this.setElement(template({ counter: this.counter }));
         this.$el.hide();
 
         return this;
@@ -36,7 +35,7 @@ var DisconnectedView = Backbone.View.extend({
 
             clearInterval(that.interval);
 
-            $.ajax('images/surf-ico.png?' + Math.random(), {timeout: 900})
+            $.ajax('images/surf-ico.png?' + Math.random(), { timeout: 900 })
                 .fail(function () {
                     that.counterStart *= 2;
                     that.counter = that.counterStart;

@@ -1,7 +1,7 @@
 /** necessary functions from the deprecated phpjs package */
 /* eslint-disable no-unused-vars */
 
-function wordwrap(str, intWidth, strBreak, cut) {
+export function wordwrap(str, intWidth, strBreak, cut) {
     //  discuss at: http://locutus.io/php/wordwrap/
     // original by: Jonas Raoni Soares Silva (http://www.jsfromhell.com)
     // improved by: Nick Callen
@@ -93,7 +93,7 @@ function wordwrap(str, intWidth, strBreak, cut) {
 }
 //# sourceMappingURL=wordwrap.js.map
 
-function nl2br(str, isXhtml) {
+export function nl2br(str, isXhtml) {
     //  discuss at: http://locutus.io/php/nl2br/
     // original by: Kevin van Zonneveld (http://kvz.io)
     // improved by: Philip Peterson
@@ -126,7 +126,7 @@ function nl2br(str, isXhtml) {
 }
 //# sourceMappingURL=nl2br.js.map
 
-function strip_tags(input, allowed) {
+export function strip_tags(input, allowed) {
     // eslint-disable-line camelcase
     //  discuss at: http://locutus.io/php/strip_tags/
     // original by: Kevin van Zonneveld (http://kvz.io)

@@ -1,14 +1,15 @@
-/*global Communicator, __ */
-/* exported EditUserView */
-var EditUserView = Backbone.View.extend({
+import { Communicator } from '../communicator';
+import { __ } from '../i18n';
+
+export const EditUserView = Backbone.View.extend({
     initialize: function () {
         _.bindAll(this, 'show', 'hide', 'testNotification');
         this.listenTo(this.model, 'change', this.updateFields);
     },
     events: {
-        'click a.close' : 'hide',
-        'submit form' : 'saveUser',
-        'click button#edituser-notification-test' : 'testNotification'
+        'click a.close': 'hide',
+        'submit form': 'saveUser',
+        'click button#edituser-notification-test': 'testNotification'
     },
 
     render: function () {
@@ -43,7 +44,7 @@ var EditUserView = Backbone.View.extend({
     },
 
     addAvatarOption: function (url) {
-        var template = $(_.template($('#edituser_avatar_view').text())({url: url}));
+        var template = $(_.template($('#edituser_avatar_view').text())({ url: url }));
 
         template.find('img').prop('src', url);
 
@@ -72,9 +73,9 @@ var EditUserView = Backbone.View.extend({
         var name = this.$el.find('#edituser-name').val(),
             avatar = this.$el.find('input[name=edituser-avatar-cb]:checked').val();
 
-        this.model.set('showPictures', this.$el.find('input#edituser-show-pictures').is(':checked'), {silent: true});
-        this.model.set('showVideos', this.$el.find('input#edituser-show-videos').is(':checked'), {silent: true});
-        this.model.set('showLinkPreviews', this.$el.find('input#edituser-show-linkpreviews').is(':checked'), {silent: true});
+        this.model.set('showPictures', this.$el.find('input#edituser-show-pictures').is(':checked'), { silent: true });
+        this.model.set('showVideos', this.$el.find('input#edituser-show-videos').is(':checked'), { silent: true });
+        this.model.set('showLinkPreviews', this.$el.find('input#edituser-show-linkpreviews').is(':checked'), { silent: true });
         this.model.saveLocalAttributes();
 
         //callback updates current user
@@ -100,7 +101,7 @@ var EditUserView = Backbone.View.extend({
         var that = this;
         Notification.requestPermission(function (permission) {
             if (permission === 'granted') {
-                var notification = new Notification('Test notification', {tag: 'mentionNotification', icon: '/images/surf-ico.png'});
+                var notification = new Notification('Test notification', { tag: 'mentionNotification', icon: '/images/surf-ico.png' });
                 notification.onshow = function () {
                     setTimeout(notification.close.bind(notification), 5000);
                 };

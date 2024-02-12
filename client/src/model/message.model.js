@@ -1,7 +1,8 @@
-/*global app, Communicator */
-var Message, MessageCollection;
+import { Communicator } from '../communicator';
+import { nl2br, strip_tags, wordwrap } from '../phpjs';
+import { surfAppModel } from './surfapp.singleton';
 
-Message = Backbone.Model.extend(
+export const Message = Backbone.Model.extend(
     /** @lends Message.prototype */
     {
         defaults: {
@@ -18,11 +19,11 @@ Message = Backbone.Model.extend(
         initialize: function () {
             this.messages = null;
             this.linkPreviews = [];
-            this.user = app.model.users.getUser(this.get('userId'));
+            this.user = surfAppModel.users.getUser(this.get('userId'));
             this.formatMessage();
             this.set('created_at_date', new Date(this.get('created_at')));
             if (!this.isNew()) {
-                this.set('unread', this.get('unread') && app.model.currentUser.id !== this.get('userId'));
+                this.set('unread', this.get('unread') && surfAppModel.currentUser.id !== this.get('userId'));
             }
         },
 
@@ -53,7 +54,6 @@ Message = Backbone.Model.extend(
         },
 
         formatMessage: function () {
-            /*global strip_tags, nl2br, wordwrap */
             var parts, i, c, matched, url, urlText,
                 msg = this.get('message'),
                 urlRegex = /((https?:\/\/|www\.)\S+)/g,
@@ -74,15 +74,15 @@ Message = Backbone.Model.extend(
                     urlText = urlText.length > 53 ? urlText.substr(0, 50) + '...' : urlText;
                     url = 'http' === url.substr(0, 4) ? url : 'http://' + url;
 
-                    if (app.model.currentUser.get('showPictures') && url.match(urlPictureRegex)) {
+                    if (surfAppModel.currentUser.get('showPictures') && url.match(urlPictureRegex)) {
                         replacement = '<br><a href="' + url + '" target="_blank"><img class="message-img" src="' + url + '"></a>';
-                    } else if (app.model.currentUser.get('showVideos') && url.match(urlVideoRegex) && url.match(urlVideoRegexYoutube)) {
+                    } else if (surfAppModel.currentUser.get('showVideos') && url.match(urlVideoRegex) && url.match(urlVideoRegexYoutube)) {
                         url = urlVideoRegex.exec(url);
                         replacement = '<br><iframe width="420" height="315" src="https://youtube.com/embed/' + url[2] + '" frameborder="0" allowfullscreen></iframe>';
                     } else {
                         replacement = '<a href="' + url + '" target="_blank">' + urlText + '</a>';
 
-                        if (app.model.currentUser.get('showLinkPreviews')) {
+                        if (surfAppModel.currentUser.get('showLinkPreviews')) {
                             Communicator.getLinkPreview(url, this);
                         }
                     }
@@ -124,7 +124,7 @@ Message = Backbone.Model.extend(
          */
         readAllMessages: function () {
             var unread = this.get('unread');
-            this.set({'unread': false}, {'silent': true});
+            this.set({ 'unread': false }, { 'silent': true });
 
             return unread;
         },
@@ -160,7 +160,7 @@ Message = Backbone.Model.extend(
 
             //check parent
             if (!nextUnread && this.get('parentId') && !downOnly) {
-                return app.model.messages.get(this.get('parentId')).getNextUnread(0, false, checkedIds);
+                return surfAppModel.messages.get(this.get('parentId')).getNextUnread(0, false, checkedIds);
             }
 
             return nextUnread;
@@ -171,7 +171,7 @@ Message = Backbone.Model.extend(
          */
         getRootId: function () {
             if (this.get('parentId')) {
-                return app.model.messages.get(this.get('parentId')).getRootId();
+                return surfAppModel.messages.get(this.get('parentId')).getRootId();
             }
             return this.getSortableId();
         },
@@ -180,7 +180,7 @@ Message = Backbone.Model.extend(
          * @returns {Wave}
          */
         getWave: function () {
-            return app.model.waves.get(this.get('waveId'));
+            return surfAppModel.waves.get(this.get('waveId'));
         },
 
         /**
@@ -188,7 +188,7 @@ Message = Backbone.Model.extend(
          */
         isCurrentUserMentioned: function () {
             if (this.get('unread')) {
-                var searchString = '@' + app.model.currentUser.get('name');
+                var searchString = '@' + surfAppModel.currentUser.get('name');
                 return this.get('message').indexOf(searchString) >= 0;
             }
             return false;
@@ -201,8 +201,7 @@ Message = Backbone.Model.extend(
     }
 );
 
-/** @class */
-MessageCollection = Backbone.Collection.extend(
+export const MessageCollection = Backbone.Collection.extend(
     /** @lends MessageCollection.prototype */
     {
         model: Message,

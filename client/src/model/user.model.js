@@ -1,7 +1,8 @@
-/*global Communicator, app, randomName */
-/* exported User, UserCollection */
-/** @class */
-var User = Backbone.Model.extend(
+import { Communicator } from '../communicator';
+import { randomName } from '../randomname';
+import { surfAppModel } from './surfapp.singleton';
+
+export const User = Backbone.Model.extend(
     /** @lends User.prototype */
     {
         defaults: {
@@ -31,12 +32,14 @@ var User = Backbone.Model.extend(
          */
         chatInPrivateWaveWithUser: function (user) {
             if (user !== this) {
-                var privateWaves = app.model.waves.filter(function (wave) {
+                var privateWaves = surfAppModel.waves.filter(function (wave) {
                     return 2 === wave.users.length && wave.users.contains(user) && wave.users.contains(this);
                 }, this);
 
                 if (privateWaves.length) {
-                    app.navigate('wave/' + privateWaves[0].id, {trigger: true});
+                    // TODO
+                    // eslint-disable-next-line no-undef
+                    app.navigate('wave/' + privateWaves[0].id, { trigger: true });
                 } else {
                     Communicator.createWave(randomName() + 'Room', [user.id]);
                 }
@@ -63,8 +66,7 @@ var User = Backbone.Model.extend(
     }
 );
 
-/** @class */
-var UserCollection = Backbone.Collection.extend(
+export const UserCollection = Backbone.Collection.extend(
     /** @lends UserCollection.prototype */
     {
         model: User,
@@ -77,7 +79,7 @@ var UserCollection = Backbone.Collection.extend(
             var user = this.get(id);
 
             if (undefined === user) {
-                user = new User({_id: id, name: '[loading]'});
+                user = new User({ _id: id, name: '[loading]' });
                 this.add(user);
                 Communicator.getUser(id);
             }

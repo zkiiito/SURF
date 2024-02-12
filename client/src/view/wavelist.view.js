@@ -1,6 +1,7 @@
-/*global __, app */
-/* exported WaveListView */
-var WaveListView = Backbone.View.extend({
+import { __ } from '../i18n';
+import { surfAppModel } from '../model/surfapp.singleton';
+
+export const WaveListView = Backbone.View.extend({
     initialize: function () {
         _.bindAll(this, 'setCurrent', 'countMessages', 'updateMessages', 'changeUsers', 'updateTitle', 'scrollToNextUnread', 'removeWave');
         this.listenTo(this.model, 'change:current', this.setCurrent);
@@ -17,13 +18,11 @@ var WaveListView = Backbone.View.extend({
     },
 
     events: {
-        'click' : 'scrollToNextUnread'
+        'click': 'scrollToNextUnread'
     },
 
     render: function () {
-        var context = _.extend(this.model.toJSON(), {
-                id: this.model.id
-            }),
+        var context = _.extend(this.model.toJSON(), { id: this.model.id }),
             template = _.template($('#wave_list_view').text());
 
         this.setElement(template(context));
@@ -52,7 +51,7 @@ var WaveListView = Backbone.View.extend({
     },
 
     updateMessages: function (message) {
-        if (message.get('userId') !== app.model.currentUser.id && message.get('unread')) {
+        if (message.get('userId') !== surfAppModel.currentUser.id && message.get('unread')) {
             this.$el.addClass('updated');
         }
     },
@@ -67,7 +66,7 @@ var WaveListView = Backbone.View.extend({
     },
 
     scrollToNextUnread: function (e) {
-        if (app.model.currentWaveId === this.model.id) {
+        if (surfAppModel.currentWaveId === this.model.id) {
             e.preventDefault();
             var nextUnread = this.model.getNextUnreadMessage();
 

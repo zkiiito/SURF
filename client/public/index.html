@@ -1,27 +1,30 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>SURF</title>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport"
+    content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <link rel="shortcut icon" type="image/png" href="images/surf-ico.png">
   <link rel="stylesheet" type="text/css" href="css/style.css">
   <link rel="stylesheet" type="text/css" href="css/token-input.css">
 </head>
+
 <body>
 
-<script id="user_view" type="text/html">
+  <script id="user_view" type="text/html">
 <img class="{{ status }}" src="" alt="{{ name }}" title="{{ name }}">
 </script>
 
-<script id="wave_list_view" type="text/html">
+  <script id="wave_list_view" type="text/html">
 <a class="waveitem" href="#wave/{{ id }}">
     <h2>{{ title }}</h2>
     <p class="meta mhide"><span class="usercount R">{ usercount } participants</span> <span class="piros"><!-- { unreadPosts } --></span></p>
 </a>
 </script>
 
-<script id="wave_view" type="text/html">
+  <script id="wave_view" type="text/html">
 <div class="wave">
     <div class="wavetop">
         <h2 class="wave-title">{{ title }}</h2>
@@ -43,7 +46,7 @@
 </div>
 </script>
 
-<script id="wavereplyform_view" type="text/html">
+  <script id="wavereplyform_view" type="text/html">
 <div class="notification replyform">
     <form class="add-message" method="post">
         <textarea name="message" placeholder="Add message" class="R"></textarea>
@@ -52,7 +55,7 @@
 </div>
 </script>
 
-<script id="messagereplyform_view" type="text/html">
+  <script id="messagereplyform_view" type="text/html">
 <div class="notification replyform">
     <p><a class="button threadend cancel" href=""><span class="R">Cancel</span> ⤴</a></p>
     <form class="add-message threadend" method="post">
@@ -62,7 +65,7 @@
 </div>
 </script>
 
-<script id="message_view" type="text/html">
+  <script id="message_view" type="text/html">
 <div class="message" id="msg-{{id}}">
     <table class="unread" tabindex="-1">
         <tbody>
@@ -87,7 +90,7 @@
 </div>
 </script>
 
-<script id="message_linkpreview_view" type="text/html">
+  <script id="message_linkpreview_view" type="text/html">
 <tr>
     <td class="message-header"></td>
     <td class="message-linkpreview message-body">
@@ -100,7 +103,7 @@
 </tr>
 </script>
 
-<script id="editwave_view" type="text/html">
+  <script id="editwave_view" type="text/html">
 <div id="editwave" class="overlay">
   <div class="overlay-title">
     <a class="close button R" href="">Close</a>
@@ -137,7 +140,7 @@
 </div>
 </script>
 
-<script id="edituser_view" type="text/html">
+  <script id="edituser_view" type="text/html">
 <div id="edituser" class="overlay">
   <div class="overlay-title">
     <a class="close button R" href="">Close</a>
@@ -180,7 +183,7 @@
 </div>
 </script>
 
-<script id="edituser_avatar_view" type="text/html">
+  <script id="edituser_avatar_view" type="text/html">
 <div class="avatar">
     <label>
         <img width="80"><br>
@@ -189,7 +192,7 @@
 </div>
 </script>
 
-<script id="disconnected_view" type="text/html">
+  <script id="disconnected_view" type="text/html">
 <div id="disconnected" class="overlay">
   <div class="overlay-title">
     <h2 class="R">Disconnected</h2>
@@ -202,39 +205,39 @@
 </div>
 </script>
 
-<div id="header">
-  <h1>SURF</h1>
-  <a href="#"><img id="header-logo" src="images/surf-logo.png"></a>
-  <div id="usermenu">
-    <span id="currentuser"></span>
-    <a class="button edituser" href="#"><span class="R mhide">Edit profile</span><span class="mshow">⚙</span></a>
+  <div id="header">
+    <h1>SURF</h1>
+    <a href="#"><img id="header-logo" src="images/surf-logo.png"></a>
+    <div id="usermenu">
+      <span id="currentuser"></span>
+      <a class="button edituser" href="#"><span class="R mhide">Edit profile</span><span class="mshow">⚙</span></a>
+    </div>
   </div>
-</div>
 
-<div id="container">
+  <div id="container">
     <div id="wave-list">
-        <a class="button addwave" href="#"><span class="R mhide">Add conversation +</span><span class="R mshow">Add+</span></a>
-        <div id="wave-list-active">
-        </div>
-        <div id="wave-list-archived">
-        </div>
-        <div id="wavelist-bottom">
-            <p>SURF &copy; 2023 <a href="http://zkiiito.github.io/SURF/" target="_blank">the SURF team</a></p>
-        </div>
+      <a class="button addwave" href="#"><span class="R mhide">Add conversation +</span><span
+          class="R mshow">Add+</span></a>
+      <div id="wave-list-active">
+      </div>
+      <div id="wave-list-archived">
+      </div>
+      <div id="wavelist-bottom">
+        <p>SURF &copy; 2023 <a href="http://zkiiito.github.io/SURF/" target="_blank">the SURF team</a></p>
+      </div>
     </div>
     <div id="wave-container">
-        <div class="empty" style="display: none">
-            <div class="feedback">
-                <h2 class="R">You have no conversations.</h2>
-                <a class="button addwave R" href="#">Add conversation +</a>
-            </div>
+      <div class="empty" style="display: none">
+        <div class="feedback">
+          <h2 class="R">You have no conversations.</h2>
+          <a class="button addwave R" href="#">Add conversation +</a>
         </div>
+      </div>
     </div>
-</div>
+  </div>
 
-<div id="darken"></div>
-<script src="//code.jquery.com/jquery-3.1.1.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Tocca.js/2.0.3/Tocca.min.js"></script>
-<script src="js/surf.min.js"></script>
+  <div id="darken"></div>
+  <script src="js/surf.min.js" async></script>
 </body>
+
 </html>

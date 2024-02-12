@@ -1,9 +1,14 @@
-/*global UserView, MessageReplyFormView, __ */
+import { __ } from '../i18n';
+import { MessageReplyFormView } from './messagereplyform.view';
+import { UserView } from './user.view';
 
-var messageTemplate = _.template($('#message_view').text());
-var linkPreviewTemplate = _.template($('#message_linkpreview_view').text());
+_.templateSettings.interpolate = /{|\|([\s\S]+?)\|}/g;
+_.templateSettings.escape = /{{([\s\S]+?)}}/g;
 
-var MessageView = Backbone.View.extend({
+const messageTemplate = _.template($('#message_view').text());
+const linkPreviewTemplate = _.template($('#message_linkpreview_view').text());
+
+export const MessageView = Backbone.View.extend({
     initialize: function () {
         if (this.model.messages) {
             this.listenTo(this.model.messages, 'add', this.addMessage);
@@ -25,12 +30,12 @@ var MessageView = Backbone.View.extend({
     events: {
         'click': 'readMessage',
         'dbltap': 'replyMessage',
-        'click a.reply' : 'replyMessage',
-        'click a.threadend' : 'replyMessage'
+        'click a.reply': 'replyMessage',
+        'click a.threadend': 'replyMessage'
     },
     render: function () {
-        var context = _.extend(this.model.toJSON(), {id: this.model.id, user: this.model.user.toJSON()}),
-            userView = new UserView({model: this.model.user}),
+        var context = _.extend(this.model.toJSON(), { id: this.model.id, user: this.model.user.toJSON() }),
+            userView = new UserView({ model: this.model.user }),
             that = this;
 
         this.setElement(messageTemplate(context));
@@ -116,7 +121,7 @@ var MessageView = Backbone.View.extend({
             return false;
         }
 
-        formView = new MessageReplyFormView({model: this.model});
+        formView = new MessageReplyFormView({ model: this.model });
         formView.render();
         formView.show(this.$el);
 
@@ -173,7 +178,7 @@ var MessageView = Backbone.View.extend({
     },
 
     addLinkPreview: function (data) {
-        var linkPreview = $(linkPreviewTemplate(_.extend({title: null, image: null, description: null}, data)));
+        var linkPreview = $(linkPreviewTemplate(_.extend({ title: null, image: null, description: null }, data)));
         if (!data.image) {
             linkPreview.find('img').remove();
         }

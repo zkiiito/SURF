@@ -1,6 +1,6 @@
-/*global R*/
+import { R } from 'R.js';
 /*jslint newcap: true*/
-var i18n = {
+const i18n = {
     init: function () {
         R.registerLocale('en-US', {});
         R.registerLocale('hu', {
@@ -8,12 +8,12 @@ var i18n = {
             'Edit': 'Szerkesztés',
             'All read': 'Mindet olvasottá',
             'Leave conversation': 'Kilépés',
-            '{{ usercount }} participants' : '{{ usercount }} résztvevő',
+            '{{ usercount }} participants': '{{ usercount }} résztvevő',
             'Press Return to send, Shift-Return to break line.': 'Nyomj Entert a mentéshez, Shift-Entert a sortöréshez.',
-            'Save message' : 'Üzenet mentése',
+            'Save message': 'Üzenet mentése',
             'Earlier messages': 'Régebbi üzenetek',
-            'Add message' : 'Új üzenet',
-            'new messages' : 'új üzenet',
+            'Add message': 'Új üzenet',
+            'new messages': 'új üzenet',
             'Reply to {{ user.name }}\'s message': 'Válasz {{ user.name }} üzenetére',
             'Cancel': 'Mégse',
             'Close': 'Bezárás',
@@ -90,5 +90,4 @@ var i18n = {
 };
 /*jslint newcap: false*/
 i18n.init();
-// eslint-disable-next-line no-unused-vars
-var __ = i18n.__;
+export const __ = i18n.__;

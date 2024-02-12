@@ -1,6 +1,6 @@
-/*global WaveReplyFormView */
-/* exported MessageReplyFormView */
-var MessageReplyFormView = WaveReplyFormView.extend({
+import { WaveReplyFormView } from './wavereplyform.view';
+
+export const MessageReplyFormView = WaveReplyFormView.extend({
     events: _.extend({
         'click a.cancel': 'handleCancel'
     }, WaveReplyFormView.prototype.events),
@@ -16,7 +16,7 @@ var MessageReplyFormView = WaveReplyFormView.extend({
     render: function () {
         var template = _.template($('#messagereplyform_view').text());
 
-        this.setElement(template({user: this.model.user.toJSON()}));
+        this.setElement(template({ user: this.model.user.toJSON() }));
         return this;
     },
 
@@ -43,7 +43,7 @@ var MessageReplyFormView = WaveReplyFormView.extend({
         if (threadEnd.is(':visible')) {
             threadEnd.hide();
             this.$el.height(threadEnd.height()).appendTo(parent)
-                .animate({height: '100%'}, this.timeout, function () {
+                .animate({ height: '100%' }, this.timeout, function () {
                     $(this).find('textarea').focus();
                 });
         } else {
@@ -58,7 +58,7 @@ var MessageReplyFormView = WaveReplyFormView.extend({
             threadEnd;
         if (this.$el.siblings('.replies').children().length > 0) {
             threadEnd = this.$el.siblings('.threadend');
-            this.$el.animate({height: threadEnd.height()}, this.timeout,
+            this.$el.animate({ height: threadEnd.height() }, this.timeout,
                 function () {
                     threadEnd.show();
                     that.remove();

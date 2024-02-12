@@ -1,6 +1,8 @@
-/*global io, Message, Wave, User */
-// eslint-disable-next-line no-unused-vars
-var Communicator = {
+import { io } from 'socket.io-client';
+import { Message } from './model/message.model';
+import { User } from './model/user.model';
+import { Wave } from './model/wave.model';
+export const Communicator = {
     app: null,
     socket: null,
     reconnect: true,
@@ -8,15 +10,11 @@ var Communicator = {
     readQueue: [],
     queueReads: false,
     initialize: function (app) {
-        if (window.io === undefined) {
-            console.error('no io');
-            return;
-        }
         var that = this;
 
         this.app = app;
 
-        this.socket = io({reconnection: false});
+        this.socket = io({ reconnection: false });
 
         this.socket.on('init', function (data) {
             that.onInit(data);
@@ -91,11 +89,11 @@ var Communicator = {
             this.queueReads = false; //queue of max 1
         } else {
             this.readQueue.forEach(function (msg) {
-                this.socket.emit('readMessage', {id: msg.id, waveId: msg.get('waveId')});
+                this.socket.emit('readMessage', { id: msg.id, waveId: msg.get('waveId') });
             }, this);
             this.readQueue = [];
 
-            this.socket.emit('readMessage', {id: message.id, waveId: message.get('waveId')});
+            this.socket.emit('readMessage', { id: message.id, waveId: message.get('waveId') });
         }
     },
 
@@ -103,7 +101,7 @@ var Communicator = {
      * @param {Wave} wave
      */
     readAllMessages: function (wave) {
-        this.socket.emit('readAllMessages', {waveId: wave.id});
+        this.socket.emit('readAllMessages', { waveId: wave.id });
     },
 
     /**
@@ -126,7 +124,7 @@ var Communicator = {
      */
     updateWave: function (waveId, title, userIds) {
         var wave = {
-            id : waveId,
+            id: waveId,
             title: title,
             userIds: userIds
         };

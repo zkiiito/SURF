@@ -1,8 +1,10 @@
-/*global WaveReplyFormView, UserView, MessageView, __, app */
+import { __ } from '../i18n';
+import { MessageView } from './message.view';
+import { UserView } from './user.view';
+import { WaveReplyFormView } from './wavereplyform.view';
 
-var waveTemplate = _.template($('#wave_view').text());
-/* exported WaveView */
-var WaveView = Backbone.View.extend({
+const waveTemplate = _.template($('#wave_view').text());
+export const WaveView = Backbone.View.extend({
     initialize: function () {
         _.bindAll(this, 'setCurrent', 'addMessage', 'addUser', 'removeUser', 'updateTitle',
             'showUpdateWave', 'scrollToNextUnread', 'scrollToBottom', 'readAllMessages',
@@ -23,17 +25,17 @@ var WaveView = Backbone.View.extend({
         this.listenTo(this.model.users, 'change', this.countOfflineUsers);
     },
     events: {
-        'click a.editwave' : 'showUpdateWave',
-        'click a.gounread' : 'scrollToNextUnread',
-        'click div.wavetop' : 'scrollToNextUnread',
-        'click a.getprevmessages' : 'getPreviousMessages',
-        'click a.readall' : 'readAllMessages',
-        'click a.quit' : 'quitWave'
+        'click a.editwave': 'showUpdateWave',
+        'click a.gounread': 'scrollToNextUnread',
+        'click div.wavetop': 'scrollToNextUnread',
+        'click a.getprevmessages': 'getPreviousMessages',
+        'click a.readall': 'readAllMessages',
+        'click a.quit': 'quitWave'
     },
 
     render: function () {
-        var context = _.extend(this.model.toJSON(), {id: this.model.id}),
-            formView = new WaveReplyFormView({model: this.model});
+        var context = _.extend(this.model.toJSON(), { id: this.model.id }),
+            formView = new WaveReplyFormView({ model: this.model });
 
         this.setElement(waveTemplate(context));
         this.$el.hide();
@@ -61,14 +63,14 @@ var WaveView = Backbone.View.extend({
 
     addMessage: function (message) {
         if (null === message.get('parentId')) {
-            var view = new MessageView({model: message}),
+            var view = new MessageView({ model: message }),
                 viewElement = view.render().el,
                 targetPos;
 
             if (this.fragmentMode) {
                 this.fragment.append(viewElement);
             } else {
-                targetPos = this.model.messages.where({parentId: null}).indexOf(message);
+                targetPos = this.model.messages.where({ parentId: null }).indexOf(message);
                 if (0 === targetPos) {
                     this.$el.find('div.getprevmessages').after(viewElement);
                 } else {
@@ -85,7 +87,7 @@ var WaveView = Backbone.View.extend({
 
     addUser: function (user) {
         this.changeUsers();
-        var userView = new UserView({model: user});
+        var userView = new UserView({ model: user });
         this.userViews[user.id] = userView;
 
         this.$el.find('.heads').append(userView.render().el);
@@ -101,7 +103,7 @@ var WaveView = Backbone.View.extend({
 
     countOfflineUsers: function () {
         var counter = this.$el.find('.offline-list'),
-            offlineCount = this.model.users.where({status: 'offline'}).length;
+            offlineCount = this.model.users.where({ status: 'offline' }).length;
 
         if (offlineCount > 0) {
             counter.find('.count').text(offlineCount);
@@ -116,7 +118,8 @@ var WaveView = Backbone.View.extend({
     },
 
     showUpdateWave: function () {
-        // TODO: use event bus
+        // TODO
+        // eslint-disable-next-line no-undef
         return app.view.showUpdateWave();
     },
 
@@ -152,7 +155,7 @@ var WaveView = Backbone.View.extend({
     quitWave: function (e) {
         e.preventDefault();
 
-        var question =  __('Do you want to leave conversation {{ title }}' +
+        var question = __('Do you want to leave conversation {{ title }}' +
             '?\n\nIf you want to come back later, participants can invite you')
             .replace('{{ title }}', this.model.get('title'));
 

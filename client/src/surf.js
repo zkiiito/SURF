@@ -1,7 +1,9 @@
-/*global SurfAppModel, SurfAppView, Communicator */
-var SurfAppRouter = Backbone.Router.extend({
+import { surfAppModel } from './model/surfapp.singleton';
+import { SurfAppView } from './view/surfapp.view';
+
+export const SurfAppRouter = Backbone.Router.extend({
     initialize: function () {
-        this.model = new SurfAppModel();
+        this.model = surfAppModel;
         this.view = new SurfAppView({
             model: this.model
         });
@@ -31,7 +33,7 @@ var SurfAppRouter = Backbone.Router.extend({
 
         lastMsg = this.model.messages.last();
         if (lastMsg) {
-            this.navigate('wave/' + lastMsg.get('waveId'), {trigger: true});
+            this.navigate('wave/' + lastMsg.get('waveId'), { trigger: true });
         } else {
             lastWave = this.model.waves.last();
             this.showWave(lastWave ? lastWave.id : null);
@@ -39,18 +41,3 @@ var SurfAppRouter = Backbone.Router.extend({
     }
 });
 
-window.onerror = function (message, file, line) {
-    var data = {
-        prefix: 'JSERROR',
-        errorMessage: message + ' in ' + file + ' on line ' + line + '. URL: ' + window.location.href + ' BROWSER: ' + navigator.userAgent
-    };
-    $.post('/logError', data);
-};
-
-$(function () {
-    var surfApp = new SurfAppRouter();
-    window.app = surfApp;
-
-    Backbone.history.start();
-    Communicator.initialize(surfApp);
-});

@@ -1,6 +1,6 @@
-/*global Communicator */
-/* exported WaveReplyFormView */
-var WaveReplyFormView = Backbone.View.extend({
+import { Communicator } from '../communicator';
+
+export const WaveReplyFormView = Backbone.View.extend({
     initialize: function () {
         _.bindAll(this, 'submitForm', 'handleKeydown');
     },
