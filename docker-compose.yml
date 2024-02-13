@@ -14,7 +14,7 @@ services:
       - .:/opt/surf
     ports:
       - "8000:8000"
-    command: ./node_modules/.bin/nodemon -L Surf.js
+    # command: ./node_modules/.bin/nodemon -L Surf.js
     networks:
       - backend
 
