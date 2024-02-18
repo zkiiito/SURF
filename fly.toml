@@ -11,12 +11,6 @@ kill_timeout = "5s"
 [experimental]
   auto_rollback = true
 
-[build]
-  builder = "heroku/buildpacks:20"
-  [build.args]
-    NODE_ENV = "production"
-    NODE_MODULES_CACHE = "true"
-
 [env]
   NODE_ENV = "production"
   NODE_MODULES_CACHE = "true"
