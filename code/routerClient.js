@@ -100,7 +100,7 @@ if (Config.testMode) {
                 emails: [{value: 'test' + username + '@wavesurf.com'}],
                 displayName: 'Surf Tester ' + id.toString(),
                 photos: [{
-                    value: 'http://lorempixel.com/100/100/people/'
+                    value: 'https://placekitten.com/100/100'
                 }],
                 _json: {}
             };

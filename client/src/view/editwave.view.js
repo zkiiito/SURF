@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-import * as token from 'jquery-tokeninput';
+import * as token from '../jquery.tokenInput';
 import { Communicator } from '../communicator';
 import { __ } from '../i18n';
 import { surfAppModel } from '../model/surfapp.singleton';
@@ -26,7 +26,7 @@ export const EditWaveView = Backbone.View.extend({
 
     genUserArray: function () {
         this.userArray = this.model.users.reduce(function (userArray, user) {
-            var obj = { id: user.id, name: user.get('name') + ' (' + user.get('email') + ')' };
+            var obj = { id: user.id, name: user.get('name') + ' (' + user.get('email') + ')', readonly: true };
 
             if (!this.wave || (this.wave && !this.wave.users.get(user.id))) {
                 userArray.push(obj);
@@ -56,7 +56,7 @@ export const EditWaveView = Backbone.View.extend({
     updateUserSuggest: function () {
         this.initUserSuggest();
 
-        // TODO $('#editwave-users').data('settings').local_data = this.userArray;
+        this.$el.find('#editwave-users').data('settings').local_data = this.userArray;
 
         var suggest = this.$el.find('#editwave-users');
         suggest.tokenInput('clear');
