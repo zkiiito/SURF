@@ -43,7 +43,7 @@ passport.use(new FacebookStrategy(
 /*jslint unparam: false*/
 
 const app = express.Router();
-const clientDir = __dirname.replace('code', 'client');
+const clientDir = __dirname.replace('code', 'client/public');
 
 app.use('/css', express.static(clientDir + '/css'));
 app.use('/js', express.static(clientDir + '/js'));
@@ -100,7 +100,7 @@ if (Config.testMode) {
                 emails: [{value: 'test' + username + '@wavesurf.com'}],
                 displayName: 'Surf Tester ' + id.toString(),
                 photos: [{
-                    value: 'http://lorempixel.com/100/100/people/'
+                    value: 'https://placekitten.com/100/100'
                 }],
                 _json: {}
             };

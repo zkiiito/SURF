@@ -15,6 +15,7 @@
     "content-type": "^1.0.5",
     "cookie": "~0.5.0",
     "cookie-signature": "^1.2.1",
+    "errorhandler": "^1.5.1",
     "express": "^4.18.2",
     "express-session": "^1.17.3",
     "got": "^11.8.6",
@@ -39,22 +40,12 @@
   },
   "scripts": {
     "start": "node Surf.js",
-    "test": "cypress run",
-    "build": "node build.js",
-    "git-add": "git add client/js/surf.min.js admin/js/admin.min.js"
+    "test": "cypress run"
   },
-  "pre-commit": [
-    "build",
-    "git-add"
-  ],
   "devDependencies": {
     "cypress": "^13.3.3",
-    "errorhandler": "^1.5.1",
     "eslint": "^8.36.0",
-    "nodemon": "^2.0.22",
-    "pre-commit": "^1.2.2",
-    "R.js": "^0.1.5",
-    "terser": "^5.16.8"
+    "nodemon": "^2.0.22"
   },
   "nodemonConfig": {
     "ignore": [

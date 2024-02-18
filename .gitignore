@@ -1,5 +1,5 @@
 /nbproject
-/node_modules
+node_modules/
 .idea/
 .env
 out/

@@ -1,15 +1,50 @@
-FROM node:18-alpine
+# syntax = docker/dockerfile:1
 
-# Create app directory
-WORKDIR /opt/surf
+# Adjust NODE_VERSION as desired
+ARG NODE_VERSION=18.19.0
+FROM node:${NODE_VERSION}-slim as base
 
-# Install app dependencies
-COPY package*.json ./
+LABEL fly_launch_runtime="Node.js"
 
-RUN npm install --only=production
+# Node.js app lives here
+WORKDIR /app
 
-# Bundle app source
-COPY . .
+# Set production environment
+ENV NODE_ENV="production"
 
+
+# Throw-away build stage to reduce size of final image
+FROM base as build
+
+# Install packages needed to build node modules
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y build-essential node-gyp pkg-config python-is-python3
+
+# Install node modules
+COPY --link package-lock.json package.json ./
+RUN npm ci
+
+# Copy application code
+COPY --link . .
+
+WORKDIR /app/client
+RUN npm ci --include=dev
+RUN npm run build
+RUN rm -rf node_modules
+
+WORKDIR /app/admin
+RUN npm ci --include=dev
+RUN npm run build
+RUN rm -rf node_modules
+
+WORKDIR /app
+
+# Final stage for app image
+FROM base
+
+# Copy built application
+COPY --from=build /app /app
+
+# Start the server by default, this can be overwritten at runtime
 EXPOSE 8000
-CMD npm start
+CMD [ "npm", "run", "start" ]
