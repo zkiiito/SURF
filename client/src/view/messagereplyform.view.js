@@ -34,6 +34,10 @@ export const MessageReplyFormView = WaveReplyFormView.extend({
         return this.model.get('waveId');
     },
 
+    getWave: function () {
+        return this.model.getWave();
+    },
+
     getParentId: function () {
         return this.model.id;
     },

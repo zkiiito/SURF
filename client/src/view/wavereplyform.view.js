@@ -51,6 +51,10 @@ export const WaveReplyFormView = Backbone.View.extend({
         return this.model.id;
     },
 
+    getWave: function () {
+        return this.model;
+    },
+
     getParentId: function () {
         return null;
     },
@@ -64,7 +68,7 @@ export const WaveReplyFormView = Backbone.View.extend({
 
         if (atpos > -1 && caretPos - atpos < 50) {
             search = textarea.val().substring(atpos + 1, caretPos).toLowerCase();
-            users = this.model.users.filter(function (user) {
+            users = this.getWave().users.filter(function (user) {
                 return user.get('name').toLowerCase().indexOf(search) === 0;
             });
 
