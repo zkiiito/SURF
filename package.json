@@ -25,7 +25,7 @@
     "metascraper-image": "^5.33.7",
     "metascraper-title": "^5.33.7",
     "mongoose": "^7.5.0",
-    "mysql2": "^3.9.4",
+    "mysql2": "^3.9.7",
     "passport": "^0.6.0",
     "passport-facebook": "^3.0.0",
     "passport-google-oauth20": "^2.0.0",
