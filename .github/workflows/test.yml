@@ -23,11 +23,11 @@ jobs:
           npm ci
           npm run build
       - name: Start MongoDB
-        uses: supercharge/mongodb-github-action@1.6.0
+        uses: supercharge/mongodb-github-action@1.11.0
         with:
           mongodb-version: 7.0
       - name: Start Redis
-        uses: supercharge/redis-github-action@1.2.0
+        uses: supercharge/redis-github-action@1.8.0
         with:
           redis-version: 4
       - run: nohup bash -c "npm start 2>&1 &" && sleep 4
