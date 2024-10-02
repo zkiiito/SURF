@@ -5,10 +5,10 @@ import LinkPreview from './LinkPreview.js';
 import SessionStore from './SessionStore.js';
 import { startExpressServer } from './ExpressServer.js';
 import { Model as Message } from './model/Message.js';
-import { Model as User, Collection as UserCollection } from './model/User.js';
-import { Model as Wave, Collection as WaveCollection } from './model/Wave.js';
 import Config from './Config.js';
 import cookie from 'cookie';
+import { User, UserCollection } from './model/User.js';
+import { Wave, WaveCollection } from './model/Wave.js';
 
 /** @namespace */
 const SurfServer = {
