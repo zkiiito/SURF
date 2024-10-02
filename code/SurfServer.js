@@ -3,7 +3,7 @@ import signature from 'cookie-signature';
 import DAL from './DALMongoRedis.js';
 import LinkPreview from './LinkPreview.js';
 import SessionStore from './SessionStore.js';
-import ExpressServer from './ExpressServer.js';
+import { startExpressServer } from './ExpressServer.js';
 import { Model as Message } from './model/Message.js';
 import { Model as User, Collection as UserCollection } from './model/User.js';
 import { Model as Wave, Collection as WaveCollection } from './model/Wave.js';
@@ -21,6 +21,7 @@ const SurfServer = {
     },
 
     startServer: function () {
+        const ExpressServer = startExpressServer();
         ExpressServer.listen(Config.port);
         console.log('SURF is running, listening on port ' + Config.port);
 

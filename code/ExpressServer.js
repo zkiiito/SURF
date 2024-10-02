@@ -5,7 +5,7 @@ import SessionStore from './SessionStore.js';
 import bodyParser from 'body-parser';
 import session from 'express-session';
 import routerClient from './routerClient.js';
-import routerAdmin from './routerAdmin.js';
+import startRouterAdmin from './routerAdmin.js';
 
 passport.serializeUser(function (user, done) {
     done(null, user);
@@ -15,32 +15,33 @@ passport.deserializeUser(function (obj, done) {
     done(null, obj);
 });
 
-const app = express();
-app.disable('x-powered-by');
+export function startExpressServer() {
+    const app = express();
+    app.disable('x-powered-by');
 
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
-app.use(bodyParser.json());
+    app.use('/admin', startRouterAdmin());
 
-app.use(session({
-    name: 'surf.sid',
-    store: SessionStore,
-    secret: 'surfSessionSecret9',
-    cookie: {
-        httpOnly: true
-        //secure: true //in prod?
-    },
-    saveUninitialized: true,
-    resave: true
-}));
+    app.use(bodyParser.urlencoded({
+        extended: true
+    }));
+    app.use(bodyParser.json());
 
-app.use(passport.initialize());
-app.use(passport.session());
+    app.use(session({
+        name: 'surf.sid',
+        store: SessionStore,
+        secret: 'surfSessionSecret9',
+        cookie: {
+            httpOnly: process.env.NODE_ENV === 'production',
+            secure: process.env.NODE_ENV === 'production',
+        },
+        saveUninitialized: true,
+        resave: true
+    }));
 
-app.use('/', routerClient);
-app.use('/admin', routerAdmin);
+    app.use(passport.initialize());
+    app.use(passport.session());
 
-const ExpressServer = http.createServer(app);
+    app.use('/', routerClient);
 
-export default ExpressServer;
+    return http.createServer(app);
+}
