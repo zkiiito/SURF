@@ -1,5 +1,5 @@
 const Backbone =  require('backbone'),
-    DAL = require('../DAL');
+    DAL = require('../DALMongoRedis');
 
 const Message = Backbone.Model.extend(
     /** @lends Message.prototype */

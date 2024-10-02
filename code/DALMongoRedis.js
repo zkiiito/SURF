@@ -2,7 +2,6 @@ const _ = require('underscore'),
     mongoose = require('mongoose'),
     redis = require('./RedisClient'),
     Config = require('./Config'),
-    GraphiteClient = require('./GraphiteClient'),
     UserModel = require('./MongooseModels').UserModel,
     WaveModel = require('./MongooseModels').WaveModel,
     MessageModel = require('./MongooseModels').MessageModel,
@@ -162,7 +161,6 @@ const DAL = {
         }
 
         const allTime = new Date().getTime() - startTime;
-        GraphiteClient.track('.lastmessagesforuser.time', allTime);
 
         console.log('QUERY LastMessagesForUser: msg query in ' + allTime);
         console.log('QUERY LastMessagesForUser: msgs: ' + msgCount);

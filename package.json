@@ -12,6 +12,7 @@
   "dependencies": {
     "backbone": "^1.6.0",
     "body-parser": "^1.20.2",
+    "connect-redis": "^7.1.1",
     "content-type": "^1.0.5",
     "cookie": "^0.6.0",
     "cookie-signature": "^1.2.1",
@@ -25,7 +26,6 @@
     "metascraper-image": "^5.45.22",
     "metascraper-title": "^5.45.22",
     "mongoose": "^8.7.0",
-    "mysql2": "^3.11.3",
     "passport": "^0.7.0",
     "passport-facebook": "^3.0.0",
     "passport-google-oauth20": "^2.0.0",
@@ -35,7 +35,7 @@
     "underscore": "^1.13.7"
   },
   "engines": {
-    "node": "18.x"
+    "node": "20.x"
   },
   "scripts": {
     "start": "node Surf.js",

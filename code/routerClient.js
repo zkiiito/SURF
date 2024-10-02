@@ -1,6 +1,6 @@
 const express = require('express'),
     fs = require('fs'),
-    DAL = require('./DAL'),
+    DAL = require('./DALMongoRedis'),
     Config = require('./Config'),
     passport = require('passport'),
     GoogleStrategy = require('passport-google-oauth20').Strategy,

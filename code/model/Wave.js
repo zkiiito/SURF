@@ -1,6 +1,6 @@
 const _ = require('underscore'),
     Backbone =  require('backbone'),
-    DAL = require('../DAL');
+    DAL = require('../DALMongoRedis');
 
 const Wave = Backbone.Model.extend(
     /** @lends Wave.prototype */
