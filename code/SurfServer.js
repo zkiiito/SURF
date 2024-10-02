@@ -1,6 +1,6 @@
 const IO = require('socket.io'),
     signature = require('cookie-signature'),
-    DAL = require('./DAL'),
+    DAL = require('./DALMongoRedis'),
     LinkPreview = require('./LinkPreview'),
     SessionStore = require('./SessionStore'),
     ExpressServer = require('./ExpressServer'),

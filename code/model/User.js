@@ -1,7 +1,7 @@
 const crypto = require('crypto'),
     _ = require('underscore'),
     Backbone =  require('backbone'),
-    DAL = require('../DAL');
+    DAL = require('../DALMongoRedis');
 
 const User = Backbone.Model.extend(
     /** @lends User.prototype */

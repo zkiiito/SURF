@@ -11,16 +11,7 @@ const config = {
     hostName: process.env.HOSTNAME || '',
     testMode: process.env.TESTMODE || 0,
     port: process.env.PORT || 8000,
-    graphiteKey: process.env.HOSTEDGRAPHITE_APIKEY || null,
     adminPass: process.env.ADMINPASS || 'adminPass',
-    mysql: {
-        host: 'localhost',
-        user: 'root',
-        password: '',
-        database: 'surf'
-        //, debug: ['ComQueryPacket']
-    },
-    dal: process.env.DAL || 'DALMongoRedis'
 };
 
 module.exports = config;

@@ -1,3 +1,7 @@
-const session = require('express-session');
+const RedisStore = require('connect-redis').default;
+const redisClient = require('./RedisClient');
 
-module.exports = new session.MemoryStore();
+module.exports = new RedisStore({
+    client: redisClient,
+    prefix: 'wave.sid:',
+});
