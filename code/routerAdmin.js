@@ -1,14 +1,15 @@
-var express = require('express');
-var Passport = require('passport');
-var passport = new Passport.Passport();
-var LocalStrategy = require('passport-local').Strategy;
-var app = express.Router();
+import express from 'express';
+import { Passport } from 'passport';
+import { Strategy as LocalStrategy } from 'passport-local';
+import Config from './Config.js';
+import UserController from './adminController/User.js';
+import WaveController from './adminController/Wave.js';
+import WaveInviteController from './adminController/WaveInvite.js';
+import MessageController from './adminController/Message.js';
 
-var Config = require('./Config');
-var UserController = require('./adminController/User');
-var WaveController = require('./adminController/Wave');
-var WaveInviteController = require('./adminController/WaveInvite');
-var MessageController = require('./adminController/Message');
+const passport = new Passport();
+const app = express.Router();
+const __dirname = import.meta.dirname;
 
 var adminDir = __dirname.replace('code', 'admin/public');
 
@@ -64,4 +65,4 @@ app.put('/api/waveinvite/:id', WaveInviteController.update);
 app.get('/api/unread/:userId/:waveId', UserController.getUnreadCountByWave);
 app.delete('/api/unread/:userId/:waveId', UserController.deleteUnreadCountByWave);
 
-module.exports = app;
+export default app;

@@ -1,11 +1,12 @@
-var base = require('./Base'),
-    Model = require('../MongooseModels').UserModel,
-    redisClient = require('../RedisClient'),
-    _ = require('underscore');
+import base from './Base.js';
+import { UserModel as Model } from '../MongooseModels.js';
+import redisClient from '../RedisClient.js';
+import _ from 'underscore';
+import SurfServer from '../SurfServer.js';
 
-module.exports = _.extend(base(Model), {
+export default _.extend(base(Model), {
     update: function (req, res) {
-        const user = require('../SurfServer').users.get(req.params.id);
+        const user = SurfServer.users.get(req.params.id);
         if (user) {
             delete req.body._id;
             user.update(req.body);
@@ -24,8 +25,8 @@ module.exports = _.extend(base(Model), {
     },
 
     deleteUnreadCountByWave: function (req, res) {
-        const wave = require('../SurfServer').waves.get(req.params.waveId);
-        const user = require('../SurfServer').users.get(req.params.userId);
+        const wave = SurfServer.waves.get(req.params.waveId);
+        const user = SurfServer.users.get(req.params.userId);
 
         if (wave && user) {
             wave.readAllMessagesOfUser(user);

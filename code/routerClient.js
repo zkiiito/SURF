@@ -1,11 +1,13 @@
-const express = require('express'),
-    fs = require('fs'),
-    DAL = require('./DALMongoRedis'),
-    Config = require('./Config'),
-    passport = require('passport'),
-    GoogleStrategy = require('passport-google-oauth20').Strategy,
-    FacebookStrategy = require('passport-facebook').Strategy,
-    LocalStrategy = require('passport-local').Strategy;
+import express from 'express';
+import fs from 'fs';
+import DAL from './DALMongoRedis.js';
+import Config from './Config.js';
+import passport from 'passport';
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
+import { Strategy as FacebookStrategy } from 'passport-facebook';
+import { Strategy as LocalStrategy } from 'passport-local';
+
+const __dirname = import.meta.dirname;
 
 /*jslint unparam: true*/
 passport.use(new GoogleStrategy(
@@ -85,11 +87,13 @@ app.get('/auth/facebook', passport.authenticate('facebook', { scope: 'email' }))
 app.get('/auth/facebook/callback',  passport.authenticate('facebook', { successRedirect: '/' }));
 
 if (Config.testMode) {
+    /*
     const errorHandler = require('errorhandler');
     app.use(errorHandler({
         dumpExceptions: true,
         showStack: true
     }));
+    */
 
     passport.use(new LocalStrategy(
         function (username, password, done) {
@@ -136,4 +140,4 @@ app.get('/invite/:inviteCode', async function (req, res) {
     res.redirect('/');
 });
 
-module.exports = app;
+export default app;

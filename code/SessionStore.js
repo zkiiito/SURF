@@ -1,7 +1,7 @@
-const RedisStore = require('connect-redis').default;
-const redisClient = require('./RedisClient');
+import RedisStore from 'connect-redis';
+import redisClient from './RedisClient.js';
 
-module.exports = new RedisStore({
+export default new RedisStore({
     client: redisClient,
     prefix: 'wave.sid:',
 });

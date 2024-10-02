@@ -1,15 +1,21 @@
-const got = require('got');
-const contentType = require('content-type');
-const iconv = require('iconv-lite');
-const metascraper = require('metascraper')([
-    require('metascraper-description')(),
-    require('metascraper-image')(),
-    require('metascraper-title')(),
-]);
-const redis = require('./RedisClient');
+import got from 'got';
+import { parse } from 'content-type';
+import iconv from 'iconv-lite';
+import metascraper from 'metascraper';
+import metascraperDescription from 'metascraper-description';
+import metascraperImage from 'metascraper-image';
+import metascraperTitle from 'metascraper-title';
+import redis from './RedisClient.js';
+
 const currentQueries = {};
 
-module.exports = {
+const metascraperInstance = metascraper([
+    metascraperDescription(),
+    metascraperImage(),
+    metascraperTitle(),
+]);
+
+export default {
     parse: function (url) {
         if (currentQueries[url]) {
             return currentQueries[url];
@@ -77,7 +83,7 @@ module.exports = {
                     return got.get(url, options);
                 })
                 .then((header) => {
-                    contenttype = header.headers['content-type'] ? contentType.parse(header.headers['content-type'].replace(/;+$/, '')) : {type: 'undefined'};
+                    contenttype = header.headers['content-type'] ? parse(header.headers['content-type'].replace(/;+$/, '')) : { type: 'undefined' };
 
                     if (contenttype.type !== 'text/html') {
                         if (contenttype.type.match(/^image\//)) {
@@ -95,7 +101,7 @@ module.exports = {
                 })
                 .then((response) => {
                     const str = iconv.decode(response.body, contenttype.parameters.charset || 'utf-8');
-                    return metascraper({ url, html: str });
+                    return metascraperInstance({ url, html: str });
                 })
                 .then((meta) => {
                     result.title = meta.title;

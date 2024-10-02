@@ -1,4 +1,4 @@
-module.exports = function (Model) {
+export default function (Model) {
     const that = {
         index: async function (req, res) {
             const { count, data } = await that.queryAll(req, res);
@@ -90,4 +90,4 @@ module.exports = function (Model) {
     };
 
     return that;
-};
+}

@@ -1,15 +1,14 @@
-const IO = require('socket.io'),
-    signature = require('cookie-signature'),
-    DAL = require('./DALMongoRedis'),
-    LinkPreview = require('./LinkPreview'),
-    SessionStore = require('./SessionStore'),
-    ExpressServer = require('./ExpressServer'),
-    Message = require('./model/Message').Model,
-    User = require('./model/User').Model,
-    UserCollection = require('./model/User').Collection,
-    Wave = require('./model/Wave').Model,
-    WaveCollection = require('./model/Wave').Collection,
-    Config = require('./Config');
+import { Server } from 'socket.io';
+import signature from 'cookie-signature';
+import DAL from './DALMongoRedis.js';
+import LinkPreview from './LinkPreview.js';
+import SessionStore from './SessionStore.js';
+import ExpressServer from './ExpressServer.js';
+import { Model as Message } from './model/Message.js';
+import { Model as User, Collection as UserCollection } from './model/User.js';
+import { Model as Wave, Collection as WaveCollection } from './model/Wave.js';
+import Config from './Config.js';
+import cookie from 'cookie';
 
 /** @namespace */
 const SurfServer = {
@@ -25,7 +24,7 @@ const SurfServer = {
         ExpressServer.listen(Config.port);
         console.log('SURF is running, listening on port ' + Config.port);
 
-        this.socket = IO(ExpressServer, {'pingInterval': 4000, 'pingTimeout': 10000});
+        this.socket = new Server(ExpressServer, { 'pingInterval': 4000, 'pingTimeout': 10000 });
 
         this.socket.use(function (socket, next) {
             const data = socket.request;
@@ -34,7 +33,7 @@ const SurfServer = {
                 return next(new Error('Session cookie required.'));
             }
 
-            data.cookie = require('cookie').parse(data.headers.cookie);
+            data.cookie = cookie.parse(data.headers.cookie);
 
             if (data.cookie['surf.sid'] === undefined) {
                 return next(new Error('Session cookie invalid.'));
@@ -261,4 +260,4 @@ const SurfServer = {
     }
 };
 
-module.exports = SurfServer;
+export default SurfServer;

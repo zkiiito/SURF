@@ -14,4 +14,4 @@ const config = {
     adminPass: process.env.ADMINPASS || 'adminPass',
 };
 
-module.exports = config;
+export default config;

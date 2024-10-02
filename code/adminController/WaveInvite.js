@@ -1,4 +1,4 @@
-const base = require('./Base'),
-    Model = require('../MongooseModels').WaveInviteModel;
+import base from './Base.js';
+import { WaveInviteModel as Model } from '../MongooseModels.js';
 
-module.exports = base(Model);
+export default base(Model);

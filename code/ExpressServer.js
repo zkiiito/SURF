@@ -1,9 +1,11 @@
-const express = require('express'),
-    http = require('http'),
-    passport = require('passport'),
-    SessionStore = require('./SessionStore'),
-    bodyParser = require('body-parser');
-const session = require('express-session');
+import express from 'express';
+import http from 'http';
+import passport from 'passport';
+import SessionStore from './SessionStore.js';
+import bodyParser from 'body-parser';
+import session from 'express-session';
+import routerClient from './routerClient.js';
+import routerAdmin from './routerAdmin.js';
 
 passport.serializeUser(function (user, done) {
     done(null, user);
@@ -36,9 +38,9 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use('/', require('./routerClient'));
-app.use('/admin', require('./routerAdmin'));
+app.use('/', routerClient);
+app.use('/admin', routerAdmin);
 
 const ExpressServer = http.createServer(app);
 
-module.exports = ExpressServer;
+export default ExpressServer;

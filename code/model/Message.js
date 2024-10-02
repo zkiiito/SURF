@@ -1,5 +1,5 @@
-const Backbone =  require('backbone'),
-    DAL = require('../DALMongoRedis');
+import Backbone from 'backbone';
+import DAL from '../DALMongoRedis.js';
 
 const Message = Backbone.Model.extend(
     /** @lends Message.prototype */
@@ -38,4 +38,4 @@ const MessageCollection = Backbone.Collection.extend(
     }
 );
 
-module.exports = { Model: Message, Collection: MessageCollection };
+export { Message as Model, MessageCollection as Collection };

@@ -8,6 +8,8 @@
     "type": "git",
     "url": "git@github.com:zkiiito/SURF.git"
   },
+  "type": "module",
+  "exports": "./code/Surf.js",
   "license": "GPL-3.0",
   "dependencies": {
     "backbone": "^1.6.0",
