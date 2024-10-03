@@ -8,6 +8,8 @@
     "type": "git",
     "url": "git@github.com:zkiiito/SURF.git"
   },
+  "type": "module",
+  "exports": "./code/Surf.js",
   "license": "GPL-3.0",
   "dependencies": {
     "backbone": "^1.6.0",
@@ -19,7 +21,7 @@
     "errorhandler": "^1.5.1",
     "express": "^4.21.0",
     "express-session": "^1.18.0",
-    "got": "^11.8.6",
+    "got": "^14.4.2",
     "iconv-lite": "^0.6.3",
     "metascraper": "^5.45.23",
     "metascraper-description": "^5.45.22",

@@ -1,11 +1,8 @@
-const _ = require('underscore'),
-    mongoose = require('mongoose'),
-    redis = require('./RedisClient'),
-    Config = require('./Config'),
-    UserModel = require('./MongooseModels').UserModel,
-    WaveModel = require('./MongooseModels').WaveModel,
-    MessageModel = require('./MongooseModels').MessageModel,
-    WaveInviteModel = require('./MongooseModels').WaveInviteModel;
+import _ from 'underscore';
+import mongoose from 'mongoose';
+import redis from './RedisClient.js';
+import Config from './Config.js';
+import { UserModel, WaveModel, MessageModel, WaveInviteModel } from './MongooseModels.js';
 
 /** @namespace */
 const DAL = {
@@ -439,4 +436,4 @@ const DAL = {
     }
 };
 
-module.exports = DAL;
+export default DAL;

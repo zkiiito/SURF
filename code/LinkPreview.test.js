@@ -1,4 +1,4 @@
-const linkPreview = require('./LinkPreview');
+import linkPreview from './LinkPreview.js';
 const url = process.argv[2];
 /*
 https://onezero.medium.com/states-ditch-surveillance-firm-banjo-after-ceos-kkk-past-is-revealed-acebaefea17f

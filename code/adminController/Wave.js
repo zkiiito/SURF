@@ -1,7 +1,7 @@
-const base = require('./Base'),
-    Model = require('../MongooseModels').WaveModel,
-    MessageModel = require('../MongooseModels').MessageModel,
-    _ = require('underscore');
+import base from './Base.js';
+import { WaveModel as Model, MessageModel } from '../MongooseModels.js';
+import _ from 'underscore';
+import SurfServer from '../SurfServer.js';
 
 const WaveController = _.extend(base(Model), {
     index: async function (req, res) {
@@ -27,7 +27,7 @@ const WaveController = _.extend(base(Model), {
     },
 
     update: function (req, res) {
-        const wave = require('../SurfServer').waves.get(req.params.id);
+        const wave = SurfServer.waves.get(req.params.id);
         if (wave) {
             delete req.body._id;
             wave.update(req.body, true);
@@ -36,4 +36,4 @@ const WaveController = _.extend(base(Model), {
     }
 });
 
-module.exports = WaveController;
+export default WaveController;

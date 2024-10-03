@@ -1,5 +1,5 @@
-const mongoose = require('mongoose'),
-    Schema = mongoose.Schema;
+import mongoose from 'mongoose';
+const { Schema } = mongoose;
 
 const UserSchema = new Schema({
     name: {type: String, trim: true},
@@ -32,7 +32,7 @@ const WaveInviteSchema = new Schema({
     created_at: {type: Date}
 });
 
-exports.UserModel = mongoose.model('UserModel', UserSchema);
-exports.MessageModel = mongoose.model('MessageModel', MessageSchema);
-exports.WaveModel = mongoose.model('WaveModel', WaveSchema);
-exports.WaveInviteModel = mongoose.model('WaveInviteModel', WaveInviteSchema);
+export const UserModel = mongoose.model('UserModel', UserSchema);
+export const MessageModel = mongoose.model('MessageModel', MessageSchema);
+export const WaveModel = mongoose.model('WaveModel', WaveSchema);
+export const WaveInviteModel = mongoose.model('WaveInviteModel', WaveInviteSchema);

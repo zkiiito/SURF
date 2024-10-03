@@ -1,7 +1,9 @@
-const crypto = require('crypto'),
-    _ = require('underscore'),
-    Backbone =  require('backbone'),
-    DAL = require('../DALMongoRedis');
+import crypto from 'crypto';
+import _ from 'underscore';
+import Backbone from 'backbone';
+import DAL from '../DALMongoRedis.js';
+import { Collection as WaveCollection } from '../model/Wave.js';
+import SurfServer from '../SurfServer.js';
 
 const User = Backbone.Model.extend(
     /** @lends User.prototype */
@@ -18,7 +20,6 @@ const User = Backbone.Model.extend(
         },
         /** @constructs */
         initialize: function () {
-            const WaveCollection = require('./Wave').Collection;
             this.waves = new WaveCollection();
         },
         idAttribute: '_id',
@@ -68,7 +69,7 @@ const User = Backbone.Model.extend(
                 const uids = wave.get('userIds');
                 uids.forEach(uid => {
                     if (uid !== this.id.toString()) {
-                        const user = require('../SurfServer').users.get(uid);
+                        const user = SurfServer.users.get(uid);
                         friends.add(user);
                     }
                 });
@@ -140,7 +141,7 @@ const User = Backbone.Model.extend(
             try {
                 const result = await DAL.removeWaveInviteByCode(invite.code);
                 if (result.ok > 0) {
-                    const wave = require('../SurfServer').waves.get(invite.waveId);
+                    const wave = SurfServer.waves.get(invite.waveId);
                     if (wave && !wave.isMember(this)) {
                         wave.addUser(this, true);
                         await wave.save();
@@ -194,4 +195,4 @@ const UserCollection = Backbone.Collection.extend(
     }
 );
 
-module.exports = {Model: User, Collection: UserCollection};
+export { User as Model, UserCollection as Collection };

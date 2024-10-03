@@ -1,6 +1,6 @@
-const base = require('./Base'),
-    Model = require('../MongooseModels').MessageModel,
-    _ = require('underscore');
+import base from './Base.js';
+import { MessageModel as Model } from '../MongooseModels.js';
+import _ from 'underscore';
 
 const MessageController = _.extend(base(Model), {
     index: async function (req, res) {
@@ -25,4 +25,4 @@ const MessageController = _.extend(base(Model), {
     }
 });
 
-module.exports = MessageController;
+export default MessageController;

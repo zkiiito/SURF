@@ -1,5 +1,5 @@
 /* eslint-env node */
-var SurfServer = require('./code/SurfServer');
+import SurfServer from './code/SurfServer.js';
 
 var shutdown = async function () {
     await SurfServer.shutdown();

@@ -1,6 +1,8 @@
-const _ = require('underscore'),
-    Backbone =  require('backbone'),
-    DAL = require('../DALMongoRedis');
+import _ from 'underscore';
+import Backbone from 'backbone';
+import DAL from '../DALMongoRedis.js';
+import { Collection as UserCollection } from './User.js';
+import SurfServer from '../SurfServer.js';
 
 const Wave = Backbone.Model.extend(
     /** @lends Wave.prototype */
@@ -13,7 +15,6 @@ const Wave = Backbone.Model.extend(
 
         /** @constructs */
         initialize: function () {
-            const UserCollection = require('./User').Collection;
             this.users = new UserCollection();
             if (this.get('userIds')) {
                 const uids = this.get('userIds');
@@ -46,7 +47,7 @@ const Wave = Backbone.Model.extend(
             const newUsers = [];
             userIds.forEach((item) => {
 
-                const user = require('../SurfServer').users.get(item);
+                const user = SurfServer.users.get(item);
                 if (user) {
                     newUsers.push(user);
                     this.addUser(user, false);//do not notify anyone here, only in next step
@@ -218,14 +219,14 @@ const Wave = Backbone.Model.extend(
 
                     //send old messages from the wave to the new user
                     newIds.forEach((userId) => {
-                        const user = require('../SurfServer').users.get(userId);
+                        const user = SurfServer.users.get(userId);
                         this.sendOldMessagesToUser(user);
                     });
 
                     if (withRemove) {
                         const removedIds = _.difference(userIds, data.userIds);
                         removedIds.forEach((userId) => {
-                            const user = require('../SurfServer').users.get(userId);
+                            const user = SurfServer.users.get(userId);
                             this.quitUser(user);
                         });
                     }
@@ -262,4 +263,4 @@ const WaveCollection = Backbone.Collection.extend(
     }
 );
 
-module.exports = {Model: Wave, Collection: WaveCollection};
+export { Wave as Model, WaveCollection as Collection };
