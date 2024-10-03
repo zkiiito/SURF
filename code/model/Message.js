@@ -38,4 +38,4 @@ const MessageCollection = Backbone.Collection.extend(
     }
 );
 
-export { Message, MessageCollection };
+export { Message as Model, MessageCollection as Collection };

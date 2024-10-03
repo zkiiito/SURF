@@ -12,22 +12,22 @@ const UserSchema = new Schema({
 });
 
 const MessageSchema = new Schema({
-    userId: { type: Schema.ObjectId, ref: 'UserModel' },
-    waveId: { type: Schema.ObjectId, ref: 'WaveModel' },
-    parentId: { type: Schema.ObjectId, ref: 'MessageModel' },
-    rootId: { type: Schema.ObjectId, ref: 'MessageModel' },
+    userId: Schema.ObjectId,
+    waveId: Schema.ObjectId,
+    parentId: Schema.ObjectId,
+    rootId: Schema.ObjectId,
     message: {type: String, trim: true},
     created_at: {type: Date}
 });
 
 const WaveSchema = new Schema({
     title: {type: String, trim: true},
-    userIds: { type: [Schema.ObjectId], ref: 'UserModel' }
+    userIds: {type: [String]}
 });
 
 const WaveInviteSchema = new Schema({
-    userId: { type: Schema.ObjectId, ref: 'UserModel' },
-    waveId: { type: Schema.ObjectId, ref: 'WaveModel' },
+    userId: Schema.ObjectId,
+    waveId: Schema.ObjectId,
     code: {type: String, trim: true},
     created_at: {type: Date}
 });

@@ -12,9 +12,6 @@
   "exports": "./code/Surf.js",
   "license": "GPL-3.0",
   "dependencies": {
-    "@adminjs/express": "^6.1.0",
-    "@adminjs/mongoose": "^4.1.0",
-    "adminjs": "^7.8.13",
     "backbone": "^1.6.0",
     "body-parser": "^1.20.2",
     "connect-redis": "^7.1.1",
