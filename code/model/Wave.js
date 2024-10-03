@@ -1,8 +1,8 @@
 import _ from 'underscore';
 import Backbone from 'backbone';
 import DAL from '../DALMongoRedis.js';
+import { Collection as UserCollection } from './User.js';
 import SurfServer from '../SurfServer.js';
-import { UserCollection } from './User.js';
 
 const Wave = Backbone.Model.extend(
     /** @lends Wave.prototype */
@@ -263,4 +263,4 @@ const WaveCollection = Backbone.Collection.extend(
     }
 );
 
-export { Wave, WaveCollection };
+export { Wave as Model, WaveCollection as Collection };

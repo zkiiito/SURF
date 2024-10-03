@@ -2,8 +2,8 @@ import crypto from 'crypto';
 import _ from 'underscore';
 import Backbone from 'backbone';
 import DAL from '../DALMongoRedis.js';
+import { Collection as WaveCollection } from '../model/Wave.js';
 import SurfServer from '../SurfServer.js';
-import { WaveCollection } from './Wave.js';
 
 const User = Backbone.Model.extend(
     /** @lends User.prototype */
@@ -195,4 +195,4 @@ const UserCollection = Backbone.Collection.extend(
     }
 );
 
-export { User, UserCollection };
+export { User as Model, UserCollection as Collection };
