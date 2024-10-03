@@ -4,7 +4,7 @@ import DAL from './DALMongoRedis.js';
 import LinkPreview from './LinkPreview.js';
 import SessionStore from './SessionStore.js';
 import { startExpressServer } from './ExpressServer.js';
-import { Model as Message } from './model/Message.js';
+import { Message } from './model/Message.js';
 import Config from './Config.js';
 import cookie from 'cookie';
 import { User, UserCollection } from './model/User.js';

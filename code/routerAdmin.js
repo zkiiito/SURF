@@ -33,14 +33,14 @@ export function startRouterAdmin() {
         {
             authenticate,
             cookieName: 'adminjs',
-            cookiePassword: 'adminSessionsecret',
+            cookiePassword: 'adminSessionsecret9',
         },
         null,
         {
             store: SessionStore,
             resave: true,
             saveUninitialized: true,
-            secret: 'adminSessionsecret',
+            secret: 'adminSessionsecret9',
             cookie: {
                 httpOnly: process.env.NODE_ENV === 'production',
                 secure: process.env.NODE_ENV === 'production',
