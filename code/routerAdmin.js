@@ -1,68 +1,53 @@
-import express from 'express';
-import { Passport } from 'passport';
-import { Strategy as LocalStrategy } from 'passport-local';
-import Config from './Config.js';
-import UserController from './adminController/User.js';
-import WaveController from './adminController/Wave.js';
-import WaveInviteController from './adminController/WaveInvite.js';
-import MessageController from './adminController/Message.js';
+import AdminJS from 'adminjs';
+import * as AdminJSMongoose from '@adminjs/mongoose';
+import AdminJSExpress from '@adminjs/express';
+import { MessageModel, UserModel, WaveInviteModel, WaveModel } from './MongooseModels.js';
+import SessionStore from './SessionStore.js';
+import config from './Config.js';
 
-const passport = new Passport();
-const app = express.Router();
-const __dirname = import.meta.dirname;
+AdminJS.registerAdapter({
+    Resource: AdminJSMongoose.Resource,
+    Database: AdminJSMongoose.Database,
+});
 
-var adminDir = __dirname.replace('code', 'admin/public');
+const DEFAULT_ADMIN = {
+    email: 'admin',
+    password: config.adminPass,
+};
 
-app.use('/css', express.static(adminDir + '/css'));
-app.use('/fonts', express.static(adminDir + '/fonts'));
-app.use('/js', express.static(adminDir + '/js'));
-
-app.use(function (req, res, next) {
-    if (req.url !== '/login' && !req.session.admin) {
-        return res.redirect('/admin/login');
+const authenticate = async (email, password) => {
+    if (email === DEFAULT_ADMIN.email && password === DEFAULT_ADMIN.password) {
+        return Promise.resolve(DEFAULT_ADMIN);
     }
-    next();
-});
+    return null;
+};
 
-/*jslint unparam: true*/
-app.get('/', function (req, res) {
-    res.sendFile(adminDir + '/index.html');
-});
 
-app.get('/login', function (req, res) {
-    res.sendFile(adminDir + '/login.html');
-});
-/*jslint unparam: false*/
+export function startRouterAdmin() {
+    const admin = new AdminJS({
+        resources: [UserModel, WaveModel, MessageModel, WaveInviteModel],
+    });
 
-passport.use(new LocalStrategy(
-    function (username, password, done) {
-        if ('admin' === username) {
-            if (password === Config.adminPass) {
-                return done(null, {
-                    admin: true
-                });
-            }
+    const adminRouter = AdminJSExpress.buildAuthenticatedRouter(
+        admin,
+        {
+            authenticate,
+            cookieName: 'adminjs',
+            cookiePassword: 'adminSessionsecret9',
+        },
+        null,
+        {
+            store: SessionStore,
+            resave: true,
+            saveUninitialized: true,
+            secret: 'adminSessionsecret9',
+            cookie: {
+                httpOnly: true,
+                // secure: process.env.NODE_ENV === 'production',
+            },
+            name: 'adminjs',
         }
-        return done('auth error');
-    }
-));
+    );
 
-app.post('/login', passport.authorize('local', { failureRedirect: '/admin/login' }), function (req, res) {
-    req.session.admin = true;
-    res.redirect('/admin#waves');
-});
-
-app.get('/api/user', UserController.index);
-app.get('/api/user/:id', UserController.getById);
-app.get('/api/wave', WaveController.index);
-app.get('/api/message/:waveId', MessageController.index);
-app.get('/api/waveinvite', WaveInviteController.index);
-app.put('/api/user/:id', UserController.update);
-app.put('/api/wave/:id', WaveController.update);
-app.put('/api/message/:waveId/:id', MessageController.update);
-app.put('/api/waveinvite/:id', WaveInviteController.update);
-
-app.get('/api/unread/:userId/:waveId', UserController.getUnreadCountByWave);
-app.delete('/api/unread/:userId/:waveId', UserController.deleteUnreadCountByWave);
-
-export default app;
+    return adminRouter;
+}
