@@ -32,11 +32,6 @@ RUN npm ci --include=dev
 RUN npm run build
 RUN rm -rf node_modules
 
-WORKDIR /app/admin
-RUN npm ci --include=dev
-RUN npm run build
-RUN rm -rf node_modules
-
 WORKDIR /app
 
 # Final stage for app image

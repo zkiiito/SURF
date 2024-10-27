@@ -6,6 +6,7 @@ import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { Strategy as FacebookStrategy } from 'passport-facebook';
 import { Strategy as LocalStrategy } from 'passport-local';
+import errorHandler from 'errorhandler';
 
 const __dirname = import.meta.dirname;
 
@@ -87,13 +88,10 @@ app.get('/auth/facebook', passport.authenticate('facebook', { scope: 'email' }))
 app.get('/auth/facebook/callback',  passport.authenticate('facebook', { successRedirect: '/' }));
 
 if (Config.testMode) {
-    /*
-    const errorHandler = require('errorhandler');
     app.use(errorHandler({
         dumpExceptions: true,
         showStack: true
     }));
-    */
 
     passport.use(new LocalStrategy(
         function (username, password, done) {
