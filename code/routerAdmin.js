@@ -42,8 +42,8 @@ export function startRouterAdmin() {
             saveUninitialized: true,
             secret: 'adminSessionsecret9',
             cookie: {
-                httpOnly: process.env.NODE_ENV === 'production',
-                secure: process.env.NODE_ENV === 'production',
+                httpOnly: true,
+                // secure: process.env.NODE_ENV === 'production',
             },
             name: 'adminjs',
         }
