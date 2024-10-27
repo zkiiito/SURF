@@ -31,8 +31,8 @@ export function startExpressServer() {
         store: SessionStore,
         secret: 'surfSessionSecret9',
         cookie: {
-            httpOnly: process.env.NODE_ENV === 'production',
-            secure: process.env.NODE_ENV === 'production',
+            httpOnly: true,
+            // secure: process.env.NODE_ENV === 'production',
         },
         saveUninitialized: true,
         resave: true
