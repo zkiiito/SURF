@@ -30,7 +30,7 @@
     "metascraper-description": "^5.45.22",
     "metascraper-image": "^5.45.22",
     "metascraper-title": "^5.45.22",
-    "mongoose": "^8.7.0",
+    "mongoose": "^8.8.3",
     "passport": "^0.7.0",
     "passport-facebook": "^3.0.0",
     "passport-google-oauth20": "^2.0.0",
