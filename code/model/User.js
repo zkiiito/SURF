@@ -15,8 +15,6 @@ const User = Backbone.Model.extend(
             email: '',
             googleId: '',
             googleAvatar: '',
-            facebookId: '',
-            facebookAvatar: ''
         },
         /** @constructs */
         initialize: function () {

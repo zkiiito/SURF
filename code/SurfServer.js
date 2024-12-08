@@ -100,7 +100,6 @@ const SurfServer = {
 
         let user = this.users.find(function (u) {
             return u.get('googleId') === userData.id
-                || u.get('facebookId') === userData.id
                 || u.get('email') === userData.emails[0].value;
         });
         const picture = userData.photos && userData.photos.length ? userData.photos[0].value : null;

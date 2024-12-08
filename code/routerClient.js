@@ -4,7 +4,6 @@ import DAL from './DALMongoRedis.js';
 import Config from './Config.js';
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
-import { Strategy as FacebookStrategy } from 'passport-facebook';
 import { Strategy as LocalStrategy } from 'passport-local';
 import errorHandler from 'errorhandler';
 
@@ -24,20 +23,6 @@ passport.use(new GoogleStrategy(
             // represent the logged-in user.  In a typical application, you would want
             // to associate the Google account with a user record in your database,
             // and return that user instead.
-            return done(null, profile);
-        });
-    }
-));
-
-passport.use(new FacebookStrategy(
-    {
-        clientID: Config.facebookId,
-        clientSecret: Config.facebookSecret,
-        callbackURL: Config.hostName + '/auth/facebook/callback',
-        profileFields: ['id', 'name', 'email', 'picture']
-    },
-    function (accessToken, refreshToken, profile, done) {
-        process.nextTick(function () {
             return done(null, profile);
         });
     }
@@ -83,9 +68,6 @@ app.post('/logError', function (req, res) {
 
 app.get('/auth/google', passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email'] }));
 app.get('/auth/google/callback',  passport.authenticate('google', { successRedirect: '/' }));
-
-app.get('/auth/facebook', passport.authenticate('facebook', { scope: 'email' }));
-app.get('/auth/facebook/callback',  passport.authenticate('facebook', { successRedirect: '/' }));
 
 if (Config.testMode) {
     app.use(errorHandler({

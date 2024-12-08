@@ -36,10 +36,6 @@ export const EditUserView = Backbone.View.extend({
             this.addAvatarOption(this.model.get('googleAvatar'));
         }
 
-        if (this.model.get('facebookAvatar')) {
-            this.addAvatarOption(this.model.get('facebookAvatar'));
-        }
-
         this.addAvatarOption(gravatarUrl);
     },
 

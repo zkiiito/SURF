@@ -5,9 +5,7 @@ const UserSchema = new Schema({
     name: {type: String, trim: true},
     avatar: {type: String, trim: true},
     googleId: {type: String, trim: true},
-    googleAvatar: {type: String, trim: true},
-    facebookId: {type: String, trim: true},
-    facebookAvatar: {type: String, trim: true},
+    googleAvatar: { type: String, trim: true },
     email: {type: String, trim: true}
 });
 
