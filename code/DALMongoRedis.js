@@ -23,8 +23,6 @@ const DAL = {
                 email: user.email,
                 googleId: user.googleId,
                 googleAvatar: user.googleAvatar,
-                facebookId: user.facebookId,
-                facebookAvatar: user.facebookAvatar
             };
         });
         server.users.reset(usersTmp);
@@ -58,8 +56,6 @@ const DAL = {
             avatar: user.get('avatar'),
             googleId: user.get('googleId'),
             googleAvatar: user.get('googleAvatar'),
-            facebookId: user.get('facebookId'),
-            facebookAvatar: user.get('facebookAvatar'),
             email: user.get('email')
         };
 

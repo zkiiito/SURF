@@ -5,7 +5,6 @@ import SessionStore from './SessionStore.js';
 import bodyParser from 'body-parser';
 import session from 'express-session';
 import routerClient from './routerClient.js';
-import { startRouterAdmin } from './routerAdmin.js';
 
 passport.serializeUser(function (user, done) {
     done(null, user);
@@ -18,8 +17,6 @@ passport.deserializeUser(function (obj, done) {
 export function startExpressServer() {
     const app = express();
     app.disable('x-powered-by');
-
-    app.use('/admin', startRouterAdmin());
 
     app.use(bodyParser.urlencoded({
         extended: true

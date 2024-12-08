@@ -38,16 +38,14 @@ $ export TESTMODE=1
 $ npm ci
 $ node Surf.js
 ```
-After this, your server is running on http://localhost:8000/ with google authtentication, http://localhost:8000/loginTest with no authentication, and http://localhost:8000/admin for administration (default login with admin/adminPass).
-
-If you need facebook auth, edit the config file /code/Config.js with your facebook appId and appSecret, and http://localhost:8000/auth/facebook will be your friend.
+After this, your server is running on http://localhost:8000/ with google authtentication, http://localhost:8000/loginTest with no authentication.
 
 ## Development
 
 You want to develop? Cool!
 
 ##### Minify client-side js every time it changes:
-* setup your IDE to run "npm run build" every time files change in the client/js or admin/js folder, excluding surf.min.js and admin.min.js
+* setup your IDE to run "npm run build" every time files change in the client/js folder, excluding surf.min.js
 * the pre-commit package will take care of uglifying when committing
 
 ##### Test
