@@ -66,7 +66,7 @@ const User = Backbone.Model.extend(
             return this.waves.reduce(function (friends, wave) {
                 const uids = wave.get('userIds');
                 uids.forEach(uid => {
-                    if (uid !== this.id.toString()) {
+                    if (uid.toString() !== this.id.toString()) {
                         const user = SurfServer.users.get(uid);
                         friends.add(user);
                     }
