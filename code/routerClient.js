@@ -31,12 +31,13 @@ passport.use(new GoogleStrategy(
 /*jslint unparam: false*/
 
 const app = express.Router();
-const clientDir = __dirname.replace('code', 'client/public');
+const clientDir = __dirname.replace('code', 'client/dist');
 
 app.use('/css', express.static(clientDir + '/css'));
 app.use('/js', express.static(clientDir + '/js'));
 app.use('/images', express.static(clientDir + '/images'));
 app.use('/fonts', express.static(clientDir + '/fonts'));
+app.use('/assets', express.static(clientDir + '/assets'));
 
 let clientIndexHtml = '';
 

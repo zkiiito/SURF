@@ -1,3 +1,6 @@
+import Backbone from 'backbone';
+import _ from 'underscore';
+import $ from 'jquery';
 // eslint-disable-next-line no-unused-vars
 import * as token from '../jquery.tokenInput';
 import { Communicator } from '../communicator';

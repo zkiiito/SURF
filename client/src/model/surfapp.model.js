@@ -1,3 +1,4 @@
+import Backbone from 'backbone';
 import { MessageCollection } from './message.model';
 import { UserCollection } from './user.model';
 import { WaveCollection } from './wave.model';

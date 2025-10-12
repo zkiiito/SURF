@@ -1,3 +1,4 @@
+import $ from 'jquery';
 import { R } from 'R.js';
 /*jslint newcap: true*/
 const i18n = {

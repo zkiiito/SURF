@@ -1,3 +1,6 @@
+import Backbone from 'backbone';
+import _ from 'underscore';
+import $ from 'jquery';
 export const DisconnectedView = Backbone.View.extend({
     initialize: function () {
         _.bindAll(this, 'show');

@@ -1,3 +1,6 @@
+import Backbone from 'backbone';
+import _ from 'underscore';
+import $ from 'jquery';
 import { __ } from '../i18n';
 import { MessageView } from './message.view';
 import { UserView } from './user.view';

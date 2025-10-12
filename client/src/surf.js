@@ -1,3 +1,4 @@
+import Backbone from 'backbone';
 import { surfAppModel } from './model/surfapp.singleton';
 import { SurfAppView } from './view/surfapp.view';
 

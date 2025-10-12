@@ -1,3 +1,6 @@
+import Backbone from 'backbone';
+import _ from 'underscore';
+import $ from 'jquery';
 import { surfAppModel } from '../model/surfapp.singleton';
 
 export const UserView = Backbone.View.extend({
