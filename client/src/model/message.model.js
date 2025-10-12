@@ -1,3 +1,5 @@
+import Backbone from 'backbone';
+import _ from 'underscore';
 import { Communicator } from '../communicator';
 import { nl2br, strip_tags, wordwrap } from '../phpjs';
 import { surfAppModel } from './surfapp.singleton';

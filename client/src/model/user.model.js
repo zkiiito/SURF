@@ -1,3 +1,5 @@
+import Backbone from 'backbone';
+import _ from 'underscore';
 import { Communicator } from '../communicator';
 import { randomName } from '../randomname';
 import { surfAppModel } from './surfapp.singleton';

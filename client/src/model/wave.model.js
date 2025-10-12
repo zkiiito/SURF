@@ -1,3 +1,5 @@
+import Backbone from 'backbone';
+import _ from 'underscore';
 import { Communicator } from '../communicator';
 import { MessageCollection } from './message.model';
 import { surfAppModel } from './surfapp.singleton';

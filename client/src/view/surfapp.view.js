@@ -1,3 +1,6 @@
+import Backbone from 'backbone';
+import _ from 'underscore';
+import $ from 'jquery';
 import { DisconnectedView } from './disconnected.view';
 import { EditUserView } from './edituser.view';
 import { EditWaveView } from './editwave.view';

@@ -5,6 +5,7 @@ import SessionStore from './SessionStore.js';
 import bodyParser from 'body-parser';
 import session from 'express-session';
 import routerClient from './routerClient.js';
+import cors from 'cors';
 
 passport.serializeUser(function (user, done) {
     done(null, user);
@@ -17,6 +18,13 @@ passport.deserializeUser(function (obj, done) {
 export function startExpressServer() {
     const app = express();
     app.disable('x-powered-by');
+
+    app.use(cors({
+        origin: true,
+        credentials: true,
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+    }));
 
     app.use(bodyParser.urlencoded({
         extended: true

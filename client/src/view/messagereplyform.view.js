@@ -1,5 +1,6 @@
 import { WaveReplyFormView } from './wavereplyform.view';
-
+import _ from 'underscore';
+import $ from 'jquery';
 export const MessageReplyFormView = WaveReplyFormView.extend({
     events: _.extend({
         'click a.cancel': 'handleCancel'

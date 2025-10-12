@@ -1,3 +1,6 @@
+import Backbone from 'backbone';
+import _ from 'underscore';
+import $ from 'jquery';
 import { Communicator } from '../communicator';
 import { __ } from '../i18n';
 
