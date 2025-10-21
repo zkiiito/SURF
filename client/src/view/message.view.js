@@ -33,6 +33,7 @@ export const MessageView = Backbone.View.extend({
     events: {
         'click': 'readMessage',
         'dbltap': 'replyMessage',
+        'dblclick': 'replyMessage',
         'click a.reply': 'replyMessage',
         'click a.threadend': 'replyMessage'
     },
