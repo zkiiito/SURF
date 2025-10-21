@@ -1,8 +1,9 @@
 import { WaveReplyFormView } from './wavereplyform.view';
-import _ from 'underscore';
 import $ from 'jquery';
+import { template, bindAll } from '../utils';
+
 export const MessageReplyFormView = WaveReplyFormView.extend({
-    events: _.extend({
+    events: Object.assign({
         'click a.cancel': 'handleCancel'
     }, WaveReplyFormView.prototype.events),
 
@@ -10,14 +11,14 @@ export const MessageReplyFormView = WaveReplyFormView.extend({
         WaveReplyFormView.prototype.initialize.apply(this, arguments);
 
         this.timeout = 75;
-        _.bindAll(this, 'handleCancel', 'hide');
+        bindAll(this, 'handleCancel', 'hide');
         this.listenTo(this.model.getWave(), 'hideReplyForm', this.hide);
     },
 
     render: function () {
-        var template = _.template($('#messagereplyform_view').text());
+        var messagereplyformTemplate = template($('#messagereplyform_view').text());
 
-        this.setElement(template({ user: this.model.user.toJSON() }));
+        this.setElement(messagereplyformTemplate({ user: this.model.user.toJSON() }));
         return this;
     },
 

@@ -22,7 +22,6 @@
     "R.js": "^0.1.5",
     "socket.io-client": "^4.8.0",
     "tocca": "^2.0.9",
-    "underscore": "^1.13.7",
     "vite": "^5.0.0"
   }
 }

@@ -1,5 +1,4 @@
 import Backbone from 'backbone';
-import _ from 'underscore';
 import { Communicator } from '../communicator';
 import { MessageCollection } from './message.model';
 import { surfAppModel } from './surfapp.singleton';
@@ -73,7 +72,7 @@ export const Wave = Backbone.Model.extend(
          * @param {Array} ids
          */
         addUsers: function (ids) {
-            _.each(ids, function (item) {
+            ids.forEach((item) => {
                 var user = surfAppModel.users.get(item);
                 this.addUser(user);
             }, this);
@@ -113,8 +112,8 @@ export const Wave = Backbone.Model.extend(
                 newIds;
 
             if (data.userIds !== userIds) {
-                newIds = _.difference(data.userIds, userIds);
-                deletedIds = _.difference(userIds, data.userIds);
+                newIds = data.userIds.filter(id => !userIds.includes(id));
+                deletedIds = userIds.filter(id => !data.userIds.includes(id));
                 this.users.remove(deletedIds);
                 this.addUsers(newIds);
                 this.set('userIds', data.userIds);

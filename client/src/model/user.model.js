@@ -1,5 +1,4 @@
 import Backbone from 'backbone';
-import _ from 'underscore';
 import { Communicator } from '../communicator';
 import { randomName } from '../randomname';
 import { surfAppModel } from './surfapp.singleton';
@@ -22,9 +21,9 @@ export const User = Backbone.Model.extend(
          * @param {Object} data
          */
         update: function (data) {
-            _.each(data, function (el, idx) {
+            Object.keys(data).forEach((idx) => {
                 if (this.idAttribute !== idx) {
-                    this.set(idx, el);
+                    this.set(idx, data[idx]);
                 }
             }, this);
         },
@@ -50,7 +49,7 @@ export const User = Backbone.Model.extend(
 
         loadLocalAttributes: function () {
             if (window.localStorage !== undefined) {
-                _.each(this.localAttributes, function (attr) {
+                this.localAttributes.forEach((attr) => {
                     var key = this.id + attr;
                     this.set(attr, localStorage.getItem(key) > 0);
                 }, this);
@@ -59,7 +58,7 @@ export const User = Backbone.Model.extend(
 
         saveLocalAttributes: function () {
             if (window.localStorage !== undefined) {
-                _.each(this.localAttributes, function (attr) {
+                this.localAttributes.forEach((attr) => {
                     var key = this.id + attr;
                     localStorage.setItem(key, this.get(attr) ? 1 : 0);
                 }, this);

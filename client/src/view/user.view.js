@@ -1,11 +1,11 @@
 import Backbone from 'backbone';
-import _ from 'underscore';
 import $ from 'jquery';
 import { surfAppModel } from '../model/surfapp.singleton';
+import { template, bindAll } from '../utils';
 
 export const UserView = Backbone.View.extend({
     initialize: function () {
-        _.bindAll(this, 'render', 'update', 'chatInPrivate');
+        bindAll(this, 'render', 'update', 'chatInPrivate');
         this.listenTo(this.model, 'change', this.update);
     },
 
@@ -14,8 +14,8 @@ export const UserView = Backbone.View.extend({
     },
 
     render: function () {
-        var template = _.template($('#user_view').text());
-        this.setElement(template(this.model.toJSON()));
+        var userTemplate = template($('#user_view').text());
+        this.setElement(userTemplate(this.model.toJSON()));
         this.$el.attr('src', this.model.get('avatar'));//kesobb kell beallitani, mert kulonben nem talalja az {{}} avatar imaget
         return this;
     },

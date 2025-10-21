@@ -1,12 +1,12 @@
 import Backbone from 'backbone';
-import _ from 'underscore';
 import $ from 'jquery';
 import { Communicator } from '../communicator';
 import { __ } from '../i18n';
+import { template, bindAll } from '../utils';
 
 export const EditUserView = Backbone.View.extend({
     initialize: function () {
-        _.bindAll(this, 'show', 'hide', 'testNotification');
+        bindAll(this, 'show', 'hide', 'testNotification');
         this.listenTo(this.model, 'change', this.updateFields);
     },
     events: {
@@ -16,8 +16,8 @@ export const EditUserView = Backbone.View.extend({
     },
 
     render: function () {
-        var template = _.template($('#edituser_view').text());
-        this.setElement(template());
+        var edituserTemplate = template($('#edituser_view').text());
+        this.setElement(edituserTemplate());
         this.$el.hide();
         this.updateFields();
 
@@ -43,15 +43,15 @@ export const EditUserView = Backbone.View.extend({
     },
 
     addAvatarOption: function (url) {
-        var template = $(_.template($('#edituser_avatar_view').text())({ url: url }));
+        var edituserAvatarTemplate = $(template($('#edituser_avatar_view').text())({ url: url }));
 
-        template.find('img').prop('src', url);
+        edituserAvatarTemplate.find('img').prop('src', url);
 
         if (url === this.model.get('avatar')) {
-            template.find('input').prop('checked', true);
+            edituserAvatarTemplate.find('input').prop('checked', true);
         }
 
-        this.$el.find('.ediutuser-avatar-row .right').append(template);
+        this.$el.find('.ediutuser-avatar-row .right').append(edituserAvatarTemplate);
     },
 
     show: function () {

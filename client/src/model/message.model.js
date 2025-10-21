@@ -1,5 +1,4 @@
 import Backbone from 'backbone';
-import _ from 'underscore';
 import { Communicator } from '../communicator';
 import { nl2br, strip_tags, wordwrap } from '../phpjs';
 import { surfAppModel } from './surfapp.singleton';
@@ -137,7 +136,7 @@ export const Message = Backbone.Model.extend(
          * @returns {Message}
          */
         getNextUnread: function (minId, downOnly, checkedIds) {
-            if (_.indexOf(checkedIds, this.getSortableId()) > -1) {
+            if (checkedIds.indexOf(this.getSortableId()) > -1) {
                 return null;
             }
 

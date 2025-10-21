@@ -1,15 +1,15 @@
 import Backbone from 'backbone';
-import _ from 'underscore';
 import $ from 'jquery';
 import { __ } from '../i18n';
 import { MessageView } from './message.view';
 import { UserView } from './user.view';
 import { WaveReplyFormView } from './wavereplyform.view';
+import { template, bindAll } from '../utils';
 
-const waveTemplate = _.template($('#wave_view').text());
+const waveTemplate = template($('#wave_view').text());
 export const WaveView = Backbone.View.extend({
     initialize: function () {
-        _.bindAll(this, 'setCurrent', 'addMessage', 'addUser', 'removeUser', 'updateTitle',
+        bindAll(this, 'setCurrent', 'addMessage', 'addUser', 'removeUser', 'updateTitle',
             'showUpdateWave', 'scrollToNextUnread', 'scrollToBottom', 'readAllMessages',
             'quitWave', 'removeWave', 'countOfflineUsers', 'readAll');
 
@@ -37,7 +37,7 @@ export const WaveView = Backbone.View.extend({
     },
 
     render: function () {
-        var context = _.extend(this.model.toJSON(), { id: this.model.id }),
+        var context = Object.assign({}, this.model.toJSON(), { id: this.model.id }),
             formView = new WaveReplyFormView({ model: this.model });
 
         this.setElement(waveTemplate(context));
