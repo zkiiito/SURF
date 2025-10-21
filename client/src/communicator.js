@@ -2,6 +2,7 @@ import { io } from 'socket.io-client';
 import { Message } from './model/message.model';
 import { User } from './model/user.model';
 import { Wave } from './model/wave.model';
+
 export const Communicator = {
     app: null,
     socket: null,
@@ -14,7 +15,7 @@ export const Communicator = {
 
         this.app = app;
 
-        this.socket = io({ reconnection: false });
+        this.socket = io('http://localhost:8000', { reconnection: false });
 
         this.socket.on('init', function (data) {
             that.onInit(data);
@@ -137,9 +138,9 @@ export const Communicator = {
      */
     onMessage: function (data) {
         if (data.messages) {
-            _.each(data.messages, function (msg) {
+            data.messages.forEach((msg) => {
                 this.onMessage(msg);
-            }, this);
+            });
             return;
         }
 

@@ -1,3 +1,6 @@
+import Backbone from 'backbone';
+import _ from 'underscore';
+import $ from 'jquery';
 import { __ } from '../i18n';
 import { MessageReplyFormView } from './messagereplyform.view';
 import { UserView } from './user.view';
@@ -30,6 +33,7 @@ export const MessageView = Backbone.View.extend({
     events: {
         'click': 'readMessage',
         'dbltap': 'replyMessage',
+        'dblclick': 'replyMessage',
         'click a.reply': 'replyMessage',
         'click a.threadend': 'replyMessage'
     },

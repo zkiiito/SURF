@@ -6,3 +6,4 @@ out/
 coverage/
 report/
 .DS_Store
+client/dist/
