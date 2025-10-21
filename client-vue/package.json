@@ -1,0 +1,28 @@
+{
+  "name": "surf-client-vue",
+  "version": "2.0.0",
+  "description": "SURF - Modern real-time messaging app built with Vue 3",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc && vite build",
+    "preview": "vite preview",
+    "type-check": "vue-tsc --noEmit"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "pinia": "^2.1.7",
+    "socket.io-client": "^4.8.0",
+    "vue": "^3.4.21",
+    "vue-router": "^4.3.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.4",
+    "@vue/tsconfig": "^0.5.1",
+    "typescript": "^5.4.2",
+    "vite": "^5.0.0",
+    "vue-tsc": "^2.0.6"
+  }
+}
+
