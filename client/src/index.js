@@ -1,7 +1,7 @@
 import jQuery from 'jquery';
 import Backbone from 'backbone';
 // eslint-disable-next-line no-unused-vars
-// import * as tocca from 'tocca';
+import * as tocca from 'tocca';
 import { SurfAppRouter } from './surf';
 import { Communicator } from './communicator';
 import _ from 'underscore';

@@ -15,7 +15,7 @@ export const Communicator = {
 
         this.app = app;
 
-        this.socket = io('http://localhost:8000', { reconnection: false });
+        this.socket = io({ reconnection: false });
 
         this.socket.on('init', function (data) {
             that.onInit(data);
