@@ -1,15 +1,12 @@
 import Backbone from 'backbone';
-import _ from 'underscore';
 import $ from 'jquery';
 import { __ } from '../i18n';
 import { MessageReplyFormView } from './messagereplyform.view';
 import { UserView } from './user.view';
+import { template } from '../utils';
 
-_.templateSettings.interpolate = /{|\|([\s\S]+?)\|}/g;
-_.templateSettings.escape = /{{([\s\S]+?)}}/g;
-
-const messageTemplate = _.template($('#message_view').text());
-const linkPreviewTemplate = _.template($('#message_linkpreview_view').text());
+const messageTemplate = template($('#message_view').text());
+const linkPreviewTemplate = template($('#message_linkpreview_view').text());
 
 export const MessageView = Backbone.View.extend({
     initialize: function () {
@@ -38,7 +35,7 @@ export const MessageView = Backbone.View.extend({
         'click a.threadend': 'replyMessage'
     },
     render: function () {
-        var context = _.extend(this.model.toJSON(), { id: this.model.id, user: this.model.user.toJSON() }),
+        var context = Object.assign({}, this.model.toJSON(), { id: this.model.id, user: this.model.user.toJSON() }),
             userView = new UserView({ model: this.model.user }),
             that = this;
 
@@ -182,7 +179,7 @@ export const MessageView = Backbone.View.extend({
     },
 
     addLinkPreview: function (data) {
-        var linkPreview = $(linkPreviewTemplate(_.extend({ title: null, image: null, description: null }, data)));
+        var linkPreview = $(linkPreviewTemplate(Object.assign({ title: null, image: null, description: null }, data)));
         if (!data.image) {
             linkPreview.find('img').remove();
         }

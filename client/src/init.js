@@ -1,4 +1,1 @@
-_.templateSettings = {
-    interpolate: /{|\|([\s\S]+?)\|}/g,
-    escape: /{{([\s\S]+?)}}/g
-};
+// Template settings are now handled in utils.js

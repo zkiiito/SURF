@@ -1,11 +1,11 @@
 import Backbone from 'backbone';
-import _ from 'underscore';
 import $ from 'jquery';
 import { Communicator } from '../communicator';
+import { template, bindAll } from '../utils';
 
 export const WaveReplyFormView = Backbone.View.extend({
     initialize: function () {
-        _.bindAll(this, 'submitForm', 'handleKeydown');
+        bindAll(this, 'submitForm', 'handleKeydown');
     },
 
     events: {
@@ -14,8 +14,8 @@ export const WaveReplyFormView = Backbone.View.extend({
     },
 
     render: function () {
-        var template = _.template($('#wavereplyform_view').text());
-        this.setElement(template());
+        var wavereplyformTemplate = template($('#wavereplyform_view').text());
+        this.setElement(wavereplyformTemplate());
         return this;
     },
 
@@ -84,7 +84,7 @@ export const WaveReplyFormView = Backbone.View.extend({
                         return user.get('name').substr(0, replace.length) === replace;
                     };
 
-                    while (_.all(users, allFunc)) {
+                    while (users.every(allFunc)) {
                         replace = users[0].get('name').substr(0, replace.length + 1);
                     }
 

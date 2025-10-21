@@ -1,16 +1,17 @@
 import Backbone from 'backbone';
-import _ from 'underscore';
 import $ from 'jquery';
+import { template, bindAll } from '../utils';
+
 export const DisconnectedView = Backbone.View.extend({
     initialize: function () {
-        _.bindAll(this, 'show');
+        bindAll(this, 'show');
         this.counterStart = 3;
         this.counter = this.counterStart;
     },
 
     render: function () {
-        var template = _.template($('#disconnected_view').text());
-        this.setElement(template({ counter: this.counter }));
+        var disconnectedTemplate = template($('#disconnected_view').text());
+        this.setElement(disconnectedTemplate({ counter: this.counter }));
         this.$el.hide();
 
         return this;

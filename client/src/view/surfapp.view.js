@@ -1,5 +1,4 @@
 import Backbone from 'backbone';
-import _ from 'underscore';
 import $ from 'jquery';
 import { DisconnectedView } from './disconnected.view';
 import { EditUserView } from './edituser.view';
@@ -7,10 +6,11 @@ import { EditWaveView } from './editwave.view';
 import { UserView } from './user.view';
 import { WaveView } from './wave.view';
 import { WaveListView } from './wavelist.view';
+import { bindAll } from '../utils';
 
 export const SurfAppView = Backbone.View.extend({
     initialize: function () {
-        _.bindAll(this, 'addMessage', 'showCreateWave', 'showUpdateWave', 'showEditUser', 'hideOverlays', 'addWave');
+        bindAll(this, 'addMessage', 'showCreateWave', 'showUpdateWave', 'showEditUser', 'hideOverlays', 'addWave');
         this.listenTo(this.model.waves, 'add', this.addWave);
         this.listenTo(this.model.waves, 'reset', this.resetWaves);
         this.listenTo(this.model.waves, 'reset', this.handleEmpty);
@@ -111,7 +111,7 @@ export const SurfAppView = Backbone.View.extend({
     },
 
     renderWave: function (wave) {
-        if (!_.contains(this.renderedWaves, wave)) {
+        if (!this.renderedWaves.includes(wave)) {
             var view = new WaveView({ model: wave });
             $('#wave-container').append(view.render().el);
             view.setCurrent();
@@ -157,7 +157,7 @@ export const SurfAppView = Backbone.View.extend({
     },
 
     hideOverlays: function () {
-        if (_.isUndefined(this.disconnectedView)) {
+        if (this.disconnectedView === undefined) {
             $('#darken').hide();
             $('.overlay').hide();
         }

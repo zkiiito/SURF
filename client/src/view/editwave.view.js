@@ -1,15 +1,15 @@
 import Backbone from 'backbone';
-import _ from 'underscore';
 import $ from 'jquery';
 // eslint-disable-next-line no-unused-vars
 import * as token from '../jquery.tokenInput';
 import { Communicator } from '../communicator';
 import { __ } from '../i18n';
 import { surfAppModel } from '../model/surfapp.singleton';
+import { template, bindAll } from '../utils';
 
 export const EditWaveView = Backbone.View.extend({
     initialize: function () {
-        _.bindAll(this, 'show', 'hide', 'setWave', 'genUserArray', 'inviteCodeReady');
+        bindAll(this, 'show', 'hide', 'setWave', 'genUserArray', 'inviteCodeReady');
         this.userArray = [];
         this.listenTo(this.model.users, 'add', this.genUserArray);
         this.listenTo(this.model.users, 'change', this.genUserArray);
@@ -21,8 +21,8 @@ export const EditWaveView = Backbone.View.extend({
     },
 
     render: function () {
-        var template = _.template($('#editwave_view').text());
-        this.setElement(template());
+        var editwaveTemplate = template($('#editwave_view').text());
+        this.setElement(editwaveTemplate());
         this.$el.hide();
         return this;
     },
@@ -114,7 +114,7 @@ export const EditWaveView = Backbone.View.extend({
     editWave: function () {
         var title = this.$el.find('#editwave-title').val(),
             users = this.$el.find('#editwave-users').tokenInput('get'),
-            userIds = _.pluck(users, 'id');
+            userIds = users.map(user => user.id);
 
         if (this.wave) {
             Communicator.updateWave(this.wave.id, title, userIds);

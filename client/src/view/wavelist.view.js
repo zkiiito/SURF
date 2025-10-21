@@ -1,12 +1,12 @@
 import Backbone from 'backbone';
-import _ from 'underscore';
 import $ from 'jquery';
 import { __ } from '../i18n';
 import { surfAppModel } from '../model/surfapp.singleton';
+import { template, bindAll } from '../utils';
 
 export const WaveListView = Backbone.View.extend({
     initialize: function () {
-        _.bindAll(this, 'setCurrent', 'countMessages', 'updateMessages', 'changeUsers', 'updateTitle', 'scrollToNextUnread', 'removeWave');
+        bindAll(this, 'setCurrent', 'countMessages', 'updateMessages', 'changeUsers', 'updateTitle', 'scrollToNextUnread', 'removeWave');
         this.listenTo(this.model, 'change:current', this.setCurrent);
         this.listenTo(this.model, 'change:title', this.updateTitle);
         this.listenTo(this.model, 'remove', this.removeWave);
@@ -25,10 +25,10 @@ export const WaveListView = Backbone.View.extend({
     },
 
     render: function () {
-        var context = _.extend(this.model.toJSON(), { id: this.model.id }),
-            template = _.template($('#wave_list_view').text());
+        var context = Object.assign({}, this.model.toJSON(), { id: this.model.id }),
+            waveListTemplate = template($('#wave_list_view').text());
 
-        this.setElement(template(context));
+        this.setElement(waveListTemplate(context));
         this.changeUsers();
         this.countMessages();
         this.setCurrent();
