@@ -12,6 +12,7 @@ import EmptyState from './components/EmptyState'
 import EditWave from './components/EditWave'
 import EditUser from './components/EditUser'
 import Disconnected from './components/Disconnected'
+import '../public/css/style.css'
 import './App.css'
 
 function App() {
