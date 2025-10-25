@@ -14,7 +14,7 @@ describe('full test', () => {
 
         cy.get('#editwave form input#editwave-title').type(`Teszt Wave 1{enter}`)
 
-        cy.get('#editwave').should('be.hidden')
+        cy.get('#editwave').should('not.exist')
 
         cy.get('#wave-list a.waveitem').should('have.length', 1)
         
@@ -48,7 +48,7 @@ describe('full test', () => {
         cy.get('a.button.editwave').click()
         cy.get('#editwave').should('be.visible')
         cy.get('#editwave form input#editwave-title').clear().type(`${newTitle}{enter}`)
-        cy.get('#editwave').should('be.hidden')
+        cy.get('#editwave').should('not.exist')
 
         cy.get('.wave h2.wave-title').should('have.text', newTitle)
         cy.get('#wave-list .waveitem h2').should('have.text', newTitle)

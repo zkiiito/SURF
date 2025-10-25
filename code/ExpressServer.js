@@ -3,6 +3,7 @@ import http from 'http';
 import passport from 'passport';
 import SessionStore from './SessionStore.js';
 import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import routerClient from './routerClient.js';
 import cors from 'cors';
@@ -30,6 +31,7 @@ export function startExpressServer() {
         extended: true
     }));
     app.use(bodyParser.json());
+    app.use(cookieParser());
 
     app.use(session({
         name: 'surf.sid',
