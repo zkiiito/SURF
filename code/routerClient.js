@@ -44,27 +44,54 @@ for (const clientDir of clientDirs) {
     app.use('/assets', express.static(clientDirPath + '/assets'));
 }
 
-let clientIndexHtml = '';
+let clientIndexHtmlBackbone = '';
+let clientIndexHtmlReact = '';
 const cacheClientIndexHtml = true;
+
+// Route to enable React client
+app.get('/use-react', function (req, res) {
+    res.cookie('client-version', 'react', {
+        maxAge: 365 * 24 * 60 * 60 * 1000, // 1 year
+        httpOnly: true,
+        sameSite: 'lax'
+    });
+    res.redirect('/');
+});
+
+// Route to enable Backbone client (default)
+app.get('/use-backbone', function (req, res) {
+    res.clearCookie('client-version');
+    res.redirect('/');
+});
 
 app.get('/', function (req, res) {
     if (!req.isAuthenticated()) {
         return res.redirect('/auth/google');
     }
 
-    if (!clientIndexHtml || !cacheClientIndexHtml) {
-        fs.readFile(clientDirs[1] + '/index.html', { encoding: 'utf-8' }, function (err, data) {
+    // Check cookie to determine which client to serve
+    const useReact = (req.cookies && req.cookies['client-version'] === 'react') || (process.env.CLIENT_VERSION && process.env.CLIENT_VERSION === 'react');
+    const clientDir = useReact ? clientDirs[1] : clientDirs[0];
+    const cachedHtml = useReact ? clientIndexHtmlReact : clientIndexHtmlBackbone;
+
+    if (!cachedHtml || !cacheClientIndexHtml) {
+        fs.readFile(clientDir + '/index.html', { encoding: 'utf-8' }, function (err, data) {
             if (!err) {
-                clientIndexHtml = data;
-                res.send(clientIndexHtml);
+                if (useReact) {
+                    clientIndexHtmlReact = data;
+                } else {
+                    clientIndexHtmlBackbone = data;
+                }
+                res.send(data);
 
                 if (Config.testMode) {
-                    clientIndexHtml = null;
+                    clientIndexHtmlBackbone = null;
+                    clientIndexHtmlReact = null;
                 }
             }
         });
     } else {
-        res.send(clientIndexHtml);
+        res.send(cachedHtml);
     }
 });
 
@@ -102,7 +129,10 @@ if (Config.testMode) {
 
     /*jslint unparam: true*/
     app.get('/loginTest', function (req, res) {
-        res.sendFile(__dirname.replace('code', clientDirs[1]) + '/test/login.html');
+        // Use React client for test mode by default, but respect cookie
+        const useReact = req.cookies && req.cookies['client-version'] === 'react';
+        const clientDir = useReact ? clientDirs[1] : clientDirs[0];
+        res.sendFile(__dirname.replace('code', clientDir) + '/test/login.html');
     });
     /*jslint unparam: false*/
 
