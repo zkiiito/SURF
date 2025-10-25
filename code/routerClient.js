@@ -31,23 +31,29 @@ passport.use(new GoogleStrategy(
 /*jslint unparam: false*/
 
 const app = express.Router();
-const clientDir = __dirname.replace('code', 'client-vue/dist');
 
-app.use('/css', express.static(clientDir + '/css'));
-app.use('/js', express.static(clientDir + '/js'));
-app.use('/images', express.static(clientDir + '/images'));
-app.use('/fonts', express.static(clientDir + '/fonts'));
-app.use('/assets', express.static(clientDir + '/assets'));
+
+const clientDirs = ['client/dist', 'client-vue/dist', 'client-react/dist'];
+
+for (const clientDir of clientDirs) {
+    const clientDirPath = __dirname.replace('code', clientDir);
+    app.use('/css', express.static(clientDirPath + '/css'));
+    app.use('/js', express.static(clientDirPath + '/js'));
+    app.use('/images', express.static(clientDirPath + '/images'));
+    app.use('/fonts', express.static(clientDirPath + '/fonts'));
+    app.use('/assets', express.static(clientDirPath + '/assets'));
+}
 
 let clientIndexHtml = '';
+const cacheClientIndexHtml = true;
 
 app.get('/', function (req, res) {
     if (!req.isAuthenticated()) {
         return res.redirect('/auth/google');
     }
 
-    if (!clientIndexHtml) {
-        fs.readFile(clientDir + '/index.html', {encoding: 'utf-8'}, function (err, data) {
+    if (!clientIndexHtml || !cacheClientIndexHtml) {
+        fs.readFile(clientDirs[2] + '/index.html', { encoding: 'utf-8' }, function (err, data) {
             if (!err) {
                 clientIndexHtml = data;
                 res.send(clientIndexHtml);
@@ -60,6 +66,14 @@ app.get('/', function (req, res) {
     } else {
         res.send(clientIndexHtml);
     }
+});
+
+app.get('/vue', function (req, res) {
+    res.sendFile(clientDirs[1] + '/index.html');
+});
+
+app.get('/react', function (req, res) {
+    res.sendFile(clientDirs[2] + '/index.html');
 });
 
 app.post('/logError', function (req, res) {

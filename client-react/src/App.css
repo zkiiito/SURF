@@ -1,0 +1,54 @@
+/* Full height layout - matches original Backbone behavior */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* Container layout */
+#container {
+  display: flex;
+  flex: 1 100%;
+  min-height: 0;
+}
+
+#wave-list {
+  flex: 1 20%;
+  overflow: auto;
+}
+
+#wave-container {
+  flex: 1 80%;
+  display: flex;
+}
+
+.wave {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* Scrollable messages container */
+.waves-container {
+  overflow-y: scroll;
+  flex: 1 100%;
+  background: #eee;
+}
+
+/* Open/current wave styling - matches original Backbone behavior */
+#wave-list .open {
+  border-left-color: #6d8b39;
+}
+

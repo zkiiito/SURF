@@ -1,0 +1,69 @@
+import { useState, useRef, useEffect, FormEvent, KeyboardEvent } from 'react'
+import type { Message } from '@/types'
+import { useUserStore } from '@/stores/userStore'
+import { communicator } from '@/services/communicator'
+import { t } from '@/utils/i18n'
+
+interface Props {
+  message: Message
+  onCancel: () => void
+  onSent: () => void
+}
+
+export default function MessageReplyForm({ message, onCancel, onSent }: Props) {
+  const [replyMessage, setReplyMessage] = useState('')
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  
+  const messageUser = useUserStore(state => {
+    const user = state.getUser(message.userId)
+    return user || { name: 'Unknown' }
+  })
+
+  useEffect(() => {
+    textareaRef.current?.focus()
+  }, [])
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault()
+    if (!replyMessage.trim()) return
+    
+    communicator.sendMessage(replyMessage, message.waveId, message._id)
+    setReplyMessage('')
+    onSent()
+  }
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      handleSubmit(e)
+    }
+  }
+
+  return (
+    <div className="notification replyform">
+      <p>
+        <a className="button threadend cancel" href="#" onClick={(e) => { e.preventDefault(); onCancel() }}>
+          <span className="R">{t('Cancel')}</span> ⤴
+        </a>
+      </p>
+      <form className="add-message threadend" method="post" onSubmit={handleSubmit}>
+        <textarea
+          ref={textareaRef}
+          value={replyMessage}
+          onChange={(e) => setReplyMessage(e.target.value)}
+          name="message"
+          placeholder={`${t('Reply to message')} ${messageUser.name}`}
+          className="R"
+          onKeyDown={handleKeyDown}
+        />
+        <p className="inline-help mhide">
+          <button type="submit" className="button sendmsg R">
+            {t('Save message')}
+          </button>
+          <span className="R hint">{t('Press Return to send, Shift-Return to break line.')}</span>
+        </p>
+      </form>
+    </div>
+  )
+}
+
