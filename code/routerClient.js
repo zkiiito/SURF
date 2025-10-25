@@ -130,7 +130,7 @@ if (Config.testMode) {
     /*jslint unparam: true*/
     app.get('/loginTest', function (req, res) {
         // Use React client for test mode by default, but respect cookie
-        const useReact = req.cookies && req.cookies['client-version'] === 'react';
+        const useReact = (req.cookies && req.cookies['client-version'] === 'react') || (process.env.CLIENT_VERSION && process.env.CLIENT_VERSION === 'react');
         const clientDir = useReact ? clientDirs[1] : clientDirs[0];
         res.sendFile(__dirname.replace('code', clientDir) + '/test/login.html');
     });
