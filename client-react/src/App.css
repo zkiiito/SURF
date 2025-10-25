@@ -82,3 +82,16 @@ body {
   background: #d8ebb6;
   outline: none;
 }
+/* Overlay background - matches original Backbone behavior */
+#darken {
+  display: block !important;
+  z-index: 10;
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: #333333;
+  opacity: 0.6;
+  filter: alpha(opacity=60);
+}

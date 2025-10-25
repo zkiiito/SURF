@@ -1,4 +1,4 @@
-import { useRef, forwardRef, useImperativeHandle } from 'react'
+import { useRef, useEffect, forwardRef, useImperativeHandle } from 'react'
 import type { Message } from '@/types'
 import { useMessageStore } from '@/stores/messageStore'
 import { useUserStore } from '@/stores/userStore'
@@ -44,8 +44,30 @@ const MessageItem = forwardRef<MessageItemRef, Props>(({
   const replies = useMessageStore(state => state.getReplies(message._id))
   const currentUser = useUserStore(state => state.currentUser())
   const shouldShowLinkPreview = currentUser?.showLinkPreviews ?? true
+  const shouldShowPictures = currentUser?.showPictures ?? true
+  const shouldShowVideos = currentUser?.showVideos ?? true
 
   const formattedDate = new Date(message.created_at).toLocaleString()
+
+  // Request link preview for URLs in the message
+  useEffect(() => {
+    if (!shouldShowLinkPreview || message.linkPreview) return
+
+    const urlRegex = /((https?:\/\/|www\.)\S+)/g
+    const urlPictureRegex = /\.(jpg|png|gif)(\?.*)?$/i
+    const urlVideoRegex = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]+).*/i
+    
+    const matches = message.message.match(urlRegex)
+    if (matches && matches.length > 0) {
+      const url = matches[0]
+      let fullUrl = url.startsWith('http') ? url : 'http://' + url
+      
+      // Don't request preview for images or videos
+      if (!urlPictureRegex.test(fullUrl) && !urlVideoRegex.test(fullUrl)) {
+        communicator.getLinkPreview(fullUrl, message._id)
+      }
+    }
+  }, [message._id, message.message, message.linkPreview, shouldShowLinkPreview])
 
   useImperativeHandle(ref, () => ({
     scrollIntoView: () => {
@@ -66,12 +88,48 @@ const MessageItem = forwardRef<MessageItemRef, Props>(({
 
   const formattedMessage = () => {
     let msg = message.message
-    msg = stripTags(msg, '<b><i><u><a><br>')
+    const urlRegex = /((https?:\/\/|www\.)\S+)/g
+    const urlPictureRegex = /\.(jpg|png|gif)(\?.*)?$/i
+    const urlVideoRegex = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]+).*/i
+    const urlVideoRegexYoutube = /.*youtu.*/i
+
+    // Escape HTML
+    msg = msg.replace(/</g, '&lt;')
+    msg = msg.replace(/>/g, '&gt;')
+    msg = msg.replace(/\n/g, ' \n')
+    msg = stripTags(msg)
+    
+    // Process URLs
+    const parts = msg.split(' ')
+    for (let i = 0; i < parts.length; i++) {
+      const matched = parts[i].match(urlRegex)
+      if (matched) {
+        let url = matched[0]
+        let urlText = url.length > 53 ? url.substr(0, 50) + '...' : url
+        url = url.startsWith('http') ? url : 'http://' + url
+
+        if (shouldShowPictures && url.match(urlPictureRegex)) {
+          // Show image
+          parts[i] = parts[i].replace(matched[0], 
+            `<br><a href="${url}" target="_blank"><img class="message-img" src="${url}"></a>`)
+        } else if (shouldShowVideos && url.match(urlVideoRegex) && url.match(urlVideoRegexYoutube)) {
+          // Show YouTube video
+          const videoMatch = urlVideoRegex.exec(url)
+          if (videoMatch && videoMatch[2]) {
+            parts[i] = parts[i].replace(matched[0], 
+              `<br><iframe width="420" height="315" src="https://youtube.com/embed/${videoMatch[2]}" frameborder="0" allowfullscreen></iframe>`)
+          }
+        } else {
+          // Show link
+          parts[i] = parts[i].replace(matched[0], 
+            `<a href="${url}" target="_blank">${urlText}</a>`)
+        }
+      }
+    }
+
+    msg = parts.join(' ')
     msg = nl2br(msg)
-    msg = msg.replace(
-      /(https?:\/\/[^\s]+)/g,
-      '<a href="$1" target="_blank">$1</a>'
-    )
+    
     return msg
   }
 
@@ -124,12 +182,8 @@ const MessageItem = forwardRef<MessageItemRef, Props>(({
               </p>
             </td>
           </tr>
-        </tbody>
-      </table>
-      
-      {message.linkPreview && shouldShowLinkPreview && (
-        <table>
-          <tbody>
+          
+          {message.linkPreview && shouldShowLinkPreview && (
             <tr>
               <td className="message-header"></td>
               <td className="message-linkpreview message-body">
@@ -142,9 +196,9 @@ const MessageItem = forwardRef<MessageItemRef, Props>(({
                 </a>
               </td>
             </tr>
-          </tbody>
-        </table>
-      )}
+          )}
+        </tbody>
+      </table>
       
       <div className="replies">
         {replies.map(reply => (

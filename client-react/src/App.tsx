@@ -72,6 +72,15 @@ function App() {
     
     document.addEventListener('keydown', handleKeyDown)
     
+    // Handle ESC key to close overlays
+    const handleEscKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' || e.keyCode === 27) {
+        closeAllOverlays()
+      }
+    }
+    
+    document.addEventListener('keydown', handleEscKey)
+    
     // Error logging
     window.onerror = (message, file, line) => {
       const data = {
@@ -89,9 +98,10 @@ function App() {
     return () => {
       window.removeEventListener('resize', handleResize)
       document.removeEventListener('keydown', handleKeyDown)
+      document.removeEventListener('keydown', handleEscKey)
       communicator.disconnect()
     }
-  }, [setMobile])
+  }, [setMobile, closeAllOverlays])
 
   // Update page title
   useEffect(() => {

@@ -6,6 +6,7 @@ export interface User {
   showPictures?: boolean
   showVideos?: boolean
   showLinkPreviews?: boolean
+  showMentions?: boolean
 }
 
 export interface Wave {
