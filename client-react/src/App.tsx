@@ -5,6 +5,7 @@ import { useWaveStore } from './stores/waveStore'
 import { useMessageStore } from './stores/messageStore'
 import { communicator } from './services/communicator'
 import { initI18n } from './utils/i18n'
+import { scrollToMessage } from './utils/scrollToMessage'
 import TheHeader from './components/TheHeader'
 import WaveList from './components/WaveList'
 import EmptyState from './components/EmptyState'
@@ -41,6 +42,36 @@ function App() {
     handleResize()
     window.addEventListener('resize', handleResize)
     
+    // Handle space key to jump to next unread
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const nodeName = (e.target as HTMLElement).nodeName
+      
+      // Ignore if typing in input or textarea
+      if (nodeName === 'INPUT' || nodeName === 'TEXTAREA') {
+        return
+      }
+      
+      if (e.code === 'Space') {
+        e.preventDefault()
+        const currentWaveId = useWaveStore.getState().currentWaveId
+        if (currentWaveId) {
+          if (document.activeElement instanceof HTMLElement) {
+            document.activeElement.blur()
+          }
+          const currentMessageId = useWaveStore.getState().currentMessageId
+          const nextUnread = useMessageStore.getState().getNextUnreadInWave(
+            currentWaveId,
+            currentMessageId || undefined
+          )
+          if (nextUnread) {
+            scrollToMessage(nextUnread._id)
+          }
+        }
+      }
+    }
+    
+    document.addEventListener('keydown', handleKeyDown)
+    
     // Error logging
     window.onerror = (message, file, line) => {
       const data = {
@@ -57,6 +88,7 @@ function App() {
     
     return () => {
       window.removeEventListener('resize', handleResize)
+      document.removeEventListener('keydown', handleKeyDown)
       communicator.disconnect()
     }
   }, [setMobile])

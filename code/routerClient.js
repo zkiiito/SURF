@@ -33,7 +33,7 @@ passport.use(new GoogleStrategy(
 const app = express.Router();
 
 
-const clientDirs = ['client/dist', 'client-vue/dist', 'client-react/dist'];
+const clientDirs = ['client/dist', 'client-react/dist'];
 
 for (const clientDir of clientDirs) {
     const clientDirPath = __dirname.replace('code', clientDir);
@@ -53,7 +53,7 @@ app.get('/', function (req, res) {
     }
 
     if (!clientIndexHtml || !cacheClientIndexHtml) {
-        fs.readFile(clientDirs[2] + '/index.html', { encoding: 'utf-8' }, function (err, data) {
+        fs.readFile(clientDirs[1] + '/index.html', { encoding: 'utf-8' }, function (err, data) {
             if (!err) {
                 clientIndexHtml = data;
                 res.send(clientIndexHtml);
@@ -66,14 +66,6 @@ app.get('/', function (req, res) {
     } else {
         res.send(clientIndexHtml);
     }
-});
-
-app.get('/vue', function (req, res) {
-    res.sendFile(clientDirs[1] + '/index.html');
-});
-
-app.get('/react', function (req, res) {
-    res.sendFile(clientDirs[2] + '/index.html');
 });
 
 app.post('/logError', function (req, res) {
@@ -110,7 +102,7 @@ if (Config.testMode) {
 
     /*jslint unparam: true*/
     app.get('/loginTest', function (req, res) {
-        res.sendFile(clientDir + '/test/login.html');
+        res.sendFile(__dirname.replace('code', clientDirs[1]) + '/test/login.html');
     });
     /*jslint unparam: false*/
 

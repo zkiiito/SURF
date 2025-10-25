@@ -52,6 +52,10 @@ body {
   border-left-color: #6d8b39;
 }
 
+/* Updated wave (has unread messages) - matches original Backbone behavior */
+#wave-list .updated {
+  border-left-color: #9d9732;
+}
 /* Button spacing - matches original Backbone behavior */
 .button {
   margin-left: 0.3em;
@@ -68,4 +72,13 @@ body {
 
 .notification.replyform form.threadend {
   margin-left: 0;
+}
+
+/* Active/focused message styling - matches original Backbone behavior */
+.message table:focus,
+.message table:focus:hover,
+.message table.selected,
+.message table.selected:hover {
+  background: #d8ebb6;
+  outline: none;
 }

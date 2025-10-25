@@ -6,6 +6,7 @@ import { useUserStore } from './userStore'
 interface WaveState {
   waves: Map<string, Wave>
   currentWaveId: string | null
+  currentMessageId: string | null
   
   // Computed
   allWaves: () => Wave[]
@@ -20,6 +21,7 @@ interface WaveState {
   updateWave: (waveId: string, updates: Partial<Wave>) => void
   removeWave: (waveId: string) => void
   setCurrentWave: (waveId: string | null) => void
+  setCurrentMessage: (messageId: string | null) => void
   getWaveUsers: (waveId: string) => any[]
   getWaveUserNames: (waveId: string) => string
   getWaveUnreadCount: (waveId: string) => number
@@ -30,6 +32,7 @@ interface WaveState {
 export const useWaveStore = create<WaveState>((set, get) => ({
   waves: new Map(),
   currentWaveId: null,
+  currentMessageId: null,
   
   allWaves: () => Array.from(get().waves.values()),
   
@@ -93,8 +96,10 @@ export const useWaveStore = create<WaveState>((set, get) => ({
       get().updateWave(waveId, { current: true })
     }
     
-    set({ currentWaveId: waveId })
+    set({ currentWaveId: waveId, currentMessageId: null })
   },
+  
+  setCurrentMessage: (messageId) => set({ currentMessageId: messageId }),
   
   getWaveUsers: (waveId) => {
     const wave = get().waves.get(waveId)
@@ -139,6 +144,6 @@ export const useWaveStore = create<WaveState>((set, get) => ({
     }
   },
   
-  reset: () => set({ waves: new Map(), currentWaveId: null })
+  reset: () => set({ waves: new Map(), currentWaveId: null, currentMessageId: null })
 }))
 

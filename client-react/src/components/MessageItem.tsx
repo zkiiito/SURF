@@ -1,6 +1,8 @@
+import { useRef, forwardRef, useImperativeHandle } from 'react'
 import type { Message } from '@/types'
 import { useMessageStore } from '@/stores/messageStore'
 import { useUserStore } from '@/stores/userStore'
+import { useWaveStore } from '@/stores/waveStore'
 import { communicator } from '@/services/communicator'
 import { t } from '@/utils/i18n'
 import { nl2br, stripTags } from '@/utils/text'
@@ -14,13 +16,20 @@ interface Props {
   onCloseReplyForm?: () => void
 }
 
-export default function MessageItem({ 
+export interface MessageItemRef {
+  scrollIntoView: () => void
+  focus: () => void
+}
+
+const MessageItem = forwardRef<MessageItemRef, Props>(({ 
   message, 
   openReplyFormId = null,
   onOpenReplyForm,
   onCloseReplyForm
-}: Props) {
+}, ref) => {
   const isReplyFormOpen = openReplyFormId === message._id
+  const tableRef = useRef<HTMLTableElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
   
   const messageUser = useUserStore(state => {
     const user = state.getUser(message.userId)
@@ -38,6 +47,23 @@ export default function MessageItem({
 
   const formattedDate = new Date(message.created_at).toLocaleString()
 
+  useImperativeHandle(ref, () => ({
+    scrollIntoView: () => {
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect()
+        const parent = containerRef.current.closest('.waves-container')
+        if (parent) {
+          const parentRect = parent.getBoundingClientRect()
+          const scrollTop = rect.top - parentRect.top + parent.scrollTop - parentRect.height * 0.3
+          parent.scrollTop = scrollTop
+        }
+      }
+    },
+    focus: () => {
+      tableRef.current?.focus()
+    }
+  }))
+
   const formattedMessage = () => {
     let msg = message.message
     msg = stripTags(msg, '<b><i><u><a><br>')
@@ -50,6 +76,7 @@ export default function MessageItem({
   }
 
   const handleRead = () => {
+    useWaveStore.getState().setCurrentMessage(message._id)
     if (message.unread) {
       communicator.readMessage(message._id, message.waveId)
       useMessageStore.getState().markAsRead(message._id)
@@ -72,8 +99,9 @@ export default function MessageItem({
   }
 
   return (
-    <div className="message" id={`msg-${message._id}`}>
+    <div className="message" id={`msg-${message._id}`} ref={containerRef}>
       <table 
+        ref={tableRef}
         className={message.unread ? 'unread' : ''} 
         tabIndex={-1} 
         onClick={handleRead}
@@ -148,5 +176,9 @@ export default function MessageItem({
       )}
     </div>
   )
-}
+})
+
+MessageItem.displayName = 'MessageItem'
+
+export default MessageItem
 

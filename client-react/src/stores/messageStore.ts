@@ -117,20 +117,62 @@ export const useMessageStore = create<MessageState>((set, get) => ({
     get().updateMessage(messageId, { linkPreview })
   },
   
-  getNextUnreadInWave: (waveId, afterMessageId) => {
-    const waveMessages = get().getRootMessagesByWave(waveId)
-    const unread = waveMessages.filter(msg => msg.unread)
-    
-    if (afterMessageId) {
-      const afterMsg = get().messages.get(afterMessageId)
-      if (afterMsg) {
-        const afterTime = afterMsg.created_at
-        const nextUnread = unread.find(msg => msg.created_at > afterTime)
-        return nextUnread || unread[0] || null
+  getNextUnreadInWave: (waveId, currentMessageId) => {
+    const findUnreadInReplies = (messageId: string): Message | null => {
+      const replies = get().getReplies(messageId)
+      for (const reply of replies) {
+        if (reply.unread) return reply
+        const nestedUnread = findUnreadInReplies(reply._id)
+        if (nestedUnread) return nestedUnread
+      }
+      return null
+    }
+
+    // If we have a current message, start from there
+    if (currentMessageId) {
+      const currentMsg = get().getMessage(currentMessageId)
+      if (currentMsg) {
+        // First check replies of current message
+        const unreadInReplies = findUnreadInReplies(currentMessageId)
+        if (unreadInReplies) return unreadInReplies
+
+        // Find all root messages after current message's root
+        const rootMessages = get().getRootMessagesByWave(waveId)
+        const currentRoot = currentMsg.parentId 
+          ? get().getMessage(currentMsg.parentId)
+          : currentMsg
+        
+        if (currentRoot) {
+          const currentRootIndex = rootMessages.findIndex(m => m._id === currentRoot._id)
+          
+          // Check remaining root messages and their threads
+          for (let i = currentRootIndex + 1; i < rootMessages.length; i++) {
+            const rootMsg = rootMessages[i]
+            if (rootMsg.unread) return rootMsg
+            const unreadInThread = findUnreadInReplies(rootMsg._id)
+            if (unreadInThread) return unreadInThread
+          }
+          
+          // Wrap around to beginning
+          for (let i = 0; i <= currentRootIndex; i++) {
+            const rootMsg = rootMessages[i]
+            if (rootMsg.unread) return rootMsg
+            const unreadInThread = findUnreadInReplies(rootMsg._id)
+            if (unreadInThread) return unreadInThread
+          }
+        }
       }
     }
-    
-    return unread[0] || null
+
+    // No current message, just find first unread
+    const rootMessages = get().getRootMessagesByWave(waveId)
+    for (const rootMsg of rootMessages) {
+      if (rootMsg.unread) return rootMsg
+      const unreadInThread = findUnreadInReplies(rootMsg._id)
+      if (unreadInThread) return unreadInThread
+    }
+
+    return null
   },
   
   reset: () => set({ messages: new Map(), replies: new Map() })

@@ -4,6 +4,7 @@ import { useWaveStore } from '@/stores/waveStore'
 import { useMessageStore } from '@/stores/messageStore'
 import { useAppStore } from '@/stores/appStore'
 import { communicator } from '@/services/communicator'
+import { scrollToMessage } from '@/utils/scrollToMessage'
 import { t } from '@/utils/i18n'
 import UserAvatar from '@/components/UserAvatar'
 import MessageItem from '@/components/MessageItem'
@@ -27,6 +28,14 @@ export default function WaveView() {
   useEffect(() => {
     if (id) {
       useWaveStore.getState().setCurrentWave(id)
+      
+      // Jump to first unread message when opening a wave
+      setTimeout(() => {
+        const firstUnread = useMessageStore.getState().getNextUnreadInWave(id, undefined)
+        if (firstUnread) {
+          scrollToMessage(firstUnread._id)
+        }
+      }, 100) // Small delay to ensure DOM is ready
     }
     return () => {
       useWaveStore.getState().setCurrentWave(null)
@@ -49,16 +58,14 @@ export default function WaveView() {
   const scrollToNextUnread = () => {
     if (!id) return
     
-    const nextUnread = useMessageStore.getState().getNextUnreadInWave(id)
+    const currentMessageId = useWaveStore.getState().currentMessageId
+    const nextUnread = useMessageStore.getState().getNextUnreadInWave(
+      id, 
+      currentMessageId || undefined
+    )
+    
     if (nextUnread) {
-      const messageEl = document.getElementById(`msg-${nextUnread._id}`)
-      if (messageEl && wavesContainerRef.current) {
-        const scrollTop = messageEl.offsetTop - wavesContainerRef.current.offsetTop
-        wavesContainerRef.current.scrollTop = scrollTop
-        
-        communicator.readMessage(nextUnread._id, nextUnread.waveId)
-        useMessageStore.getState().markAsRead(nextUnread._id)
-      }
+      scrollToMessage(nextUnread._id)
     } else {
       scrollToBottom()
     }
@@ -112,9 +119,18 @@ export default function WaveView() {
 
   if (!wave) return null
 
+  const handleWavetopClick = (e: React.MouseEvent) => {
+    // Only handle clicks on the wavetop div itself, not on buttons or links
+    if ((e.target as HTMLElement).closest('a, .button')) {
+      return
+    }
+    e.preventDefault()
+    scrollToNextUnread()
+  }
+
   return (
     <div className="wave">
-      <div className="wavetop">
+      <div className="wavetop" onClick={handleWavetopClick}>
         <h2 className="wave-title">{wave.title}</h2>
         <p className="heads">
           {waveUsers.map(user => (
