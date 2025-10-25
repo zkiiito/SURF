@@ -1,0 +1,97 @@
+/* Full height layout - matches original Backbone behavior */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* Container layout */
+#container {
+  display: flex;
+  flex: 1 100%;
+  min-height: 0;
+}
+
+#wave-list {
+  flex: 1 20%;
+  overflow: auto;
+}
+
+#wave-container {
+  flex: 1 80%;
+  display: flex;
+}
+
+.wave {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* Scrollable messages container */
+.waves-container {
+  overflow-y: scroll;
+  flex: 1 100%;
+  background: #eee;
+}
+
+/* Open/current wave styling - matches original Backbone behavior */
+#wave-list .open {
+  border-left-color: #6d8b39;
+}
+
+/* Updated wave (has unread messages) - matches original Backbone behavior */
+#wave-list .updated {
+  border-left-color: #9d9732;
+}
+/* Button spacing - matches original Backbone behavior */
+.button {
+  margin-left: 0.3em;
+}
+
+.button:first-child {
+  margin-left: 0;
+}
+
+/* Reply form alignment fix */
+.notification.replyform .threadend {
+  margin-left: 0;
+}
+
+.notification.replyform form.threadend {
+  margin-left: 0;
+}
+
+/* Active/focused message styling - matches original Backbone behavior */
+.message table:focus,
+.message table:focus:hover,
+.message table.selected,
+.message table.selected:hover {
+  background: #d8ebb6;
+  outline: none;
+}
+/* Overlay background - matches original Backbone behavior */
+#darken {
+  display: block !important;
+  z-index: 10;
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: #333333;
+  opacity: 0.6;
+  filter: alpha(opacity=60);
+}
