@@ -7,10 +7,9 @@ import { t } from '@/utils/i18n'
 interface Props {
   message: Message
   onCancel: () => void
-  onSent: () => void
 }
 
-export default function MessageReplyForm({ message, onCancel, onSent }: Props) {
+export default function MessageReplyForm({ message, onCancel }: Props) {
   const [replyMessage, setReplyMessage] = useState('')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   
@@ -29,7 +28,9 @@ export default function MessageReplyForm({ message, onCancel, onSent }: Props) {
     
     communicator.sendMessage(replyMessage, message.waveId, message._id)
     setReplyMessage('')
-    onSent()
+    
+    // Keep the form open and refocus
+    textareaRef.current?.focus()
   }
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -42,7 +43,7 @@ export default function MessageReplyForm({ message, onCancel, onSent }: Props) {
   return (
     <div className="notification replyform">
       <p>
-        <a className="button threadend cancel" href="#" onClick={(e) => { e.preventDefault(); onCancel() }}>
+        <a className="button cancel" href="#" onClick={(e) => { e.preventDefault(); onCancel() }}>
           <span className="R">{t('Cancel')}</span> ⤴
         </a>
       </p>

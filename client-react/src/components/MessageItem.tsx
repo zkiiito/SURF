@@ -9,17 +9,18 @@ import MessageReplyForm from './MessageReplyForm'
 
 interface Props {
   message: Message
-  isReplyFormOpen?: boolean
+  openReplyFormId?: string | null
   onOpenReplyForm?: (messageId: string) => void
   onCloseReplyForm?: () => void
 }
 
 export default function MessageItem({ 
   message, 
-  isReplyFormOpen = false,
+  openReplyFormId = null,
   onOpenReplyForm,
   onCloseReplyForm
 }: Props) {
+  const isReplyFormOpen = openReplyFormId === message._id
   
   const messageUser = useUserStore(state => {
     const user = state.getUser(message.userId)
@@ -122,7 +123,7 @@ export default function MessageItem({
           <MessageItem 
             key={reply._id} 
             message={reply}
-            isReplyFormOpen={isReplyFormOpen}
+            openReplyFormId={openReplyFormId}
             onOpenReplyForm={onOpenReplyForm}
             onCloseReplyForm={onCloseReplyForm}
           />
@@ -133,7 +134,6 @@ export default function MessageItem({
         <MessageReplyForm
           message={message}
           onCancel={() => onCloseReplyForm?.()}
-          onSent={() => onCloseReplyForm?.()}
         />
       )}
       

@@ -46,7 +46,7 @@ export interface SocketMessageData {
   waveId: string
   message: string
   parentId: string | null
-  created_at: number
+  created_at: number | string // Can be timestamp or Date string from server
   unread?: boolean
   messages?: SocketMessageData[]
 }

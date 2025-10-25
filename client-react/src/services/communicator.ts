@@ -143,13 +143,18 @@ class Communicator {
     // Don't mark own messages as unread
     const isOwnMessage = currentUser && msgData.userId === currentUser._id
     
+    // Convert created_at to timestamp if it's a Date string
+    const createdAt = typeof msgData.created_at === 'string' 
+      ? new Date(msgData.created_at).getTime() 
+      : msgData.created_at
+    
     const message: Message = {
       _id: msgData._id,
       userId: msgData.userId,
       waveId: msgData.waveId,
       message: msgData.message,
       parentId: msgData.parentId,
-      created_at: msgData.created_at,
+      created_at: createdAt,
       unread: isOwnMessage ? false : (msgData.unread ?? true)
     }
 

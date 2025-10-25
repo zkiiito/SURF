@@ -158,7 +158,7 @@ export default function WaveView() {
             <MessageItem 
               key={message._id} 
               message={message}
-              isReplyFormOpen={openReplyFormId === message._id}
+              openReplyFormId={openReplyFormId}
               onOpenReplyForm={handleOpenReplyForm}
               onCloseReplyForm={handleCloseReplyForm}
             />

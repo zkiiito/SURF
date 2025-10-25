@@ -16,6 +16,8 @@ export default function WaveReplyForm({ waveId }: Props) {
     
     communicator.sendMessage(message, waveId, null)
     setMessage('')
+    
+    // Keep the form open and refocus
     textareaRef.current?.focus()
   }
 

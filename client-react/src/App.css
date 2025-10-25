@@ -52,3 +52,20 @@ body {
   border-left-color: #6d8b39;
 }
 
+/* Button spacing - matches original Backbone behavior */
+.button {
+  margin-left: 0.3em;
+}
+
+.button:first-child {
+  margin-left: 0;
+}
+
+/* Reply form alignment fix */
+.notification.replyform .threadend {
+  margin-left: 0;
+}
+
+.notification.replyform form.threadend {
+  margin-left: 0;
+}
