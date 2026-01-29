@@ -32,6 +32,11 @@ RUN npm ci --include=dev
 RUN npm run build
 RUN rm -rf node_modules
 
+WORKDIR /app/client-vue
+RUN npm ci --include=dev
+RUN npm run build
+RUN rm -rf node_modules
+
 WORKDIR /app
 
 # Final stage for app image

@@ -17,6 +17,7 @@
     "connect-redis": "^7.1.1",
     "content-type": "^1.0.5",
     "cookie": "^1.0.0",
+    "cookie-parser": "^1.4.7",
     "cookie-signature": "^1.2.1",
     "cors": "^2.8.5",
     "errorhandler": "^1.5.1",

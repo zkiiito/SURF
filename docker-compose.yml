@@ -10,7 +10,7 @@ services:
       - HOSTNAME=http://localhost:8000
       - TESTMODE=1
     volumes:
-      - .:/opt/surf
+      - .:/app
     ports:
       - "8000:8000"
     # command: ./node_modules/.bin/nodemon -L Surf.js
