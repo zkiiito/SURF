@@ -185,8 +185,11 @@ class Communicator {
     } else {
       waveStore.addWave(wavedata)
       
+      // Navigate to the new wave if it's the first/only wave or we just created it
       if (waveStore.allWaves().length === 1 || this.createTitle === wavedata.title) {
         waveStore.setCurrentWave(wavedata._id)
+        // Navigate to the wave using hash routing
+        window.location.hash = `/wave/${wavedata._id}`
       }
     }
   }

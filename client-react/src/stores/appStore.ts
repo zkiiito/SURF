@@ -21,6 +21,7 @@ interface AppState {
   setReady: () => void
   setMobile: (mobile: boolean) => void
   toggleWaveList: () => void
+  setShowWaveList: (show: boolean) => void
   openEditWave: (waveId?: string | null) => void
   closeEditWave: () => void
   openEditUser: () => void
@@ -50,9 +51,15 @@ export const useAppStore = create<AppState>((set, get) => ({
   
   setReady: () => set({ ready: true }),
   
-  setMobile: (mobile) => set({ isMobile: mobile }),
+  setMobile: (mobile) => set({ 
+    isMobile: mobile,
+    // Hide wave list by default on mobile
+    showWaveList: !mobile 
+  }),
   
   toggleWaveList: () => set((state) => ({ showWaveList: !state.showWaveList })),
+  
+  setShowWaveList: (show) => set({ showWaveList: show }),
   
   openEditWave: (waveId = null) => set({ editingWaveId: waveId, showEditWave: true }),
   

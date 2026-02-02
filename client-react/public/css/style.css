@@ -779,6 +779,11 @@ textarea {
         height: 100%;
         width: 55%;
         left: -55%;
-        transition: .2s;
+        z-index: 5;
+        transition: left .2s ease-out;
+    }
+
+    #wave-list.open {
+        left: 0;
     }
 }

@@ -1,14 +1,28 @@
-import { useShallow } from 'zustand/react/shallow'
+import { useMemo } from 'react'
 import { useWaveStore } from '@/stores/waveStore'
 import { useAppStore } from '@/stores/appStore'
 import { t } from '@/utils/i18n'
 import WaveListItem from './WaveListItem'
 
 export default function WaveList() {
-  const activeWaves = useWaveStore(useShallow(state => state.activeWaves()))
-  const archivedWaves = useWaveStore(useShallow(state => state.archivedWaves()))
+  // Subscribe directly to waves Map to ensure re-render when waves are added
+  const waves = useWaveStore(state => state.waves)
   const openEditWave = useAppStore(state => state.openEditWave)
   const showWaveList = useAppStore(state => state.showWaveList)
+  
+  const activeWaves = useMemo(() => 
+    Array.from(waves.values())
+      .filter(wave => !wave.archived)
+      .sort((a, b) => a._id.localeCompare(b._id)),
+    [waves]
+  )
+  
+  const archivedWaves = useMemo(() => 
+    Array.from(waves.values())
+      .filter(wave => wave.archived)
+      .sort((a, b) => a._id.localeCompare(b._id)),
+    [waves]
+  )
 
   return (
     <div id="wave-list" className={showWaveList ? 'open' : ''}>
