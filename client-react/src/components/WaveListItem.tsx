@@ -2,6 +2,7 @@ import { Link, useParams } from 'react-router-dom'
 import type { Wave } from '@/types'
 import { useWaveStore } from '@/stores/waveStore'
 import { useMessageStore } from '@/stores/messageStore'
+import { useAppStore } from '@/stores/appStore'
 import { scrollToMessage } from '@/utils/scrollToMessage'
 import { t } from '@/utils/i18n'
 
@@ -13,6 +14,8 @@ export default function WaveListItem({ wave }: Props) {
   const { id } = useParams<{ id: string }>()
   const userCount = wave.userIds.length
   const unreadCount = useWaveStore(state => state.getWaveUnreadCount(wave._id))
+  const isMobile = useAppStore(state => state.isMobile)
+  const setShowWaveList = useAppStore(state => state.setShowWaveList)
   const isOpen = id === wave._id
 
   const handleClick = (e: React.MouseEvent) => {
@@ -27,6 +30,11 @@ export default function WaveListItem({ wave }: Props) {
       if (nextUnread) {
         scrollToMessage(nextUnread._id)
       }
+    }
+    
+    // Close wave list on mobile when selecting a wave
+    if (isMobile) {
+      setShowWaveList(false)
     }
   }
 

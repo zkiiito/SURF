@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef, useCallback } from 'react'
 import { Outlet } from 'react-router-dom'
 import { useShallow } from 'zustand/react/shallow'
 import { useAppStore } from './stores/appStore'
@@ -19,16 +19,51 @@ import './App.css'
 
 function App() {
   const ready = useAppStore(state => state.ready)
+  const isMobile = useAppStore(state => state.isMobile)
   const showEditWave = useAppStore(state => state.showEditWave)
   const showEditUser = useAppStore(state => state.showEditUser)
   const showDisconnected = useAppStore(state => state.showDisconnected)
   const closeAllOverlays = useAppStore(state => state.closeAllOverlays)
   const setMobile = useAppStore(state => state.setMobile)
+  const setShowWaveList = useAppStore(state => state.setShowWaveList)
   const pageTitle = useAppStore(state => state.pageTitle())
   const unreadCount = useMessageStore(state => state.unreadCount())
   const allWaves = useWaveStore(useShallow(state => state.allWaves()))
 
   const showOverlay = showEditWave || showEditUser || showDisconnected
+
+  // Swipe gesture handling
+  const touchStartX = useRef<number | null>(null)
+  const touchStartY = useRef<number | null>(null)
+
+  const handleTouchStart = useCallback((e: TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX
+    touchStartY.current = e.touches[0].clientY
+  }, [])
+
+  const handleTouchEnd = useCallback((e: TouchEvent) => {
+    if (touchStartX.current === null || touchStartY.current === null) return
+    
+    const touchEndX = e.changedTouches[0].clientX
+    const touchEndY = e.changedTouches[0].clientY
+    const deltaX = touchEndX - touchStartX.current
+    const deltaY = touchEndY - touchStartY.current
+    
+    // Only trigger swipe if horizontal movement is greater than vertical
+    // and the swipe is at least 50px
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+      if (deltaX > 0) {
+        // Swipe right - show wave list
+        setShowWaveList(true)
+      } else {
+        // Swipe left - hide wave list
+        setShowWaveList(false)
+      }
+    }
+    
+    touchStartX.current = null
+    touchStartY.current = null
+  }, [setShowWaveList])
 
   useEffect(() => {
     // Initialize i18n
@@ -116,6 +151,23 @@ function App() {
   useEffect(() => {
     updateFavicon(unreadCount)
   }, [unreadCount])
+
+  // Mobile: add body class and swipe listeners
+  useEffect(() => {
+    if (isMobile) {
+      document.body.classList.add('mobile')
+      document.addEventListener('touchstart', handleTouchStart, { passive: true })
+      document.addEventListener('touchend', handleTouchEnd, { passive: true })
+    } else {
+      document.body.classList.remove('mobile')
+    }
+    
+    return () => {
+      document.body.classList.remove('mobile')
+      document.removeEventListener('touchstart', handleTouchStart)
+      document.removeEventListener('touchend', handleTouchEnd)
+    }
+  }, [isMobile, handleTouchStart, handleTouchEnd])
 
   function updateFavicon(count: number) {
     const canvas = document.createElement('canvas')
