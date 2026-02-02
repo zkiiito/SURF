@@ -1,6 +1,5 @@
 import { useEffect, useRef, useCallback } from 'react'
 import { Outlet } from 'react-router-dom'
-import { useShallow } from 'zustand/react/shallow'
 import { useAppStore } from './stores/appStore'
 import { useWaveStore } from './stores/waveStore'
 import { useMessageStore } from './stores/messageStore'
@@ -28,7 +27,9 @@ function App() {
   const setShowWaveList = useAppStore(state => state.setShowWaveList)
   const pageTitle = useAppStore(state => state.pageTitle())
   const unreadCount = useMessageStore(state => state.unreadCount())
-  const allWaves = useWaveStore(useShallow(state => state.allWaves()))
+  // Subscribe directly to waves Map to ensure re-render when waves are added
+  const waves = useWaveStore(state => state.waves)
+  const allWaves = Array.from(waves.values())
 
   const showOverlay = showEditWave || showEditUser || showDisconnected
 
