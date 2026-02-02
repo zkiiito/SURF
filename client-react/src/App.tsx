@@ -18,6 +18,7 @@ import '../public/css/token-input.css'
 import './App.css'
 
 function App() {
+  const ready = useAppStore(state => state.ready)
   const showEditWave = useAppStore(state => state.showEditWave)
   const showEditUser = useAppStore(state => state.showEditUser)
   const showDisconnected = useAppStore(state => state.showDisconnected)
@@ -151,6 +152,19 @@ function App() {
       if (oldLink) oldLink.remove()
       document.head.appendChild(link)
     }
+  }
+
+  if (!ready) {
+    return (
+      <>
+        <TheHeader />
+        <div id="container">
+          <div id="loading-state">
+            <div className="loading-spinner"></div>
+          </div>
+        </div>
+      </>
+    )
   }
 
   return (
