@@ -4,6 +4,7 @@ import { useWaveStore } from '@/stores/waveStore'
 import { useAppStore } from '@/stores/appStore'
 import { communicator } from '@/services/communicator'
 import { t } from '@/utils/i18n'
+import UserTokenInput from './UserTokenInput'
 
 export default function EditWave() {
   const editingWaveId = useAppStore(state => state.editingWaveId)
@@ -69,9 +70,10 @@ export default function EditWave() {
     }
   }
 
-  const handleUserSelection = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const options = Array.from(e.target.selectedOptions)
-    setSelectedUserIds(options.map(opt => opt.value))
+  const handleAddUser = (userId: string) => {
+    if (!selectedUserIds.includes(userId)) {
+      setSelectedUserIds([...selectedUserIds, userId])
+    }
   }
 
   return (
@@ -104,21 +106,12 @@ export default function EditWave() {
           <div>
             <label htmlFor="editwave-users" className="R">{t('Participants')}</label>
             <div className="right">
-              <select 
-                id="editwave-users" 
-                value={selectedUserIds}
-                onChange={handleUserSelection}
-                className="normal" 
-                multiple
-                size={5}
-              >
-                {allUsers.map(user => (
-                  <option key={user._id} value={user._id}>
-                    {user.name}
-                  </option>
-                ))}
-              </select>
-              <p style={{ fontSize: '0.9em', color: '#666' }}>Hold Ctrl/Cmd to select multiple users</p>
+              <UserTokenInput
+                users={allUsers}
+                selectedUserIds={selectedUserIds}
+                onAdd={handleAddUser}
+                placeholder={t('Type to add participants...')}
+              />
             </div>
           </div>
           

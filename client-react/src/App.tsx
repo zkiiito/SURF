@@ -13,6 +13,7 @@ import EditWave from './components/EditWave'
 import EditUser from './components/EditUser'
 import Disconnected from './components/Disconnected'
 import '../public/css/style.css'
+import '../public/css/token-input.css'
 import './App.css'
 
 function App() {
