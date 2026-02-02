@@ -1,4 +1,4 @@
-import { useRef, useEffect, forwardRef, useImperativeHandle } from 'react'
+import { useRef, useEffect, useImperativeHandle, type Ref } from 'react'
 import type { Message } from '@/types'
 import { useMessageStore } from '@/stores/messageStore'
 import { useUserStore } from '@/stores/userStore'
@@ -9,24 +9,26 @@ import { nl2br, stripTags } from '@/utils/text'
 import UserAvatar from './UserAvatar'
 import MessageReplyForm from './MessageReplyForm'
 
-interface Props {
-  message: Message
-  openReplyFormId?: string | null
-  onOpenReplyForm?: (messageId: string) => void
-  onCloseReplyForm?: () => void
-}
-
 export interface MessageItemRef {
   scrollIntoView: () => void
   focus: () => void
 }
 
-const MessageItem = forwardRef<MessageItemRef, Props>(({ 
+interface Props {
+  message: Message
+  openReplyFormId?: string | null
+  onOpenReplyForm?: (messageId: string) => void
+  onCloseReplyForm?: () => void
+  ref?: Ref<MessageItemRef>
+}
+
+function MessageItem({ 
   message, 
   openReplyFormId = null,
   onOpenReplyForm,
-  onCloseReplyForm
-}, ref) => {
+  onCloseReplyForm,
+  ref
+}: Props) {
   const isReplyFormOpen = openReplyFormId === message._id
   const tableRef = useRef<HTMLTableElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -230,9 +232,7 @@ const MessageItem = forwardRef<MessageItemRef, Props>(({
       )}
     </div>
   )
-})
-
-MessageItem.displayName = 'MessageItem'
+}
 
 export default MessageItem
 
