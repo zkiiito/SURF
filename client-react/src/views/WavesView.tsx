@@ -1,12 +1,13 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useShallow } from 'zustand/react/shallow'
 import { useWaveStore } from '@/stores/waveStore'
 import { useAppStore } from '@/stores/appStore'
 import { t } from '@/utils/i18n'
 
 export default function WavesView() {
   const navigate = useNavigate()
-  const activeWaves = useWaveStore(state => state.activeWaves())
+  const activeWaves = useWaveStore(useShallow(state => state.activeWaves()))
   const openEditWave = useAppStore(state => state.openEditWave)
 
   useEffect(() => {

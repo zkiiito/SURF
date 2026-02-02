@@ -1,11 +1,12 @@
+import { useShallow } from 'zustand/react/shallow'
 import { useWaveStore } from '@/stores/waveStore'
 import { useAppStore } from '@/stores/appStore'
 import { t } from '@/utils/i18n'
 import WaveListItem from './WaveListItem'
 
 export default function WaveList() {
-  const activeWaves = useWaveStore(state => state.activeWaves())
-  const archivedWaves = useWaveStore(state => state.archivedWaves())
+  const activeWaves = useWaveStore(useShallow(state => state.activeWaves()))
+  const archivedWaves = useWaveStore(useShallow(state => state.archivedWaves()))
   const openEditWave = useAppStore(state => state.openEditWave)
   const showWaveList = useAppStore(state => state.showWaveList)
 

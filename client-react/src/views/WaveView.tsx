@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { useShallow } from 'zustand/react/shallow'
 import { useWaveStore } from '@/stores/waveStore'
 import { useMessageStore } from '@/stores/messageStore'
 import { useAppStore } from '@/stores/appStore'
@@ -17,10 +18,10 @@ export default function WaveView() {
   const [openReplyFormId, setOpenReplyFormId] = useState<string | null>(null)
   
   const wave = useWaveStore(state => id ? state.getWave(id) : undefined)
-  const rootMessages = useMessageStore(state => 
+  const rootMessages = useMessageStore(useShallow(state => 
     id ? state.getRootMessagesByWave(id) : []
-  )
-  const waveUsers = useWaveStore(state => id ? state.getWaveUsers(id) : [])
+  ))
+  const waveUsers = useWaveStore(useShallow(state => id ? state.getWaveUsers(id) : []))
   const openEditWave = useAppStore(state => state.openEditWave)
   
   const offlineCount = waveUsers.filter(u => u.status === 'offline').length

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, FormEvent } from 'react'
+import { useShallow } from 'zustand/react/shallow'
 import { useUserStore } from '@/stores/userStore'
 import { useWaveStore } from '@/stores/waveStore'
 import { useAppStore } from '@/stores/appStore'
@@ -9,7 +10,7 @@ import UserTokenInput from './UserTokenInput'
 export default function EditWave() {
   const editingWaveId = useAppStore(state => state.editingWaveId)
   const closeEditWave = useAppStore(state => state.closeEditWave)
-  const allUsers = useUserStore(state => state.allUsers())
+  const allUsers = useUserStore(useShallow(state => state.allUsers()))
   const currentUser = useUserStore(state => state.currentUser())
   const getWave = useWaveStore(state => state.getWave)
   

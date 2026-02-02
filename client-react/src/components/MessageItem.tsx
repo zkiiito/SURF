@@ -1,4 +1,5 @@
 import { useRef, useEffect, useImperativeHandle, type Ref } from 'react'
+import { useShallow } from 'zustand/react/shallow'
 import type { Message } from '@/types'
 import { useMessageStore } from '@/stores/messageStore'
 import { useUserStore } from '@/stores/userStore'
@@ -43,7 +44,7 @@ function MessageItem({
     }
   })
   
-  const replies = useMessageStore(state => state.getReplies(message._id))
+  const replies = useMessageStore(useShallow(state => state.getReplies(message._id)))
   const currentUser = useUserStore(state => state.currentUser())
   const shouldShowLinkPreview = currentUser?.showLinkPreviews ?? true
   const shouldShowPictures = currentUser?.showPictures ?? true

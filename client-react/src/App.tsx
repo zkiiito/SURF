@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { Outlet } from 'react-router-dom'
+import { useShallow } from 'zustand/react/shallow'
 import { useAppStore } from './stores/appStore'
 import { useWaveStore } from './stores/waveStore'
 import { useMessageStore } from './stores/messageStore'
@@ -24,7 +25,7 @@ function App() {
   const setMobile = useAppStore(state => state.setMobile)
   const pageTitle = useAppStore(state => state.pageTitle())
   const unreadCount = useMessageStore(state => state.unreadCount())
-  const allWaves = useWaveStore(state => state.allWaves())
+  const allWaves = useWaveStore(useShallow(state => state.allWaves()))
 
   const showOverlay = showEditWave || showEditUser || showDisconnected
 
