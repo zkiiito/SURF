@@ -9,10 +9,9 @@
     "url": "git@github.com:zkiiito/SURF.git"
   },
   "type": "module",
-  "exports": "./code/Surf.js",
+  "exports": "./code/dist/SurfServer.js",
   "license": "GPL-3.0",
   "dependencies": {
-    "backbone": "^1.6.0",
     "body-parser": "^1.20.4",
     "connect-redis": "^7.1.1",
     "content-type": "^1.0.5",
@@ -34,20 +33,37 @@
     "passport-google-oauth20": "^2.0.0",
     "passport-local": "^1.0.0",
     "redis": "^4.7.0",
-    "socket.io": "^4.8.0",
-    "underscore": "^1.13.7"
+    "socket.io": "^4.8.0"
   },
   "engines": {
     "node": "20.x"
   },
   "scripts": {
-    "start": "node Surf.js",
-    "test": "cypress run"
+    "build": "tsc -p code/tsconfig.json",
+    "start": "npm run build && node Surf.js",
+    "dev": "tsc -p code/tsconfig.json --watch",
+    "test": "vitest run --config code/vitest.config.ts",
+    "test:watch": "vitest --config code/vitest.config.ts",
+    "test:e2e": "cypress run"
   },
   "devDependencies": {
+    "@types/content-type": "^1.1.9",
+    "@types/cookie": "^0.6.0",
+    "@types/cookie-parser": "^1.4.7",
+    "@types/cookie-signature": "^1.1.2",
+    "@types/cors": "^2.8.17",
+    "@types/errorhandler": "^1.5.3",
+    "@types/express": "^4.17.21",
+    "@types/express-session": "^1.18.0",
+    "@types/node": "^20.11.0",
+    "@types/passport": "^1.0.16",
+    "@types/passport-google-oauth20": "^2.0.16",
+    "@types/passport-local": "^1.0.38",
     "cypress": "^13.15.0",
     "eslint": "^8.57.1",
-    "nodemon": "^3.1.7"
+    "nodemon": "^3.1.7",
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.0"
   },
   "nodemonConfig": {
     "ignore": [
