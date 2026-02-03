@@ -1,4 +1,4 @@
-import { useRef, useEffect, useImperativeHandle, type Ref } from 'react'
+import { useRef, useEffect, useImperativeHandle, useMemo, type Ref } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import type { Message } from '@/types'
 import { useMessageStore } from '@/stores/messageStore'
@@ -89,7 +89,7 @@ function MessageItem({
     }
   }))
 
-  const formattedMessage = () => {
+  const formattedMessage = useMemo(() => {
     let msg = message.message
     const urlRegex = /((https?:\/\/|www\.)\S+)/g
     const urlPictureRegex = /\.(jpg|png|gif)(\?.*)?$/i
@@ -134,7 +134,7 @@ function MessageItem({
     msg = nl2br(msg)
     
     return msg
-  }
+  }, [message.message, shouldShowPictures, shouldShowVideos])
 
   const handleRead = () => {
     useWaveStore.getState().setCurrentMessage(message._id)
@@ -180,7 +180,7 @@ function MessageItem({
                 <span className="author">{messageUser.name}:</span>
                 <span 
                   className="message-formatted" 
-                  dangerouslySetInnerHTML={{ __html: formattedMessage() }}
+                  dangerouslySetInnerHTML={{ __html: formattedMessage }}
                 />
               </p>
             </td>

@@ -160,6 +160,23 @@ class Communicator {
 
     const wave = waveStore.getWave(msgData.waveId)
     if (wave) {
+      // Check if this is a reply and if the parent exists
+      if (message.parentId !== null) {
+        const parentMsg = messageStore.getMessage(message.parentId)
+        
+        if (!parentMsg) {
+          // Parent doesn't exist locally - fetch missing messages
+          const waveMessages = messageStore.getRootMessagesByWave(message.waveId)
+          if (waveMessages.length > 0) {
+            const minParentId = message.parentId
+            const maxRootId = waveMessages[0]._id
+            this.getMessages(message.waveId, minParentId, maxRootId)
+          }
+          // Don't add the message yet - it will come back with the parent chain
+          return
+        }
+      }
+      
       messageStore.addMessage(message)
       waveStore.checkAndArchive(msgData.waveId)
     }
