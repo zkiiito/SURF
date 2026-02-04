@@ -1,9 +1,10 @@
-import { useRef, useEffect, useImperativeHandle, useMemo, type Ref } from 'react'
+import { useRef, useEffect, useImperativeHandle, useMemo, memo, type Ref } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import type { Message } from '@/types'
 import { useMessageStore } from '@/stores/messageStore'
 import { useUserStore } from '@/stores/userStore'
 import { useWaveStore } from '@/stores/waveStore'
+import { useAppStore } from '@/stores/appStore'
 import { communicator } from '@/services/communicator'
 import { t } from '@/utils/i18n'
 import { nl2br, stripTags } from '@/utils/text'
@@ -17,20 +18,17 @@ export interface MessageItemRef {
 
 interface Props {
   message: Message
-  openReplyFormId?: string | null
-  onOpenReplyForm?: (messageId: string) => void
-  onCloseReplyForm?: () => void
   ref?: Ref<MessageItemRef>
 }
 
-function MessageItem({ 
+const MessageItem = memo(function MessageItem({ 
   message, 
-  openReplyFormId = null,
-  onOpenReplyForm,
-  onCloseReplyForm,
   ref
 }: Props) {
-  const isReplyFormOpen = openReplyFormId === message._id
+  // Subscribe to only this message's reply form state
+  const isReplyFormOpen = useAppStore(state => state.openReplyFormId === message._id)
+  const openReplyForm = useAppStore(state => state.openReplyForm)
+  const closeReplyForm = useAppStore(state => state.closeReplyForm)
   const tableRef = useRef<HTMLTableElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   
@@ -148,15 +146,15 @@ function MessageItem({
     e.preventDefault()
     e.stopPropagation()
     if (isReplyFormOpen) {
-      onCloseReplyForm?.()
+      closeReplyForm()
     } else {
-      onOpenReplyForm?.(message._id)
+      openReplyForm(message._id)
     }
   }
 
   const handleDoubleClick = (e: React.MouseEvent) => {
     e.preventDefault()
-    onOpenReplyForm?.(message._id)
+    openReplyForm(message._id)
   }
 
   return (
@@ -208,9 +206,6 @@ function MessageItem({
           <MessageItem 
             key={reply._id} 
             message={reply}
-            openReplyFormId={openReplyFormId}
-            onOpenReplyForm={onOpenReplyForm}
-            onCloseReplyForm={onCloseReplyForm}
           />
         ))}
       </div>
@@ -218,7 +213,7 @@ function MessageItem({
       {isReplyFormOpen && (
         <MessageReplyForm
           message={message}
-          onCancel={() => onCloseReplyForm?.()}
+          onCancel={closeReplyForm}
         />
       )}
       
@@ -233,7 +228,10 @@ function MessageItem({
       )}
     </div>
   )
-}
+}, (prevProps, nextProps) => {
+  // Only re-render if message changed - reply form state is handled by store subscription
+  return prevProps.message === nextProps.message
+})
 
 export default MessageItem
 

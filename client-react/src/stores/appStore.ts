@@ -12,6 +12,7 @@ interface AppState {
   showEditWave: boolean
   showEditUser: boolean
   editingWaveId: string | null
+  openReplyFormId: string | null
   
   // Computed
   unreadCount: () => number
@@ -26,6 +27,8 @@ interface AppState {
   closeEditWave: () => void
   openEditUser: () => void
   closeEditUser: () => void
+  openReplyForm: (messageId: string) => void
+  closeReplyForm: () => void
   closeAllOverlays: () => void
   handleDisconnect: (reconnect: boolean) => void
   reset: () => void
@@ -40,6 +43,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   showEditWave: false,
   showEditUser: false,
   editingWaveId: null,
+  openReplyFormId: null,
   
   unreadCount: () => useMessageStore.getState().unreadCount(),
   
@@ -69,6 +73,10 @@ export const useAppStore = create<AppState>((set, get) => ({
   
   closeEditUser: () => set({ showEditUser: false }),
   
+  openReplyForm: (messageId) => set({ openReplyFormId: messageId }),
+  
+  closeReplyForm: () => set({ openReplyFormId: null }),
+  
   closeAllOverlays: () => set({
     showEditWave: false,
     showEditUser: false,
@@ -90,7 +98,8 @@ export const useAppStore = create<AppState>((set, get) => ({
       shouldReconnect: true,
       showEditWave: false,
       showEditUser: false,
-      editingWaveId: null
+      editingWaveId: null,
+      openReplyFormId: null
     })
     
     // Reset all other stores
