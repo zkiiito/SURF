@@ -1,3 +1,5 @@
+import { useWaveStore } from '@/stores/waveStore'
+
 export function scrollToMessage(messageId: string) {
   const messageEl = document.getElementById(`msg-${messageId}`)
   if (!messageEl) return
@@ -22,5 +24,8 @@ export function scrollToMessage(messageId: string) {
 
   // Mark as read by triggering a click
   tableEl.click()
+  
+  // Set as current message for next unread navigation
+  useWaveStore.getState().setCurrentMessage(messageId)
 }
 
