@@ -1,8 +1,10 @@
 import { useState, useRef, useEffect, FormEvent, KeyboardEvent } from 'react'
 import type { Message } from '@/types'
 import { useUserStore } from '@/stores/userStore'
+import { useWaveStore } from '@/stores/waveStore'
 import { communicator } from '@/services/communicator'
 import { t } from '@/utils/i18n'
+import { mentionUser } from '@/utils/mentionUser'
 
 interface Props {
   message: Message
@@ -17,6 +19,7 @@ export default function MessageReplyForm({ message, onCancel }: Props) {
     const user = state.getUser(message.userId)
     return user || { name: 'Unknown' }
   })
+  const waveUsers = useWaveStore(state => state.getWaveUsers(message.waveId))
 
   useEffect(() => {
     textareaRef.current?.focus()
@@ -37,6 +40,9 @@ export default function MessageReplyForm({ message, onCancel }: Props) {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
       handleSubmit(e)
+    } else if (e.key === 'Tab' && !e.shiftKey) {
+      e.preventDefault()
+      mentionUser(textareaRef.current, replyMessage, setReplyMessage, waveUsers)
     }
   }
 
