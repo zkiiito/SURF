@@ -1,6 +1,20 @@
 import { create } from 'zustand'
 import type { Message, LinkPreview } from '@/types'
 
+/**
+ * Extract a sortable number from MongoDB ObjectId for chronological ordering.
+ * ObjectId format: 4-byte timestamp + 5-byte random + 3-byte counter
+ * We use timestamp + (counter % 1000) / 1000 for sub-second ordering.
+ */
+function getSortableId(messageId: string): number {
+  if (messageId.length === 24) {
+    const timestamp = parseInt(messageId.substring(0, 8), 16)
+    const increment = parseInt(messageId.substring(18, 24), 16)
+    return timestamp + (increment % 1000) / 1000
+  }
+  return 0
+}
+
 interface MessageState {
   messages: Map<string, Message>
   replies: Map<string, string[]>
@@ -22,7 +36,7 @@ interface MessageState {
   markAllAsReadInWave: (waveId: string) => void
   removeMessagesByWave: (waveId: string) => void
   addLinkPreview: (messageId: string, linkPreview: LinkPreview) => void
-  getNextUnreadInWave: (waveId: string, afterMessageId?: string) => Message | null
+  getNextUnreadInWave: (waveId: string, currentMessageId?: string | null) => Message | null
   reset: () => void
 }
 
@@ -118,60 +132,105 @@ export const useMessageStore = create<MessageState>((set, get) => ({
   },
   
   getNextUnreadInWave: (waveId, currentMessageId) => {
-    const findUnreadInReplies = (messageId: string): Message | null => {
+    /**
+     * Recursive function to find next unread message.
+     * Matches original Backbone logic from message.model.js getNextUnread().
+     * 
+     * @param messageId - Message to check
+     * @param minId - Only consider messages with sortableId > minId
+     * @param downOnly - If true, only search children, don't go up to parent
+     * @param checkedIds - Set of already checked message IDs to prevent loops
+     */
+    const getNextUnread = (
+      messageId: string,
+      minId: number,
+      downOnly: boolean,
+      checkedIds: Set<string>
+    ): Message | null => {
+      const sortableId = getSortableId(messageId)
+      
+      // Prevent infinite loops
+      if (checkedIds.has(messageId)) {
+        return null
+      }
+      checkedIds.add(messageId)
+      
+      const message = get().getMessage(messageId)
+      if (!message) return null
+      
+      // Check if this message is unread and after minId
+      if (sortableId > minId && message.unread) {
+        return message
+      }
+      
+      // Check children (replies) recursively
       const replies = get().getReplies(messageId)
       for (const reply of replies) {
-        if (reply.unread) return reply
-        const nestedUnread = findUnreadInReplies(reply._id)
-        if (nestedUnread) return nestedUnread
+        const nextUnread = getNextUnread(reply._id, minId, true, checkedIds)
+        if (nextUnread) return nextUnread
       }
+      
+      // If not downOnly, go up to parent and check siblings
+      if (!downOnly && message.parentId) {
+        const parentUnread = getNextUnread(message.parentId, 0, false, checkedIds)
+        if (parentUnread) return parentUnread
+      }
+      
       return null
     }
-
-    // If we have a current message, start from there
+    
+    /**
+     * Get the root message ID for a given message (traverses up the tree)
+     */
+    const getRootId = (messageId: string): string => {
+      const message = get().getMessage(messageId)
+      if (!message) return messageId
+      if (message.parentId) {
+        return getRootId(message.parentId)
+      }
+      return messageId
+    }
+    
+    let minId = 0
+    
+    // If we have a current message, start the search from there
     if (currentMessageId) {
       const currentMsg = get().getMessage(currentMessageId)
       if (currentMsg) {
-        // First check replies of current message
-        const unreadInReplies = findUnreadInReplies(currentMessageId)
-        if (unreadInReplies) return unreadInReplies
-
-        // Find all root messages after current message's root
-        const rootMessages = get().getRootMessagesByWave(waveId)
-        const currentRoot = currentMsg.parentId 
-          ? get().getMessage(currentMsg.parentId)
-          : currentMsg
+        minId = getSortableId(currentMessageId)
         
-        if (currentRoot) {
-          const currentRootIndex = rootMessages.findIndex(m => m._id === currentRoot._id)
-          
-          // Check remaining root messages and their threads
-          for (let i = currentRootIndex + 1; i < rootMessages.length; i++) {
-            const rootMsg = rootMessages[i]
-            if (rootMsg.unread) return rootMsg
-            const unreadInThread = findUnreadInReplies(rootMsg._id)
-            if (unreadInThread) return unreadInThread
-          }
-          
-          // Wrap around to beginning
-          for (let i = 0; i <= currentRootIndex; i++) {
-            const rootMsg = rootMessages[i]
-            if (rootMsg.unread) return rootMsg
-            const unreadInThread = findUnreadInReplies(rootMsg._id)
-            if (unreadInThread) return unreadInThread
-          }
-        }
+        // First check from current message: its children, then up to parents recursively
+        const checkedIds = new Set<string>()
+        const nextUnread = getNextUnread(currentMessageId, minId, false, checkedIds)
+        if (nextUnread) return nextUnread
+        
+        // Get the root message's sortable ID for filtering root messages
+        const rootId = getRootId(currentMessageId)
+        minId = getSortableId(rootId)
       }
     }
-
-    // No current message, just find first unread
+    
+    // Check all root messages after the current root
     const rootMessages = get().getRootMessagesByWave(waveId)
-    for (const rootMsg of rootMessages) {
-      if (rootMsg.unread) return rootMsg
-      const unreadInThread = findUnreadInReplies(rootMsg._id)
-      if (unreadInThread) return unreadInThread
+    const rootsAfterCurrent = rootMessages.filter(msg => getSortableId(msg._id) > minId)
+    
+    for (const rootMsg of rootsAfterCurrent) {
+      const checkedIds = new Set<string>()
+      const nextUnread = getNextUnread(rootMsg._id, minId, true, checkedIds)
+      if (nextUnread) return nextUnread
     }
-
+    
+    // Wrap around: check root messages from the beginning (before current)
+    if (minId > 0) {
+      const rootsBeforeCurrent = rootMessages.filter(msg => getSortableId(msg._id) <= minId)
+      
+      for (const rootMsg of rootsBeforeCurrent) {
+        const checkedIds = new Set<string>()
+        const nextUnread = getNextUnread(rootMsg._id, 0, true, checkedIds)
+        if (nextUnread) return nextUnread
+      }
+    }
+    
     return null
   },
   
