@@ -105,6 +105,11 @@ function App() {
           )
           if (nextUnread) {
             scrollToMessage(nextUnread._id)
+          } else {
+            const wavesContainer = document.querySelector('.waves-container')
+            if (wavesContainer) {
+              wavesContainer.scrollTop = wavesContainer.scrollHeight
+            }
           }
         }
       }
