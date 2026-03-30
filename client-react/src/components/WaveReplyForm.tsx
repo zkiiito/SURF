@@ -1,4 +1,5 @@
 import { useState, useRef, FormEvent, KeyboardEvent } from 'react'
+import { useShallow } from 'zustand/react/shallow'
 import { communicator } from '@/services/communicator'
 import { useWaveStore } from '@/stores/waveStore'
 import { t } from '@/utils/i18n'
@@ -11,7 +12,7 @@ interface Props {
 export default function WaveReplyForm({ waveId }: Props) {
   const [message, setMessage] = useState('')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
-  const waveUsers = useWaveStore(state => state.getWaveUsers(waveId))
+  const waveUsers = useWaveStore(useShallow(state => state.getWaveUsers(waveId)))
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()

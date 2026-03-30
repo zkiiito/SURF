@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, FormEvent, KeyboardEvent } from 'react'
+import { useShallow } from 'zustand/react/shallow'
 import type { Message } from '@/types'
 import { useUserStore } from '@/stores/userStore'
 import { useWaveStore } from '@/stores/waveStore'
@@ -19,7 +20,7 @@ export default function MessageReplyForm({ message, onCancel }: Props) {
     const user = state.getUser(message.userId)
     return user || { name: 'Unknown' }
   })
-  const waveUsers = useWaveStore(state => state.getWaveUsers(message.waveId))
+  const waveUsers = useWaveStore(useShallow(state => state.getWaveUsers(message.waveId)))
 
   useEffect(() => {
     textareaRef.current?.focus()
