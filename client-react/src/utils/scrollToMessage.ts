@@ -1,3 +1,5 @@
+import { useWaveStore } from '@/stores/waveStore'
+
 export function scrollToMessage(messageId: string) {
   const messageEl = document.getElementById(`msg-${messageId}`)
   if (!messageEl) return
@@ -9,18 +11,25 @@ export function scrollToMessage(messageId: string) {
   const container = messageEl.closest('.waves-container')
   if (!container) return
 
-  // Calculate scroll position (30% from top like Backbone version)
-  const rect = messageEl.getBoundingClientRect()
+  // Get position relative to container (like jQuery's .position().top)
   const containerRect = container.getBoundingClientRect()
-  const scrollTop = rect.top - containerRect.top + container.scrollTop - containerRect.height * 0.3
+  const messageRect = messageEl.getBoundingClientRect()
+  const positionTop = messageRect.top - containerRect.top
+  const containerHeight = containerRect.height
 
-  // Scroll to the message
-  container.scrollTop = scrollTop
+  // Only scroll if message is outside the visible area (matching Backbone behavior)
+  if (positionTop < 0 || positionTop > containerHeight) {
+    const scrollTop = positionTop + container.scrollTop - containerHeight * 0.3
+    container.scrollTop = scrollTop
+  }
 
   // Focus the table element (triggers CSS :focus styling)
   tableEl.focus()
 
   // Mark as read by triggering a click
   tableEl.click()
+  
+  // Set as current message for next unread navigation
+  useWaveStore.getState().setCurrentMessage(messageId)
 }
 

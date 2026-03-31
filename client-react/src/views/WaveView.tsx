@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useShallow } from 'zustand/react/shallow'
 import { useWaveStore } from '@/stores/waveStore'
@@ -15,7 +15,6 @@ export default function WaveView() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const wavesContainerRef = useRef<HTMLDivElement>(null)
-  const [openReplyFormId, setOpenReplyFormId] = useState<string | null>(null)
   
   const wave = useWaveStore(state => id ? state.getWave(id) : undefined)
   const rootMessages = useMessageStore(useShallow(state => 
@@ -23,6 +22,7 @@ export default function WaveView() {
   ))
   const waveUsers = useWaveStore(useShallow(state => id ? state.getWaveUsers(id) : []))
   const openEditWave = useAppStore(state => state.openEditWave)
+  const closeReplyForm = useAppStore(state => state.closeReplyForm)
   
   const offlineCount = waveUsers.filter(u => u.status === 'offline').length
 
@@ -45,16 +45,8 @@ export default function WaveView() {
 
   // Close all reply forms when wave changes
   useEffect(() => {
-    setOpenReplyFormId(null)
-  }, [id])
-
-  const handleOpenReplyForm = (messageId: string) => {
-    setOpenReplyFormId(messageId)
-  }
-
-  const handleCloseReplyForm = () => {
-    setOpenReplyFormId(null)
-  }
+    closeReplyForm()
+  }, [id, closeReplyForm])
 
   const scrollToNextUnread = () => {
     if (!id) return
@@ -175,9 +167,6 @@ export default function WaveView() {
             <MessageItem 
               key={message._id} 
               message={message}
-              openReplyFormId={openReplyFormId}
-              onOpenReplyForm={handleOpenReplyForm}
-              onCloseReplyForm={handleCloseReplyForm}
             />
           ))}
         </div>

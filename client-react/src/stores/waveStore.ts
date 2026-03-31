@@ -52,7 +52,7 @@ export const useWaveStore = create<WaveState>((set, get) => ({
   
   addWave: (wave) => set((state) => {
     const newWaves = new Map(state.waves)
-    newWaves.set(wave._id, { ...wave, current: false })
+    newWaves.set(wave._id, { ...wave, userIds: [...new Set(wave.userIds)], current: false })
     return { waves: newWaves }
   }),
   
@@ -65,9 +65,13 @@ export const useWaveStore = create<WaveState>((set, get) => ({
   updateWave: (waveId, updates) => set((state) => {
     const wave = state.waves.get(waveId)
     if (!wave) return state
-    
+
+    const merged = { ...wave, ...updates }
+    if (updates.userIds) {
+      merged.userIds = [...new Set(updates.userIds)]
+    }
     const newWaves = new Map(state.waves)
-    newWaves.set(waveId, { ...wave, ...updates })
+    newWaves.set(waveId, merged)
     return { waves: newWaves }
   }),
   
@@ -106,9 +110,7 @@ export const useWaveStore = create<WaveState>((set, get) => ({
     if (!wave) return []
     
     const userStore = useUserStore.getState()
-    // Remove duplicates by using a Set of user IDs first
-    const uniqueUserIds = Array.from(new Set(wave.userIds))
-    return uniqueUserIds
+    return wave.userIds
       .map(userId => userStore.getUser(userId))
       .filter((user): user is NonNullable<typeof user> => user !== undefined)
   },
