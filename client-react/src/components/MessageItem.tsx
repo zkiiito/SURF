@@ -175,8 +175,8 @@ const MessageItem = memo(function MessageItem({
               <a className="button reply" href="#" onClick={handleReply}>↩</a>
               <p className="time">{formattedDate}</p>
               <p className="message-text">
-                <span className="author">{messageUser.name}:</span>
-                <span 
+                <span className="author">{messageUser.name}:</span>{' '}
+                <span
                   className="message-formatted" 
                   dangerouslySetInnerHTML={{ __html: formattedMessage }}
                 />

@@ -1,6 +1,9 @@
 import { useState, useRef, FormEvent, KeyboardEvent } from 'react'
+import { useShallow } from 'zustand/react/shallow'
 import { communicator } from '@/services/communicator'
+import { useWaveStore } from '@/stores/waveStore'
 import { t } from '@/utils/i18n'
+import { mentionUser } from '@/utils/mentionUser'
 
 interface Props {
   waveId: string
@@ -9,6 +12,7 @@ interface Props {
 export default function WaveReplyForm({ waveId }: Props) {
   const [message, setMessage] = useState('')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const waveUsers = useWaveStore(useShallow(state => state.getWaveUsers(waveId)))
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
@@ -25,6 +29,9 @@ export default function WaveReplyForm({ waveId }: Props) {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
       handleSubmit(e)
+    } else if (e.key === 'Tab' && !e.shiftKey) {
+      e.preventDefault()
+      mentionUser(textareaRef.current, message, setMessage, waveUsers)
     }
   }
 
