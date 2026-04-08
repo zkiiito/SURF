@@ -20,9 +20,9 @@ FROM base AS build
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential node-gyp pkg-config python-is-python3
 
-# Install node modules
+# Install node modules (including devDependencies for build)
 COPY --link package-lock.json package.json ./
-RUN npm ci
+RUN npm ci --include=dev
 
 # Copy application code
 COPY --link . .
@@ -38,6 +38,12 @@ RUN npm run build
 RUN rm -rf node_modules
 
 WORKDIR /app
+
+# Build TypeScript backend
+RUN npm run build
+
+# Remove devDependencies for production
+RUN npm prune --production
 
 # Final stage for app image
 FROM base
