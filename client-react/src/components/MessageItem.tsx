@@ -15,6 +15,12 @@ const URL_PICTURE_REGEX = /\.(jpg|png|gif)(\?.*)?$/i
 const URL_VIDEO_REGEX = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]+).*/i
 const URL_VIDEO_REGEX_YOUTUBE = /.*youtu.*/i
 
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+  return `${(bytes / 1024 / 1024).toFixed(1)} MB`
+}
+
 function parseMessageContent(
   text: string,
   shouldShowPictures: boolean,
@@ -211,6 +217,28 @@ const MessageItem = memo(function MessageItem({
             </td>
           </tr>
           
+          {message.attachment && (() => {
+            const downloadUrl = `/wave/${message.waveId}/file/${message._id}`
+            const isImage = message.attachment.mimeType.startsWith('image/') && shouldShowPictures
+            return (
+              <tr>
+                <td className="message-header"></td>
+                <td className="message-attachment message-body">
+                  {isImage ? (
+                    <a href={downloadUrl} target="_blank" rel="noreferrer">
+                      <img src={downloadUrl} className="message-img" alt={message.attachment.filename} />
+                    </a>
+                  ) : (
+                    <a href={downloadUrl} target="_blank" rel="noreferrer" className="attachment-card">
+                      📎 {message.attachment.filename}{' '}
+                      <span className="attachment-size">({formatBytes(message.attachment.size)})</span>
+                    </a>
+                  )}
+                </td>
+              </tr>
+            )
+          })()}
+
           {message.linkPreview && shouldShowLinkPreview && (
             <tr>
               <td className="message-header"></td>
