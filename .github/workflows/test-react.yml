@@ -17,6 +17,8 @@ jobs:
           registry-url: https://registry.npmjs.org
           cache: npm
       - run: npm ci
+      - name: build backend
+        run: npm run build
       - name: build client
         working-directory: ./client-react
         run: |
