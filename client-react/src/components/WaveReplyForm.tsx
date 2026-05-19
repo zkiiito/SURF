@@ -1,9 +1,11 @@
-import { useState, useRef, FormEvent, KeyboardEvent } from 'react'
+import { useState, useRef, ClipboardEvent, FormEvent, KeyboardEvent } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { communicator } from '@/services/communicator'
 import { useWaveStore } from '@/stores/waveStore'
 import { t } from '@/utils/i18n'
 import { mentionUser } from '@/utils/mentionUser'
+
+const MAX_FILES = 10
 
 interface Props {
   waveId: string
@@ -17,21 +19,25 @@ function formatBytes(bytes: number): string {
 
 export default function WaveReplyForm({ waveId }: Props) {
   const [message, setMessage] = useState('')
-  const [pendingFile, setPendingFile] = useState<File | null>(null)
+  const [pendingFiles, setPendingFiles] = useState<File[]>([])
   const [uploading, setUploading] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const waveUsers = useWaveStore(useShallow(state => state.getWaveUsers(waveId)))
 
+  const addFiles = (incoming: File[]) => {
+    setPendingFiles(prev => [...prev, ...incoming].slice(0, MAX_FILES))
+  }
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     if (uploading) return
 
-    if (pendingFile) {
+    if (pendingFiles.length > 0) {
       setUploading(true)
       try {
-        await communicator.uploadFile(pendingFile, waveId, message, null)
-        setPendingFile(null)
+        await communicator.uploadFiles(pendingFiles, waveId, message, null)
+        setPendingFiles([])
         setMessage('')
         if (fileInputRef.current) fileInputRef.current.value = ''
       } catch (err) {
@@ -60,14 +66,32 @@ export default function WaveReplyForm({ waveId }: Props) {
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) setPendingFile(file)
-  }
-
-  const clearFile = () => {
-    setPendingFile(null)
+    const files = Array.from(e.target.files ?? [])
+    if (files.length > 0) addFiles(files)
     if (fileInputRef.current) fileInputRef.current.value = ''
   }
+
+  const handlePaste = (e: ClipboardEvent<HTMLTextAreaElement>) => {
+    const items = e.clipboardData?.items
+    if (!items) return
+    const pasted: File[] = []
+    for (const item of items) {
+      if (item.kind === 'file') {
+        const file = item.getAsFile()
+        if (file) pasted.push(file)
+      }
+    }
+    if (pasted.length > 0) {
+      e.preventDefault()
+      addFiles(pasted)
+    }
+  }
+
+  const removeFile = (idx: number) => {
+    setPendingFiles(prev => prev.filter((_, i) => i !== idx))
+  }
+
+  const atLimit = pendingFiles.length >= MAX_FILES
 
   return (
     <div className="notification replyform">
@@ -77,21 +101,27 @@ export default function WaveReplyForm({ waveId }: Props) {
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           name="message"
-          placeholder={pendingFile ? t('Add caption (optional)') : t('Add message')}
+          placeholder={pendingFiles.length > 0 ? t('Add caption (optional)') : t('Add message')}
           className="R"
           onKeyDown={handleKeyDown}
+          onPaste={handlePaste}
           disabled={uploading}
         />
-        {pendingFile && (
-          <p className="attachment-chip">
-            📎 {pendingFile.name} ({formatBytes(pendingFile.size)})
-            <a href="#" className="button cancel" onClick={(e) => { e.preventDefault(); clearFile() }}>✕</a>
-          </p>
+        {pendingFiles.length > 0 && (
+          <ul className="attachment-chips">
+            {pendingFiles.map((f, i) => (
+              <li key={`${f.name}-${i}`} className="attachment-chip">
+                📎 {f.name} ({formatBytes(f.size)})
+                <a href="#" className="button cancel" onClick={(e) => { e.preventDefault(); removeFile(i) }}>✕</a>
+              </li>
+            ))}
+          </ul>
         )}
         <p className="inline-help mhide">
           <input
             ref={fileInputRef}
             type="file"
+            multiple
             style={{ display: 'none' }}
             onChange={handleFileChange}
             disabled={uploading}
@@ -100,12 +130,16 @@ export default function WaveReplyForm({ waveId }: Props) {
             type="button"
             className="button attach R"
             onClick={() => fileInputRef.current?.click()}
-            disabled={uploading}
-            title={t('Attach file')}
+            disabled={uploading || atLimit}
+            title={atLimit ? t('Maximum 10 files') : t('Attach file')}
           >
             📎
           </button>
-          <button type="submit" className="button sendmsg R" disabled={uploading || (!pendingFile && !message.trim())}>
+          <button
+            type="submit"
+            className="button sendmsg R"
+            disabled={uploading || (pendingFiles.length === 0 && !message.trim())}
+          >
             {uploading ? t('Uploading...') : t('Save message')}
           </button>
           <span className="R hint">{t('Press Return to send, Shift-Return to break line.')}</span>

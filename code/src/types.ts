@@ -49,7 +49,7 @@ export interface MessageData {
   parentId: string | null;
   rootId?: string | null;
   message: string;
-  attachment?: AttachmentData;
+  attachments?: AttachmentData[];
   unread?: boolean;
   created_at: number;
 }
@@ -119,7 +119,7 @@ export interface MessageDocument {
   parentId: Types.ObjectId | null;
   rootId: Types.ObjectId | null;
   message: string;
-  attachment?: AttachmentData;
+  attachments?: AttachmentData[];
   created_at: Date;
 }
 

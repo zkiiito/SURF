@@ -24,7 +24,7 @@ const MessageSchema = new Schema<MessageDocument>({
   parentId: { type: Schema.Types.ObjectId, ref: 'MessageModel', default: null },
   rootId: { type: Schema.Types.ObjectId, ref: 'MessageModel', default: null },
   message: { type: String, trim: true },
-  attachment: { type: AttachmentSchema, default: undefined },
+  attachments: { type: [AttachmentSchema], default: undefined },
   created_at: { type: Date }
 });
 

@@ -21,6 +21,8 @@ const INLINE_MIMES = new Set([
 
 const router = express.Router();
 
+const MAX_FILES_PER_MESSAGE = 10;
+
 const upload = multer({
   storage: multer.diskStorage({
     destination: (req, _file, cb) => {
@@ -33,7 +35,7 @@ const upload = multer({
       cb(null, Storage.generateKey());
     },
   }),
-  limits: { fileSize: Config.maxUploadBytes, files: 1 },
+  limits: { fileSize: Config.maxUploadBytes, files: MAX_FILES_PER_MESSAGE },
 });
 
 async function resolveWaveMember(
@@ -83,16 +85,19 @@ function encodeContentDisposition(disposition: 'inline' | 'attachment', filename
 router.post(
   '/wave/:waveId/upload',
   resolveWaveMember,
-  upload.single('file'),
+  upload.array('file', MAX_FILES_PER_MESSAGE),
   async (req: Request, res: Response) => {
-    const file = req.file;
-    if (!file) {
+    const files = (req.files ?? []) as Express.Multer.File[];
+    const surfUserId = (req as Request & { surfUserId: string }).surfUserId;
+    const surfWaveId = (req as Request & { surfWaveId: string }).surfWaveId;
+
+    const cleanup = () => Promise.all(files.map(f => Storage.delete(surfWaveId, f.filename)));
+
+    if (files.length === 0) {
       res.status(400).json({ error: 'No file provided' });
       return;
     }
 
-    const surfUserId = (req as Request & { surfUserId: string }).surfUserId;
-    const surfWaveId = (req as Request & { surfWaveId: string }).surfWaveId;
     const caption = typeof req.body.caption === 'string' ? req.body.caption : '';
     const parentIdRaw = typeof req.body.parentId === 'string' ? req.body.parentId : '';
     const parentId = parentIdRaw && Types.ObjectId.isValid(parentIdRaw) ? parentIdRaw : null;
@@ -101,7 +106,7 @@ router.post(
       const { default: SurfServer } = await import('./SurfServer.js');
       const wave = SurfServer.waves.get(surfWaveId);
       if (!wave) {
-        await Storage.delete(surfWaveId, file.filename);
+        await cleanup();
         res.status(404).json({ error: 'Wave not found' });
         return;
       }
@@ -111,16 +116,16 @@ router.post(
         waveId: surfWaveId,
         parentId,
         message: caption,
-        attachment: {
-          storageKey: file.filename,
-          filename: file.originalname,
-          mimeType: file.mimetype,
-          size: file.size,
-        },
+        attachments: files.map(f => ({
+          storageKey: f.filename,
+          filename: f.originalname,
+          mimeType: f.mimetype,
+          size: f.size,
+        })),
       });
 
       if (!msg.isValid()) {
-        await Storage.delete(surfWaveId, file.filename);
+        await cleanup();
         res.status(400).json({ error: 'Invalid message' });
         return;
       }
@@ -128,7 +133,7 @@ router.post(
       await wave.addMessage(msg);
       res.status(201).json(msg.toJSON());
     } catch (err) {
-      await Storage.delete(surfWaveId, file.filename);
+      await cleanup();
       console.log('UPLOAD ERROR', err);
       res.status(500).json({ error: 'Upload failed' });
     }
@@ -136,23 +141,33 @@ router.post(
 );
 
 router.get(
-  '/wave/:waveId/file/:messageId',
+  '/wave/:waveId/file/:messageId/:storageKey',
   resolveWaveMember,
   async (req: Request, res: Response) => {
-    const messageId = req.params.messageId;
+    const { messageId, storageKey } = req.params;
     if (!Types.ObjectId.isValid(messageId)) {
       res.status(400).json({ error: 'Invalid messageId' });
+      return;
+    }
+    if (!/^[a-f0-9]{32}$/.test(storageKey)) {
+      res.status(400).json({ error: 'Invalid storageKey' });
       return;
     }
 
     const surfWaveId = (req as Request & { surfWaveId: string }).surfWaveId;
     const msgDoc = await MessageModel.findById(messageId).exec();
-    if (!msgDoc || msgDoc.waveId.toString() !== surfWaveId || !msgDoc.attachment) {
+    if (!msgDoc || msgDoc.waveId.toString() !== surfWaveId) {
       res.status(404).json({ error: 'File not found' });
       return;
     }
 
-    const { storageKey, filename, mimeType, size } = msgDoc.attachment;
+    const attachment = msgDoc.attachments?.find(a => a.storageKey === storageKey);
+    if (!attachment) {
+      res.status(404).json({ error: 'File not found' });
+      return;
+    }
+
+    const { filename, mimeType, size } = attachment;
     const filePath = Storage.pathFor(surfWaveId, storageKey);
 
     if (!(await Storage.exists(surfWaveId, storageKey))) {

@@ -33,7 +33,7 @@ export interface Message {
   created_at: number
   unread: boolean
   linkPreview?: LinkPreview
-  attachment?: Attachment
+  attachments?: Attachment[]
 }
 
 export interface LinkPreview {
@@ -57,7 +57,7 @@ export interface SocketMessageData {
   parentId: string | null
   created_at: number | string // Can be timestamp or Date string from server
   unread?: boolean
-  attachment?: Attachment
+  attachments?: Attachment[]
   messages?: SocketMessageData[]
 }
 

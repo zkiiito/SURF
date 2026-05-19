@@ -88,14 +88,14 @@ class Communicator {
     this.socket.emit('message', msg)
   }
 
-  async uploadFile(
-    file: File,
+  async uploadFiles(
+    files: File[],
     waveId: string,
     caption: string,
     parentId: string | null
   ): Promise<void> {
     const formData = new FormData()
-    formData.append('file', file)
+    for (const f of files) formData.append('file', f)
     formData.append('caption', caption)
     if (parentId) formData.append('parentId', parentId)
 
@@ -179,7 +179,7 @@ class Communicator {
       parentId: msgData.parentId,
       created_at: createdAt,
       unread: isOwnMessage ? false : (msgData.unread ?? true),
-      attachment: msgData.attachment
+      attachments: msgData.attachments
     }
 
     const wave = waveStore.getWave(msgData.waveId)

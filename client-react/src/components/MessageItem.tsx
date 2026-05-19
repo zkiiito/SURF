@@ -217,27 +217,27 @@ const MessageItem = memo(function MessageItem({
             </td>
           </tr>
           
-          {message.attachment && (() => {
-            const downloadUrl = `/wave/${message.waveId}/file/${message._id}`
-            const isImage = message.attachment.mimeType.startsWith('image/') && shouldShowPictures
+          {message.attachments?.map(att => {
+            const downloadUrl = `/wave/${message.waveId}/file/${message._id}/${att.storageKey}`
+            const isImage = att.mimeType.startsWith('image/') && shouldShowPictures
             return (
-              <tr>
+              <tr key={att.storageKey}>
                 <td className="message-header"></td>
                 <td className="message-attachment message-body">
                   {isImage ? (
                     <a href={downloadUrl} target="_blank" rel="noreferrer">
-                      <img src={downloadUrl} className="message-img" alt={message.attachment.filename} />
+                      <img src={downloadUrl} className="message-img" alt={att.filename} />
                     </a>
                   ) : (
                     <a href={downloadUrl} target="_blank" rel="noreferrer" className="attachment-card">
-                      📎 {message.attachment.filename}{' '}
-                      <span className="attachment-size">({formatBytes(message.attachment.size)})</span>
+                      📎 {att.filename}{' '}
+                      <span className="attachment-size">({formatBytes(att.size)})</span>
                     </a>
                   )}
                 </td>
               </tr>
             )
-          })()}
+          })}
 
           {message.linkPreview && shouldShowLinkPreview && (
             <tr>
