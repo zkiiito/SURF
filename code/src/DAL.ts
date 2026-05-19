@@ -1,4 +1,4 @@
-import mongoose, { Types } from 'mongoose';
+import mongoose, { Types, FilterQuery } from 'mongoose';
 import redis from './RedisClient.js';
 import Config from './Config.js';
 import { UserModel, WaveModel, MessageModel, WaveInviteModel } from './MongooseModels.js';
@@ -286,16 +286,12 @@ class DataAccessLayer {
    */
   async getNextMinRootIdForWave(wave: Wave, minRootId: string | null): Promise<string | null> {
     const startTime = Date.now();
-    const query = MessageModel.find({ waveId: wave.id, parentId: null })
-      .sort('-_id')
-      .limit(11);
-
+    const filter: FilterQuery<MessageDocument> = { waveId: wave.id, parentId: null };
     if (minRootId) {
-      // ObjectId comparison works at runtime, type assertion needed for TS
-      query.where('_id').lt(new Types.ObjectId(minRootId) as unknown as number);
+      filter._id = { $lt: new Types.ObjectId(minRootId) };
     }
 
-    const results = await query.exec();
+    const results = await MessageModel.find(filter).sort('-_id').limit(11).exec();
     const endTime = Date.now();
 
     console.log('QUERY getNextMinRootIdForWave: ' + wave.id + ' query in ' + (endTime - startTime));
@@ -320,17 +316,15 @@ class DataAccessLayer {
     }
 
     const startTime = Date.now();
-    const query = MessageModel.find({ waveId: wave.id });
-
-    // ObjectId comparison works at runtime, type assertion needed for TS
-    query.where('rootId').gte(new Types.ObjectId(minRootId) as unknown as number);
-
+    const rootIdFilter: { $gte: Types.ObjectId; $lt?: Types.ObjectId } = {
+      $gte: new Types.ObjectId(minRootId),
+    };
     if (maxRootId) {
-      query.where('rootId').lt(new Types.ObjectId(maxRootId) as unknown as number);
+      rootIdFilter.$lt = new Types.ObjectId(maxRootId);
     }
 
     try {
-      const count = await query.countDocuments();
+      const count = await MessageModel.countDocuments({ waveId: wave.id, rootId: rootIdFilter });
       const endTime = Date.now();
       console.log('QUERY countMessagesInRange: query in ' + (endTime - startTime));
       return count;
@@ -349,36 +343,27 @@ class DataAccessLayer {
     unreadIds: string[]
   ): Promise<MessageData[]> {
     const startTime = Date.now();
-    const query = MessageModel.find({ waveId: wave.id }).sort('_id');
-
-    if (minRootId) {
-      // ObjectId comparison works at runtime, type assertion needed for TS
-      query.where('rootId').gte(new Types.ObjectId(minRootId) as unknown as number);
+    const filter: FilterQuery<MessageDocument> = { waveId: wave.id };
+    const rootIdFilter: { $gte?: Types.ObjectId; $lt?: Types.ObjectId } = {};
+    if (minRootId) rootIdFilter.$gte = new Types.ObjectId(minRootId);
+    if (maxRootId) rootIdFilter.$lt = new Types.ObjectId(maxRootId);
+    if (minRootId || maxRootId) {
+      filter.rootId = rootIdFilter;
     }
 
-    if (maxRootId) {
-      query.where('rootId').lt(new Types.ObjectId(maxRootId) as unknown as number);
-    }
-
-    const messages = await query.exec();
+    const messages = await MessageModel.find(filter).sort('_id').exec();
     const endTime = Date.now();
     console.log('QUERY getMessagesForUserInWave: ' + wave.id + ' query in ' + (endTime - startTime));
 
-    return messages.map((mmsg) => {
-      const unread = typeof unreadIds === 'string'
-        ? unreadIds === mmsg._id.toString()
-        : unreadIds.includes(mmsg._id.toString());
-
-      return {
-        _id: mmsg._id.toString(),
-        userId: mmsg.userId.toString(),
-        waveId: mmsg.waveId.toString(),
-        parentId: mmsg.parentId?.toString() ?? null,
-        message: mmsg.message,
-        unread,
-        created_at: mmsg.created_at.getTime(),
-      };
-    });
+    return messages.map((mmsg) => ({
+      _id: mmsg._id.toString(),
+      userId: mmsg.userId.toString(),
+      waveId: mmsg.waveId.toString(),
+      parentId: mmsg.parentId?.toString() ?? null,
+      message: mmsg.message,
+      unread: unreadIds.includes(mmsg._id.toString()),
+      created_at: mmsg.created_at.getTime(),
+    }));
   }
 
   /**

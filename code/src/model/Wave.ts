@@ -66,10 +66,13 @@ export class Wave {
 
     try {
       await message.save();
-      for (const user of this.users) {
-        user.send('message', message.toJSON());
-        await DAL.addUnreadMessage(user, message);
-      }
+      const payload = message.toJSON();
+      await Promise.all(
+        this.users.map((user) => {
+          user.send('message', payload);
+          return DAL.addUnreadMessage(user, message);
+        })
+      );
     } catch (err) {
       console.log('ERROR', err);
     }
@@ -257,40 +260,26 @@ export class Wave {
   /**
    * Update wave data
    */
-  async update(data: Partial<WaveData>, withRemove: boolean = false): Promise<void> {
+  async update(data: Partial<WaveData>): Promise<void> {
     const { default: SurfServer } = await import('../SurfServer.js');
 
     this.title = data.title ?? '';
     let notified = false;
 
     if (this.isValid() && data.userIds) {
-      // Check if userIds changed
       const currentIds = [...this.userIds].sort();
       const newIds = [...data.userIds].sort();
-      const idsEqual = currentIds.length === newIds.length && 
+      const idsEqual = currentIds.length === newIds.length &&
                        currentIds.every((id, i) => id === newIds[i]);
 
       if (!idsEqual) {
-        // Find newly added users
         const addedIds = data.userIds.filter(id => !this.userIds.includes(id));
         notified = await this.addUsers(addedIds, true);
 
-        // Send old messages to new users
         for (const userId of addedIds) {
           const user = SurfServer.users.get(userId);
           if (user) {
             await this.sendOldMessagesToUser(user);
-          }
-        }
-
-        if (withRemove) {
-          // Find removed users
-          const removedIds = this.userIds.filter(id => !data.userIds!.includes(id));
-          for (const userId of removedIds) {
-            const user = SurfServer.users.get(userId);
-            if (user) {
-              await this.quitUser(user);
-            }
           }
         }
       }

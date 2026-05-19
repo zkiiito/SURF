@@ -132,21 +132,14 @@ class SurfServerClass implements SurfServerInterface {
 
         this.setupClientEventHandlers(surfClient);
 
-        let invite = null;
+        let invite: { waveId: string; code: string } | null = null;
         if (surfClient.session.invite) {
           console.log('invitedto: ' + surfClient.session.invite.waveId);
           invite = surfClient.session.invite;
           surfClient.session.invite = undefined;
         }
 
-        // Convert session invite to WaveInviteData format
-        const inviteData = invite ? {
-          waveId: invite.waveId,
-          code: invite.code,
-          userId: '',
-          created_at: 0,
-        } : null;
-        await surfClient.curUser.init(inviteData);
+        await surfClient.curUser.init(invite);
       } catch (err) {
         console.log('User auth error', err);
         client.disconnect(true);
@@ -267,7 +260,7 @@ class SurfServerClass implements SurfServerInterface {
       console.log('updateWave: ' + client.curUser.id);
       const wave = this.waves.get(data.id);
       if (wave && wave.isMember(client.curUser)) {
-        wave.update(data, false);
+        wave.update(data);
       }
     });
 

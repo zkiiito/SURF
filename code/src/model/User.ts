@@ -1,6 +1,8 @@
 import crypto from 'crypto';
 import type { Socket } from 'socket.io';
-import type { UserData, PublicUserData, SelfUserData, WaveInviteData } from '../types.js';
+import type { UserData, PublicUserData, SelfUserData } from '../types.js';
+
+type InviteRef = { waveId: string; code: string };
 import { Collection } from './Collection.js';
 import type { Wave } from './Wave.js';
 
@@ -106,7 +108,7 @@ export class User {
   /**
    * Initialize user after connection
    */
-  async init(invite: WaveInviteData | null): Promise<void> {
+  async init(invite: InviteRef | null): Promise<void> {
     const { default: SurfServer } = await import('../SurfServer.js');
     const { default: DAL } = await import('../DAL.js');
 
@@ -223,7 +225,7 @@ export class User {
   /**
    * Handle invite code after login
    */
-  async handleInvite(invite: WaveInviteData): Promise<void> {
+  async handleInvite(invite: InviteRef): Promise<void> {
     const { default: SurfServer } = await import('../SurfServer.js');
     const { default: DAL } = await import('../DAL.js');
 
