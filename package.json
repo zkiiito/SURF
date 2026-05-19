@@ -12,6 +12,7 @@
   "exports": "./code/dist/SurfServer.js",
   "license": "GPL-3.0",
   "dependencies": {
+    "@types/multer": "^2.1.0",
     "body-parser": "^1.20.4",
     "connect-redis": "^7.1.1",
     "content-type": "^1.0.5",
@@ -29,6 +30,7 @@
     "metascraper-image": "^5.45.22",
     "metascraper-title": "^5.45.22",
     "mongoose": "^8.22.1",
+    "multer": "^2.1.1",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-local": "^1.0.0",
