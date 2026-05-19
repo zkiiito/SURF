@@ -136,9 +136,10 @@ class LinkPreviewService {
           result.image = meta.image ?? null;
           result.description = meta.description ?? null;
 
-          if (result.title) {
-            return resolve(result);
+          if (!result.title) {
+            throw new Error('no title');
           }
+          resolve(result);
         })
         .catch((err: Error & { resultReady?: boolean }) => {
           if (err.resultReady) {
