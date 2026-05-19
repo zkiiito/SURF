@@ -40,7 +40,7 @@
   },
   "scripts": {
     "build": "tsc -p code/tsconfig.json",
-    "start": "npm run build && node Surf.js",
+    "start": "node Surf.js",
     "dev": "tsc -p code/tsconfig.json --watch",
     "test": "vitest run --config code/vitest.config.ts",
     "test:watch": "vitest --config code/vitest.config.ts",
