@@ -36,4 +36,4 @@ jobs:
         env:
           TESTMODE: 1
           CLIENT_VERSION: backbone
-      - run: npx cypress run
+      - run: npx cypress run --env CLIENT_VERSION=backbone

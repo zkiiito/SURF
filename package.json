@@ -12,6 +12,7 @@
   "exports": "./code/dist/SurfServer.js",
   "license": "GPL-3.0",
   "dependencies": {
+    "@types/multer": "^2.1.0",
     "body-parser": "^1.20.4",
     "connect-redis": "^7.1.1",
     "content-type": "^1.0.5",
@@ -29,6 +30,7 @@
     "metascraper-image": "^5.45.22",
     "metascraper-title": "^5.45.22",
     "mongoose": "^8.22.1",
+    "multer": "^2.1.1",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-local": "^1.0.0",
@@ -42,6 +44,9 @@
     "build": "tsc -p code/tsconfig.json",
     "start": "node Surf.js",
     "dev": "tsc -p code/tsconfig.json --watch",
+    "dev:server": "concurrently -k -n tsc,node -c blue,green \"tsc -p code/tsconfig.json --watch\" \"TESTMODE=1 nodemon --watch code/dist --ext js Surf.js\"",
+    "dev:react": "npm --prefix client-react run build -- --watch",
+    "dev:all": "concurrently -k -n srv,react -c blue,magenta \"npm:dev:server\" \"npm:dev:react\"",
     "test": "vitest run --config code/vitest.config.ts",
     "test:watch": "vitest --config code/vitest.config.ts",
     "test:e2e": "cypress run"
@@ -59,6 +64,7 @@
     "@types/passport": "^1.0.16",
     "@types/passport-google-oauth20": "^2.0.16",
     "@types/passport-local": "^1.0.38",
+    "concurrently": "^9.2.1",
     "cypress": "^13.15.0",
     "eslint": "^8.57.1",
     "nodemon": "^3.1.7",

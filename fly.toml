@@ -15,6 +15,11 @@ kill_timeout = "5s"
   NODE_ENV = "production"
   NODE_MODULES_CACHE = "true"
   PORT = "8080"
+  UPLOAD_DIR = "/data/uploads"
+
+[[mounts]]
+  source = "uploads"
+  destination = "/data/uploads"
 
 [[services]]
   protocol = "tcp"

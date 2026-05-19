@@ -88,6 +88,29 @@ class Communicator {
     this.socket.emit('message', msg)
   }
 
+  async uploadFiles(
+    files: File[],
+    waveId: string,
+    caption: string,
+    parentId: string | null
+  ): Promise<void> {
+    const formData = new FormData()
+    for (const f of files) formData.append('file', f)
+    formData.append('caption', caption)
+    if (parentId) formData.append('parentId', parentId)
+
+    const res = await fetch(`/wave/${waveId}/upload`, {
+      method: 'POST',
+      credentials: 'include',
+      body: formData
+    })
+
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({ error: 'Upload failed' }))
+      throw new Error(body.error || `Upload failed (${res.status})`)
+    }
+  }
+
   readMessage(messageId: string, waveId: string) {
     if (!this.socket) return
 
@@ -155,7 +178,8 @@ class Communicator {
       message: msgData.message,
       parentId: msgData.parentId,
       created_at: createdAt,
-      unread: isOwnMessage ? false : (msgData.unread ?? true)
+      unread: isOwnMessage ? false : (msgData.unread ?? true),
+      attachments: msgData.attachments
     }
 
     const wave = waveStore.getWave(msgData.waveId)

@@ -17,6 +17,13 @@ export interface Wave {
   current?: boolean
 }
 
+export interface Attachment {
+  storageKey: string
+  filename: string
+  mimeType: string
+  size: number
+}
+
 export interface Message {
   _id: string
   userId: string
@@ -26,6 +33,7 @@ export interface Message {
   created_at: number
   unread: boolean
   linkPreview?: LinkPreview
+  attachments?: Attachment[]
 }
 
 export interface LinkPreview {
@@ -49,6 +57,7 @@ export interface SocketMessageData {
   parentId: string | null
   created_at: number | string // Can be timestamp or Date string from server
   unread?: boolean
+  attachments?: Attachment[]
   messages?: SocketMessageData[]
 }
 

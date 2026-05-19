@@ -83,6 +83,64 @@ describe('Message', () => {
       const message = new Message({ message: 'Hello' });
       expect(message.validate()).toBeUndefined();
     });
+
+    it('should return undefined when only attachments are present', () => {
+      const message = new Message({
+        message: '',
+        attachments: [{
+          storageKey: 'abc123',
+          filename: 'photo.jpg',
+          mimeType: 'image/jpeg',
+          size: 1234,
+        }],
+      });
+      expect(message.validate()).toBeUndefined();
+    });
+
+    it('should return error for empty attachments array with no text', () => {
+      const message = new Message({ message: '', attachments: [] });
+      expect(message.validate()).toBe('Empty message');
+    });
+
+    it('should return undefined for multiple attachments', () => {
+      const message = new Message({
+        message: '',
+        attachments: [
+          { storageKey: 'k1', filename: 'a.jpg', mimeType: 'image/jpeg', size: 1 },
+          { storageKey: 'k2', filename: 'b.jpg', mimeType: 'image/jpeg', size: 2 },
+        ],
+      });
+      expect(message.validate()).toBeUndefined();
+    });
+
+    it('should return undefined when both attachments and caption are present', () => {
+      const message = new Message({
+        message: 'Look at this',
+        attachments: [{
+          storageKey: 'abc123',
+          filename: 'photo.jpg',
+          mimeType: 'image/jpeg',
+          size: 1234,
+        }],
+      });
+      expect(message.validate()).toBeUndefined();
+    });
+  });
+
+  describe('toJSON with attachments', () => {
+    it('should include attachments array when present', () => {
+      const atts = [
+        { storageKey: 'k1', filename: 'a.pdf', mimeType: 'application/pdf', size: 42 },
+        { storageKey: 'k2', filename: 'b.png', mimeType: 'image/png', size: 99 },
+      ];
+      const message = new Message({ userId: 'u1', waveId: 'w1', message: '', attachments: atts });
+      expect(message.toJSON().attachments).toEqual(atts);
+    });
+
+    it('should omit attachments when absent', () => {
+      const message = new Message({ message: 'hi' });
+      expect(message.toJSON().attachments).toBeUndefined();
+    });
   });
 
   describe('isValid', () => {

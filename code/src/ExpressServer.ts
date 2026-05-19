@@ -6,6 +6,7 @@ import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import routerClient from './routerClient.js';
+import routerUploads from './routerUploads.js';
 import cors from 'cors';
 import type { GoogleProfile } from './types.js';
 
@@ -56,6 +57,7 @@ export function startExpressServer(): http.Server {
   app.use(passport.initialize());
   app.use(passport.session());
 
+  app.use('/', routerUploads);
   app.use('/', routerClient);
 
   return http.createServer(app);

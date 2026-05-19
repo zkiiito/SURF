@@ -35,6 +35,13 @@ export interface WaveData {
   userIds: string[];
 }
 
+export interface AttachmentData {
+  storageKey: string;
+  filename: string;
+  mimeType: string;
+  size: number;
+}
+
 export interface MessageData {
   _id?: string;
   userId: string;
@@ -42,6 +49,7 @@ export interface MessageData {
   parentId: string | null;
   rootId?: string | null;
   message: string;
+  attachments?: AttachmentData[];
   unread?: boolean;
   created_at: number;
 }
@@ -111,6 +119,7 @@ export interface MessageDocument {
   parentId: Types.ObjectId | null;
   rootId: Types.ObjectId | null;
   message: string;
+  attachments?: AttachmentData[];
   created_at: Date;
 }
 
@@ -135,6 +144,8 @@ export interface Config {
   hostName: string;
   testMode: boolean;
   port: number;
+  uploadDir: string;
+  maxUploadBytes: number;
 }
 
 // ============================================================================
