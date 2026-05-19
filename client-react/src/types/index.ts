@@ -3,6 +3,8 @@ export interface User {
   name: string
   avatar: string
   status: 'online' | 'offline'
+  googleAvatar?: string
+  emailMD5?: string
   showPictures?: boolean
   showVideos?: boolean
   showLinkPreviews?: boolean

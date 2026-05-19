@@ -108,17 +108,50 @@ export default function EditUser() {
                 <div key={avatarName} className="avatar">
                   <label>
                     <img src={`/images/${avatarName}.png`} width="80" alt={avatarName} /><br />
-                    <input 
-                      type="radio" 
-                      value={avatarName} 
+                    <input
+                      type="radio"
+                      value={avatarName}
                       checked={avatar === avatarName}
                       onChange={(e) => setAvatar(e.target.value)}
-                      name="edituser-avatar-cb" 
+                      name="edituser-avatar-cb"
                       required
                     />
                   </label>
                 </div>
               ))}
+              {currentUser?.googleAvatar && (
+                <div className="avatar">
+                  <label>
+                    <img src={currentUser.googleAvatar} width="80" alt="Google avatar" /><br />
+                    <input
+                      type="radio"
+                      value={currentUser.googleAvatar}
+                      checked={avatar === currentUser.googleAvatar}
+                      onChange={(e) => setAvatar(e.target.value)}
+                      name="edituser-avatar-cb"
+                      required
+                    />
+                  </label>
+                </div>
+              )}
+              {currentUser?.emailMD5 && (() => {
+                const gravatarUrl = `https://secure.gravatar.com/avatar/${currentUser.emailMD5}?s=80&d=monsterid`
+                return (
+                  <div className="avatar">
+                    <label>
+                      <img src={gravatarUrl} width="80" alt="Gravatar" /><br />
+                      <input
+                        type="radio"
+                        value={gravatarUrl}
+                        checked={avatar === gravatarUrl}
+                        onChange={(e) => setAvatar(e.target.value)}
+                        name="edituser-avatar-cb"
+                        required
+                      />
+                    </label>
+                  </div>
+                )
+              })()}
             </div>
           </div>
           
