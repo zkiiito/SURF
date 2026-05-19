@@ -13,7 +13,7 @@ services:
       - .:/app
     ports:
       - "8000:8000"
-    # command: ./node_modules/.bin/nodemon -L Surf.js
+    command: npm run start
     networks:
       - backend
 
