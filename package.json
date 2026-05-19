@@ -45,7 +45,8 @@
     "start": "node Surf.js",
     "dev": "tsc -p code/tsconfig.json --watch",
     "dev:server": "concurrently -k -n tsc,node -c blue,green \"tsc -p code/tsconfig.json --watch\" \"TESTMODE=1 nodemon --watch code/dist --ext js Surf.js\"",
-    "dev:react": "npm --prefix client-react run dev",
+    "dev:react": "npm --prefix client-react run build -- --watch",
+    "dev:all": "concurrently -k -n srv,react -c blue,magenta \"npm:dev:server\" \"npm:dev:react\"",
     "test": "vitest run --config code/vitest.config.ts",
     "test:watch": "vitest --config code/vitest.config.ts",
     "test:e2e": "cypress run"
