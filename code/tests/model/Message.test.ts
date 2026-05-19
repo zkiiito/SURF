@@ -83,6 +83,59 @@ describe('Message', () => {
       const message = new Message({ message: 'Hello' });
       expect(message.validate()).toBeUndefined();
     });
+
+    it('should return undefined when only attachment is present', () => {
+      const message = new Message({
+        message: '',
+        attachment: {
+          storageKey: 'abc123',
+          filename: 'photo.jpg',
+          mimeType: 'image/jpeg',
+          size: 1234,
+        },
+      });
+      expect(message.validate()).toBeUndefined();
+    });
+
+    it('should return undefined when both attachment and caption are present', () => {
+      const message = new Message({
+        message: 'Look at this',
+        attachment: {
+          storageKey: 'abc123',
+          filename: 'photo.jpg',
+          mimeType: 'image/jpeg',
+          size: 1234,
+        },
+      });
+      expect(message.validate()).toBeUndefined();
+    });
+  });
+
+  describe('toJSON with attachment', () => {
+    it('should include attachment when present', () => {
+      const message = new Message({
+        userId: 'u1',
+        waveId: 'w1',
+        message: '',
+        attachment: {
+          storageKey: 'key',
+          filename: 'a.pdf',
+          mimeType: 'application/pdf',
+          size: 42,
+        },
+      });
+      expect(message.toJSON().attachment).toEqual({
+        storageKey: 'key',
+        filename: 'a.pdf',
+        mimeType: 'application/pdf',
+        size: 42,
+      });
+    });
+
+    it('should omit attachment when absent', () => {
+      const message = new Message({ message: 'hi' });
+      expect(message.toJSON().attachment).toBeUndefined();
+    });
   });
 
   describe('isValid', () => {
