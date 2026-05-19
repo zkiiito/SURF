@@ -49,19 +49,24 @@ let clientIndexHtmlBackbone = '';
 let clientIndexHtmlReact = '';
 const cacheClientIndexHtml = true;
 
-// Route to enable React client
+function shouldUseBackbone(req: Request): boolean {
+  return req.cookies?.['client-version'] === 'backbone' ||
+         process.env.CLIENT_VERSION === 'backbone';
+}
+
+// Route to enable React client (default)
 router.get('/use-react', (_req: Request, res: Response) => {
-  res.cookie('client-version', 'react', {
+  res.clearCookie('client-version');
+  res.redirect('/');
+});
+
+// Route to opt back into the legacy Backbone client
+router.get('/use-backbone', (_req: Request, res: Response) => {
+  res.cookie('client-version', 'backbone', {
     maxAge: 365 * 24 * 60 * 60 * 1000, // 1 year
     httpOnly: true,
     sameSite: 'lax',
   });
-  res.redirect('/');
-});
-
-// Route to enable Backbone client (default)
-router.get('/use-backbone', (_req: Request, res: Response) => {
-  res.clearCookie('client-version');
   res.redirect('/');
 });
 
@@ -70,20 +75,18 @@ router.get('/', (req: Request, res: Response) => {
     return res.redirect('/auth/google');
   }
 
-  // Check cookie to determine which client to serve
-  const useReact = (req.cookies?.['client-version'] === 'react') || 
-                   (process.env.CLIENT_VERSION === 'react');
-  const clientDir = useReact ? clientDirs[1] : clientDirs[0];
-  const cachedHtml = useReact ? clientIndexHtmlReact : clientIndexHtmlBackbone;
+  const useBackbone = shouldUseBackbone(req);
+  const clientDir = useBackbone ? clientDirs[0] : clientDirs[1];
+  const cachedHtml = useBackbone ? clientIndexHtmlBackbone : clientIndexHtmlReact;
 
   if (!cachedHtml || !cacheClientIndexHtml) {
     const indexPath = path.join(basePath, clientDir, 'index.html');
     fs.readFile(indexPath, { encoding: 'utf-8' }, (err, data) => {
       if (!err) {
-        if (useReact) {
-          clientIndexHtmlReact = data;
-        } else {
+        if (useBackbone) {
           clientIndexHtmlBackbone = data;
+        } else {
+          clientIndexHtmlReact = data;
         }
         res.send(data);
 
@@ -133,10 +136,7 @@ if (Config.testMode) {
   ));
 
   router.get('/loginTest', (req: Request, res: Response) => {
-    // Use React client for test mode by default, but respect cookie
-    const useReact = (req.cookies?.['client-version'] === 'react') || 
-                     (process.env.CLIENT_VERSION === 'react');
-    const clientDir = useReact ? clientDirs[1] : clientDirs[0];
+    const clientDir = shouldUseBackbone(req) ? clientDirs[0] : clientDirs[1];
     const testLoginPath = path.join(basePath, clientDir, 'test', 'login.html');
     res.sendFile(testLoginPath);
   });
