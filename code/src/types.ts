@@ -144,6 +144,8 @@ export interface Config {
   hostName: string;
   testMode: boolean;
   port: number;
+  uploadDir: string;
+  maxUploadBytes: number;
 }
 
 // ============================================================================

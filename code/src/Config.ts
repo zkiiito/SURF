@@ -1,3 +1,4 @@
+import path from 'path';
 import type { Config } from './types.js';
 
 const config: Config = {
@@ -9,6 +10,8 @@ const config: Config = {
   hostName: process.env.HOSTNAME || '',
   testMode: Boolean(process.env.TESTMODE) || false,
   port: Number(process.env.PORT) || 8000,
+  uploadDir: process.env.UPLOAD_DIR || path.join(process.cwd(), 'uploads'),
+  maxUploadBytes: Number(process.env.MAX_UPLOAD_BYTES) || 10 * 1024 * 1024,
 };
 
 export default config;
