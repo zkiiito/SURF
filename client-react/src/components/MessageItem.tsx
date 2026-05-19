@@ -1,4 +1,4 @@
-import { useRef, useEffect, useImperativeHandle, useMemo, memo, type Ref } from 'react'
+import { useRef, useEffect, useImperativeHandle, useMemo, memo, type Ref, type ReactNode } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import type { Message } from '@/types'
 import { useMessageStore } from '@/stores/messageStore'
@@ -7,9 +7,84 @@ import { useWaveStore } from '@/stores/waveStore'
 import { useAppStore } from '@/stores/appStore'
 import { communicator } from '@/services/communicator'
 import { t } from '@/utils/i18n'
-import { nl2br, stripTags } from '@/utils/text'
 import UserAvatar from './UserAvatar'
 import MessageReplyForm from './MessageReplyForm'
+
+const URL_REGEX = /((https?:\/\/|www\.)\S+)/
+const URL_PICTURE_REGEX = /\.(jpg|png|gif)(\?.*)?$/i
+const URL_VIDEO_REGEX = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]+).*/i
+const URL_VIDEO_REGEX_YOUTUBE = /.*youtu.*/i
+
+function parseMessageContent(
+  text: string,
+  shouldShowPictures: boolean,
+  shouldShowVideos: boolean
+): ReactNode[] {
+  const nodes: ReactNode[] = []
+  const lines = text.split('\n')
+
+  lines.forEach((line, lineIdx) => {
+    if (lineIdx > 0) {
+      nodes.push(<br key={`br-${lineIdx}`} />)
+    }
+
+    const tokens = line.split(' ')
+    tokens.forEach((token, tokenIdx) => {
+      if (tokenIdx > 0) {
+        nodes.push(' ')
+      }
+
+      const matched = token.match(URL_REGEX)
+      if (!matched) {
+        nodes.push(token)
+        return
+      }
+
+      const matchedUrl = matched[0]
+      const matchIdx = matched.index ?? 0
+      const before = token.substring(0, matchIdx)
+      const after = token.substring(matchIdx + matchedUrl.length)
+      const fullUrl = matchedUrl.startsWith('http') ? matchedUrl : 'http://' + matchedUrl
+      const urlText = matchedUrl.length > 53 ? matchedUrl.substring(0, 50) + '...' : matchedUrl
+      const key = `${lineIdx}-${tokenIdx}`
+
+      if (before) nodes.push(before)
+
+      const videoMatch = URL_VIDEO_REGEX.exec(fullUrl)
+
+      if (shouldShowPictures && matchedUrl.match(URL_PICTURE_REGEX)) {
+        nodes.push(
+          <span key={`img-${key}`}>
+            <br />
+            <a href={fullUrl} target="_blank" rel="noreferrer">
+              <img className="message-img" src={fullUrl} alt="" />
+            </a>
+          </span>
+        )
+      } else if (shouldShowVideos && videoMatch && videoMatch[2] && URL_VIDEO_REGEX_YOUTUBE.test(matchedUrl)) {
+        nodes.push(
+          <span key={`yt-${key}`}>
+            <br />
+            <iframe
+              width="420"
+              height="315"
+              src={`https://youtube.com/embed/${videoMatch[2]}`}
+              allowFullScreen
+            />
+          </span>
+        )
+      } else {
+        nodes.push(
+          <a key={`link-${key}`} href={fullUrl} target="_blank" rel="noreferrer">{urlText}</a>
+        )
+      }
+
+      if (after) nodes.push(after)
+    })
+  })
+
+  return nodes
+}
 
 export interface MessageItemRef {
   scrollIntoView: () => void
@@ -54,17 +129,14 @@ const MessageItem = memo(function MessageItem({
   useEffect(() => {
     if (!shouldShowLinkPreview || message.linkPreview) return
 
-    const urlRegex = /((https?:\/\/|www\.)\S+)/g
-    const urlPictureRegex = /\.(jpg|png|gif)(\?.*)?$/i
-    const urlVideoRegex = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]+).*/i
-    
-    const matches = message.message.match(urlRegex)
+    const urlRegexGlobal = /((https?:\/\/|www\.)\S+)/g
+    const matches = message.message.match(urlRegexGlobal)
     if (matches && matches.length > 0) {
       const url = matches[0]
-      let fullUrl = url.startsWith('http') ? url : 'http://' + url
-      
+      const fullUrl = url.startsWith('http') ? url : 'http://' + url
+
       // Don't request preview for images or videos
-      if (!urlPictureRegex.test(fullUrl) && !urlVideoRegex.test(fullUrl)) {
+      if (!URL_PICTURE_REGEX.test(fullUrl) && !URL_VIDEO_REGEX.test(fullUrl)) {
         communicator.getLinkPreview(fullUrl, message._id)
       }
     }
@@ -87,52 +159,10 @@ const MessageItem = memo(function MessageItem({
     }
   }))
 
-  const formattedMessage = useMemo(() => {
-    let msg = message.message
-    const urlRegex = /((https?:\/\/|www\.)\S+)/g
-    const urlPictureRegex = /\.(jpg|png|gif)(\?.*)?$/i
-    const urlVideoRegex = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]+).*/i
-    const urlVideoRegexYoutube = /.*youtu.*/i
-
-    // Escape HTML
-    msg = msg.replace(/</g, '&lt;')
-    msg = msg.replace(/>/g, '&gt;')
-    msg = msg.replace(/\n/g, ' \n')
-    msg = stripTags(msg)
-    
-    // Process URLs
-    const parts = msg.split(' ')
-    for (let i = 0; i < parts.length; i++) {
-      const matched = parts[i].match(urlRegex)
-      if (matched) {
-        let url = matched[0]
-        let urlText = url.length > 53 ? url.substr(0, 50) + '...' : url
-        url = url.startsWith('http') ? url : 'http://' + url
-
-        if (shouldShowPictures && url.match(urlPictureRegex)) {
-          // Show image
-          parts[i] = parts[i].replace(matched[0], 
-            `<br><a href="${url}" target="_blank"><img class="message-img" src="${url}"></a>`)
-        } else if (shouldShowVideos && url.match(urlVideoRegex) && url.match(urlVideoRegexYoutube)) {
-          // Show YouTube video
-          const videoMatch = urlVideoRegex.exec(url)
-          if (videoMatch && videoMatch[2]) {
-            parts[i] = parts[i].replace(matched[0], 
-              `<br><iframe width="420" height="315" src="https://youtube.com/embed/${videoMatch[2]}" frameborder="0" allowfullscreen></iframe>`)
-          }
-        } else {
-          // Show link
-          parts[i] = parts[i].replace(matched[0], 
-            `<a href="${url}" target="_blank">${urlText}</a>`)
-        }
-      }
-    }
-
-    msg = parts.join(' ')
-    msg = nl2br(msg)
-    
-    return msg
-  }, [message.message, shouldShowPictures, shouldShowVideos])
+  const messageContent = useMemo(
+    () => parseMessageContent(message.message, shouldShowPictures, shouldShowVideos),
+    [message.message, shouldShowPictures, shouldShowVideos]
+  )
 
   const handleRead = () => {
     useWaveStore.getState().setCurrentMessage(message._id)
@@ -176,10 +206,7 @@ const MessageItem = memo(function MessageItem({
               <p className="time">{formattedDate}</p>
               <p className="message-text">
                 <span className="author">{messageUser.name}:</span>{' '}
-                <span
-                  className="message-formatted" 
-                  dangerouslySetInnerHTML={{ __html: formattedMessage }}
-                />
+                <span className="message-formatted">{messageContent}</span>
               </p>
             </td>
           </tr>
