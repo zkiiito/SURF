@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useShallow } from 'zustand/react/shallow'
 import { useWaveStore } from '@/stores/waveStore'
+import { useMessageStore } from '@/stores/messageStore'
 import { useAppStore } from '@/stores/appStore'
 import { t } from '@/utils/i18n'
 
@@ -11,10 +12,26 @@ export default function WavesView() {
   const openEditWave = useAppStore(state => state.openEditWave)
 
   useEffect(() => {
-    if (activeWaves.length > 0) {
-      const lastWave = activeWaves[activeWaves.length - 1]
-      navigate(`/wave/${lastWave._id}`)
+    if (activeWaves.length === 0) return
+
+    const activeIds = new Set(activeWaves.map(w => w._id))
+    const allMessages = useMessageStore.getState().allMessages()
+
+    let targetWaveId: string | null = null
+    if (allMessages.length > 0) {
+      const latest = allMessages.reduce((acc, msg) =>
+        msg.created_at > acc.created_at ? msg : acc
+      )
+      if (activeIds.has(latest.waveId)) {
+        targetWaveId = latest.waveId
+      }
     }
+
+    if (!targetWaveId) {
+      targetWaveId = activeWaves[activeWaves.length - 1]._id
+    }
+
+    navigate(`/wave/${targetWaveId}`)
   }, [activeWaves, navigate])
 
   return (
