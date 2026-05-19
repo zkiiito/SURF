@@ -1,4 +1,4 @@
-import type { MessageData } from '../types.js';
+import type { AttachmentData, MessageData } from '../types.js';
 
 export class Message {
   private _id: string | undefined;
@@ -6,6 +6,7 @@ export class Message {
   waveId: string;
   parentId: string | null;
   message: string;
+  attachment?: AttachmentData;
   unread: boolean;
   created_at: number;
 
@@ -15,6 +16,7 @@ export class Message {
     this.waveId = data?.waveId ?? '';
     this.parentId = data?.parentId ?? null;
     this.message = data?.message ?? '';
+    this.attachment = data?.attachment;
     this.unread = data?.unread ?? true;
     this.created_at = data?.created_at ?? Date.now();
   }
@@ -32,7 +34,7 @@ export class Message {
   }
 
   validate(): string | undefined {
-    if (this.message.trim().length === 0) {
+    if (this.message.trim().length === 0 && !this.attachment) {
       return 'Empty message';
     }
     return undefined;
@@ -49,6 +51,7 @@ export class Message {
       waveId: this.waveId,
       parentId: this.parentId,
       message: this.message,
+      attachment: this.attachment,
       unread: this.unread,
       created_at: this.created_at,
     };

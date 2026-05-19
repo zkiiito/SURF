@@ -114,6 +114,7 @@ class DataAccessLayer {
       waveId: new Types.ObjectId(message.waveId),
       parentId: message.parentId ? new Types.ObjectId(message.parentId) : null,
       message: message.message,
+      attachment: message.attachment,
       created_at: new Date(message.created_at),
     });
 
@@ -362,6 +363,7 @@ class DataAccessLayer {
       waveId: mmsg.waveId.toString(),
       parentId: mmsg.parentId?.toString() ?? null,
       message: mmsg.message,
+      attachment: mmsg.attachment,
       unread: unreadIds.includes(mmsg._id.toString()),
       created_at: mmsg.created_at.getTime(),
     }));

@@ -11,12 +11,20 @@ const UserSchema = new Schema<UserDocument>({
   email: { type: String, trim: true }
 });
 
+const AttachmentSchema = new Schema({
+  storageKey: { type: String, required: true },
+  filename: { type: String, required: true },
+  mimeType: { type: String, required: true },
+  size: { type: Number, required: true }
+}, { _id: false });
+
 const MessageSchema = new Schema<MessageDocument>({
   userId: { type: Schema.Types.ObjectId, ref: 'UserModel' },
   waveId: { type: Schema.Types.ObjectId, ref: 'WaveModel' },
   parentId: { type: Schema.Types.ObjectId, ref: 'MessageModel', default: null },
   rootId: { type: Schema.Types.ObjectId, ref: 'MessageModel', default: null },
   message: { type: String, trim: true },
+  attachment: { type: AttachmentSchema, default: undefined },
   created_at: { type: Date }
 });
 
