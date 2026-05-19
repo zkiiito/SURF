@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import mongoose, { Types, FilterQuery } from 'mongoose';
 import redis from './RedisClient.js';
 import Config from './Config.js';
@@ -396,7 +397,7 @@ class DataAccessLayer {
    * Create an invite code for a wave
    */
   async createInviteCodeForWave(user: User, wave: Wave): Promise<string> {
-    const code = (Math.random() + 1).toString(36).replace(/\W/g, '');
+    const code = crypto.randomBytes(9).toString('base64url');
     const data = {
       userId: new Types.ObjectId(user.id),
       waveId: new Types.ObjectId(wave.id),
