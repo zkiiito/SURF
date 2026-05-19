@@ -126,7 +126,7 @@ class LinkPreviewService {
         })
         .then((response) => {
           const str = iconv.decode(
-            response.body as Buffer,
+            response.body as unknown as Buffer,
             contenttype.parameters.charset || 'utf-8'
           );
           return metascraperInstance({ url, html: str });
