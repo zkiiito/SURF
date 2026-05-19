@@ -12,10 +12,19 @@ interface Props {
   onCancel: () => void
 }
 
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+  return `${(bytes / 1024 / 1024).toFixed(1)} MB`
+}
+
 export default function MessageReplyForm({ message, onCancel }: Props) {
   const [replyMessage, setReplyMessage] = useState('')
+  const [pendingFile, setPendingFile] = useState<File | null>(null)
+  const [uploading, setUploading] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
-  
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
   const messageUser = useUserStore(state => {
     const user = state.getUser(message.userId)
     return user || { name: 'Unknown' }
@@ -26,14 +35,29 @@ export default function MessageReplyForm({ message, onCancel }: Props) {
     textareaRef.current?.focus()
   }, [])
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
+    if (uploading) return
+
+    if (pendingFile) {
+      setUploading(true)
+      try {
+        await communicator.uploadFile(pendingFile, message.waveId, replyMessage, message._id)
+        setPendingFile(null)
+        setReplyMessage('')
+        if (fileInputRef.current) fileInputRef.current.value = ''
+      } catch (err) {
+        alert((err as Error).message)
+      } finally {
+        setUploading(false)
+        textareaRef.current?.focus()
+      }
+      return
+    }
+
     if (!replyMessage.trim()) return
-    
     communicator.sendMessage(replyMessage, message.waveId, message._id)
     setReplyMessage('')
-    
-    // Keep the form open and refocus
     textareaRef.current?.focus()
   }
 
@@ -45,6 +69,16 @@ export default function MessageReplyForm({ message, onCancel }: Props) {
       e.preventDefault()
       mentionUser(textareaRef.current, replyMessage, setReplyMessage, waveUsers)
     }
+  }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) setPendingFile(file)
+  }
+
+  const clearFile = () => {
+    setPendingFile(null)
+    if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
   return (
@@ -60,13 +94,36 @@ export default function MessageReplyForm({ message, onCancel }: Props) {
           value={replyMessage}
           onChange={(e) => setReplyMessage(e.target.value)}
           name="message"
-          placeholder={`${t('Reply to message')} ${messageUser.name}`}
+          placeholder={pendingFile ? t('Add caption (optional)') : `${t('Reply to message')} ${messageUser.name}`}
           className="R"
           onKeyDown={handleKeyDown}
+          disabled={uploading}
         />
+        {pendingFile && (
+          <p className="attachment-chip">
+            📎 {pendingFile.name} ({formatBytes(pendingFile.size)})
+            <a href="#" className="button cancel" onClick={(e) => { e.preventDefault(); clearFile() }}>✕</a>
+          </p>
+        )}
         <p className="inline-help mhide">
-          <button type="submit" className="button sendmsg R">
-            {t('Save message')}
+          <input
+            ref={fileInputRef}
+            type="file"
+            style={{ display: 'none' }}
+            onChange={handleFileChange}
+            disabled={uploading}
+          />
+          <button
+            type="button"
+            className="button attach R"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+            title={t('Attach file')}
+          >
+            📎
+          </button>
+          <button type="submit" className="button sendmsg R" disabled={uploading || (!pendingFile && !replyMessage.trim())}>
+            {uploading ? t('Uploading...') : t('Save message')}
           </button>
           <span className="R hint">{t('Press Return to send, Shift-Return to break line.')}</span>
         </p>
