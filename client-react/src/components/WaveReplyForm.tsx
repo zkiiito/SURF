@@ -67,7 +67,11 @@ export default function WaveReplyForm({ waveId }: Props) {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? [])
-    if (files.length > 0) addFiles(files)
+    const images = files.filter(f => f.type.startsWith('image/'))
+    if (images.length < files.length) {
+      alert(t('Only image files are allowed'))
+    }
+    if (images.length > 0) addFiles(images)
     if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
@@ -76,7 +80,7 @@ export default function WaveReplyForm({ waveId }: Props) {
     if (!items) return
     const pasted: File[] = []
     for (const item of items) {
-      if (item.kind === 'file') {
+      if (item.kind === 'file' && item.type.startsWith('image/')) {
         const file = item.getAsFile()
         if (file) pasted.push(file)
       }
@@ -121,6 +125,7 @@ export default function WaveReplyForm({ waveId }: Props) {
           <input
             ref={fileInputRef}
             type="file"
+            accept="image/*"
             multiple
             style={{ display: 'none' }}
             onChange={handleFileChange}
@@ -131,7 +136,7 @@ export default function WaveReplyForm({ waveId }: Props) {
             className="button attach R"
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading || atLimit}
-            title={atLimit ? t('Maximum 10 files') : t('Attach file')}
+            title={atLimit ? t('Maximum 10 files') : t('Attach image')}
           >
             📎
           </button>

@@ -22,6 +22,7 @@ const INLINE_MIMES = new Set([
 const router = express.Router();
 
 const MAX_FILES_PER_MESSAGE = 10;
+const UNSUPPORTED_FILE_TYPE = 'UNSUPPORTED_FILE_TYPE';
 
 const upload = multer({
   storage: multer.diskStorage({
@@ -35,6 +36,15 @@ const upload = multer({
       cb(null, Storage.generateKey());
     },
   }),
+  fileFilter: (_req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      const err = new Error('Only image files are allowed') as Error & { code: string };
+      err.code = UNSUPPORTED_FILE_TYPE;
+      cb(err);
+    }
+  },
   limits: { fileSize: Config.maxUploadBytes, files: MAX_FILES_PER_MESSAGE },
 });
 
@@ -187,13 +197,17 @@ router.get(
   }
 );
 
-router.use((err: Error, _req: Request, res: Response, next: NextFunction) => {
+router.use((err: Error & { code?: string }, _req: Request, res: Response, next: NextFunction) => {
   if (err instanceof multer.MulterError) {
     if (err.code === 'LIMIT_FILE_SIZE') {
       res.status(413).json({ error: 'File too large' });
       return;
     }
     res.status(400).json({ error: err.message });
+    return;
+  }
+  if (err.code === UNSUPPORTED_FILE_TYPE) {
+    res.status(415).json({ error: err.message });
     return;
   }
   next(err);
