@@ -21,8 +21,9 @@ export default defineConfig({
   server: {
     port: 3002,
     open: true,
+    hmr: { port: 3003 },
     proxy: {
-      '/socket.io': { target: 'http://localhost:8000', ws: true, changeOrigin: true },
+      '/socket.io': { target: 'ws://localhost:8000', ws: true, rewriteWsOrigin: true },
       '/wave':      { target: 'http://localhost:8000', changeOrigin: true },
       '/auth':      { target: 'http://localhost:8000', changeOrigin: true },
       '/loginTest': { target: 'http://localhost:8000', changeOrigin: true },
