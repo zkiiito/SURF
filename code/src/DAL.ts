@@ -120,48 +120,23 @@ class DataAccessLayer {
 
     if (message.parentId === null) {
       m.rootId = m._id;
-      await m.save();
     } else {
-      await m.save();
-      await this.calcRootId(message.parentId, [m]);
+      const parent = await MessageModel.findById(message.parentId, 'rootId').exec();
+      m.rootId = parent?.rootId ?? new Types.ObjectId(message.parentId);
     }
 
+    await m.save();
     message.setId(m._id.toString());
   }
 
   /**
-   * Calculate root ID recursively for message threading
+   * Resolve the rootId of a message by id. Assumes the rootId invariant holds
+   * (every message has rootId populated at save time).
    */
-  async calcRootId(
-    messageId: string, 
-    messages: MessageDocument[]
-  ): Promise<string | null> {
-    const message = await MessageModel.findById(messageId);
+  async getRootId(messageId: string): Promise<string | null> {
+    const message = await MessageModel.findById(messageId, 'rootId').exec();
     if (!message) return null;
-
-    // If knows root element, or IS a root element
-    if (message.rootId !== null || message.parentId === null) {
-      let rootId: Types.ObjectId | null = null;
-
-      if (message.rootId !== null) {
-        rootId = message.rootId;
-      } else if (message.parentId === null) {
-        rootId = message._id;
-        messages.push(message);
-      }
-
-      if (rootId) {
-        await MessageModel.updateMany(
-          { _id: { $in: messages.map(msg => msg._id) } },
-          { rootId }
-        ).exec();
-      }
-
-      return rootId?.toString() ?? null;
-    } else {
-      messages.push(message);
-      return this.calcRootId(message.parentId.toString(), messages);
-    }
+    return (message.rootId ?? message._id).toString();
   }
 
   /**
