@@ -1,5 +1,6 @@
 import type { WaveData } from '../types.js';
 import { Collection } from './Collection.js';
+import { Registry } from '../Registry.js';
 import type { User } from './User.js';
 import { Message } from './Message.js';
 
@@ -58,19 +59,14 @@ export class Wave {
     }
   }
 
-  /**
-   * Add a message to this wave
-   */
   async addMessage(message: Message): Promise<void> {
-    const { default: DAL } = await import('../DAL.js');
-
     try {
       await message.save();
       const payload = message.toJSON();
       await Promise.all(
         this.users.map((user) => {
           user.send('message', payload);
-          return DAL.addUnreadMessage(user, message);
+          return Registry.dal.addUnreadMessage(user, message);
         })
       );
     } catch (err) {
@@ -78,15 +74,11 @@ export class Wave {
     }
   }
 
-  /**
-   * Add multiple users to this wave
-   */
   async addUsers(userIds: string[], notify: boolean): Promise<boolean> {
-    const { default: SurfServer } = await import('../SurfServer.js');
     const newUsers: User[] = [];
 
     for (const userId of userIds) {
-      const user = SurfServer.users.get(userId);
+      const user = Registry.server.users.get(userId);
       if (user) {
         newUsers.push(user);
         this.addUser(user, false); // don't notify yet
@@ -170,39 +162,29 @@ export class Wave {
     }
   }
 
-  /**
-   * Send old messages to a user (when they join)
-   */
   async sendOldMessagesToUser(user: User): Promise<void> {
-    const { default: DAL } = await import('../DAL.js');
-
     try {
-      const msgs = await DAL.getLastMessagesForUserInWave(user, this);
+      const msgs = await Registry.dal.getLastMessagesForUserInWave(user, this);
       user.send('message', { messages: msgs });
     } catch (err) {
       console.log('ERROR', err);
     }
   }
 
-  /**
-   * Send previous messages to user (for pagination/history)
-   */
   async sendPreviousMessagesToUser(
-    user: User, 
-    minParentId: string | null, 
+    user: User,
+    minParentId: string | null,
     maxRootId: string | null
   ): Promise<void> {
-    const { default: DAL } = await import('../DAL.js');
-
     try {
       if (minParentId && maxRootId) {
-        const minRootId = await DAL.calcRootId(minParentId, []);
-        const ids = await DAL.getUnreadIdsForUserInWave(user, this);
-        const msgs = await DAL.getMessagesForUserInWave(this, minRootId, maxRootId, ids);
+        const minRootId = await Registry.dal.calcRootId(minParentId, []);
+        const ids = await Registry.dal.getUnreadIdsForUserInWave(user, this);
+        const msgs = await Registry.dal.getMessagesForUserInWave(this, minRootId, maxRootId, ids);
         user.send('message', { messages: msgs, waveId: this.id });
       } else {
-        const newMinRootId = await DAL.getMinRootIdForWave(this, maxRootId, maxRootId);
-        const msgs = await DAL.getMessagesForUserInWave(this, newMinRootId, maxRootId, []);
+        const newMinRootId = await Registry.dal.getMinRootIdForWave(this, maxRootId, maxRootId);
+        const msgs = await Registry.dal.getMessagesForUserInWave(this, newMinRootId, maxRootId, []);
         user.send('message', { messages: msgs, waveId: this.id });
       }
     } catch (err) {
@@ -210,20 +192,12 @@ export class Wave {
     }
   }
 
-  /**
-   * Mark all messages as read for a user in this wave
-   */
   async readAllMessagesOfUser(user: User): Promise<void> {
-    const { default: DAL } = await import('../DAL.js');
-    await DAL.readAllMessagesForUserInWave(user, this);
+    await Registry.dal.readAllMessagesForUserInWave(user, this);
   }
 
-  /**
-   * Save wave data via DAL
-   */
   async save(): Promise<void> {
-    const DAL = (await import('../DAL.js')).default;
-    await DAL.saveWave(this);
+    await Registry.dal.saveWave(this);
   }
 
   /**
@@ -249,20 +223,11 @@ export class Wave {
     }
   }
 
-  /**
-   * Create an invite code for this wave
-   */
   async createInviteCode(user: User): Promise<string> {
-    const { default: DAL } = await import('../DAL.js');
-    return DAL.createInviteCodeForWave(user, this);
+    return Registry.dal.createInviteCodeForWave(user, this);
   }
 
-  /**
-   * Update wave data
-   */
   async update(data: Partial<WaveData>): Promise<void> {
-    const { default: SurfServer } = await import('../SurfServer.js');
-
     this.title = data.title ?? '';
     let notified = false;
 
@@ -277,7 +242,7 @@ export class Wave {
         notified = await this.addUsers(addedIds, true);
 
         for (const userId of addedIds) {
-          const user = SurfServer.users.get(userId);
+          const user = Registry.server.users.get(userId);
           if (user) {
             await this.sendOldMessagesToUser(user);
           }

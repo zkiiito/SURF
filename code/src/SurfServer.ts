@@ -6,6 +6,7 @@ import LinkPreview from './LinkPreview.js';
 import SessionStore from './SessionStore.js';
 import { startExpressServer } from './ExpressServer.js';
 import Config from './Config.js';
+import { Registry } from './Registry.js';
 import { User, Wave, Message, Collection } from './model/index.js';
 import type { 
   SurfSession, 
@@ -48,6 +49,7 @@ class SurfServerClass implements SurfServerInterface {
    * Initialize the server - load data from database
    */
   init(): void {
+    Registry.init(DAL, this);
     DAL.init(this);
   }
 
