@@ -1,22 +1,21 @@
 import crypto from 'crypto';
 import mongoose, { Types, type QueryFilter } from 'mongoose';
-import redis from './RedisClient.js';
 import Config from './Config.js';
-import { UserModel, WaveModel, MessageModel, WaveInviteModel } from './MongooseModels.js';
+import { UserModel, WaveModel, MessageModel, WaveInviteModel, UnreadMessageModel } from './MongooseModels.js';
 import { User, Wave, Message, Collection } from './model/index.js';
 import type { MessageData, MessageDocument } from './types.js';
 import type { SurfServerInterface } from './SurfServer.js';
 
 /**
- * Data Access Layer for MongoDB and Redis operations
+ * Data Access Layer for MongoDB operations
  */
 class DataAccessLayer {
   /**
-   * Initialize database connections and load data
+   * Initialize database connection and load data
    */
   async init(server: SurfServerInterface): Promise<void> {
     mongoose.set('debug', Config.mongoDebug);
-    await Promise.all([mongoose.connect(Config.mongoUrl), redis.connect()]);
+    await mongoose.connect(Config.mongoUrl);
 
     const users = await UserModel.find().exec();
 
@@ -31,7 +30,7 @@ class DataAccessLayer {
       });
       return u;
     });
-    
+
     for (const user of userInstances) {
       server.users.add(user);
     }
@@ -52,18 +51,6 @@ class DataAccessLayer {
     }
 
     server.startServer();
-
-    // Temporary fix: delete all unread, if user has more than 1000
-    await Promise.all(users.map(async (user) => {
-      const unreadKeys = await redis.keys('unread-' + user._id + '-*');
-      await Promise.all(unreadKeys.map(async (key) => {
-        const msgCount = await redis.sCard(key);
-        if (msgCount > 1000) {
-          console.log('deleteTooMuchUnread: ' + key + ' : ' + msgCount);
-          await redis.del(key);
-        }
-      }));
-    }));
   }
 
   /**
@@ -127,6 +114,7 @@ class DataAccessLayer {
     }
 
     message.setId(m._id.toString());
+    message.rootId = m.rootId?.toString() ?? null;
   }
 
   /**
@@ -198,59 +186,45 @@ class DataAccessLayer {
   }
 
   /**
-   * Get minimum unread root ID for a user in a wave
+   * Get minimum unread root ID for a user in a wave, plus the unread message IDs.
+   * One query — sorted by rootId so the first row is the earliest unread thread.
    */
   async getMinUnreadRootIdForUserInWave(
-    user: User, 
+    user: User,
     wave: Wave
   ): Promise<{ minRootId: string | null; unreadIds: string[] }> {
-    const defaultResult = {
-      minRootId: null,
-      unreadIds: [] as string[],
-    };
-
+    const startTime = Date.now();
     try {
-      const unreadIds = await this.getUnreadIdsForUserInWave(user, wave);
-      if (unreadIds.length === 0) {
-        return defaultResult;
-      }
-      console.log('QUERY getMinUnreadRootIdForUserInWave: ' + wave.id + ' count: ' + unreadIds.length);
-
-      const startTime = Date.now();
-
-      const message = await MessageModel.findOne({ waveId: wave.id })
-        .where('_id').in(unreadIds)
-        .select('rootId')
+      const rows = await UnreadMessageModel
+        .find({ userId: user.id, waveId: wave.id })
+        .select('messageId rootId')
         .sort('rootId')
-        .limit(1)
         .exec();
+      console.log('QUERY getMinUnreadRootIdForUserInWave: ' + wave.id + ' query in ' + (Date.now() - startTime));
 
-      const endTime = Date.now();
-      console.log('QUERY getMinUnreadRootIdForUserInWave: ' + wave.id + ' query in ' + (endTime - startTime));
-
-      if (!message) {
-        return defaultResult;
+      if (rows.length === 0) {
+        return { minRootId: null, unreadIds: [] };
       }
-
       return {
-        minRootId: message.rootId?.toString() ?? null,
-        unreadIds,
+        minRootId: rows[0].rootId.toString(),
+        unreadIds: rows.map(r => r.messageId.toString()),
       };
     } catch (err) {
-      return defaultResult;
+      return { minRootId: null, unreadIds: [] };
     }
   }
 
   /**
-   * Get unread message IDs for a user in a wave (from Redis)
+   * Get unread message IDs for a user in a wave
    */
   async getUnreadIdsForUserInWave(user: User, wave: Wave): Promise<string[]> {
     const startTime = Date.now();
-    const key = 'unread-' + user.id + '-' + wave.id;
-    const results = await redis.sMembers(key);
-    const endTime = Date.now();
-    console.log('QUERY getUnreadIdsForUserInWave: ' + wave.id + ' query in ' + (endTime - startTime));
-    return results;
+    const rows = await UnreadMessageModel
+      .find({ userId: user.id, waveId: wave.id })
+      .select('messageId')
+      .exec();
+    console.log('QUERY getUnreadIdsForUserInWave: ' + wave.id + ' query in ' + (Date.now() - startTime));
+    return rows.map(r => r.messageId.toString());
   }
 
   /**
@@ -370,29 +344,44 @@ class DataAccessLayer {
   }
 
   /**
-   * Mark a message as read (remove from Redis unread set)
+   * Mark a message as read for a user
    */
   async readMessage(user: User, message: { id: string; waveId: string }): Promise<void> {
-    const key = 'unread-' + user.id + '-' + message.waveId;
-    await redis.sRem(key, message.id);
+    await UnreadMessageModel.deleteOne({
+      userId: new Types.ObjectId(user.id),
+      messageId: new Types.ObjectId(message.id),
+    }).exec();
   }
 
   /**
-   * Add a message to user's unread set
+   * Mark a message as unread for a user (during fan-out)
    */
   async addUnreadMessage(user: User, message: Message): Promise<void> {
-    if (message.userId !== user.id && message.id) {
-      const key = 'unread-' + user.id + '-' + message.waveId;
-      await redis.sAdd(key, message.id);
-    }
+    if (message.userId === user.id || !message.id || !message.rootId) return;
+
+    await UnreadMessageModel.updateOne(
+      {
+        userId: new Types.ObjectId(user.id),
+        messageId: new Types.ObjectId(message.id),
+      },
+      {
+        $setOnInsert: {
+          waveId: new Types.ObjectId(message.waveId),
+          rootId: new Types.ObjectId(message.rootId),
+        },
+      },
+      { upsert: true }
+    ).exec();
   }
 
   /**
    * Mark all messages as read for a user in a wave
    */
   async readAllMessagesForUserInWave(user: User, wave: Wave): Promise<void> {
-    const key = 'unread-' + user.id + '-' + wave.id;
-    await redis.del(key);
+    await UnreadMessageModel.deleteMany({
+      userId: new Types.ObjectId(user.id),
+      waveId: new Types.ObjectId(wave.id),
+    }).exec();
   }
 
   /**
@@ -438,8 +427,6 @@ class DataAccessLayer {
   async shutdown(): Promise<void> {
     await mongoose.connection.close();
     console.log('mongoose down');
-    await redis.quit();
-    console.log('redis down');
   }
 }
 
