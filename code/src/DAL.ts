@@ -359,19 +359,12 @@ class DataAccessLayer {
   async addUnreadMessage(user: User, message: Message): Promise<void> {
     if (message.userId === user.id || !message.id || !message.rootId) return;
 
-    await UnreadMessageModel.updateOne(
-      {
-        userId: new Types.ObjectId(user.id),
-        messageId: new Types.ObjectId(message.id),
-      },
-      {
-        $setOnInsert: {
-          waveId: new Types.ObjectId(message.waveId),
-          rootId: new Types.ObjectId(message.rootId),
-        },
-      },
-      { upsert: true }
-    ).exec();
+    await UnreadMessageModel.create({
+      userId: new Types.ObjectId(user.id),
+      waveId: new Types.ObjectId(message.waveId),
+      messageId: new Types.ObjectId(message.id),
+      rootId: new Types.ObjectId(message.rootId),
+    });
   }
 
   /**
