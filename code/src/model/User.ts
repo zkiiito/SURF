@@ -4,6 +4,7 @@ import type { UserData, PublicUserData, SelfUserData } from '../types.js';
 
 type InviteRef = { waveId: string; code: string };
 import { Collection } from './Collection.js';
+import { Registry } from '../Registry.js';
 import type { Wave } from './Wave.js';
 
 export class User {
@@ -105,16 +106,10 @@ export class User {
     }
   }
 
-  /**
-   * Initialize user after connection
-   */
   async init(invite: InviteRef | null): Promise<void> {
-    const { default: SurfServer } = await import('../SurfServer.js');
-    const { default: DAL } = await import('../DAL.js');
-
     this.status = 'online';
 
-    const friends = this.getFriends(SurfServer.users).map((f) => f.toFilteredJSON());
+    const friends = this.getFriends(Registry.server.users).map((f) => f.toFilteredJSON());
 
     this.socket?.emit('init', {
       me: this.toSelfJSON(),
@@ -122,10 +117,10 @@ export class User {
       waves: this.waves.toArray(),
     });
 
-    this.notifyFriends(SurfServer.users);
+    this.notifyFriends(Registry.server.users);
 
     try {
-      await DAL.getLastMessagesForUser(this, (err, msgs, waveId) => {
+      await Registry.dal.getLastMessagesForUser(this, (err, msgs, waveId) => {
         if (!err) {
           this.send('message', { messages: msgs, waveId });
         }
@@ -139,13 +134,9 @@ export class User {
     }
   }
 
-  /**
-   * Handle user disconnect
-   */
   async disconnect(): Promise<void> {
-    const { default: SurfServer } = await import('../SurfServer.js');
     this.status = 'offline';
-    this.notifyFriends(SurfServer.users);
+    this.notifyFriends(Registry.server.users);
   }
 
   /**
@@ -181,20 +172,11 @@ export class User {
     }
   }
 
-  /**
-   * Save user data via DAL
-   */
   async save(): Promise<void> {
-    const DAL = (await import('../DAL.js')).default;
-    await DAL.saveUser(this);
+    await Registry.dal.saveUser(this);
   }
 
-  /**
-   * Update user profile
-   */
   async update(data: Partial<UserData>): Promise<void> {
-    const { default: SurfServer } = await import('../SurfServer.js');
-
     try {
       let name = data.name ?? '';
       const avatar = data.avatar ?? '';
@@ -205,7 +187,7 @@ export class User {
         this.name = name.trim();
         this.avatar = avatar.trim();
         await this.save();
-        this.notifyFriends(SurfServer.users);
+        this.notifyFriends(Registry.server.users);
         this.send('updateUser', { user: this.toSelfJSON() });
       } else {
         console.log(this.validate(data));
@@ -222,17 +204,11 @@ export class User {
     this.waves.remove(wave);
   }
 
-  /**
-   * Handle invite code after login
-   */
   async handleInvite(invite: InviteRef): Promise<void> {
-    const { default: SurfServer } = await import('../SurfServer.js');
-    const { default: DAL } = await import('../DAL.js');
-
     try {
-      const result = await DAL.removeWaveInviteByCode(invite.code);
+      const result = await Registry.dal.removeWaveInviteByCode(invite.code);
       if (result.ok > 0) {
-        const wave = SurfServer.waves.get(invite.waveId);
+        const wave = Registry.server.waves.get(invite.waveId);
         if (wave && !wave.isMember(this)) {
           wave.addUser(this, true);
           await wave.save();

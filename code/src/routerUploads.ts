@@ -6,6 +6,7 @@ import Config from './Config.js';
 import Storage from './Storage.js';
 import { MessageModel } from './MongooseModels.js';
 import { Message } from './model/Message.js';
+import { Registry } from './Registry.js';
 import type { GoogleProfile } from './types.js';
 
 const INLINE_MIMES = new Set([
@@ -64,8 +65,7 @@ async function resolveWaveMember(
     return;
   }
 
-  const { default: SurfServer } = await import('./SurfServer.js');
-  const wave = SurfServer.waves.get(waveId);
+  const wave = Registry.server.waves.get(waveId);
   if (!wave) {
     res.status(404).json({ error: 'Wave not found' });
     return;
@@ -73,7 +73,7 @@ async function resolveWaveMember(
 
   const passportUser = req.user as GoogleProfile;
   const email = passportUser.emails?.[0]?.value;
-  const surfUser = SurfServer.users.find(u =>
+  const surfUser = Registry.server.users.find(u =>
     u.googleId === passportUser.id || (email !== undefined && u.email === email)
   );
 
@@ -113,8 +113,7 @@ router.post(
     const parentId = parentIdRaw && Types.ObjectId.isValid(parentIdRaw) ? parentIdRaw : null;
 
     try {
-      const { default: SurfServer } = await import('./SurfServer.js');
-      const wave = SurfServer.waves.get(surfWaveId);
+      const wave = Registry.server.waves.get(surfWaveId);
       if (!wave) {
         await cleanup();
         res.status(404).json({ error: 'Wave not found' });

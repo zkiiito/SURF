@@ -1,4 +1,5 @@
 import type { AttachmentData, MessageData } from '../types.js';
+import { Registry } from '../Registry.js';
 
 export class Message {
   private _id: string | undefined;
@@ -58,12 +59,7 @@ export class Message {
     };
   }
 
-  /**
-   * Save the message via DAL
-   * DAL is imported dynamically to avoid circular dependencies
-   */
   async save(): Promise<void> {
-    const DAL = (await import('../DAL.js')).default;
-    await DAL.saveMessage(this);
+    await Registry.dal.saveMessage(this);
   }
 }
