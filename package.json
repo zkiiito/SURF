@@ -14,7 +14,7 @@
   "dependencies": {
     "@types/multer": "^2.1.0",
     "body-parser": "^1.20.5",
-    "connect-redis": "^7.1.1",
+    "connect-redis": "^9.0.0",
     "content-type": "^2.0.0",
     "cookie": "^1.1.1",
     "cookie-parser": "^1.4.7",

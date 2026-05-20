@@ -1,4 +1,4 @@
-import RedisStore from 'connect-redis';
+import { RedisStore } from 'connect-redis';
 import redisClient from './RedisClient.js';
 
 export default new RedisStore({
