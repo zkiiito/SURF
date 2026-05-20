@@ -161,7 +161,7 @@ router.get('/logout', (req: Request, res: Response, next: NextFunction) => {
   });
 });
 
-router.get('/invite/:inviteCode', async (req: Request, res: Response) => {
+router.get('/invite/:inviteCode', async (req: Request<{ inviteCode: string }>, res: Response) => {
   const invite = await DAL.getWaveInviteByCode(req.params.inviteCode);
   if (invite) {
     (req.session as SurfSession).invite = invite;

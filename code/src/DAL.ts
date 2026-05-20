@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import mongoose, { Types, FilterQuery } from 'mongoose';
+import mongoose, { Types, type QueryFilter } from 'mongoose';
 import redis from './RedisClient.js';
 import Config from './Config.js';
 import { UserModel, WaveModel, MessageModel, WaveInviteModel } from './MongooseModels.js';
@@ -288,7 +288,7 @@ class DataAccessLayer {
    */
   async getNextMinRootIdForWave(wave: Wave, minRootId: string | null): Promise<string | null> {
     const startTime = Date.now();
-    const filter: FilterQuery<MessageDocument> = { waveId: wave.id, parentId: null };
+    const filter: QueryFilter<MessageDocument> = { waveId: wave.id, parentId: null };
     if (minRootId) {
       filter._id = { $lt: new Types.ObjectId(minRootId) };
     }
@@ -345,7 +345,7 @@ class DataAccessLayer {
     unreadIds: string[]
   ): Promise<MessageData[]> {
     const startTime = Date.now();
-    const filter: FilterQuery<MessageDocument> = { waveId: wave.id };
+    const filter: QueryFilter<MessageDocument> = { waveId: wave.id };
     const rootIdFilter: { $gte?: Types.ObjectId; $lt?: Types.ObjectId } = {};
     if (minRootId) rootIdFilter.$gte = new Types.ObjectId(minRootId);
     if (maxRootId) rootIdFilter.$lt = new Types.ObjectId(maxRootId);

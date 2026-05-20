@@ -18,10 +18,14 @@ passport.deserializeUser((obj: Express.User, done) => {
   done(null, obj);
 });
 
-// Extend Express types for passport user
+// Extend Express types for passport user and route-local context
 declare global {
   namespace Express {
     interface User extends GoogleProfile {}
+    interface Request {
+      surfUserId?: string;
+      surfWaveId?: string;
+    }
   }
 }
 

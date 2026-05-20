@@ -27,7 +27,7 @@ const UNSUPPORTED_FILE_TYPE = 'UNSUPPORTED_FILE_TYPE';
 const upload = multer({
   storage: multer.diskStorage({
     destination: (req, _file, cb) => {
-      const waveId = req.params.waveId;
+      const waveId = req.params.waveId as string;
       Storage.ensureWaveDir(waveId)
         .then(dir => cb(null, dir))
         .catch(err => cb(err as Error, ''));
@@ -58,7 +58,7 @@ async function resolveWaveMember(
     return;
   }
 
-  const waveId = req.params.waveId;
+  const waveId = req.params.waveId as string;
   if (!waveId || !Types.ObjectId.isValid(waveId)) {
     res.status(400).json({ error: 'Invalid waveId' });
     return;
@@ -82,8 +82,8 @@ async function resolveWaveMember(
     return;
   }
 
-  (req as Request & { surfUserId: string; surfWaveId: string }).surfUserId = surfUser.id;
-  (req as Request & { surfUserId: string; surfWaveId: string }).surfWaveId = wave.id;
+  req.surfUserId = surfUser.id;
+  req.surfWaveId = wave.id;
   next();
 }
 
@@ -96,10 +96,10 @@ router.post(
   '/wave/:waveId/upload',
   resolveWaveMember,
   upload.array('file', MAX_FILES_PER_MESSAGE),
-  async (req: Request, res: Response) => {
+  async (req: Request<{ waveId: string }>, res: Response) => {
     const files = (req.files ?? []) as Express.Multer.File[];
-    const surfUserId = (req as Request & { surfUserId: string }).surfUserId;
-    const surfWaveId = (req as Request & { surfWaveId: string }).surfWaveId;
+    const surfUserId = req.surfUserId!;
+    const surfWaveId = req.surfWaveId!;
 
     const cleanup = () => Promise.all(files.map(f => Storage.delete(surfWaveId, f.filename)));
 
@@ -153,7 +153,7 @@ router.post(
 router.get(
   '/wave/:waveId/file/:messageId/:storageKey',
   resolveWaveMember,
-  async (req: Request, res: Response) => {
+  async (req: Request<{ waveId: string; messageId: string; storageKey: string }>, res: Response) => {
     const { messageId, storageKey } = req.params;
     if (!Types.ObjectId.isValid(messageId)) {
       res.status(400).json({ error: 'Invalid messageId' });
@@ -164,7 +164,7 @@ router.get(
       return;
     }
 
-    const surfWaveId = (req as Request & { surfWaveId: string }).surfWaveId;
+    const surfWaveId = req.surfWaveId!;
     const msgDoc = await MessageModel.findById(messageId).exec();
     if (!msgDoc || msgDoc.waveId.toString() !== surfWaveId) {
       res.status(404).json({ error: 'File not found' });
