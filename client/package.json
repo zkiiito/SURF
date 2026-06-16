@@ -23,6 +23,6 @@
     "socket.io-client": "^4.8.3",
     "tocca": "^2.0.9",
     "underscore": "^1.13.8",
-    "vite": "^8.0.13"
+    "vite": "^8.0.16"
   }
 }
