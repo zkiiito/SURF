@@ -30,7 +30,7 @@
     "metascraper-image": "^5.50.1",
     "metascraper-title": "^5.50.1",
     "mongoose": "^9.6.2",
-    "multer": "^2.1.1",
+    "multer": "^2.2.0",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-local": "^1.0.0",
