@@ -25,10 +25,8 @@ describe('DAL', () => {
     });
 
     vi.spyOn(MessageModel.prototype, 'save').mockResolvedValue(undefined as never);
-    vi.spyOn(MessageModel, 'findById').mockResolvedValue(parent);
-    // Database updates do not mutate the document passed to calcRootId.
-    vi.spyOn(MessageModel, 'updateMany').mockReturnValue({
-      exec: vi.fn().mockResolvedValue({ acknowledged: true, modifiedCount: 1 }),
+    vi.spyOn(MessageModel, 'findById').mockReturnValue({
+      exec: vi.fn().mockResolvedValue(parent),
     } as never);
     const createUnread = vi.spyOn(UnreadMessageModel, 'create')
       .mockResolvedValue(undefined as never);

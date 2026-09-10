@@ -15,14 +15,14 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@babel/core": "^7.29.0",
-    "@babel/preset-env": "^7.29.5",
+    "@babel/core": "^8.0.1",
+    "@babel/preset-env": "^8.0.2",
     "backbone": "^1.6.1",
     "jquery": "^3.7.1",
     "R.js": "^0.1.5",
     "socket.io-client": "^4.8.3",
     "tocca": "^2.0.9",
     "underscore": "^1.13.8",
-    "vite": "^8.0.13"
+    "vite": "^8.0.16"
   }
 }

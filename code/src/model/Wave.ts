@@ -178,7 +178,7 @@ export class Wave {
   ): Promise<void> {
     try {
       if (minParentId && maxRootId) {
-        const minRootId = await Registry.dal.calcRootId(minParentId, []);
+        const minRootId = await Registry.dal.getRootId(minParentId);
         const ids = await Registry.dal.getUnreadIdsForUserInWave(user, this);
         const msgs = await Registry.dal.getMessagesForUserInWave(this, minRootId, maxRootId, ids);
         user.send('message', { messages: msgs, waveId: this.id });

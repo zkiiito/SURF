@@ -13,7 +13,7 @@
   "license": "GPL-3.0",
   "dependencies": {
     "@types/multer": "^2.1.0",
-    "body-parser": "^2.2.2",
+    "body-parser": "^2.3.0",
     "connect-mongo": "^6.0.0",
     "content-type": "^2.0.0",
     "cookie": "^1.1.1",
@@ -25,12 +25,12 @@
     "express-session": "^1.19.0",
     "got": "^15.0.5",
     "iconv-lite": "^0.7.2",
-    "metascraper": "^5.50.3",
-    "metascraper-description": "^5.50.1",
-    "metascraper-image": "^5.50.1",
-    "metascraper-title": "^5.50.1",
-    "mongoose": "^9.6.2",
-    "multer": "^2.1.1",
+    "metascraper": "^5.53.0",
+    "metascraper-description": "^5.53.0",
+    "metascraper-image": "^5.53.0",
+    "metascraper-title": "^5.53.0",
+    "mongoose": "^9.7.2",
+    "multer": "^2.3.0",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-local": "^1.0.0",
@@ -63,12 +63,12 @@
     "@types/passport": "^1.0.17",
     "@types/passport-google-oauth20": "^2.0.17",
     "@types/passport-local": "^1.0.38",
-    "concurrently": "^9.2.1",
+    "concurrently": "^10.0.4",
     "cypress": "^15.15.0",
     "eslint": "^10.4.0",
     "nodemon": "^3.1.14",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.6"
+    "vitest": "^4.1.11"
   },
   "nodemonConfig": {
     "ignore": [
