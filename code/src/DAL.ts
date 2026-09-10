@@ -108,13 +108,13 @@ class DataAccessLayer {
     if (message.parentId === null) {
       m.rootId = m._id;
       await m.save();
+      message.rootId = m.rootId.toString();
     } else {
       await m.save();
-      await this.calcRootId(message.parentId, [m]);
+      message.rootId = await this.calcRootId(message.parentId, [m]);
     }
 
     message.setId(m._id.toString());
-    message.rootId = m.rootId?.toString() ?? null;
   }
 
   /**
