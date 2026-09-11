@@ -22,6 +22,8 @@ class Communicator {
   private requestedUserIds = new Set<string>()
 
   initialize() {
+    this.disconnect()
+    this.reconnect = true
     this.requestedUserIds.clear()
     this.socket = io({ reconnection: false })
 
@@ -34,6 +36,10 @@ class Communicator {
     })
 
     this.socket.on('disconnect', () => {
+      useAppStore.getState().handleDisconnect(this.reconnect)
+    })
+
+    this.socket.on('connect_error', () => {
       useAppStore.getState().handleDisconnect(this.reconnect)
     })
 
@@ -55,6 +61,7 @@ class Communicator {
 
     this.socket.on('dontReconnect', () => {
       this.reconnect = false
+      useAppStore.getState().handleDisconnect(false)
     })
 
     this.socket.on('ready', () => {
@@ -289,7 +296,9 @@ class Communicator {
 
   disconnect() {
     if (this.socket) {
+      this.socket.removeAllListeners()
       this.socket.disconnect()
+      this.socket = null
     }
   }
 }

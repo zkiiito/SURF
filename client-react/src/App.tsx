@@ -214,6 +214,13 @@ function App() {
     }
   }
 
+  const overlays = <>
+    {showOverlay && <div id="darken" onClick={closeAllOverlays}></div>}
+    {showEditWave && <EditWave />}
+    {showEditUser && <EditUser />}
+    {showDisconnected && <Disconnected />}
+  </>
+
   if (!ready) {
     return (
       <>
@@ -223,6 +230,7 @@ function App() {
             <div className="loading-spinner"></div>
           </div>
         </div>
+        {overlays}
       </>
     )
   }
@@ -239,10 +247,7 @@ function App() {
         </div>
       </div>
 
-      {showOverlay && <div id="darken" onClick={closeAllOverlays}></div>}
-      {showEditWave && <EditWave />}
-      {showEditUser && <EditUser />}
-      {showDisconnected && <Disconnected />}
+      {overlays}
     </>
   )
 }

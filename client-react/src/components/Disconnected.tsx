@@ -4,22 +4,56 @@ import { t } from '@/utils/i18n'
 
 export default function Disconnected() {
   const shouldReconnect = useAppStore(state => state.shouldReconnect)
-  const [counter, setCounter] = useState(10)
+  const [counter, setCounter] = useState(3)
 
   useEffect(() => {
     if (!shouldReconnect) return
 
-    const interval = setInterval(() => {
-      setCounter(prev => {
-        if (prev <= 1) {
-          window.location.reload()
-          return 0
-        }
-        return prev - 1
-      })
-    }, 1000)
+    let cancelled = false
+    let delay = 3
+    let interval: ReturnType<typeof setInterval>
+    let timeout: ReturnType<typeof setTimeout>
+    let controller: AbortController | undefined
 
-    return () => clearInterval(interval)
+    const probe = async () => {
+      controller = new AbortController()
+      timeout = setTimeout(() => controller?.abort(), 900)
+      try {
+        const response = await fetch(`/images/surf-ico.png?reconnect=${Date.now()}`, {
+          cache: 'no-store', signal: controller.signal,
+        })
+        if (!response.ok) throw new Error('Server unavailable')
+        if (!cancelled) window.location.reload()
+      } catch {
+        if (!cancelled) {
+          delay = Math.min(delay * 2, 60)
+          schedule()
+        }
+      } finally {
+        clearTimeout(timeout)
+      }
+    }
+
+    const schedule = () => {
+      let remaining = delay
+      setCounter(remaining)
+      interval = setInterval(() => {
+        remaining--
+        setCounter(remaining)
+        if (remaining === 0) {
+          clearInterval(interval)
+          void probe()
+        }
+      }, 1000)
+    }
+    schedule()
+
+    return () => {
+      cancelled = true
+      clearInterval(interval)
+      clearTimeout(timeout)
+      controller?.abort()
+    }
   }, [shouldReconnect])
 
   return (
@@ -40,4 +74,3 @@ export default function Disconnected() {
     </div>
   )
 }
-
