@@ -139,7 +139,7 @@ export default function MessageReplyForm({ message, onCancel }: Props) {
             ))}
           </ul>
         )}
-        <p className="inline-help mhide">
+        <p className="inline-help">
           <input
             ref={fileInputRef}
             type="file"
@@ -165,7 +165,7 @@ export default function MessageReplyForm({ message, onCancel }: Props) {
           >
             {uploading ? t('Uploading...') : t('Save message')}
           </button>
-          <span className="R hint">{t('Press Return to send, Shift-Return to break line.')}</span>
+          <span className="R hint mhide">{t('Press Return to send, Shift-Return to break line.')}</span>
         </p>
       </form>
     </div>
