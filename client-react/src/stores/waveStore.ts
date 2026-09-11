@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import type { Wave } from '@/types'
 import { useMessageStore } from './messageStore'
 import { useUserStore } from './userStore'
+import { useDraftStore } from './draftStore'
 
 interface WaveState {
   waves: Map<string, Wave>
@@ -81,6 +82,7 @@ export const useWaveStore = create<WaveState>((set, get) => ({
     
     // Clean up messages for this wave
     useMessageStore.getState().removeMessagesByWave(waveId)
+    useDraftStore.getState().removeDraft(waveId)
     
     return {
       waves: newWaves,
@@ -148,4 +150,3 @@ export const useWaveStore = create<WaveState>((set, get) => ({
   
   reset: () => set({ waves: new Map(), currentWaveId: null, currentMessageId: null })
 }))
-

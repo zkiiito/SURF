@@ -171,9 +171,8 @@ export default function WaveView() {
           ))}
         </div>
         
-        <WaveReplyForm waveId={wave._id} />
+        <WaveReplyForm key={wave._id} waveId={wave._id} />
       </div>
     </div>
   )
 }
-
