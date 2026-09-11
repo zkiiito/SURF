@@ -131,6 +131,21 @@ export interface WaveInviteDocument {
   created_at: Date;
 }
 
+export interface UnreadMessageDocument {
+  _id: Types.ObjectId;
+  userId: Types.ObjectId;
+  waveId: Types.ObjectId;
+  messageId: Types.ObjectId;
+  rootId: Types.ObjectId;
+}
+
+export interface LinkPreviewCacheDocument {
+  _id: Types.ObjectId;
+  url: string;
+  data: LinkPreviewResult;
+  expiresAt: Date;
+}
+
 // ============================================================================
 // Config Type
 // ============================================================================
@@ -140,7 +155,6 @@ export interface Config {
   googleSecret: string;
   mongoUrl: string;
   mongoDebug: boolean;
-  redisUrl: string;
   hostName: string;
   testMode: boolean;
   port: number;
