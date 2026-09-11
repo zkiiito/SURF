@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { useShallow } from 'zustand/react/shallow'
 import { useWaveStore } from '@/stores/waveStore'
 import { useMessageStore } from '@/stores/messageStore'
@@ -14,6 +14,8 @@ import WaveReplyForm from '@/components/WaveReplyForm'
 export default function WaveView() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const notificationMessageId = searchParams.get('message')
   const wavesContainerRef = useRef<HTMLDivElement>(null)
   
   const wave = useWaveStore(state => id ? state.getWave(id) : undefined)
@@ -27,21 +29,25 @@ export default function WaveView() {
   const offlineCount = waveUsers.filter(u => u.status === 'offline').length
 
   useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>
     if (id) {
       useWaveStore.getState().setCurrentWave(id)
       
       // Jump to first unread message when opening a wave
-      setTimeout(() => {
-        const firstUnread = useMessageStore.getState().getNextUnreadInWave(id, undefined)
-        if (firstUnread) {
-          scrollToMessage(firstUnread._id)
+      timer = setTimeout(() => {
+        const store = useMessageStore.getState()
+        const requested = notificationMessageId ? store.getMessage(notificationMessageId) : undefined
+        const target = requested?.waveId === id ? requested : store.getNextUnreadInWave(id, undefined)
+        if (target) {
+          scrollToMessage(target._id)
         }
       }, 100) // Small delay to ensure DOM is ready
     }
     return () => {
+      clearTimeout(timer)
       useWaveStore.getState().setCurrentWave(null)
     }
-  }, [id])
+  }, [id, notificationMessageId])
 
   // Close all reply forms when wave changes
   useEffect(() => {

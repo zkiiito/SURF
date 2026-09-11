@@ -4,6 +4,7 @@ const translations: Record<string, Translations> = {
   'en-US': {},
   'hu': {
     'Unknown': 'Ismeretlen',
+    '{{ participantName }} mentioned you in {{ waveName }}!': '{{ participantName }} megemlített itt: {{ waveName }}!',
     'Next unread': 'Köv. olvasatlan',
     'Edit': 'Szerkesztés',
     'All read': 'Mindet olvasottá',
