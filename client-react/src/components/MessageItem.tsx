@@ -1,3 +1,4 @@
+import { useDoubleTap } from '@/hooks/useDoubleTap'
 import { useRef, useEffect, useImperativeHandle, useMemo, memo, type Ref, type ReactNode } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import type { Message } from '@/types'
@@ -181,7 +182,10 @@ const MessageItem = memo(function MessageItem({
     }
   }
 
+  const doubleTap = useDoubleTap(() => openReplyForm(message._id))
+
   const handleDoubleClick = (e: React.MouseEvent) => {
+    if ((e.target as Element).closest('a, button, input, textarea, img, iframe, video')) return
     e.preventDefault()
     openReplyForm(message._id)
   }
@@ -194,6 +198,7 @@ const MessageItem = memo(function MessageItem({
         tabIndex={-1} 
         onClick={handleRead}
         onDoubleClick={handleDoubleClick}
+        {...doubleTap}
       >
         <tbody>
           <tr>
