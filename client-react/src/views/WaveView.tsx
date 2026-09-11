@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useLayoutEffect, useRef } from 'react'
 import { useParams, useNavigate, useSearchParams, Navigate } from 'react-router-dom'
 import { useShallow } from 'zustand/react/shallow'
 import { useWaveStore } from '@/stores/waveStore'
@@ -29,23 +29,40 @@ export default function WaveView() {
   
   const offlineCount = waveUsers.filter(u => u.status === 'offline').length
 
-  useEffect(() => {
-    let timer: ReturnType<typeof setTimeout>
-    if (id && useWaveStore.getState().getWave(id)) {
-      useWaveStore.getState().setCurrentWave(id)
-      
-      // Jump to first unread message when opening a wave
-      timer = setTimeout(() => {
-        const store = useMessageStore.getState()
-        const requested = notificationMessageId ? store.getMessage(notificationMessageId) : undefined
-        const target = requested?.waveId === id ? requested : store.getNextUnreadInWave(id, undefined)
-        if (target) {
-          scrollToMessage(target._id)
-        }
-      }, 100) // Small delay to ensure DOM is ready
+  useLayoutEffect(() => {
+    if (!id || !useWaveStore.getState().getWave(id)) return
+    useWaveStore.getState().setCurrentWave(id)
+    const store = useMessageStore.getState()
+    const requested = notificationMessageId ? store.getMessage(notificationMessageId) : undefined
+    const target = requested?.waveId === id ? requested : store.getNextUnreadInWave(id, undefined)
+    let cancelled = false
+    const container = wavesContainerRef.current
+    const stopSettling = () => { cancelled = true }
+    if (target) {
+      scrollToMessage(target._id)
+    } else if (container) {
+      container.scrollTop = container.scrollHeight
+      let lastScrollTop = container.scrollTop
+      const settleBottom = () => {
+        // Font and image loading can change initial message heights. Stop
+        // following that layout once the reader moves away from our position.
+        if (cancelled || container.scrollTop !== lastScrollTop) return
+        container.scrollTop = container.scrollHeight
+        lastScrollTop = container.scrollTop
+      }
+      void document.fonts.ready.then(settleBottom)
+      container.querySelectorAll('img').forEach(image => {
+        if (!image.complete) void image.decode().then(settleBottom, () => {})
+      })
+      container.addEventListener('wheel', stopSettling, { passive: true })
+      container.addEventListener('pointerdown', stopSettling, { passive: true })
+      container.addEventListener('keydown', stopSettling)
     }
     return () => {
-      clearTimeout(timer)
+      cancelled = true
+      container?.removeEventListener('wheel', stopSettling)
+      container?.removeEventListener('pointerdown', stopSettling)
+      container?.removeEventListener('keydown', stopSettling)
       useWaveStore.getState().setCurrentWave(null)
     }
   }, [id, notificationMessageId])
