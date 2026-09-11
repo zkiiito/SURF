@@ -9,9 +9,10 @@ export const message = (id, overrides = {}) => ({
   parentId: null, created_at: Date.now(), unread: false, ...overrides,
 })
 
+let scenarioVisit = 0
 export function visitScenario(overrides = {}, options = {}, route = `/wave/${waveA._id}`) {
   return cy.task('react:reset', { me, users: [bob], waves: [waveA, waveB], messages: [], ...overrides })
-    .then(url => cy.visit(`${url}/#${route}`, options))
+    .then(url => cy.visit(`${url}/?scenario=${++scenarioVisit}#${route}`, options))
 }
 
 export const rootForm = '.waves-container > .replyform form'

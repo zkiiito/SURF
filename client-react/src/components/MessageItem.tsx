@@ -118,9 +118,9 @@ const MessageItem = memo(function MessageItem({
   
   const replies = useMessageStore(useShallow(state => state.getReplies(message._id)))
   const currentUser = useUserStore(state => state.currentUser())
-  const shouldShowLinkPreview = currentUser?.showLinkPreviews ?? true
-  const shouldShowPictures = currentUser?.showPictures ?? true
-  const shouldShowVideos = currentUser?.showVideos ?? true
+  const shouldShowLinkPreview = currentUser?.showLinkPreviews ?? false
+  const shouldShowPictures = currentUser?.showPictures ?? false
+  const shouldShowVideos = currentUser?.showVideos ?? false
 
   const formattedDate = new Date(message.created_at).toLocaleString()
 
