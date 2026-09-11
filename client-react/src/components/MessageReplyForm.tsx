@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, ClipboardEvent, FormEvent, KeyboardEvent } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import type { Message } from '@/types'
-import { useUserStore } from '@/stores/userStore'
+import { useMessageUser } from '@/hooks/useMessageUser'
 import { useWaveStore } from '@/stores/waveStore'
 import { communicator } from '@/services/communicator'
 import { t } from '@/utils/i18n'
@@ -27,10 +27,7 @@ export default function MessageReplyForm({ message, onCancel }: Props) {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const messageUser = useUserStore(state => {
-    const user = state.getUser(message.userId)
-    return user || { name: 'Unknown' }
-  })
+  const messageUser = useMessageUser(message.userId)
   const waveUsers = useWaveStore(useShallow(state => state.getWaveUsers(message.waveId)))
 
   useEffect(() => {
@@ -170,4 +167,3 @@ export default function MessageReplyForm({ message, onCancel }: Props) {
     </div>
   )
 }
-

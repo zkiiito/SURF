@@ -19,8 +19,10 @@ class Communicator {
   private createTitle: string | null = null
   private readQueue: Message[] = []
   private queueReads = false
+  private requestedUserIds = new Set<string>()
 
   initialize() {
+    this.requestedUserIds.clear()
     this.socket = io({ reconnection: false })
 
     this.socket.on('init', (data: SocketInitData) => {
@@ -209,6 +211,7 @@ class Communicator {
   private onUpdateUser(data: { user: any }) {
     const userStore = useUserStore.getState()
     const user = data.user
+    this.requestedUserIds.delete(user._id)
 
     if (userStore.getUser(user._id)) {
       userStore.updateUser(user._id, user)
@@ -242,7 +245,8 @@ class Communicator {
   }
 
   getUser(userId: string) {
-    if (!this.socket) return
+    if (!this.socket || useUserStore.getState().getUser(userId) || this.requestedUserIds.has(userId)) return
+    this.requestedUserIds.add(userId)
     this.socket.emit('getUser', { userId })
   }
 
@@ -291,4 +295,3 @@ class Communicator {
 }
 
 export const communicator = new Communicator()
-

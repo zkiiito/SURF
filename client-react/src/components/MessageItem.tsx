@@ -9,6 +9,7 @@ import { communicator } from '@/services/communicator'
 import { t } from '@/utils/i18n'
 import UserAvatar from './UserAvatar'
 import MessageReplyForm from './MessageReplyForm'
+import { useMessageUser } from '@/hooks/useMessageUser'
 
 const URL_REGEX = /((https?:\/\/|www\.)\S+)/
 const URL_PICTURE_REGEX = /\.(jpg|png|gif)(\?.*)?$/i
@@ -113,15 +114,7 @@ const MessageItem = memo(function MessageItem({
   const tableRef = useRef<HTMLTableElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   
-  const messageUser = useUserStore(state => {
-    const user = state.getUser(message.userId)
-    return user || {
-      _id: message.userId,
-      name: 'Unknown',
-      avatar: 'head1',
-      status: 'offline' as const
-    }
-  })
+  const messageUser = useMessageUser(message.userId)
   
   const replies = useMessageStore(useShallow(state => state.getReplies(message._id)))
   const currentUser = useUserStore(state => state.currentUser())
@@ -289,4 +282,3 @@ const MessageItem = memo(function MessageItem({
 })
 
 export default MessageItem
-

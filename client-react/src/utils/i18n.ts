@@ -3,6 +3,7 @@ type Translations = Record<string, string>
 const translations: Record<string, Translations> = {
   'en-US': {},
   'hu': {
+    'Unknown': 'Ismeretlen',
     'Next unread': 'Köv. olvasatlan',
     'Edit': 'Szerkesztés',
     'All read': 'Mindet olvasottá',
@@ -79,4 +80,3 @@ export function initI18n() {
   const browserLocale = navigator.language || (navigator as any).browserLanguage || 'en-US'
   setLocale(browserLocale)
 }
-
