@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
+import { useParams, useNavigate, useSearchParams, Navigate } from 'react-router-dom'
 import { useShallow } from 'zustand/react/shallow'
 import { useWaveStore } from '@/stores/waveStore'
 import { useMessageStore } from '@/stores/messageStore'
@@ -31,7 +31,7 @@ export default function WaveView() {
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>
-    if (id) {
+    if (id && useWaveStore.getState().getWave(id)) {
       useWaveStore.getState().setCurrentWave(id)
       
       // Jump to first unread message when opening a wave
@@ -97,12 +97,7 @@ export default function WaveView() {
       communicator.quitWave(wave._id)
       useWaveStore.getState().removeWave(wave._id)
       
-      const lastWave = useWaveStore.getState().activeWaves()[0]
-      if (lastWave) {
-        navigate(`/wave/${lastWave._id}`)
-      } else {
-        navigate('/')
-      }
+      navigate('/waves', { replace: true })
     }
   }
 
@@ -117,7 +112,7 @@ export default function WaveView() {
     }
   }
 
-  if (!wave) return null
+  if (!wave) return <Navigate to="/waves" replace />
 
   const handleWavetopClick = (e: React.MouseEvent) => {
     // Only handle clicks on the wavetop div itself, not on buttons or links

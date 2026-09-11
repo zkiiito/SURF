@@ -53,7 +53,7 @@ export const useWaveStore = create<WaveState>((set, get) => ({
   
   addWave: (wave) => set((state) => {
     const newWaves = new Map(state.waves)
-    newWaves.set(wave._id, { ...wave, userIds: [...new Set(wave.userIds)], current: false })
+    newWaves.set(wave._id, { ...wave, archived: wave.archived ?? true, userIds: [...new Set(wave.userIds)], current: false })
     return { waves: newWaves }
   }),
   
