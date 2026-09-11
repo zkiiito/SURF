@@ -10,6 +10,7 @@ import { t } from '@/utils/i18n'
 import UserAvatar from '@/components/UserAvatar'
 import MessageItem from '@/components/MessageItem'
 import WaveReplyForm from '@/components/WaveReplyForm'
+import { useWaveUsers } from '@/hooks/useWaveUsers'
 
 export default function WaveView() {
   const { id } = useParams<{ id: string }>()
@@ -22,7 +23,7 @@ export default function WaveView() {
   const rootMessages = useMessageStore(useShallow(state => 
     id ? state.getRootMessagesByWave(id) : []
   ))
-  const waveUsers = useWaveStore(useShallow(state => id ? state.getWaveUsers(id) : []))
+  const waveUsers = useWaveUsers(id)
   const openEditWave = useAppStore(state => state.openEditWave)
   const closeReplyForm = useAppStore(state => state.closeReplyForm)
   
@@ -131,17 +132,17 @@ export default function WaveView() {
     <div className="wave">
       <div className="wavetop" onClick={handleWavetopClick}>
         <h2 className="wave-title">{wave.title}</h2>
-        <p className="heads">
+        <div className="heads">
           {waveUsers.map(user => (
             <UserAvatar key={user._id} user={user} />
           ))}
           {offlineCount > 0 && (
-            <p className="offline-list">
+            <span className="offline-list">
               +<span className="count">{offlineCount}</span>
               <span className="mhide"> offline</span>
-            </p>
+            </span>
           )}
-        </p>
+        </div>
         <div className="buttons">
           <a className="button gounread R mhide" href="#" onClick={(e) => { e.preventDefault(); scrollToNextUnread() }}>
             {t('Next unread')}

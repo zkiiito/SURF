@@ -1,7 +1,6 @@
 import { useRef, ClipboardEvent, FormEvent, KeyboardEvent } from 'react'
-import { useShallow } from 'zustand/react/shallow'
 import { communicator } from '@/services/communicator'
-import { useWaveStore } from '@/stores/waveStore'
+import { useWaveUsers } from '@/hooks/useWaveUsers'
 import { t } from '@/utils/i18n'
 import { mentionUser } from '@/utils/mentionUser'
 import { useDraftStore, useWaveDraft, type Draft } from '@/stores/draftStore'
@@ -25,7 +24,7 @@ export default function WaveReplyForm({ waveId }: Props) {
   const setMessage = (message: string) => updateDraft({ message })
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const waveUsers = useWaveStore(useShallow(state => state.getWaveUsers(waveId)))
+  const waveUsers = useWaveUsers(waveId)
 
   const addFiles = (incoming: File[]) => {
     if (!uploading) updateDraft({ files: [...pendingFiles, ...incoming].slice(0, MAX_FILES) })
