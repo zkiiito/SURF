@@ -1,3 +1,4 @@
+import { nextUnread } from '@/utils/nextUnread'
 import { useRef, ClipboardEvent, FormEvent, KeyboardEvent } from 'react'
 import { communicator } from '@/services/communicator'
 import { useWaveUsers } from '@/hooks/useWaveUsers'
@@ -56,7 +57,11 @@ export default function WaveReplyForm({ waveId }: Props) {
   }
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === ' ' && message === ' ') {
+      e.preventDefault()
+      e.stopPropagation()
+      nextUnread(waveId)
+    } else if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
       handleSubmit(e)
     } else if (e.key === 'Tab' && !e.shiftKey) {

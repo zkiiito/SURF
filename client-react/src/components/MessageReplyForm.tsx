@@ -1,3 +1,4 @@
+import { nextUnread } from '@/utils/nextUnread'
 import { useState, useRef, useEffect, ClipboardEvent, FormEvent, KeyboardEvent } from 'react'
 import type { Message } from '@/types'
 import { useMessageUser } from '@/hooks/useMessageUser'
@@ -64,7 +65,11 @@ export default function MessageReplyForm({ message, onCancel }: Props) {
   }
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === ' ' && replyMessage === ' ') {
+      e.preventDefault()
+      e.stopPropagation()
+      nextUnread(message.waveId)
+    } else if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
       handleSubmit(e)
     } else if (e.key === 'Tab' && !e.shiftKey) {

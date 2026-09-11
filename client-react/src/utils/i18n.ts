@@ -3,6 +3,10 @@ type Translations = Record<string, string>
 const translations: Record<string, Translations> = {
   'en-US': {},
   'hu': {
+    'Type to add...': 'Írj a hozzáadáshoz...',
+    'Type to add participants...': 'Írj résztvevők hozzáadásához...',
+    'No matching users': 'Nincs megfelelő felhasználó',
+    'No more users to add': 'Nincs több hozzáadható felhasználó',
     'Unknown': 'Ismeretlen',
     '{{ participantName }} mentioned you in {{ waveName }}!': '{{ participantName }} megemlített itt: {{ waveName }}!',
     'Next unread': 'Köv. olvasatlan',

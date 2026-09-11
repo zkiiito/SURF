@@ -1,3 +1,4 @@
+import { t } from '@/utils/i18n'
 import { useState, useRef, useEffect, KeyboardEvent } from 'react'
 import { createPortal } from 'react-dom'
 import type { User } from '@/types'
@@ -13,7 +14,7 @@ export default function UserTokenInput({
   users, 
   selectedUserIds, 
   onAdd,
-  placeholder = 'Type to add...'
+  placeholder = t('Type to add...')
 }: UserTokenInputProps) {
   const [inputValue, setInputValue] = useState('')
   const [showDropdown, setShowDropdown] = useState(false)
@@ -30,7 +31,7 @@ export default function UserTokenInput({
 
   const filteredUsers = inputValue.trim() 
     ? availableUsers.filter(user => 
-        user.name.toLowerCase().includes(inputValue.toLowerCase())
+        `${user.name} ${user.email ?? ''}`.toLowerCase().includes(inputValue.toLowerCase())
       )
     : availableUsers
 
@@ -106,7 +107,9 @@ export default function UserTokenInput({
         e.preventDefault()
         setSelectedIndex(prev => prev > 0 ? prev - 1 : 0)
         break
+      case 'Tab':
       case 'Enter':
+        if (e.key === 'Tab' && e.shiftKey) break
         e.preventDefault()
         if (filteredUsers[selectedIndex]) {
           handleSelectUser(filteredUsers[selectedIndex])
@@ -161,12 +164,12 @@ export default function UserTokenInput({
                 handleSelectUser(user)
               }}
             >
-              {highlightMatch(user.name, inputValue)}
+              {highlightMatch(user.email ? `${user.name} (${user.email})` : user.name, inputValue)}
             </li>
           ))}
         </ul>
       ) : (
-        <p>{inputValue ? 'No matching users' : 'No more users to add'}</p>
+        <p>{inputValue ? t('No matching users') : t('No more users to add')}</p>
       )}
     </div>,
     document.body
