@@ -34,7 +34,7 @@ export interface Message {
   parentId: string | null
   created_at: number
   unread: boolean
-  linkPreview?: LinkPreview
+  linkPreviews?: LinkPreview[]
   attachments?: Attachment[]
 }
 
