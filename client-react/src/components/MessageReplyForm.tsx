@@ -1,8 +1,8 @@
+import { nextUnread } from '@/utils/nextUnread'
 import { useState, useRef, useEffect, ClipboardEvent, FormEvent, KeyboardEvent } from 'react'
-import { useShallow } from 'zustand/react/shallow'
 import type { Message } from '@/types'
-import { useUserStore } from '@/stores/userStore'
-import { useWaveStore } from '@/stores/waveStore'
+import { useMessageUser } from '@/hooks/useMessageUser'
+import { useWaveUsers } from '@/hooks/useWaveUsers'
 import { communicator } from '@/services/communicator'
 import { t } from '@/utils/i18n'
 import { mentionUser } from '@/utils/mentionUser'
@@ -27,11 +27,8 @@ export default function MessageReplyForm({ message, onCancel }: Props) {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const messageUser = useUserStore(state => {
-    const user = state.getUser(message.userId)
-    return user || { name: 'Unknown' }
-  })
-  const waveUsers = useWaveStore(useShallow(state => state.getWaveUsers(message.waveId)))
+  const messageUser = useMessageUser(message.userId)
+  const waveUsers = useWaveUsers(message.waveId)
 
   useEffect(() => {
     textareaRef.current?.focus()
@@ -68,7 +65,11 @@ export default function MessageReplyForm({ message, onCancel }: Props) {
   }
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === ' ' && replyMessage === ' ') {
+      e.preventDefault()
+      e.stopPropagation()
+      nextUnread(message.waveId)
+    } else if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
       handleSubmit(e)
     } else if (e.key === 'Tab' && !e.shiftKey) {
@@ -138,7 +139,7 @@ export default function MessageReplyForm({ message, onCancel }: Props) {
             ))}
           </ul>
         )}
-        <p className="inline-help mhide">
+        <p className="inline-help">
           <input
             ref={fileInputRef}
             type="file"
@@ -164,10 +165,9 @@ export default function MessageReplyForm({ message, onCancel }: Props) {
           >
             {uploading ? t('Uploading...') : t('Save message')}
           </button>
-          <span className="R hint">{t('Press Return to send, Shift-Return to break line.')}</span>
+          <span className="R hint mhide">{t('Press Return to send, Shift-Return to break line.')}</span>
         </p>
       </form>
     </div>
   )
 }
-

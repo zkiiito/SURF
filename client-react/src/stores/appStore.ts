@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { useMessageStore } from './messageStore'
 import { useUserStore } from './userStore'
 import { useWaveStore } from './waveStore'
+import { useDraftStore } from './draftStore'
 
 interface AppState {
   ready: boolean
@@ -53,7 +54,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     return count > 0 ? `[${count}] SURF` : 'SURF'
   },
   
-  setReady: () => set({ ready: true }),
+  setReady: () => set({ ready: true, showDisconnected: false }),
   
   setMobile: (mobile) => set({ 
     isMobile: mobile,
@@ -80,7 +81,6 @@ export const useAppStore = create<AppState>((set, get) => ({
   closeAllOverlays: () => set({
     showEditWave: false,
     showEditUser: false,
-    showDisconnected: false,
     editingWaveId: null
   }),
   
@@ -106,6 +106,6 @@ export const useAppStore = create<AppState>((set, get) => ({
     useUserStore.getState().reset()
     useWaveStore.getState().reset()
     useMessageStore.getState().reset()
+    useDraftStore.getState().reset()
   }
 }))
-

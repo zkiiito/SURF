@@ -1,9 +1,10 @@
-import { useState, useRef, ClipboardEvent, FormEvent, KeyboardEvent } from 'react'
-import { useShallow } from 'zustand/react/shallow'
+import { nextUnread } from '@/utils/nextUnread'
+import { useRef, ClipboardEvent, FormEvent, KeyboardEvent } from 'react'
 import { communicator } from '@/services/communicator'
-import { useWaveStore } from '@/stores/waveStore'
+import { useWaveUsers } from '@/hooks/useWaveUsers'
 import { t } from '@/utils/i18n'
 import { mentionUser } from '@/utils/mentionUser'
+import { useDraftStore, useWaveDraft, type Draft } from '@/stores/draftStore'
 
 const MAX_FILES = 10
 
@@ -18,15 +19,16 @@ function formatBytes(bytes: number): string {
 }
 
 export default function WaveReplyForm({ waveId }: Props) {
-  const [message, setMessage] = useState('')
-  const [pendingFiles, setPendingFiles] = useState<File[]>([])
-  const [uploading, setUploading] = useState(false)
+  const { message, files: pendingFiles, uploading } = useWaveDraft(waveId)
+  const updateDraft = (updates: Partial<Draft>) =>
+    useDraftStore.getState().updateDraft(waveId, updates)
+  const setMessage = (message: string) => updateDraft({ message })
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const waveUsers = useWaveStore(useShallow(state => state.getWaveUsers(waveId)))
+  const waveUsers = useWaveUsers(waveId)
 
   const addFiles = (incoming: File[]) => {
-    setPendingFiles(prev => [...prev, ...incoming].slice(0, MAX_FILES))
+    if (!uploading) updateDraft({ files: [...pendingFiles, ...incoming].slice(0, MAX_FILES) })
   }
 
   const handleSubmit = async (e: FormEvent) => {
@@ -34,16 +36,15 @@ export default function WaveReplyForm({ waveId }: Props) {
     if (uploading) return
 
     if (pendingFiles.length > 0) {
-      setUploading(true)
+      updateDraft({ uploading: true })
       try {
         await communicator.uploadFiles(pendingFiles, waveId, message, null)
-        setPendingFiles([])
-        setMessage('')
+        updateDraft({ files: [], message: '' })
         if (fileInputRef.current) fileInputRef.current.value = ''
       } catch (err) {
         alert((err as Error).message)
       } finally {
-        setUploading(false)
+        updateDraft({ uploading: false })
         textareaRef.current?.focus()
       }
       return
@@ -56,7 +57,11 @@ export default function WaveReplyForm({ waveId }: Props) {
   }
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === ' ' && message === ' ') {
+      e.preventDefault()
+      e.stopPropagation()
+      nextUnread(waveId)
+    } else if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
       handleSubmit(e)
     } else if (e.key === 'Tab' && !e.shiftKey) {
@@ -92,7 +97,7 @@ export default function WaveReplyForm({ waveId }: Props) {
   }
 
   const removeFile = (idx: number) => {
-    setPendingFiles(prev => prev.filter((_, i) => i !== idx))
+    if (!uploading) updateDraft({ files: pendingFiles.filter((_, i) => i !== idx) })
   }
 
   const atLimit = pendingFiles.length >= MAX_FILES
@@ -121,7 +126,7 @@ export default function WaveReplyForm({ waveId }: Props) {
             ))}
           </ul>
         )}
-        <p className="inline-help mhide">
+        <p className="inline-help">
           <input
             ref={fileInputRef}
             type="file"
@@ -147,10 +152,9 @@ export default function WaveReplyForm({ waveId }: Props) {
           >
             {uploading ? t('Uploading...') : t('Save message')}
           </button>
-          <span className="R hint">{t('Press Return to send, Shift-Return to break line.')}</span>
+          <span className="R hint mhide">{t('Press Return to send, Shift-Return to break line.')}</span>
         </p>
       </form>
     </div>
   )
 }
-

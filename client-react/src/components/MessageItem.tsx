@@ -1,3 +1,4 @@
+import { useDoubleTap } from '@/hooks/useDoubleTap'
 import { useRef, useEffect, useImperativeHandle, useMemo, memo, type Ref, type ReactNode } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import type { Message } from '@/types'
@@ -9,6 +10,7 @@ import { communicator } from '@/services/communicator'
 import { t } from '@/utils/i18n'
 import UserAvatar from './UserAvatar'
 import MessageReplyForm from './MessageReplyForm'
+import { useMessageUser } from '@/hooks/useMessageUser'
 
 const URL_REGEX = /((https?:\/\/|www\.)\S+)/
 const URL_PICTURE_REGEX = /\.(jpg|png|gif)(\?.*)?$/i
@@ -113,40 +115,32 @@ const MessageItem = memo(function MessageItem({
   const tableRef = useRef<HTMLTableElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   
-  const messageUser = useUserStore(state => {
-    const user = state.getUser(message.userId)
-    return user || {
-      _id: message.userId,
-      name: 'Unknown',
-      avatar: 'head1',
-      status: 'offline' as const
-    }
-  })
+  const messageUser = useMessageUser(message.userId)
   
   const replies = useMessageStore(useShallow(state => state.getReplies(message._id)))
   const currentUser = useUserStore(state => state.currentUser())
-  const shouldShowLinkPreview = currentUser?.showLinkPreviews ?? true
-  const shouldShowPictures = currentUser?.showPictures ?? true
-  const shouldShowVideos = currentUser?.showVideos ?? true
+  const shouldShowLinkPreview = currentUser?.showLinkPreviews ?? false
+  const shouldShowPictures = currentUser?.showPictures ?? false
+  const shouldShowVideos = currentUser?.showVideos ?? false
 
   const formattedDate = new Date(message.created_at).toLocaleString()
 
-  // Request link preview for URLs in the message
+  const requestedPreviews = useRef(new Set<string>())
+  const previewUrls = useMemo(() => [...new Set(
+    (message.message.match(/((https?:\/\/|www\.)\S+)/g) ?? [])
+      .map(url => url.startsWith('http') ? url : 'http://' + url)
+      .filter(url => !(shouldShowPictures && URL_PICTURE_REGEX.test(url)))
+      .filter(url => !(shouldShowVideos && URL_VIDEO_REGEX.test(url) && URL_VIDEO_REGEX_YOUTUBE.test(url)))
+  )], [message.message, shouldShowPictures, shouldShowVideos])
+
   useEffect(() => {
-    if (!shouldShowLinkPreview || message.linkPreview) return
-
-    const urlRegexGlobal = /((https?:\/\/|www\.)\S+)/g
-    const matches = message.message.match(urlRegexGlobal)
-    if (matches && matches.length > 0) {
-      const url = matches[0]
-      const fullUrl = url.startsWith('http') ? url : 'http://' + url
-
-      // Don't request preview for images or videos
-      if (!URL_PICTURE_REGEX.test(fullUrl) && !URL_VIDEO_REGEX.test(fullUrl)) {
-        communicator.getLinkPreview(fullUrl, message._id)
-      }
+    if (!shouldShowLinkPreview) return
+    for (const url of previewUrls) {
+      if (message.linkPreviews?.some(preview => preview.url === url) || requestedPreviews.current.has(url)) continue
+      requestedPreviews.current.add(url)
+      communicator.getLinkPreview(url, message._id)
     }
-  }, [message._id, message.message, message.linkPreview, shouldShowLinkPreview])
+  }, [message._id, message.linkPreviews, previewUrls, shouldShowLinkPreview])
 
   useImperativeHandle(ref, () => ({
     scrollIntoView: () => {
@@ -188,7 +182,10 @@ const MessageItem = memo(function MessageItem({
     }
   }
 
+  const doubleTap = useDoubleTap(() => openReplyForm(message._id))
+
   const handleDoubleClick = (e: React.MouseEvent) => {
+    if ((e.target as Element).closest('a, button, input, textarea, img, iframe, video')) return
     e.preventDefault()
     openReplyForm(message._id)
   }
@@ -201,6 +198,7 @@ const MessageItem = memo(function MessageItem({
         tabIndex={-1} 
         onClick={handleRead}
         onDoubleClick={handleDoubleClick}
+        {...doubleTap}
       >
         <tbody>
           <tr>
@@ -239,20 +237,20 @@ const MessageItem = memo(function MessageItem({
             )
           })}
 
-          {message.linkPreview && shouldShowLinkPreview && (
-            <tr>
+          {shouldShowLinkPreview && previewUrls.map(url => message.linkPreviews?.find(preview => preview.url === url)).filter(preview => preview !== undefined).map(preview => (
+            <tr key={preview.url}>
               <td className="message-header"></td>
               <td className="message-linkpreview message-body">
-                <a href={message.linkPreview.url} target="_blank" rel="noreferrer">
-                  <b>{message.linkPreview.title}</b><br />
-                  {message.linkPreview.image && (
-                    <><img src={message.linkPreview.image} className="message-img" alt="" /><br /></>
+                <a href={preview.url} target="_blank" rel="noreferrer">
+                  <b>{preview.title}</b><br />
+                  {preview.image && (
+                    <><img src={preview.image} className="message-img" alt="" /><br /></>
                   )}
-                  <span>{message.linkPreview.description}</span>
+                  <span>{preview.description}</span>
                 </a>
               </td>
             </tr>
-          )}
+          ))}
         </tbody>
       </table>
       
@@ -289,4 +287,3 @@ const MessageItem = memo(function MessageItem({
 })
 
 export default MessageItem
-

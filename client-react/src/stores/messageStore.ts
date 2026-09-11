@@ -128,7 +128,8 @@ export const useMessageStore = create<MessageState>((set, get) => ({
   }),
   
   addLinkPreview: (messageId, linkPreview) => {
-    get().updateMessage(messageId, { linkPreview })
+    const previews = get().getMessage(messageId)?.linkPreviews ?? []
+    get().updateMessage(messageId, { linkPreviews: [...previews.filter(preview => preview.url !== linkPreview.url), linkPreview] })
   },
   
   getNextUnreadInWave: (waveId, currentMessageId) => {
