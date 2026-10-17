@@ -1,5 +1,5 @@
 import mongoose, { Model } from 'mongoose';
-import type { UserDocument, WaveDocument, MessageDocument, WaveInviteDocument } from './types.js';
+import type { UserDocument, WaveDocument, MessageDocument, WaveInviteDocument, UnreadMessageDocument, LinkPreviewCacheDocument } from './types.js';
 
 const { Schema } = mongoose;
 
@@ -40,7 +40,25 @@ const WaveInviteSchema = new Schema<WaveInviteDocument>({
   created_at: { type: Date }
 });
 
+const UnreadMessageSchema = new Schema<UnreadMessageDocument>({
+  userId: { type: Schema.Types.ObjectId, ref: 'UserModel', required: true },
+  waveId: { type: Schema.Types.ObjectId, ref: 'WaveModel', required: true },
+  messageId: { type: Schema.Types.ObjectId, ref: 'MessageModel', required: true },
+  rootId: { type: Schema.Types.ObjectId, ref: 'MessageModel', required: true }
+});
+UnreadMessageSchema.index({ userId: 1, waveId: 1, rootId: 1 });
+UnreadMessageSchema.index({ userId: 1, messageId: 1 }, { unique: true });
+
+const LinkPreviewCacheSchema = new Schema<LinkPreviewCacheDocument>({
+  url: { type: String, required: true, unique: true },
+  data: { type: Schema.Types.Mixed, required: true },
+  expiresAt: { type: Date, required: true }
+});
+LinkPreviewCacheSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+
 export const UserModel: Model<UserDocument> = mongoose.model<UserDocument>('UserModel', UserSchema);
 export const MessageModel: Model<MessageDocument> = mongoose.model<MessageDocument>('MessageModel', MessageSchema);
 export const WaveModel: Model<WaveDocument> = mongoose.model<WaveDocument>('WaveModel', WaveSchema);
 export const WaveInviteModel: Model<WaveInviteDocument> = mongoose.model<WaveInviteDocument>('WaveInviteModel', WaveInviteSchema);
+export const UnreadMessageModel: Model<UnreadMessageDocument> = mongoose.model<UnreadMessageDocument>('UnreadMessageModel', UnreadMessageSchema);
+export const LinkPreviewCacheModel: Model<LinkPreviewCacheDocument> = mongoose.model<LinkPreviewCacheDocument>('LinkPreviewCacheModel', LinkPreviewCacheSchema);
