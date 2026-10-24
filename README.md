@@ -28,7 +28,9 @@ website at <http://zkiiito.github.io/SURF>.
 
 * [node.js]
 * [mongodb]
-* [redis]
+
+Upgrading from the Redis-backed version? Follow [the unread migration procedure](UNREAD_MIGRATION.md)
+before starting the new server. Redis is only needed as the migration source.
 
 ### Steps for you local (development) copy
 ```sh
