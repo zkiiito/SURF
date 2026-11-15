@@ -34,7 +34,6 @@
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-local": "^1.0.0",
-    "redis": "^5.12.1",
     "socket.io": "^4.8.3"
   },
   "engines": {
