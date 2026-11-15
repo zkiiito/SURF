@@ -29,9 +29,6 @@ website at <http://zkiiito.github.io/SURF>.
 * [node.js]
 * [mongodb]
 
-Upgrading from the Redis-backed version? Follow [the unread migration procedure](UNREAD_MIGRATION.md)
-before users access the new version. Redis is only needed as the migration source.
-
 ### Steps for you local (development) copy
 ```sh
 $ git clone git@github.com:zkiiito/SURF.git surf
@@ -71,4 +68,3 @@ All code released under the [GNU GPL v3.0](LICENSE).
 
 [node.js]:http://nodejs.org
 [mongodb]:http://www.mongodb.org
-[redis]:http://redis.io

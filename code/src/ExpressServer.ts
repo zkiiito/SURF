@@ -7,7 +7,6 @@ import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import routerClient from './routerClient.js';
 import routerUploads from './routerUploads.js';
-import routerMigrations from './routerMigrations.js';
 import cors from 'cors';
 import type { GoogleProfile } from './types.js';
 
@@ -33,10 +32,6 @@ declare global {
 export function startExpressServer(): http.Server {
   const app = express();
   app.disable('x-powered-by');
-
-  // Register before sessions and application routes: this uses an operator token
-  // and must not depend on the session store being migrated.
-  app.use('/admin/migrations/unreads', routerMigrations);
 
   app.use(cors({
     origin: true,
