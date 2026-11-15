@@ -6,6 +6,7 @@ export class Message {
   userId: string;
   waveId: string;
   parentId: string | null;
+  rootId: string | null;
   message: string;
   attachments?: AttachmentData[];
   unread: boolean;
@@ -16,6 +17,7 @@ export class Message {
     this.userId = data?.userId ?? '';
     this.waveId = data?.waveId ?? '';
     this.parentId = data?.parentId ?? null;
+    this.rootId = data?.rootId ?? null;
     this.message = data?.message ?? '';
     this.attachments = data?.attachments;
     this.unread = data?.unread ?? true;

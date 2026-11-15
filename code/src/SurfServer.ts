@@ -6,6 +6,7 @@ import LinkPreview from './LinkPreview.js';
 import SessionStore from './SessionStore.js';
 import { startExpressServer } from './ExpressServer.js';
 import Config from './Config.js';
+import { unreadMigrationJob } from './migrations/UnreadMigrationJob.js';
 import { Registry } from './Registry.js';
 import { User, Wave, Message, Collection } from './model/index.js';
 import type { 
@@ -74,6 +75,7 @@ class SurfServerClass implements SurfServerInterface {
 
     // Authentication middleware
     this.socket.use((socket: Socket, next) => {
+      if (unreadMigrationJob.running) return next(new Error('Unread migration in progress'));
       const data = socket.request as SocketRequest;
 
       if (!data.headers.cookie) {
@@ -214,6 +216,10 @@ class SurfServerClass implements SurfServerInterface {
    * Set up client event handlers
    */
   private setupClientEventHandlers(client: SurfSocket): void {
+    client.use((_packet, next) => {
+      if (unreadMigrationJob.running) return next(new Error('Unread migration in progress'));
+      next();
+    });
     client.on('error', (err: Error) => {
       console.log('Socket client error');
       console.log(err.stack);

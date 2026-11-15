@@ -28,10 +28,6 @@ jobs:
         uses: supercharge/mongodb-github-action@1.11.0
         with:
           mongodb-version: 8.0.0-rc18
-      - name: Start Redis
-        uses: supercharge/redis-github-action@1.8.0
-        with:
-          redis-version: 4
       - run: nohup bash -c "npm start 2>&1 &" && sleep 4
         env:
           TESTMODE: 1

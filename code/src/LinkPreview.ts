@@ -5,7 +5,7 @@ import metascraper from 'metascraper';
 import metascraperDescription from 'metascraper-description';
 import metascraperImage from 'metascraper-image';
 import metascraperTitle from 'metascraper-title';
-import redis from './RedisClient.js';
+import { LinkPreviewCacheModel } from './MongooseModels.js';
 import type { LinkPreviewResult } from './types.js';
 
 const metascraperInstance = metascraper([
@@ -43,28 +43,26 @@ class LinkPreviewService {
   }
 
   /**
-   * Generate cache key from URL
-   */
-  getKeyByUrl(url: string): string {
-    return 'linkpreview-' + url.replace(/[^a-z0-9]/gi, '');
-  }
-
-  /**
-   * Fetch preview data from cache
+   * Fetch preview data from cache (Mongo TTL collection)
    */
   async fetchDataFromCache(url: string): Promise<LinkPreviewResult> {
-    const result = await redis.get(this.getKeyByUrl(url));
-    if (result === null) {
+    const row = await LinkPreviewCacheModel.findOne({ url }).exec();
+    if (!row) {
       throw new Error('not found');
     }
-    return JSON.parse(result) as LinkPreviewResult;
+    return row.data;
   }
 
   /**
-   * Save preview data to cache
+   * Save preview data to cache. `duration` is in seconds.
    */
   saveDataToCache(url: string, data: LinkPreviewResult, duration: number): void {
-    redis.setEx(this.getKeyByUrl(url), duration, JSON.stringify(data));
+    const expiresAt = new Date(Date.now() + duration * 1000);
+    LinkPreviewCacheModel.updateOne(
+      { url },
+      { url, data, expiresAt },
+      { upsert: true }
+    ).exec().catch((err) => console.log('linkpreview cache save', err));
   }
 
   /**

@@ -3,9 +3,7 @@ services:
     build: .
     depends_on:
       - mongodb
-      - redis
     environment:
-      - REDISCLOUD_URL=redis://redis:6379
       - MONGOLAB_URI=mongodb://mongodb:27017/wave0
       - HOSTNAME=http://localhost:8000
       - TESTMODE=1
@@ -24,16 +22,8 @@ services:
     networks:
       - backend
 
-  redis:
-    image: redis:7.0-alpine
-    networks:
-      - backend
-    volumes:
-      - redis:/rdata/
-
 networks:
   backend:
 
 volumes:
   mongodb:
-  redis:
