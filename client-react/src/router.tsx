@@ -19,7 +19,8 @@ export const router = createHashRouter([
       {
         path: 'wave/:id',
         element: <WaveView />
-      }
+      },
+      { path: '*', element: <Navigate to="/waves" replace /> }
     ]
   }
 ])

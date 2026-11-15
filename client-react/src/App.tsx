@@ -12,11 +12,13 @@ import EmptyState from './components/EmptyState'
 import EditWave from './components/EditWave'
 import EditUser from './components/EditUser'
 import Disconnected from './components/Disconnected'
+import { useMentionNotifications } from './hooks/useMentionNotifications'
 import '../public/css/style.css'
 import '../public/css/token-input.css'
 import './App.css'
 
 function App() {
+  useMentionNotifications()
   const ready = useAppStore(state => state.ready)
   const isMobile = useAppStore(state => state.isMobile)
   const showEditWave = useAppStore(state => state.showEditWave)
@@ -212,6 +214,13 @@ function App() {
     }
   }
 
+  const overlays = <>
+    {showOverlay && <div id="darken" onClick={closeAllOverlays}></div>}
+    {showEditWave && <EditWave />}
+    {showEditUser && <EditUser />}
+    {showDisconnected && <Disconnected />}
+  </>
+
   if (!ready) {
     return (
       <>
@@ -221,6 +230,7 @@ function App() {
             <div className="loading-spinner"></div>
           </div>
         </div>
+        {overlays}
       </>
     )
   }
@@ -237,10 +247,7 @@ function App() {
         </div>
       </div>
 
-      {showOverlay && <div id="darken" onClick={closeAllOverlays}></div>}
-      {showEditWave && <EditWave />}
-      {showEditUser && <EditUser />}
-      {showDisconnected && <Disconnected />}
+      {overlays}
     </>
   )
 }

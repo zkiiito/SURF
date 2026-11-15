@@ -14,17 +14,17 @@ export default function EditUser() {
 
   const [name, setName] = useState('')
   const [avatar, setAvatar] = useState('head1')
-  const [showPictures, setShowPictures] = useState(true)
-  const [showVideos, setShowVideos] = useState(true)
-  const [showLinkPreviews, setShowLinkPreviews] = useState(true)
+  const [showPictures, setShowPictures] = useState(false)
+  const [showVideos, setShowVideos] = useState(false)
+  const [showLinkPreviews, setShowLinkPreviews] = useState(false)
 
   useEffect(() => {
     if (currentUser) {
       setName(currentUser.name)
       setAvatar(currentUser.avatar)
-      setShowPictures(currentUser.showPictures ?? true)
-      setShowVideos(currentUser.showVideos ?? true)
-      setShowLinkPreviews(currentUser.showLinkPreviews ?? true)
+      setShowPictures(currentUser.showPictures ?? false)
+      setShowVideos(currentUser.showVideos ?? false)
+      setShowLinkPreviews(currentUser.showLinkPreviews ?? false)
     }
   }, [currentUser])
 
@@ -208,4 +208,3 @@ export default function EditUser() {
     </div>
   )
 }
-

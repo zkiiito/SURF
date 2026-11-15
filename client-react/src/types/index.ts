@@ -4,6 +4,7 @@ export interface User {
   avatar: string
   status: 'online' | 'offline'
   googleAvatar?: string
+  email?: string
   emailMD5?: string
   showPictures?: boolean
   showVideos?: boolean
@@ -34,7 +35,7 @@ export interface Message {
   parentId: string | null
   created_at: number
   unread: boolean
-  linkPreview?: LinkPreview
+  linkPreviews?: LinkPreview[]
   attachments?: Attachment[]
 }
 

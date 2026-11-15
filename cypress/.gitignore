@@ -1,4 +1,6 @@
 plugins/*
 support/*
+!support/reactFixtureServer.js
+!support/reactScenario.js
 videos/*
 fixtures/*

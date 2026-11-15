@@ -8,31 +8,31 @@ import { t } from '@/utils/i18n'
 
 export default function WavesView() {
   const navigate = useNavigate()
-  const activeWaves = useWaveStore(useShallow(state => state.activeWaves()))
+  const allWaves = useWaveStore(useShallow(state => state.allWaves()))
   const openEditWave = useAppStore(state => state.openEditWave)
 
   useEffect(() => {
-    if (activeWaves.length === 0) return
+    if (allWaves.length === 0) return
 
-    const activeIds = new Set(activeWaves.map(w => w._id))
-    const allMessages = useMessageStore.getState().allMessages()
+    const waveIds = new Set(allWaves.map(w => w._id))
+    const allMessages = useMessageStore.getState().allMessages().filter(message => waveIds.has(message.waveId))
 
     let targetWaveId: string | null = null
     if (allMessages.length > 0) {
       const latest = allMessages.reduce((acc, msg) =>
         msg.created_at > acc.created_at ? msg : acc
       )
-      if (activeIds.has(latest.waveId)) {
+      if (waveIds.has(latest.waveId)) {
         targetWaveId = latest.waveId
       }
     }
 
     if (!targetWaveId) {
-      targetWaveId = activeWaves[activeWaves.length - 1]._id
+      targetWaveId = allWaves[allWaves.length - 1]._id
     }
 
-    navigate(`/wave/${targetWaveId}`)
-  }, [activeWaves, navigate])
+    navigate(`/wave/${targetWaveId}`, { replace: true })
+  }, [allWaves, navigate])
 
   return (
     <div className="empty">

@@ -1,6 +1,8 @@
 import { create } from 'zustand'
 import type { User } from '@/types'
 
+const localAttributes = ['showPictures', 'showVideos', 'showLinkPreviews'] as const
+
 interface UserState {
   users: Map<string, User>
   currentUserId: string | null
@@ -79,26 +81,35 @@ export const useUserStore = create<UserState>((set, get) => ({
     const currentUser = get().currentUser()
     if (!currentUser) return
     
-    const showPictures = localStorage.getItem('showPictures')
-    const showVideos = localStorage.getItem('showVideos')
-    const showLinkPreviews = localStorage.getItem('showLinkPreviews')
-    
-    get().updateUser(currentUser._id, {
-      showPictures: showPictures !== null ? showPictures === 'true' : true,
-      showVideos: showVideos !== null ? showVideos === 'true' : true,
-      showLinkPreviews: showLinkPreviews !== null ? showLinkPreviews === 'true' : true
-    })
+    const preferences = { showPictures: false, showVideos: false, showLinkPreviews: false }
+    try {
+      for (const attribute of localAttributes) {
+        // Keep Backbone's per-user keys. Adopt the old React global setting
+        // only once, so it cannot become another account's preference too.
+        const key = currentUser._id + attribute
+        const value = localStorage.getItem(key) ?? localStorage.getItem(attribute)
+        preferences[attribute] = value === '1' || value === 'true'
+        localStorage.setItem(key, preferences[attribute] ? '1' : '0')
+        localStorage.removeItem(attribute)
+      }
+    } catch {
+      // Browsers can deny storage; keep in-memory preferences usable.
+    }
+    get().updateUser(currentUser._id, preferences)
   },
   
   saveLocalAttributes: () => {
     const currentUser = get().currentUser()
     if (!currentUser) return
     
-    localStorage.setItem('showPictures', String(currentUser.showPictures ?? true))
-    localStorage.setItem('showVideos', String(currentUser.showVideos ?? true))
-    localStorage.setItem('showLinkPreviews', String(currentUser.showLinkPreviews ?? true))
+    try {
+      for (const attribute of localAttributes) {
+        localStorage.setItem(currentUser._id + attribute, currentUser[attribute] ? '1' : '0')
+      }
+    } catch {
+      // Saving locally is optional when browser storage is unavailable.
+    }
   },
   
   reset: () => set({ users: new Map(), currentUserId: null })
 }))
-

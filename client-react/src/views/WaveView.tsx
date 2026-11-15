@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useEffect, useLayoutEffect, useRef } from 'react'
+import { useParams, useNavigate, useSearchParams, Navigate } from 'react-router-dom'
 import { useShallow } from 'zustand/react/shallow'
 import { useWaveStore } from '@/stores/waveStore'
 import { useMessageStore } from '@/stores/messageStore'
@@ -10,38 +10,62 @@ import { t } from '@/utils/i18n'
 import UserAvatar from '@/components/UserAvatar'
 import MessageItem from '@/components/MessageItem'
 import WaveReplyForm from '@/components/WaveReplyForm'
+import { useWaveUsers } from '@/hooks/useWaveUsers'
 
 export default function WaveView() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const notificationMessageId = searchParams.get('message')
   const wavesContainerRef = useRef<HTMLDivElement>(null)
   
   const wave = useWaveStore(state => id ? state.getWave(id) : undefined)
   const rootMessages = useMessageStore(useShallow(state => 
     id ? state.getRootMessagesByWave(id) : []
   ))
-  const waveUsers = useWaveStore(useShallow(state => id ? state.getWaveUsers(id) : []))
+  const waveUsers = useWaveUsers(id)
   const openEditWave = useAppStore(state => state.openEditWave)
   const closeReplyForm = useAppStore(state => state.closeReplyForm)
   
   const offlineCount = waveUsers.filter(u => u.status === 'offline').length
 
-  useEffect(() => {
-    if (id) {
-      useWaveStore.getState().setCurrentWave(id)
-      
-      // Jump to first unread message when opening a wave
-      setTimeout(() => {
-        const firstUnread = useMessageStore.getState().getNextUnreadInWave(id, undefined)
-        if (firstUnread) {
-          scrollToMessage(firstUnread._id)
-        }
-      }, 100) // Small delay to ensure DOM is ready
+  useLayoutEffect(() => {
+    if (!id || !useWaveStore.getState().getWave(id)) return
+    useWaveStore.getState().setCurrentWave(id)
+    const store = useMessageStore.getState()
+    const requested = notificationMessageId ? store.getMessage(notificationMessageId) : undefined
+    const target = requested?.waveId === id ? requested : store.getNextUnreadInWave(id, undefined)
+    let cancelled = false
+    const container = wavesContainerRef.current
+    const stopSettling = () => { cancelled = true }
+    if (target) {
+      scrollToMessage(target._id)
+    } else if (container) {
+      container.scrollTop = container.scrollHeight
+      let lastScrollTop = container.scrollTop
+      const settleBottom = () => {
+        // Font and image loading can change initial message heights. Stop
+        // following that layout once the reader moves away from our position.
+        if (cancelled || container.scrollTop !== lastScrollTop) return
+        container.scrollTop = container.scrollHeight
+        lastScrollTop = container.scrollTop
+      }
+      void document.fonts.ready.then(settleBottom)
+      container.querySelectorAll('img').forEach(image => {
+        if (!image.complete) void image.decode().then(settleBottom, () => {})
+      })
+      container.addEventListener('wheel', stopSettling, { passive: true })
+      container.addEventListener('pointerdown', stopSettling, { passive: true })
+      container.addEventListener('keydown', stopSettling)
     }
     return () => {
+      cancelled = true
+      container?.removeEventListener('wheel', stopSettling)
+      container?.removeEventListener('pointerdown', stopSettling)
+      container?.removeEventListener('keydown', stopSettling)
       useWaveStore.getState().setCurrentWave(null)
     }
-  }, [id])
+  }, [id, notificationMessageId])
 
   // Close all reply forms when wave changes
   useEffect(() => {
@@ -90,12 +114,7 @@ export default function WaveView() {
       communicator.quitWave(wave._id)
       useWaveStore.getState().removeWave(wave._id)
       
-      const lastWave = useWaveStore.getState().activeWaves()[0]
-      if (lastWave) {
-        navigate(`/wave/${lastWave._id}`)
-      } else {
-        navigate('/')
-      }
+      navigate('/waves', { replace: true })
     }
   }
 
@@ -110,7 +129,7 @@ export default function WaveView() {
     }
   }
 
-  if (!wave) return null
+  if (!wave) return <Navigate to="/waves" replace />
 
   const handleWavetopClick = (e: React.MouseEvent) => {
     // Only handle clicks on the wavetop div itself, not on buttons or links
@@ -125,17 +144,17 @@ export default function WaveView() {
     <div className="wave">
       <div className="wavetop" onClick={handleWavetopClick}>
         <h2 className="wave-title">{wave.title}</h2>
-        <p className="heads">
+        <div className="heads">
           {waveUsers.map(user => (
             <UserAvatar key={user._id} user={user} />
           ))}
           {offlineCount > 0 && (
-            <p className="offline-list">
+            <span className="offline-list">
               +<span className="count">{offlineCount}</span>
               <span className="mhide"> offline</span>
-            </p>
+            </span>
           )}
-        </p>
+        </div>
         <div className="buttons">
           <a className="button gounread R mhide" href="#" onClick={(e) => { e.preventDefault(); scrollToNextUnread() }}>
             {t('Next unread')}
@@ -171,9 +190,8 @@ export default function WaveView() {
           ))}
         </div>
         
-        <WaveReplyForm waveId={wave._id} />
+        <WaveReplyForm key={wave._id} waveId={wave._id} />
       </div>
     </div>
   )
 }
-

@@ -18,6 +18,11 @@ describeIfReact('file upload', () => {
         cy.visit('http://localhost:8000/loginTest')
         cy.get('input[name="username"]').type(`${userId}{enter}`)
 
+        cy.get('a.edituser').click()
+        cy.get('#edituser-show-pictures').check()
+        cy.get('input[name="edituser-avatar-cb"][value="head1"]').check()
+        cy.get('#edituser-submit').click()
+
         cy.get('#wave-list a.addwave').click()
         cy.get('#editwave').should('be.visible')
         cy.get('#editwave form input#editwave-title').type('Upload Test{enter}')
